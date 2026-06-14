@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_groupimport';
-$plugin->version = 2026010503;   // YYYYMMDDXX. User tour update.
+$plugin->version = 2026060600;   // YYYYMMDDXX. EasyStud course manager foundation.
 $plugin->requires = 2022112800;  // Moodle 4.1 minimum.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '0.1';
+$plugin->maturity = MATURITY_BETA;
+$plugin->release = '0.2.0-beta';
 $plugin->license = 'GPLv3';

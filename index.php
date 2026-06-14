@@ -154,7 +154,7 @@ if ($mform->is_cancelled()) {
         : (!empty($config->defaultuserfield) ? $config->defaultuserfield : 'username');
 
     if ($content === false || $content === null || $content === '') {
-        $errors[] = get_string('csvloaderror', 'local_groupimport', 'Empty file');
+        $errors[] = get_string('csvloaderror', 'local_groupimport', get_string('csvemptyfiledetail', 'local_groupimport'));
     } else {
         // Parse CSV (supports ';' and ',').
         $parsed = local_groupimport_parse_csv_content($content, $errors);
@@ -183,31 +183,31 @@ if ($mform->is_cancelled()) {
                 $errors[] = get_string('csvmissingcolumns', 'local_groupimport');
             } else {
                 /**
-             * Clean a CSV cell value (handles BOM, NBSP, zero-width, trims).
-             */
-            function local_groupimport_clean_cell(string $value): string {
-                // Remove BOM if it somehow appears at cell level.
-                $value = preg_replace('/^\xEF\xBB\xBF/u', '', $value);
+                 * Clean a CSV cell value (handles BOM, NBSP, zero-width, trims).
+                 */
+                function local_groupimport_clean_cell(string $value): string {
+                    // Remove BOM if it somehow appears at cell level.
+                    $value = preg_replace('/^\xEF\xBB\xBF/u', '', $value);
 
-                // Convert non-breaking spaces to normal spaces.
-                $value = str_replace("\xC2\xA0", ' ', $value);
+                    // Convert non-breaking spaces to normal spaces.
+                    $value = str_replace("\xC2\xA0", ' ', $value);
 
-                // Remove common zero-width characters.
-                $value = preg_replace('/[\x{200B}\x{200C}\x{200D}\x{FEFF}]/u', '', $value);
+                    // Remove common zero-width characters.
+                    $value = preg_replace('/[\x{200B}\x{200C}\x{200D}\x{FEFF}]/u', '', $value);
 
-                // Trim standard whitespace.
-                return trim($value);
-            }
+                    // Trim standard whitespace.
+                    return trim($value);
+                }
                 foreach ($rows as $line) {
-                $identifier = ($identifierindex !== false && isset($line[$identifierindex]))
+                    $identifier = ($identifierindex !== false && isset($line[$identifierindex]))
                     ? local_groupimport_clean_cell($line[$identifierindex])
                     : '';
 
-                $groupname = ($groupnameindex !== false && isset($line[$groupnameindex]))
+                    $groupname = ($groupnameindex !== false && isset($line[$groupnameindex]))
                     ? local_groupimport_clean_cell($line[$groupnameindex])
                     : '';
 
-                $groupingname = ($groupingindex !== false && isset($line[$groupingindex]))
+                    $groupingname = ($groupingindex !== false && isset($line[$groupingindex]))
                     ? local_groupimport_clean_cell($line[$groupingindex])
                     : '';
 
@@ -220,8 +220,8 @@ if ($mform->is_cancelled()) {
                         continue;
                     }
                     if ($userfield === 'email') {
-                    $identifier = strtolower(preg_replace('/\s+/u', '', $identifier));
-                }
+                        $identifier = strtolower(preg_replace('/\s+/u', '', $identifier));
+                    }
 
                     // 1. Find the user according to the chosen field.
                     $user = null;
@@ -257,11 +257,11 @@ if ($mform->is_cancelled()) {
                         } else if (count($users) > 1) {
                             $a = (object)['identifier' => $identifier, 'field' => $shortname];
                             $errors[] = get_string('usermultiplematches', 'local_groupimport', $a);
-                            continue; // IMPORTANT: ne pas continuer le traitement de cette ligne
+                            continue; // IMPORTANT: ne pas continuer le traitement de cette ligne.
 
-                        } else { // 0 résultat
+                        } else { // 0 résultat.
                             $errors[] = get_string('usernotfound', 'local_groupimport', $identifier);
-                            continue; // IMPORTANT
+                            continue; // IMPORTANT.
                         }
                     }
                     if (!$user) {
@@ -324,28 +324,28 @@ if ($mform->is_cancelled()) {
                         }
                     }
 
-                  // 5. Add the user to the group (no duplicates).
-                if (!groups_is_member($groupid, $user->id)) {
-                    groups_add_member($groupid, $user->id);
+                    // 5. Add the user to the group (no duplicates).
+                    if (!groups_is_member($groupid, $user->id)) {
+                        groups_add_member($groupid, $user->id);
 
-                    $a = (object)[
+                        $a = (object)[
                         'identifier' => $identifier,
                         'groupname' => $groupname,
-                    ];
+                        ];
 
-                    if (!empty($groupingname)) {
-                        $a->groupingname = $groupingname;
-                        $success[] = get_string('useraddedtogroupwithgrouping', 'local_groupimport', $a);
+                        if (!empty($groupingname)) {
+                            $a->groupingname = $groupingname;
+                            $success[] = get_string('useraddedtogroupwithgrouping', 'local_groupimport', $a);
+                        } else {
+                            $success[] = get_string('useraddedtogroup', 'local_groupimport', $a);
+                        }
                     } else {
-                        $success[] = get_string('useraddedtogroup', 'local_groupimport', $a);
+                        $a = (object)['identifier' => $identifier, 'groupname' => $groupname];
+                        $errors[] = get_string('useralreadyingroup', 'local_groupimport', $a);
                     }
-                } else {
-                    $a = (object)['identifier' => $identifier, 'groupname' => $groupname];
-                    $errors[] = get_string('useralreadyingroup', 'local_groupimport', $a);
-                }
 
-                                }
-                            }
+                }
+            }
         }
     }
 }

@@ -1,0 +1,226 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace local_groupimport\service;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/group/lib.php');
+
+/**
+ * Read-only course structure data used by the EasyStud course manager.
+ *
+ * @package    local_groupimport
+ * @copyright  2026 Kevin Jarniac
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_structure {
+
+    /**
+     * Return course participants, groups and groupings in a UI-friendly shape.
+     *
+     * @param \stdClass $course Course record.
+     * @param \context_course $context Course context.
+     * @return array
+     */
+    public static function get_state(\stdClass $course, \context_course $context): array {
+        global $DB, $OUTPUT;
+
+        $users = get_enrolled_users(
+            $context,
+            '',
+            0,
+            'u.id, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename, ' .
+                'u.username, u.email, u.picture, u.imagealt, u.idnumber, u.institution, u.department, ' .
+                'u.city, u.country, u.lang, u.description',
+            'u.lastname ASC, u.firstname ASC, u.id ASC'
+        );
+
+        $groups = groups_get_all_groups($course->id, 0, 0, 'g.id, g.courseid, g.name, g.description');
+        $groupings = groups_get_all_groupings($course->id);
+        $memberships = self::get_group_memberships($course->id);
+        $roles = self::get_user_roles($context);
+        $groupingmemberships = self::get_grouping_memberships(array_keys($groupings));
+
+        $useritems = [];
+        foreach ($users as $user) {
+            $usergroups = $memberships['byuser'][$user->id] ?? [];
+            $useritems[$user->id] = [
+                'id' => (int)$user->id,
+                'fullname' => fullname($user),
+                'email' => (string)$user->email,
+                'profileimage' => $OUTPUT->user_picture($user, [
+                    'courseid' => $course->id,
+                    'size' => 35,
+                    'link' => false,
+                ]),
+                'profileurl' => (new \moodle_url('/user/profile.php', ['id' => $user->id, 'course' => $course->id]))->out(false),
+                'username' => (string)$user->username,
+                'idnumber' => (string)$user->idnumber,
+                'institution' => (string)$user->institution,
+                'department' => (string)$user->department,
+                'city' => (string)$user->city,
+                'country' => (string)$user->country,
+                'lang' => (string)$user->lang,
+                'description' => format_text((string)$user->description, FORMAT_HTML, ['context' => $context]),
+                'roles' => array_values($roles[$user->id] ?? []),
+                'groups' => array_values(array_map(static function($groupid) use ($groups): string {
+                    return isset($groups[$groupid]) ? format_string($groups[$groupid]->name) : '';
+                }, $usergroups)),
+                'groupids' => array_values(array_map('intval', $usergroups)),
+            ];
+        }
+
+        $groupitems = [];
+        foreach ($groups as $group) {
+            $memberids = $memberships['bygroup'][$group->id] ?? [];
+            $groupitems[$group->id] = [
+                'id' => (int)$group->id,
+                'name' => format_string($group->name),
+                'rawname' => (string)$group->name,
+                'memberids' => array_values(array_map('intval', $memberids)),
+                'membercount' => count($memberids),
+                'groupingids' => array_values(array_map('intval', $groupingmemberships['bygroup'][$group->id] ?? [])),
+            ];
+        }
+
+        $groupingitems = [];
+        foreach ($groupings as $grouping) {
+            $groupids = $groupingmemberships['bygrouping'][$grouping->id] ?? [];
+            $groupingitems[$grouping->id] = [
+                'id' => (int)$grouping->id,
+                'name' => format_string($grouping->name),
+                'rawname' => (string)$grouping->name,
+                'groupids' => array_values(array_map('intval', $groupids)),
+                'groupcount' => count($groupids),
+            ];
+        }
+
+        return [
+            'users' => $useritems,
+            'groups' => $groupitems,
+            'groupings' => $groupingitems,
+            'ungroupedgroupids' => self::get_ungrouped_group_ids($groupitems),
+        ];
+    }
+
+    /**
+     * Return group memberships indexed by user and by group.
+     *
+     * @param int $courseid Course id.
+     * @return array
+     */
+    protected static function get_group_memberships(int $courseid): array {
+        global $DB;
+
+        $sql = "SELECT gm.id, gm.userid, gm.groupid
+                  FROM {groups_members} gm
+                  JOIN {groups} g ON g.id = gm.groupid
+                 WHERE g.courseid = :courseid
+              ORDER BY gm.userid ASC, gm.groupid ASC";
+        $records = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+        $byuser = [];
+        $bygroup = [];
+
+        foreach ($records as $record) {
+            $byuser[(int)$record->userid][] = (int)$record->groupid;
+            $bygroup[(int)$record->groupid][] = (int)$record->userid;
+        }
+
+        return [
+            'byuser' => $byuser,
+            'bygroup' => $bygroup,
+        ];
+    }
+
+    /**
+     * Return course role labels indexed by user.
+     *
+     * @param \context_course $context Course context.
+     * @return array
+     */
+    protected static function get_user_roles(\context_course $context): array {
+        global $DB;
+
+        $sql = "SELECT ra.id, ra.userid, r.id AS roleid, r.name, r.shortname
+                  FROM {role_assignments} ra
+                  JOIN {role} r ON r.id = ra.roleid
+                 WHERE ra.contextid = :contextid
+              ORDER BY r.sortorder ASC, r.shortname ASC";
+        $records = $DB->get_records_sql($sql, ['contextid' => $context->id]);
+        $roles = [];
+
+        foreach ($records as $record) {
+            $role = (object)[
+                'id' => (int)$record->roleid,
+                'name' => $record->name,
+                'shortname' => $record->shortname,
+            ];
+            $roles[(int)$record->userid][(int)$record->roleid] = role_get_name($role, $context);
+        }
+
+        return $roles;
+    }
+
+    /**
+     * Return grouping memberships indexed both ways.
+     *
+     * @param array $groupingids Grouping ids.
+     * @return array
+     */
+    protected static function get_grouping_memberships(array $groupingids): array {
+        global $DB;
+
+        if (empty($groupingids)) {
+            return [
+                'bygroup' => [],
+                'bygrouping' => [],
+            ];
+        }
+
+        [$insql, $params] = $DB->get_in_or_equal($groupingids, SQL_PARAMS_NAMED);
+        $records = $DB->get_records_select('groupings_groups', "groupingid $insql", $params, 'groupingid ASC, groupid ASC');
+        $bygroup = [];
+        $bygrouping = [];
+
+        foreach ($records as $record) {
+            $bygroup[(int)$record->groupid][] = (int)$record->groupingid;
+            $bygrouping[(int)$record->groupingid][] = (int)$record->groupid;
+        }
+
+        return [
+            'bygroup' => $bygroup,
+            'bygrouping' => $bygrouping,
+        ];
+    }
+
+    /**
+     * Groups without a grouping still need an obvious place in the tree.
+     *
+     * @param array $groups Group data.
+     * @return array
+     */
+    protected static function get_ungrouped_group_ids(array $groups): array {
+        $ids = [];
+        foreach ($groups as $group) {
+            if (empty($group['groupingids'])) {
+                $ids[] = (int)$group['id'];
+            }
+        }
+
+        return $ids;
+    }
+}
