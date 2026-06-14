@@ -199,6 +199,7 @@ function local_groupimport_build_manage_template_data(
         'csvlabel' => get_string('csvimportlink', 'local_groupimport'),
         'clipboardlabel' => get_string('clipboardtools', 'local_groupimport'),
         'participantstitle' => get_string('participants', 'local_groupimport'),
+        'participantscountlabel' => get_string('participantscount', 'local_groupimport', count($users)),
         'participantactions' => [
             [
                 'icon' => 'fa-eye',
@@ -229,8 +230,13 @@ function local_groupimport_build_manage_template_data(
             ['' => get_string('allgroups', 'local_groupimport')] + local_groupimport_group_filter_options($groups)
         ),
         'searchplaceholder' => get_string('searchparticipants', 'local_groupimport'),
+        'noparticipantsstate' => get_string('noparticipantsstate', 'local_groupimport'),
         'participants' => [],
         'groupstructuretitle' => get_string('groupstructure', 'local_groupimport'),
+        'groupstructuresummarylabel' => get_string('groupstructuresummary', 'local_groupimport', (object)[
+            'groupings' => count($groupings),
+            'groups' => count($groups),
+        ]),
         'groupactions' => [
             [
                 'icon' => 'fa-trash',
@@ -257,6 +263,7 @@ function local_groupimport_build_manage_template_data(
         'newgroupingplaceholder' => get_string('newgroupingplaceholder', 'local_groupimport'),
         'creategrouplabel' => get_string('creategroup', 'local_groupimport'),
         'creategroupinglabel' => get_string('creategrouping', 'local_groupimport'),
+        'nogroupstructurestate' => get_string('nogroupstructurestate', 'local_groupimport'),
         'groupings' => [],
         'ungroupedgroups' => [],
         'groupswithoutgrouping' => get_string('groupswithoutgrouping', 'local_groupimport'),
@@ -304,6 +311,8 @@ function local_groupimport_build_manage_template_data(
             $templatedata['ungroupedgroups'][] = local_groupimport_build_group_template_data($course->id, $groups[$groupid], $users);
         }
     }
+
+    $templatedata['hasgroupstructure'] = !empty($templatedata['groupings']) || !empty($templatedata['ungroupedgroups']);
 
     return $templatedata;
 }

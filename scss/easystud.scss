@@ -111,6 +111,31 @@
     margin: 0;
   }
 
+  &__panel-title-wrap {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__panel-badge {
+    background: #e8f1fa;
+    border: 1px solid #d0dfef;
+    border-radius: 999px;
+    color: #35556f;
+    display: inline-flex;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 0.2rem 0.55rem;
+  }
+
+  &__panel-badge--accent {
+    background: #edf7f1;
+    border-color: #cee2d6;
+    color: #225842;
+  }
+
   &__filters {
     background: var(--local-groupimport-easystud-surface-soft);
     border: 1px solid #e3eaf2;
@@ -136,6 +161,34 @@
   &__participant-list {
     display: grid;
     gap: 0.7rem;
+  }
+
+  &__empty-state {
+    align-items: center;
+    background: linear-gradient(180deg, #fbfdff 0%, #f5f8fb 100%);
+    border: 1px dashed #d4e0eb;
+    border-radius: 0.9rem;
+    color: #5d7082;
+    display: grid;
+    gap: 0.45rem;
+    justify-items: center;
+    min-height: 8rem;
+    padding: 1.2rem;
+    text-align: center;
+
+    .fa {
+      color: #6f8aa4;
+      font-size: 1.35rem;
+    }
+
+    p {
+      max-width: 26rem;
+    }
+  }
+
+  &__empty-state--structure {
+    background: linear-gradient(180deg, #fbfdfb 0%, #f4f8f5 100%);
+    border-color: #d8e4da;
   }
 
   &-user {
