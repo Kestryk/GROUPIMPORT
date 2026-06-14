@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_groupimport';
-$plugin->version = 2026060600;   // YYYYMMDDXX. EasyStud course manager foundation.
-$plugin->requires = 2022112800;  // Moodle 4.1 minimum.
+$plugin->version = 2026061400;   // YYYYMMDDXX. EasyStud UI work on Moodle 5.1.
+$plugin->requires = 2025100600;  // Moodle 5.1 minimum.
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.2.0-beta';
+$plugin->release = '0.3.0-beta';
 $plugin->license = 'GPLv3';
