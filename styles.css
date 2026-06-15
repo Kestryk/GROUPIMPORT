@@ -25,6 +25,21 @@
 .local-groupimport-easystud__navigation {
   margin-bottom: 1rem;
 }
+.local-groupimport-easystud__notifications {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.9rem;
+}
+.local-groupimport-easystud__notification {
+  border-radius: 0.75rem;
+  box-shadow: 0 0.3rem 0.8rem rgba(31, 42, 55, 0.08);
+  margin: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.local-groupimport-easystud__notification.is-leaving {
+  opacity: 0;
+  transform: translateY(-0.2rem);
+}
 .local-groupimport-easystud__header {
   align-items: flex-start;
   display: block;
@@ -172,7 +187,7 @@
   cursor: pointer;
   display: grid;
   gap: 0.85rem;
-  grid-template-columns: 4.35rem minmax(0, 1fr);
+  grid-template-columns: 1.2rem 4.35rem minmax(0, 1fr);
   padding: 0.85rem 0.9rem;
   position: relative;
   transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
@@ -192,10 +207,61 @@
   cursor: grabbing;
   opacity: 0.62;
 }
+.local-groupimport-easystud-selector {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  margin: 0;
+  position: relative;
+}
+.local-groupimport-easystud-selector input {
+  cursor: pointer;
+  height: 100%;
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+.local-groupimport-easystud-selector__ui {
+  background: #fff;
+  border: 1.5px solid #b8c7d6;
+  border-radius: 0.4rem;
+  box-shadow: 0 0.1rem 0.35rem rgba(31, 42, 55, 0.06);
+  display: inline-flex;
+  height: 1.15rem;
+  position: relative;
+  transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  width: 1.15rem;
+}
+.local-groupimport-easystud-selector__ui::after {
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+  content: "";
+  height: 0.52rem;
+  left: 0.34rem;
+  opacity: 0;
+  position: absolute;
+  top: 0.14rem;
+  transform: rotate(45deg) scale(0.8);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  width: 0.28rem;
+}
+.local-groupimport-easystud [data-selectable-type].is-selected > .local-groupimport-easystud-selector .local-groupimport-easystud-selector__ui, .local-groupimport-easystud-selector input:checked + .local-groupimport-easystud-selector__ui {
+  background: var(--local-groupimport-easystud-primary);
+  border-color: var(--local-groupimport-easystud-primary);
+  box-shadow: 0 0 0 0.18rem rgba(15, 108, 191, 0.12);
+}
+.local-groupimport-easystud [data-selectable-type].is-selected > .local-groupimport-easystud-selector .local-groupimport-easystud-selector__ui::after, .local-groupimport-easystud-selector input:checked + .local-groupimport-easystud-selector__ui::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
 .local-groupimport-easystud--compact-users .local-groupimport-easystud-user {
   align-items: center;
   gap: 0.55rem;
-  grid-template-columns: 1.4rem minmax(0, 1fr);
+  grid-template-columns: 1.2rem 1.4rem minmax(0, 1fr);
   padding: 0.45rem 0.65rem;
 }
 .local-groupimport-easystud-user__rail {
@@ -203,6 +269,10 @@
   display: grid;
   gap: 0.45rem;
   justify-items: start;
+}
+.local-groupimport-easystud-user > .local-groupimport-easystud-selector {
+  align-self: start;
+  margin-top: 0.15rem;
 }
 .local-groupimport-easystud-user__drag-handle {
   align-items: center;
@@ -391,11 +461,18 @@
   border-radius: 0.95rem;
   box-shadow: var(--local-groupimport-easystud-shadow-soft);
   padding: 0.7rem 0.8rem 0.8rem;
+  position: relative;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 .local-groupimport-easystud-tree__section.is-drop-target, .local-groupimport-easystud-tree__section.is-selected {
   border-color: #8bb49f;
   box-shadow: 0 0.65rem 1.2rem rgba(27, 127, 90, 0.09);
+}
+.local-groupimport-easystud-tree__section > .local-groupimport-easystud-selector {
+  left: 0.85rem;
+  position: absolute;
+  top: 0.9rem;
+  z-index: 2;
 }
 .local-groupimport-easystud-tree__section--ungrouped {
   background: linear-gradient(180deg, #fff 0%, #fcfcfd 100%);
@@ -406,6 +483,7 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.55rem;
+  padding-left: 1.6rem;
 }
 .local-groupimport-easystud-tree__toggle {
   align-items: center;
@@ -445,6 +523,7 @@
   border-radius: 0.8rem;
   box-shadow: 0 0.18rem 0.6rem rgba(31, 42, 55, 0.05);
   cursor: grab;
+  position: relative;
   padding: 0.7rem;
   transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
@@ -462,11 +541,18 @@
   border-color: #99bbdc;
   box-shadow: 0 0.6rem 1.1rem rgba(15, 108, 191, 0.09);
 }
+.local-groupimport-easystud-group > .local-groupimport-easystud-selector {
+  left: 0.65rem;
+  position: absolute;
+  top: 0.68rem;
+  z-index: 2;
+}
 .local-groupimport-easystud-group__header {
   align-items: center;
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.45rem;
+  padding-left: 1.5rem;
 }
 .local-groupimport-easystud-group__header .badge {
   background: #fff !important;
@@ -508,9 +594,9 @@
 .local-groupimport-easystud-group__unlink-button {
   align-items: center;
   background: transparent;
-  border: 1px solid #e4d7d7;
+  border: 1px solid #e6dcd2;
   border-radius: 999px;
-  color: #9b4a4a;
+  color: #8a5d2b;
   display: inline-flex;
   flex: 0 0 auto;
   height: 1.85rem;
@@ -519,8 +605,8 @@
 }
 .local-groupimport-easystud-group__unlink-button:hover, .local-groupimport-easystud-group__unlink-button:focus {
   background: #fff;
-  border-color: #d7bdbd;
-  color: #7d2626;
+  border-color: #d6c0ab;
+  color: #71461a;
   text-decoration: none;
 }
 .local-groupimport-easystud-group__members {
@@ -539,13 +625,18 @@
   gap: 0.5rem;
   justify-content: space-between;
   min-height: 2.25rem;
-  padding: 0.25rem 0.45rem 0.25rem 0.65rem;
+  padding: 0.25rem 0.45rem 0.25rem 0.45rem;
 }
 .local-groupimport-easystud-member.is-selected {
   background: #eef6fc;
   border-color: #9fbddd;
 }
+.local-groupimport-easystud-member > .local-groupimport-easystud-selector {
+  display: inline-flex;
+  margin-right: 0.1rem;
+}
 .local-groupimport-easystud-member__name {
+  flex: 1 1 auto;
   font-size: 0.86rem;
   min-width: 0;
   overflow: hidden;
@@ -554,33 +645,22 @@
 }
 .local-groupimport-easystud-member__remove {
   align-items: center;
-  background: #fff5f5;
-  border: 1px solid #efcaca;
+  background: transparent;
+  border: 1px solid #edd3d3;
   border-radius: 999px;
   color: var(--local-groupimport-easystud-danger);
-  cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1rem;
   height: 1.7rem;
   justify-content: center;
   line-height: 1;
-  padding: 0;
-  text-decoration: none !important;
   width: 1.7rem;
-}
-.local-groupimport-easystud-member__remove span {
-  display: block;
-  line-height: 1;
-  margin-top: -0.08rem;
 }
 .local-groupimport-easystud-member__remove:hover, .local-groupimport-easystud-member__remove:focus {
   background: #fff;
   border-color: #dfb7b7;
   color: #811d1d;
-  box-shadow: 0 0 0 0.18rem rgba(161, 43, 43, 0.08);
-  outline: 0;
   text-decoration: none;
 }
 .local-groupimport-easystud-group-email {
@@ -687,6 +767,21 @@
 }
 .local-groupimport-easystud-modal__body {
   padding: 1rem;
+}
+.local-groupimport-easystud [data-selectable-type].is-selection-disabled .local-groupimport-easystud-selector {
+  cursor: not-allowed;
+}
+.local-groupimport-easystud [data-selectable-type].is-selection-disabled .local-groupimport-easystud-selector__ui {
+  background: #f2f5f8;
+  border-color: #d7e0e8;
+  box-shadow: none;
+  opacity: 0.45;
+}
+.local-groupimport-easystud [data-selectable-type].is-selection-disabled .local-groupimport-easystud-selector input {
+  cursor: not-allowed;
+}
+.local-groupimport-easystud [data-selectable-type].is-selection-disabled .local-groupimport-easystud-selector__ui::after {
+  opacity: 0;
 }
 .local-groupimport-easystud-modal__footer {
   display: flex;
@@ -835,7 +930,11 @@
     grid-template-columns: 1fr;
   }
   .local-groupimport-easystud-user {
-    grid-template-columns: 3.9rem minmax(0, 1fr);
+    grid-template-columns: 1.2rem 3.9rem minmax(0, 1fr);
+  }
+  .local-groupimport-easystud-tree__section > .local-groupimport-easystud-selector {
+    left: 0.75rem;
+    top: 0.82rem;
   }
   .local-groupimport-easystud-user__meta {
     gap: 0.35rem 0.6rem;
@@ -849,3 +948,5 @@
     grid-template-columns: 1fr;
   }
 }
+
+/*# sourceMappingURL=styles.css.map */

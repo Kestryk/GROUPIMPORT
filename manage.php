@@ -187,7 +187,24 @@ function local_groupimport_build_manage_template_data(
         'groups' => get_string('groupslabel', 'local_groupimport'),
         'nativedetails' => get_string('opennativeprofile', 'local_groupimport'),
         'removeuser' => str_replace('{}', '{name}', get_string('removeuserfromgroup', 'local_groupimport')),
+        'selectionmode' => get_string('selectionmode', 'local_groupimport'),
         'showless' => get_string('showless', 'local_groupimport'),
+        'groupswithoutgrouping' => get_string('groupswithoutgrouping', 'local_groupimport'),
+        'rename' => get_string('rename', 'local_groupimport'),
+        'save' => get_string('save'),
+        'addemailstogroup' => get_string('addemailstogroup', 'local_groupimport'),
+        'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
+        'addemails' => get_string('addemails', 'local_groupimport'),
+        'addgroupstogrouping' => get_string('addgroupstogrouping', 'local_groupimport'),
+        'pastegroupsplaceholder' => get_string('pastegroupsplaceholder', 'local_groupimport'),
+        'addgroups' => get_string('addgroups', 'local_groupimport'),
+        'nogroupmembers' => get_string('nogroupmembers', 'local_groupimport'),
+        'memberscounttemplate' => get_string('memberscount', 'local_groupimport', '__count__'),
+        'groupscounttemplate' => get_string('groupscount', 'local_groupimport', '__count__'),
+        'groupstructuresummarytemplate' => get_string('groupstructuresummary', 'local_groupimport', (object)[
+            'groupings' => '__groupings__',
+            'groups' => '__groups__',
+        ]),
     ];
 
     $templatedata = [
@@ -201,6 +218,7 @@ function local_groupimport_build_manage_template_data(
         'csvurl' => $csvurl->out(false),
         'csvlabel' => get_string('csvimportlink', 'local_groupimport'),
         'clipboardlabel' => get_string('clipboardtools', 'local_groupimport'),
+        'selectionmodelabel' => get_string('selectionmode', 'local_groupimport'),
         'participantstitle' => get_string('participants', 'local_groupimport'),
         'participantscountlabel' => get_string('participantscount', 'local_groupimport', count($users)),
         'participantactions' => [
@@ -224,6 +242,13 @@ function local_groupimport_build_manage_template_data(
                 'class' => 'btn btn-outline-secondary btn-sm',
                 'attribute' => 'data-easystud-density-toggle="1" aria-pressed="false"',
                 'disabled' => false,
+            ],
+            [
+                'icon' => 'fa-arrow-right',
+                'label' => get_string('moveselectedparticipants', 'local_groupimport'),
+                'class' => 'btn btn-outline-primary btn-sm',
+                'attribute' => 'data-easystud-move-selected-participants="1"',
+                'disabled' => true,
             ],
         ],
         'roleoptions' => local_groupimport_build_select_options(
@@ -259,6 +284,12 @@ function local_groupimport_build_manage_template_data(
                 'class' => 'btn btn-outline-danger btn-sm',
                 'attribute' => 'data-easystud-delete-selected-members="1"',
             ],
+            [
+                'icon' => 'fa-arrow-right',
+                'label' => get_string('moveselectedgroups', 'local_groupimport'),
+                'class' => 'btn btn-outline-primary btn-sm',
+                'attribute' => 'data-easystud-move-selected-groups="1"',
+            ],
         ],
         'quickcreateurl' => (new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]))->out(false),
         'sesskey' => sesskey(),
@@ -273,6 +304,12 @@ function local_groupimport_build_manage_template_data(
         'clipboarddesc' => get_string('clipboardtools_desc', 'local_groupimport'),
         'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
         'participantdetailstitle' => get_string('participantdetails', 'local_groupimport'),
+        'movedialogtitle' => get_string('movedialogtitle', 'local_groupimport'),
+        'movedialogparticipants' => get_string('movedialogparticipants', 'local_groupimport'),
+        'movedialoggroups' => get_string('movedialoggroups', 'local_groupimport'),
+        'movedestinationgroup' => get_string('movedestinationgroup', 'local_groupimport'),
+        'movedestinationgrouping' => get_string('movedestinationgrouping', 'local_groupimport'),
+        'moveconfirm' => get_string('moveconfirm', 'local_groupimport'),
         'deleteconfirmationtitle' => get_string('deleteconfirmationtitle', 'local_groupimport'),
         'confirmdeletegroups' => get_string('confirmdeletegroups', 'local_groupimport'),
         'confirmdeletegroupings' => get_string('confirmdeletegroupings', 'local_groupimport'),
@@ -290,7 +327,7 @@ function local_groupimport_build_manage_template_data(
             'email' => $user['email'],
             'profileimage' => $user['profileimage'],
             'userdetailjson' => json_encode($user),
-            'usercopyfieldsjson' => json_encode($user['copyfields']),
+            'usercopyfieldsjson' => json_encode($user['copyfields'] ?? []),
             'searchtext' => $searchtext,
             'roletext' => core_text::strtolower(implode('|', $user['roles'])),
             'groupidscsv' => implode(',', $user['groupids']),
@@ -518,6 +555,7 @@ function local_groupimport_build_grouping_template_data(int $courseid, array $gr
  * @param int $courseid Course id.
  * @param array $group Group data.
  * @param array $users User data.
+ * @param bool $withingrouping True when the group is rendered inside a grouping.
  * @return array
  */
 function local_groupimport_build_group_template_data(int $courseid, array $group, array $users, bool $withingrouping = false): array {

@@ -39,7 +39,87 @@ require_capability('moodle/course:managegroups', $context);
 $response = ['success' => false];
 
 try {
-    if ($action === 'movegroup') {
+    if ($action === 'creategroup') {
+        $name = trim(required_param('groupname', PARAM_TEXT));
+        if ($name === '') {
+            throw new moodle_exception('invaliddata', 'error');
+        }
+
+        $group = (object)[
+            'courseid' => $course->id,
+            'name' => $name,
+        ];
+        $groupid = groups_create_group($group);
+
+        $response['success'] = true;
+        $response['message'] = get_string('groupcreated', 'local_groupimport');
+        $response['group'] = [
+            'id' => (int)$groupid,
+            'name' => format_string($name),
+            'rawname' => $name,
+            'membercount' => 0,
+        ];
+    } else if ($action === 'creategrouping') {
+        $name = trim(required_param('groupingname', PARAM_TEXT));
+        if ($name === '') {
+            throw new moodle_exception('invaliddata', 'error');
+        }
+
+        $grouping = (object)[
+            'courseid' => $course->id,
+            'name' => $name,
+        ];
+        $groupingid = groups_create_grouping($grouping);
+
+        $response['success'] = true;
+        $response['message'] = get_string('groupingcreated', 'local_groupimport');
+        $response['grouping'] = [
+            'id' => (int)$groupingid,
+            'name' => format_string($name),
+            'rawname' => $name,
+            'groupcount' => 0,
+        ];
+    } else if ($action === 'renamegroup') {
+        $groupid = required_param('groupid', PARAM_INT);
+        $name = trim(required_param('name', PARAM_TEXT));
+        $group = groups_get_group($groupid);
+
+        if (!$group || (int)$group->courseid !== (int)$course->id || $name === '') {
+            throw new moodle_exception('invaliddata', 'error');
+        }
+
+        $group->name = $name;
+        groups_update_group($group);
+
+        $response['success'] = true;
+        $response['message'] = get_string('groupsaved', 'local_groupimport');
+        $response['group'] = [
+            'id' => (int)$groupid,
+            'name' => format_string($name),
+            'rawname' => $name,
+        ];
+    } else if ($action === 'renamegrouping') {
+        global $DB;
+
+        $groupingid = required_param('groupingid', PARAM_INT);
+        $name = trim(required_param('name', PARAM_TEXT));
+        $grouping = $DB->get_record('groupings', ['id' => $groupingid, 'courseid' => $course->id], '*', MUST_EXIST);
+
+        if ($name === '') {
+            throw new moodle_exception('invaliddata', 'error');
+        }
+
+        $grouping->name = $name;
+        groups_update_grouping($grouping);
+
+        $response['success'] = true;
+        $response['message'] = get_string('groupingsaved', 'local_groupimport');
+        $response['grouping'] = [
+            'id' => (int)$groupingid,
+            'name' => format_string($name),
+            'rawname' => $name,
+        ];
+    } else if ($action === 'movegroup') {
         global $DB;
 
         $groupid = required_param('groupid', PARAM_INT);

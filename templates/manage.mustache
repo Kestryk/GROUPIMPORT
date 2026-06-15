@@ -5,6 +5,8 @@
 >
     {{{navigationhtml}}}
 
+    <div class="local-groupimport-easystud__notifications" data-easystud-notifications="1" aria-live="polite"></div>
+
     <div class="local-groupimport-easystud__header">
         <div>
             <span class="local-groupimport-easystud__eyebrow">{{eyebrow}}</span>
@@ -68,7 +70,11 @@
                     >
                 </div>
 
-                <div class="local-groupimport-easystud__participant-list" data-easystud-participant-list="1">
+                <div
+                    class="local-groupimport-easystud__participant-list"
+                    data-easystud-participant-list="1"
+                    data-empty-filtered-label="{{noparticipantsstate}}"
+                >
                     {{#participants}}
                         <div
                             class="local-groupimport-easystud-user"
@@ -85,6 +91,10 @@
                             data-group-ids="{{groupidscsv}}"
                             draggable="true"
                         >
+                            <label class="local-groupimport-easystud-selector" aria-label="{{selectionmodelabel}}">
+                                <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                            </label>
                             <div class="local-groupimport-easystud-user__rail">
                                 <span
                                     class="local-groupimport-easystud-user__drag-handle"
@@ -161,7 +171,7 @@
                         </div>
                     {{/participants}}
                     {{^participants}}
-                        <div class="local-groupimport-easystud__empty-state">
+                        <div class="local-groupimport-easystud__empty-state" data-easystud-empty-state="participants">
                             <span class="fa fa-users" aria-hidden="true"></span>
                             <p class="mb-0">{{noparticipantsstate}}</p>
                         </div>
@@ -183,7 +193,7 @@
                                 type="button"
                                 class="{{class}}"
                                 {{{attribute}}}
-                                disabled
+                                {{#disabled}}disabled{{/disabled}}
                             >
                                 <span class="fa {{icon}} me-2" aria-hidden="true"></span>
                                 <span>{{label}}</span>
@@ -240,6 +250,10 @@
                             data-selectable-type="grouping"
                             data-selectable-id="{{id}}"
                         >
+                            <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--section" aria-label="{{selectionmodelabel}}">
+                                <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                            </label>
                             <div class="local-groupimport-easystud-grouping__header">
                                 <button
                                     type="button"
@@ -308,6 +322,10 @@
                                         data-selectable-id="{{id}}"
                                         draggable="true"
                                     >
+                                        <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
+                                            <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                            <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                        </label>
                                         <div class="local-groupimport-easystud-group__header">
                                             <span class="local-groupimport-easystud-group__drag-handle" aria-hidden="true">
                                                 <span class="fa fa-arrows" aria-hidden="true"></span>
@@ -359,10 +377,14 @@
                                                     data-selectable-type="member"
                                                     data-selectable-id="{{selectableid}}"
                                                 >
+                                                    <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--member" aria-label="{{selectionmodelabel}}">
+                                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                                    </label>
                                                     <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
                                                     <button
                                                         type="button"
-                                                        class="btn local-groupimport-easystud-member__remove"
+                                                        class="btn btn-link p-0 local-groupimport-easystud-member__remove"
                                                         data-easystud-remove-member="1"
                                                         data-group-id="{{groupid}}"
                                                         data-user-id="{{userid}}"
@@ -426,6 +448,10 @@
                                     data-selectable-id="{{id}}"
                                     draggable="true"
                                 >
+                                    <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
+                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                    </label>
                                     <div class="local-groupimport-easystud-group__header">
                                         <span class="local-groupimport-easystud-group__drag-handle" aria-hidden="true">
                                             <span class="fa fa-arrows" aria-hidden="true"></span>
@@ -466,10 +492,14 @@
                                                 data-selectable-type="member"
                                                 data-selectable-id="{{selectableid}}"
                                             >
+                                                <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--member" aria-label="{{selectionmodelabel}}">
+                                                    <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                                    <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                                </label>
                                                 <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
                                                 <button
                                                     type="button"
-                                                    class="btn local-groupimport-easystud-member__remove"
+                                                    class="btn btn-link p-0 local-groupimport-easystud-member__remove"
                                                     data-easystud-remove-member="1"
                                                     data-group-id="{{groupid}}"
                                                     data-user-id="{{userid}}"
@@ -608,6 +638,48 @@
                 <div class="local-groupimport-easystud-modal__footer">
                     <button type="button" class="btn btn-outline-secondary" data-easystud-close-confirm-modal="1">{{cancellabel}}</button>
                     <button type="button" class="btn btn-danger" data-easystud-confirm-modal-submit="1">{{confirmlabel}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="local-groupimport-easystud-modal"
+        data-easystud-move-modal="1"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="local-groupimport-easystud-move-title"
+    >
+        <div class="local-groupimport-easystud-modal__dialog">
+            <div class="local-groupimport-easystud-modal__header">
+                <h3 id="local-groupimport-easystud-move-title" class="h5 mb-0">{{movedialogtitle}}</h3>
+                <button
+                    type="button"
+                    class="btn btn-link p-0 local-groupimport-easystud-modal__close"
+                    data-easystud-close-move-modal="1"
+                    aria-label="{{#str}} closebuttontitle, core {{/str}}"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div
+                class="local-groupimport-easystud-modal__body"
+                data-move-participants-help="{{movedialogparticipants}}"
+                data-move-groups-help="{{movedialoggroups}}"
+                data-move-participants-label="{{movedestinationgroup}}"
+                data-move-groups-label="{{movedestinationgrouping}}"
+            >
+                <p class="text-muted mb-3" data-easystud-move-modal-help="1">{{movedialogparticipants}}</p>
+                <label class="form-label" for="local-groupimport-easystud-move-destination" data-easystud-move-modal-label="1">{{movedestinationgroup}}</label>
+                <select
+                    id="local-groupimport-easystud-move-destination"
+                    class="form-select custom-select"
+                    data-easystud-move-destination="1"
+                ></select>
+                <div class="local-groupimport-easystud-modal__footer">
+                    <button type="button" class="btn btn-outline-secondary" data-easystud-close-move-modal="1">{{cancellabel}}</button>
+                    <button type="button" class="btn btn-primary" data-easystud-confirm-move="1">{{moveconfirm}}</button>
                 </div>
             </div>
         </div>
