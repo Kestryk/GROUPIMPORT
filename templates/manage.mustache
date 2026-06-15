@@ -79,6 +79,7 @@
                             data-user-id="{{id}}"
                             data-user-email="{{email}}"
                             data-user-detail="{{userdetailjson}}"
+                            data-user-copy-fields="{{usercopyfieldsjson}}"
                             data-search-text="{{searchtext}}"
                             data-role-text="{{roletext}}"
                             data-group-ids="{{groupidscsv}}"
@@ -322,6 +323,17 @@
                                             >
                                                 <span class="fa fa-at" aria-hidden="true"></span>
                                             </button>
+                                            {{#withingrouping}}
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-link p-0 local-groupimport-easystud-group__unlink-button"
+                                                    data-easystud-remove-from-grouping="{{id}}"
+                                                    aria-label="{{removefromgroupinglabel}}"
+                                                    data-easystud-hover-help="{{removefromgroupinglabel}}"
+                                                >
+                                                    <span class="fa fa-unlink" aria-hidden="true"></span>
+                                                </button>
+                                            {{/withingrouping}}
                                         </div>
 
                                         <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename">
@@ -350,11 +362,12 @@
                                                     <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
                                                     <button
                                                         type="button"
-                                                        class="btn btn-link p-0 local-groupimport-easystud-member__remove"
+                                                        class="btn local-groupimport-easystud-member__remove"
                                                         data-easystud-remove-member="1"
                                                         data-group-id="{{groupid}}"
                                                         data-user-id="{{userid}}"
                                                         aria-label="{{removeuserlabel}}"
+                                                        title="{{removeuserlabel}}"
                                                         data-easystud-hover-help="{{removeuserlabel}}"
                                                     >
                                                         <span aria-hidden="true">&times;</span>
@@ -456,11 +469,12 @@
                                                 <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
                                                 <button
                                                     type="button"
-                                                    class="btn btn-link p-0 local-groupimport-easystud-member__remove"
+                                                    class="btn local-groupimport-easystud-member__remove"
                                                     data-easystud-remove-member="1"
                                                     data-group-id="{{groupid}}"
                                                     data-user-id="{{userid}}"
                                                     aria-label="{{removeuserlabel}}"
+                                                    title="{{removeuserlabel}}"
                                                     data-easystud-hover-help="{{removeuserlabel}}"
                                                 >
                                                     <span aria-hidden="true">&times;</span>
@@ -569,12 +583,43 @@
         </div>
     </div>
 
+    <div
+        class="local-groupimport-easystud-modal"
+        data-easystud-confirm-modal="1"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="local-groupimport-easystud-confirm-title"
+    >
+        <div class="local-groupimport-easystud-modal__dialog">
+            <div class="local-groupimport-easystud-modal__header">
+                <h3 id="local-groupimport-easystud-confirm-title" class="h5 mb-0">{{deleteconfirmationtitle}}</h3>
+                <button
+                    type="button"
+                    class="btn btn-link p-0 local-groupimport-easystud-modal__close"
+                    data-easystud-close-confirm-modal="1"
+                    aria-label="{{#str}} closebuttontitle, core {{/str}}"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="local-groupimport-easystud-modal__body">
+                <p class="text-muted mb-0" data-easystud-confirm-modal-message="1"></p>
+                <div class="local-groupimport-easystud-modal__footer">
+                    <button type="button" class="btn btn-outline-secondary" data-easystud-close-confirm-modal="1">{{cancellabel}}</button>
+                    <button type="button" class="btn btn-danger" data-easystud-confirm-modal-submit="1">{{confirmlabel}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="local-groupimport-easystud-context-menu" data-easystud-context-menu="1" hidden role="menu">
         {{#contextactions}}
             <button
                 type="button"
                 data-easystud-context-action="{{action}}"
                 data-easystud-contexts="{{contexts}}"
+                {{#fieldkey}}data-easystud-context-field="{{fieldkey}}"{{/fieldkey}}
                 role="menuitem"
             >
                 <span class="fa {{icon}}" aria-hidden="true"></span>

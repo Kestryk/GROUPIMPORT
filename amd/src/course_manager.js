@@ -45,6 +45,36 @@ const copyText = text => {
     }
 };
 
+const getLabels = root => JSON.parse(root.getAttribute('data-easystud-detail-labels') || '{}');
+
+const getSelectedParticipantsForContext = (root, target) => {
+    const selected = Array.from(root.querySelectorAll('[data-easystud-user].' + selectedClass));
+    if (!selected.length) {
+        return target ? [target] : [];
+    }
+    if (!target) {
+        return selected;
+    }
+    return selected.indexOf(target) === -1 ? [target] : selected;
+};
+
+const getUserCopyFields = user => {
+    if (!user) {
+        return [];
+    }
+    try {
+        return JSON.parse(user.getAttribute('data-user-copy-fields') || '[]');
+    } catch (error) {
+        return [];
+    }
+};
+
+const getUserCopyFieldValue = (user, fieldkey) => {
+    const fields = getUserCopyFields(user);
+    const match = fields.find(field => field.key === fieldkey);
+    return match && match.value ? match.value : '';
+};
+
 // Post an EasyStud action.
 const postAction = data => {
     const root = document.getElementById('local-groupimport-easystud');
@@ -108,6 +138,12 @@ const deleteGroupElement = (root, groupid) => {
 const deleteGroupingElement = (root, groupingid) => {
     const grouping = root.querySelector('[data-easystud-grouping-id="' + groupingid + '"]');
     if (grouping) {
+        const ungroupedchildren = root.querySelector('.local-groupimport-easystud-tree__section--ungrouped .local-groupimport-easystud-tree__children');
+        if (ungroupedchildren) {
+            grouping.querySelectorAll(':scope > .local-groupimport-easystud-tree__children > [data-easystud-group-id]').forEach(group => {
+                ungroupedchildren.appendChild(group);
+            });
+        }
         grouping.remove();
     }
     updateSelectionActions(root);
@@ -146,16 +182,39 @@ const createMemberItem = (groupid, userid, fullname, removelabel) => {
 
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.className = 'btn btn-link p-0 local-groupimport-easystud-member__remove';
+    remove.className = 'btn local-groupimport-easystud-member__remove';
     remove.setAttribute('data-easystud-remove-member', '1');
     remove.setAttribute('data-group-id', groupid);
     remove.setAttribute('data-user-id', userid);
     remove.setAttribute('aria-label', removelabel || fullname);
+    remove.setAttribute('title', removelabel || fullname);
     remove.setAttribute('data-easystud-hover-help', removelabel || fullname);
     remove.innerHTML = '<span aria-hidden="true">&times;</span>';
     item.appendChild(remove);
 
     return item;
+};
+
+const normaliseMemberRemoveLabels = root => {
+    const labels = getLabels(root);
+    root.querySelectorAll('[data-easystud-member-id]').forEach(member => {
+        const button = member.querySelector('[data-easystud-remove-member]');
+        const name = member.querySelector('.local-groupimport-easystud-member__name');
+        if (!button || !name) {
+            return;
+        }
+
+        const current = button.getAttribute('aria-label') || '';
+        if (current && current.indexOf('{}') === -1 && current.indexOf('{name}') === -1) {
+            return;
+        }
+
+        const template = labels.removeuser || 'Remove {name} from this group';
+        const label = template.replace('{name}', name.textContent.trim());
+        button.setAttribute('aria-label', label);
+        button.setAttribute('title', label);
+        button.setAttribute('data-easystud-hover-help', label);
+    });
 };
 
 // Apply participant filters.
@@ -181,6 +240,39 @@ const applyFilters = root => {
 const getSelectedItems = (root, type) => {
     const selector = type ? '[data-selectable-type="' + type + '"].' + selectedClass : '[data-selectable-type].' + selectedClass;
     return Array.from(root.querySelectorAll(selector));
+};
+
+const openConfirmModal = (root, message, onconfirm) => {
+    const modal = root.querySelector('[data-easystud-confirm-modal]');
+    const messageNode = root.querySelector('[data-easystud-confirm-modal-message]');
+    const confirmButton = root.querySelector('[data-easystud-confirm-modal-submit]');
+    const closeButtons = root.querySelectorAll('[data-easystud-close-confirm-modal]');
+    if (!modal || !messageNode || !confirmButton) {
+        onconfirm();
+        return;
+    }
+
+    const closeModal = () => {
+        modal.hidden = true;
+        confirmButton.onclick = null;
+    };
+
+    messageNode.textContent = message || '';
+    modal.hidden = false;
+    confirmButton.onclick = () => {
+        closeModal();
+        onconfirm();
+    };
+
+    closeButtons.forEach(button => {
+        button.onclick = closeModal;
+    });
+
+    modal.onclick = event => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
 };
 
 const updateSelectionActions = root => {
@@ -527,6 +619,20 @@ const bindGroupMemberActions = (root, courseId) => {
 // Bind direct grouping group paste actions.
 const bindGroupingGroupActions = (root, courseId) => {
     root.addEventListener('click', event => {
+        const removeButton = event.target.closest('[data-easystud-remove-from-grouping]');
+        if (removeButton && root.contains(removeButton)) {
+            const groupid = removeButton.getAttribute('data-easystud-remove-from-grouping');
+            postAction({
+                courseid: courseId,
+                action: 'movegroup',
+                groupid,
+                groupingid: 0,
+            }).then(() => {
+                moveGroupElementToGrouping(root, groupid, 0);
+            }).catch(() => window.location.reload());
+            return;
+        }
+
         const toggle = event.target.closest('[data-easystud-toggle-grouping-groups]');
         if (toggle && root.contains(toggle)) {
             const groupingid = toggle.getAttribute('data-easystud-toggle-grouping-groups');
@@ -580,6 +686,7 @@ const bindBulkActions = (root, courseId) => {
     const deleteGroupsButton = root.querySelector('[data-easystud-delete-selected-groups]');
     const deleteGroupingsButton = root.querySelector('[data-easystud-delete-selected-groupings]');
     const deleteMembersButton = root.querySelector('[data-easystud-delete-selected-members]');
+    const labels = getLabels(root);
 
     if (deleteGroupsButton) {
         deleteGroupsButton.addEventListener('click', () => {
@@ -589,13 +696,23 @@ const bindBulkActions = (root, courseId) => {
                 return;
             }
 
-            postAction({
-                courseid: courseId,
-                action: 'deletegroups',
-                groupids,
-            }).then(() => {
-                groupids.forEach(groupid => deleteGroupElement(root, groupid));
-            }).catch(() => window.location.reload());
+            const hasmembers = selectedGroups.some(group => group.querySelectorAll('[data-easystud-member-id]').length > 0);
+            const runDelete = () => {
+                postAction({
+                    courseid: courseId,
+                    action: 'deletegroups',
+                    groupids,
+                }).then(() => {
+                    groupids.forEach(groupid => deleteGroupElement(root, groupid));
+                }).catch(() => window.location.reload());
+            };
+
+            if (hasmembers) {
+                openConfirmModal(root, labels.confirmdeletegroups || '', runDelete);
+                return;
+            }
+
+            runDelete();
         });
     }
 
@@ -607,13 +724,25 @@ const bindBulkActions = (root, courseId) => {
                 return;
             }
 
-            postAction({
-                courseid: courseId,
-                action: 'deletegroupings',
-                groupingids,
-            }).then(() => {
-                groupingids.forEach(groupingid => deleteGroupingElement(root, groupingid));
-            }).catch(() => window.location.reload());
+            const hasgroups = selectedGroupings.some(grouping => {
+                return grouping.querySelectorAll(':scope > .local-groupimport-easystud-tree__children > [data-easystud-group-id]').length > 0;
+            });
+            const runDelete = () => {
+                postAction({
+                    courseid: courseId,
+                    action: 'deletegroupings',
+                    groupingids,
+                }).then(() => {
+                    groupingids.forEach(groupingid => deleteGroupingElement(root, groupingid));
+                }).catch(() => window.location.reload());
+            };
+
+            if (hasgroups) {
+                openConfirmModal(root, labels.confirmdeletegroupings || '', runDelete);
+                return;
+            }
+
+            runDelete();
         });
     }
 
@@ -735,17 +864,16 @@ const bindContextMenu = (root, courseId) => {
         const target = context.target;
         hideMenu();
 
-        if (action === 'copy-email') {
-            copyText(target.getAttribute('data-user-email') || '');
+        if (action === 'copy-participant-field') {
+            const fieldkey = button.getAttribute('data-easystud-context-field') || '';
+            const users = getSelectedParticipantsForContext(root, target);
+            const values = users.map(user => getUserCopyFieldValue(user, fieldkey)).filter(Boolean);
+            copyText(values.join('\n'));
         } else if (action === 'participant-open-details') {
             const button = root.querySelector('[data-easystud-open-user="' + target.getAttribute('data-user-id') + '"]');
             if (button) {
                 button.click();
             }
-        } else if (action === 'copy-selected-emails') {
-            const selected = Array.from(root.querySelectorAll('[data-easystud-user].' + selectedClass));
-            const users = selected.length ? selected : [target];
-            copyText(users.map(user => user.getAttribute('data-user-email')).filter(Boolean).join('\n'));
         } else if (action === 'clear-selection') {
             root.querySelectorAll('[data-easystud-user].' + selectedClass).forEach(user => {
                 user.classList.remove(selectedClass);
@@ -1059,5 +1187,6 @@ export const init = (rootId, courseId) => {
         bindOptionalTools(root);
         bindPastePreview(root);
         bindHoverPopovers(root);
+        normaliseMemberRemoveLabels(root);
     });
 };

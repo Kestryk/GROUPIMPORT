@@ -171,6 +171,9 @@ function local_groupimport_build_manage_template_data(
     moodle_url $nativeparticipantsurl,
     string $navigationhtml
 ): array {
+    $alloweduserfields = local_groupimport_get_allowed_user_field_definitions();
+    $users = local_groupimport_enrich_users_with_copy_fields($users, $alloweduserfields);
+
     $detaillabels = [
         'ajaxerror' => get_string('ajaxactionfailed', 'local_groupimport'),
         'username' => get_string('detailusername', 'local_groupimport'),
@@ -270,7 +273,12 @@ function local_groupimport_build_manage_template_data(
         'clipboarddesc' => get_string('clipboardtools_desc', 'local_groupimport'),
         'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
         'participantdetailstitle' => get_string('participantdetails', 'local_groupimport'),
-        'contextactions' => local_groupimport_build_context_actions_template_data(),
+        'deleteconfirmationtitle' => get_string('deleteconfirmationtitle', 'local_groupimport'),
+        'confirmdeletegroups' => get_string('confirmdeletegroups', 'local_groupimport'),
+        'confirmdeletegroupings' => get_string('confirmdeletegroupings', 'local_groupimport'),
+        'confirmlabel' => get_string('confirm', 'local_groupimport'),
+        'cancellabel' => get_string('cancel'),
+        'contextactions' => local_groupimport_build_context_actions_template_data($alloweduserfields),
     ];
 
     foreach ($users as $user) {
@@ -282,6 +290,7 @@ function local_groupimport_build_manage_template_data(
             'email' => $user['email'],
             'profileimage' => $user['profileimage'],
             'userdetailjson' => json_encode($user),
+            'usercopyfieldsjson' => json_encode($user['copyfields']),
             'searchtext' => $searchtext,
             'roletext' => core_text::strtolower(implode('|', $user['roles'])),
             'groupidscsv' => implode(',', $user['groupids']),
@@ -315,6 +324,100 @@ function local_groupimport_build_manage_template_data(
     $templatedata['hasgroupstructure'] = !empty($templatedata['groupings']) || !empty($templatedata['ungroupedgroups']);
 
     return $templatedata;
+}
+
+/**
+ * Return the user identification fields enabled in plugin settings.
+ *
+ * @return array
+ */
+function local_groupimport_get_allowed_user_field_definitions(): array {
+    global $DB;
+
+    $definitions = [
+        'username' => get_string('username'),
+        'email' => get_string('email'),
+        'idnumber' => get_string('idnumber'),
+    ];
+
+    $customfields = $DB->get_records('user_info_field', null, 'name ASC');
+    foreach ($customfields as $field) {
+        $definitions['profile_field_' . $field->shortname] = format_string($field->name);
+    }
+
+    $config = get_config('local_groupimport');
+    $allowed = !empty($config->alloweduserfields)
+        ? array_map('trim', explode(',', $config->alloweduserfields))
+        : ['username', 'email'];
+
+    $result = [];
+    foreach ($allowed as $fieldkey) {
+        if (isset($definitions[$fieldkey])) {
+            $result[$fieldkey] = $definitions[$fieldkey];
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * Enrich users with the copyable field values allowed by plugin settings.
+ *
+ * @param array $users User records.
+ * @param array $alloweduserfields Allowed fields.
+ * @return array
+ */
+function local_groupimport_enrich_users_with_copy_fields(array $users, array $alloweduserfields): array {
+    global $DB;
+
+    if (empty($users) || empty($alloweduserfields)) {
+        return $users;
+    }
+
+    $customshortnames = [];
+    foreach (array_keys($alloweduserfields) as $fieldkey) {
+        if (strpos($fieldkey, 'profile_field_') === 0) {
+            $customshortnames[] = substr($fieldkey, strlen('profile_field_'));
+        }
+    }
+
+    $customvalues = [];
+    if (!empty($customshortnames)) {
+        [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($users), SQL_PARAMS_NAMED);
+        [$fieldsql, $fieldparams] = $DB->get_in_or_equal($customshortnames, SQL_PARAMS_NAMED, 'field');
+        $records = $DB->get_records_sql(
+            "SELECT d.userid, f.shortname, d.data
+               FROM {user_info_data} d
+               JOIN {user_info_field} f ON f.id = d.fieldid
+              WHERE d.userid $usersql
+                AND f.shortname $fieldsql",
+            $userparams + $fieldparams
+        );
+
+        foreach ($records as $record) {
+            $customvalues[(int)$record->userid]['profile_field_' . $record->shortname] = (string)$record->data;
+        }
+    }
+
+    foreach ($users as $userid => $user) {
+        $copyfields = [];
+        foreach ($alloweduserfields as $fieldkey => $label) {
+            if (strpos($fieldkey, 'profile_field_') === 0) {
+                $value = $customvalues[(int)$userid][$fieldkey] ?? '';
+            } else {
+                $value = isset($user[$fieldkey]) ? (string)$user[$fieldkey] : '';
+            }
+
+            $copyfields[] = [
+                'key' => $fieldkey,
+                'label' => $label,
+                'value' => $value,
+            ];
+        }
+        $users[$userid]['copyfields'] = $copyfields;
+    }
+
+    return $users;
 }
 
 /**
@@ -402,7 +505,7 @@ function local_groupimport_build_grouping_template_data(int $courseid, array $gr
 
     foreach ($grouping['groupids'] as $groupid) {
         if (isset($groups[$groupid])) {
-            $result['groups'][] = local_groupimport_build_group_template_data($courseid, $groups[$groupid], $users);
+            $result['groups'][] = local_groupimport_build_group_template_data($courseid, $groups[$groupid], $users, true);
         }
     }
 
@@ -417,7 +520,7 @@ function local_groupimport_build_grouping_template_data(int $courseid, array $gr
  * @param array $users User data.
  * @return array
  */
-function local_groupimport_build_group_template_data(int $courseid, array $group, array $users): array {
+function local_groupimport_build_group_template_data(int $courseid, array $group, array $users, bool $withingrouping = false): array {
     $result = [
         'id' => $group['id'],
         'name' => $group['name'],
@@ -432,6 +535,8 @@ function local_groupimport_build_group_template_data(int $courseid, array $group
         'addemailstolabel' => get_string('addemailstogroup', 'local_groupimport'),
         'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
         'addemailsbutton' => get_string('addemails', 'local_groupimport'),
+        'withingrouping' => $withingrouping,
+        'removefromgroupinglabel' => get_string('removegroupfromgrouping', 'local_groupimport'),
         'members' => [],
         'hasmembers' => !empty($group['memberids']),
         'nomemberslabel' => get_string('nogroupmembers', 'local_groupimport'),
@@ -455,24 +560,15 @@ function local_groupimport_build_group_template_data(int $courseid, array $group
 /**
  * Build context menu action data for Mustache.
  *
+ * @param array $alloweduserfields Allowed configured fields.
  * @return array
  */
-function local_groupimport_build_context_actions_template_data(): array {
+function local_groupimport_build_context_actions_template_data(array $alloweduserfields = []): array {
     $actions = [
-        'copy-email' => [
-            'contexts' => 'participant',
-            'icon' => 'fa-at',
-            'label' => get_string('contextcopyemail', 'local_groupimport'),
-        ],
         'participant-open-details' => [
             'contexts' => 'participant',
             'icon' => 'fa-eye',
             'label' => get_string('viewparticipantdetails', 'local_groupimport'),
-        ],
-        'copy-selected-emails' => [
-            'contexts' => 'participant',
-            'icon' => 'fa-copy',
-            'label' => get_string('contextcopyselectedemails', 'local_groupimport'),
         ],
         'clear-selection' => [
             'contexts' => 'participant',
@@ -522,12 +618,23 @@ function local_groupimport_build_context_actions_template_data(): array {
     ];
 
     $result = [];
+    foreach ($alloweduserfields as $fieldkey => $fieldlabel) {
+        $result[] = [
+            'action' => 'copy-participant-field',
+            'contexts' => 'participant',
+            'icon' => $fieldkey === 'email' ? 'fa-at' : 'fa-copy',
+            'label' => get_string('contextcopyfield', 'local_groupimport', $fieldlabel),
+            'fieldkey' => $fieldkey,
+        ];
+    }
+
     foreach ($actions as $action => $definition) {
         $result[] = [
             'action' => $action,
             'contexts' => $definition['contexts'],
             'icon' => $definition['icon'],
             'label' => $definition['label'],
+            'fieldkey' => '',
         ];
     }
 
