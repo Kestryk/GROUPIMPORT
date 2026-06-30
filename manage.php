@@ -40,6 +40,7 @@ $PAGE->set_context($context);
 $PAGE->set_course($course);
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_pagetype('course-view-participants');
+$PAGE->set_secondary_active_tab('participants');
 $PAGE->set_title(get_string('easystudmanager', 'local_groupimport'));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->requires->js_call_amd('local_groupimport/course_manager', 'init', [
@@ -50,31 +51,53 @@ $PAGE->requires->js_call_amd('local_groupimport/course_manager', 'init', [
 $action = optional_param('action', '', PARAM_ALPHA);
 if ($action && confirm_sesskey()) {
     if ($action === 'creategroup') {
-        $name = required_param('groupname', PARAM_TEXT);
-        $group = (object)[
-            'courseid' => $course->id,
-            'name' => trim($name),
-        ];
-        if ($group->name !== '') {
+        $names = local_groupimport_extract_create_names(required_param('groupname', PARAM_TEXT));
+        $created = 0;
+        foreach ($names as $name) {
+            if (groups_get_group_by_name($course->id, $name)) {
+                redirect($url, get_string('groupnameexists', 'group', $name), null, \core\output\notification::NOTIFY_ERROR);
+            }
+            $group = (object)[
+                'courseid' => $course->id,
+                'name' => $name,
+            ];
             groups_create_group($group);
-            redirect($url, get_string('groupcreated', 'local_groupimport'), null, \core\output\notification::NOTIFY_SUCCESS);
+            $created++;
+        }
+        if ($created) {
+            $message = $created === 1 ? get_string('groupcreated', 'local_groupimport') :
+                get_string('groupscreatedcount', 'local_groupimport', $created);
+            redirect($url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
         }
     } else if ($action === 'creategrouping') {
-        $name = required_param('groupingname', PARAM_TEXT);
-        $grouping = (object)[
-            'courseid' => $course->id,
-            'name' => trim($name),
-        ];
-        if ($grouping->name !== '') {
+        $names = local_groupimport_extract_create_names(required_param('groupingname', PARAM_TEXT));
+        $created = 0;
+        foreach ($names as $name) {
+            if (groups_get_grouping_by_name($course->id, $name)) {
+                redirect($url, get_string('groupingnameexists', 'group', $name), null, \core\output\notification::NOTIFY_ERROR);
+            }
+            $grouping = (object)[
+                'courseid' => $course->id,
+                'name' => $name,
+            ];
             groups_create_grouping($grouping);
-            redirect($url, get_string('groupingcreated', 'local_groupimport'), null, \core\output\notification::NOTIFY_SUCCESS);
+            $created++;
+        }
+        if ($created) {
+            $message = $created === 1 ? get_string('groupingcreated', 'local_groupimport') :
+                get_string('groupingscreatedcount', 'local_groupimport', $created);
+            redirect($url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
         }
     } else if ($action === 'renamegroup') {
         $groupid = required_param('groupid', PARAM_INT);
         $name = required_param('name', PARAM_TEXT);
         $group = groups_get_group($groupid);
         if ($group && (int)$group->courseid === (int)$course->id && trim($name) !== '') {
-            $group->name = trim($name);
+            $name = trim($name);
+            if ($name !== (string)$group->name && groups_get_group_by_name($course->id, $name)) {
+                redirect($url, get_string('groupnameexists', 'group', $name), null, \core\output\notification::NOTIFY_ERROR);
+            }
+            $group->name = $name;
             groups_update_group($group);
             redirect($url, get_string('groupsaved', 'local_groupimport'), null, \core\output\notification::NOTIFY_SUCCESS);
         }
@@ -84,7 +107,11 @@ if ($action && confirm_sesskey()) {
         $name = required_param('name', PARAM_TEXT);
         $grouping = $DB->get_record('groupings', ['id' => $groupingid, 'courseid' => $course->id], '*', MUST_EXIST);
         if (trim($name) !== '') {
-            $grouping->name = trim($name);
+            $name = trim($name);
+            if ($name !== (string)$grouping->name && groups_get_grouping_by_name($course->id, $name)) {
+                redirect($url, get_string('groupingnameexists', 'group', $name), null, \core\output\notification::NOTIFY_ERROR);
+            }
+            $grouping->name = $name;
             groups_update_grouping($grouping);
             redirect($url, get_string('groupingsaved', 'local_groupimport'), null, \core\output\notification::NOTIFY_SUCCESS);
         }
@@ -149,6 +176,23 @@ function local_groupimport_group_filter_options(array $groups): array {
 }
 
 /**
+ * Build grouping filter options.
+ *
+ * @param array $groupings Groupings.
+ * @return array
+ */
+function local_groupimport_grouping_filter_options(array $groupings): array {
+    $options = [
+        '__none__' => get_string('nogroupingfilteroption', 'local_groupimport'),
+    ];
+    foreach ($groupings as $grouping) {
+        $options[(string)$grouping['id']] = $grouping['name'];
+    }
+    natcasesort($options);
+    return $options;
+}
+
+/**
  * Build the EasyStud page template data.
  *
  * @param stdClass $course Course record.
@@ -173,9 +217,15 @@ function local_groupimport_build_manage_template_data(
 ): array {
     $alloweduserfields = local_groupimport_get_allowed_user_field_definitions();
     $users = local_groupimport_enrich_users_with_copy_fields($users, $alloweduserfields);
+    $compactparticipantsdefault = count($users) > 5;
+    $navigationhtml = local_groupimport_prepare_navigation_html(
+        $navigationhtml,
+        get_string('easystudmanager', 'local_groupimport')
+    );
 
     $detaillabels = [
         'ajaxerror' => get_string('ajaxactionfailed', 'local_groupimport'),
+        'actioninprogress' => get_string('actioninprogress', 'local_groupimport'),
         'username' => get_string('detailusername', 'local_groupimport'),
         'idnumber' => get_string('detailidnumber', 'local_groupimport'),
         'institution' => get_string('detailinstitution', 'local_groupimport'),
@@ -185,6 +235,8 @@ function local_groupimport_build_manage_template_data(
         'language' => get_string('detaillanguage', 'local_groupimport'),
         'roles' => get_string('roleslabel', 'local_groupimport'),
         'groups' => get_string('groupslabel', 'local_groupimport'),
+        'groupings' => get_string('groupingslabel', 'local_groupimport'),
+        'participantdetails' => get_string('participantdetails', 'local_groupimport'),
         'nativedetails' => get_string('opennativeprofile', 'local_groupimport'),
         'removeuser' => str_replace('{}', '{name}', get_string('removeuserfromgroup', 'local_groupimport')),
         'selectionmode' => get_string('selectionmode', 'local_groupimport'),
@@ -196,8 +248,10 @@ function local_groupimport_build_manage_template_data(
         'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
         'addemails' => get_string('addemails', 'local_groupimport'),
         'addgroupstogrouping' => get_string('addgroupstogrouping', 'local_groupimport'),
+        'removefromgroupinglabel' => get_string('removegroupfromgrouping', 'local_groupimport'),
         'pastegroupsplaceholder' => get_string('pastegroupsplaceholder', 'local_groupimport'),
         'addgroups' => get_string('addgroups', 'local_groupimport'),
+        'duplicate' => get_string('duplicate', 'local_groupimport'),
         'nogroupmembers' => get_string('nogroupmembers', 'local_groupimport'),
         'memberscounttemplate' => get_string('memberscount', 'local_groupimport', '__count__'),
         'groupscounttemplate' => get_string('groupscount', 'local_groupimport', '__count__'),
@@ -205,62 +259,488 @@ function local_groupimport_build_manage_template_data(
             'groupings' => '__groupings__',
             'groups' => '__groups__',
         ]),
+        'removeuserscount' => get_string('membersremoved', 'local_groupimport', '__count__'),
+        'groupsmovedcount' => get_string('groupsmovedcount', 'local_groupimport', '__count__'),
+        'groupsremovedfromgroupingscount' => get_string('groupsremovedfromgroupingscount', 'local_groupimport', '__count__'),
+        'groupsmovesummary' => get_string('groupsmovesummary', 'local_groupimport', (object)[
+            'added' => '__added__',
+            'existing' => '__existing__',
+        ]),
+        'nogroupsingrouping' => get_string('nogroupsingrouping', 'local_groupimport'),
+        'nogroupsavailable' => get_string('nogroupsavailable', 'local_groupimport'),
+        'nogroupsincourse' => get_string('nogroupsincourse', 'local_groupimport'),
+        'searchgroupslabel' => get_string('searchgroupslabel', 'local_groupimport'),
+        'searchgroupsplaceholder' => get_string('searchgroups', 'local_groupimport'),
+        'nogroupingsavailable' => get_string('nogroupingsavailable', 'local_groupimport'),
+        'nogroupingsincourse' => get_string('nogroupingsincourse', 'local_groupimport'),
+        'nomovegroupsavailable' => get_string('nomovegroupsavailable', 'local_groupimport'),
+        'nomovegroupingsavailable' => get_string('nomovegroupingsavailable', 'local_groupimport'),
+        'noparticipantsstate' => get_string('noparticipantsstate', 'local_groupimport'),
+        'noparticipantsfiltered' => get_string('noparticipantsfiltered', 'local_groupimport'),
+        'noresultsfiltered' => get_string('noresultsfiltered', 'local_groupimport'),
+        'movegroupremoveorigin' => get_string('movegroupremoveorigin', 'local_groupimport'),
+        'groupdropmode' => get_string('groupdropmode', 'local_groupimport'),
+        'groupdropmodedesc' => get_string('groupdropmodedesc', 'local_groupimport'),
+        'groupdropcopy' => get_string('groupdropcopy', 'local_groupimport'),
+        'groupdropmove' => get_string('groupdropmove', 'local_groupimport'),
+        'cancel' => get_string('cancel'),
+        'selectall' => get_string('selectall', 'local_groupimport'),
+        'deselectall' => get_string('deselectall', 'local_groupimport'),
+        'selectresults' => get_string('selectresults', 'local_groupimport'),
+        'deselectresults' => get_string('deselectresults', 'local_groupimport'),
+        'selectioncounttemplate' => get_string('selectioncount', 'local_groupimport', '__count__'),
+        'listeditemscounttemplate' => get_string('listeditemscount', 'local_groupimport', '__count__'),
+        'sortitems' => get_string('sortitems', 'local_groupimport'),
+        'sortalpha' => get_string('sortalpha', 'local_groupimport'),
+        'sortfilledfirst' => get_string('sortfilledfirst', 'local_groupimport'),
+        'sortemptyfirst' => get_string('sortemptyfirst', 'local_groupimport'),
+        'sortparticipantswithgroups' => get_string('sortparticipantswithgroups', 'local_groupimport'),
+        'sortparticipantswithoutgroups' => get_string('sortparticipantswithoutgroups', 'local_groupimport'),
+        'groupingoverflowlabel' => get_string('groupingoverflowlabel', 'local_groupimport', '__count__'),
+        'advancedsettings' => get_string('advancedsettings', 'local_groupimport'),
+        'advancedsettingsintro' => get_string('advancedsettingsintro', 'local_groupimport'),
+        'advancedsettingsnative' => get_string('advancedsettingsnative', 'local_groupimport'),
+        'advancedsettingsimage' => get_string('advancedsettingsimage', 'local_groupimport'),
+        'advancedsettingsnoimage' => get_string('advancedsettingsnoimage', 'local_groupimport'),
+        'deletepicture' => get_string('deletepicture', 'local_groupimport'),
+        'advancedsettingsname' => get_string('name'),
+        'advancedsettingsidnumber' => get_string('idnumber'),
+        'advancedsettingsdescription' => get_string('description'),
+        'advancedsettingsmembers' => get_string('advancedsettingsmembers', 'local_groupimport'),
+        'advancedsettingsgroups' => get_string('advancedsettingsgroups', 'local_groupimport'),
+        'advancedsettingschoosefile' => get_string('advancedsettingschoosefile', 'local_groupimport'),
+        'advancedsettingsnofile' => get_string('advancedsettingsnofile', 'local_groupimport'),
+        'advancedsettingsenrolmentkey' => get_string('enrolmentkey', 'group'),
+        'advancedsettingsenrolmentkeyhelp' => get_string('enrolmentkey_help', 'group'),
+        'advancedsettingsimagehelp' => get_string('newpicture_help', 'group'),
+        'advancedsettingsmembername' => get_string('fullname'),
+        'advancedsettingsmemberemail' => get_string('email'),
+        'advancedsettingsmemberid' => get_string('idnumber'),
+        'advancedsettingsgroupname' => get_string('groupname', 'group'),
+        'advancedsettingsgroupid' => get_string('idnumber'),
+        'advancedsettingsgroupingname' => get_string('groupingname', 'group'),
+        'advancedsettingsgroupingid' => get_string('idnumber'),
+        'advancedsettingsnomembers' => get_string('advancedsettingsnomembers', 'local_groupimport'),
+        'advancedsettingsnogroups' => get_string('advancedsettingsnogroups', 'local_groupimport'),
+        'advancedsettingsnogroupings' => get_string('advancedsettingsnogroupings', 'local_groupimport'),
+        'advancedsettingshasenrolmentkey' => get_string('yes'),
+        'advancedsettingsnoenrolmentkey' => get_string('no'),
+        'advancedsettingshidepicture' => get_string('advancedsettingshidepicture', 'local_groupimport'),
+        'advancedsettingsconfigdata' => get_string('advancedsettingsconfigdata', 'local_groupimport'),
+        'advancedsettingsnotset' => get_string('advancedsettingsnotset', 'local_groupimport'),
+        'advancedsettingsdescription' => get_string('description'),
+        'moveconfirmone' => get_string('moveconfirmone', 'local_groupimport'),
+        'moveconfirmmany' => get_string('moveconfirmmany', 'local_groupimport'),
     ];
 
+    $rolefilteroptions = local_groupimport_role_filter_options($users);
+    $groupfilteroptions = local_groupimport_group_filter_options($groups);
+    $groupingfilteroptions = local_groupimport_grouping_filter_options($groupings);
+
     $templatedata = [
+        'courseid' => $course->id,
         'detaillabelsjson' => json_encode($detaillabels),
         'navigationhtml' => $navigationhtml,
         'eyebrow' => get_string('easystudlabel', 'local_groupimport'),
-        'title' => get_string('easystudmanager', 'local_groupimport'),
         'description' => get_string('easystudmanager_desc', 'local_groupimport'),
+        'compactparticipantsdefault' => $compactparticipantsdefault,
         'nativeparticipantsurl' => $nativeparticipantsurl->out(false),
         'nativeparticipantslabel' => get_string('nativeparticipants', 'local_groupimport'),
         'csvurl' => $csvurl->out(false),
         'csvlabel' => get_string('csvimportlink', 'local_groupimport'),
         'clipboardlabel' => get_string('clipboardtools', 'local_groupimport'),
+        'tutoriallabel' => get_string('tutoriallabel', 'local_groupimport'),
+        'tutorialtitle' => get_string('tutorialtitle', 'local_groupimport'),
+        'tutorialintro' => get_string('tutorialintro', 'local_groupimport'),
+        'tutorialmaptitle' => get_string('tutorialmaptitle', 'local_groupimport'),
+        'tutorialprogresslabel' => get_string('tutorialprogresslabel', 'local_groupimport'),
+        'tutorialparticipantlabel' => get_string('tutorialparticipantlabel', 'local_groupimport'),
+        'tutorialgrouplabel' => get_string('tutorialgrouplabel', 'local_groupimport'),
+        'tutorialgroupinglabel' => get_string('tutorialgroupinglabel', 'local_groupimport'),
+        'tutorialprevious' => get_string('tutorialprevious', 'local_groupimport'),
+        'tutorialnext' => get_string('tutorialnext', 'local_groupimport'),
+        'tutorialfinish' => get_string('tutorialfinish', 'local_groupimport'),
+        'tutorialnavnext' => get_string('tutorialnavnext', 'local_groupimport'),
+        'tutorialnavprevious' => get_string('tutorialnavprevious', 'local_groupimport'),
+        'tutorialshowinview' => get_string('tutorialshowinview', 'local_groupimport'),
+        'tutorialshowinviewhint' => get_string('tutorialshowinviewhint', 'local_groupimport'),
+        'tutorialreturntitle' => get_string('tutorialreturntitle', 'local_groupimport'),
+        'tutorialreturndesc' => get_string('tutorialreturndesc', 'local_groupimport'),
+        'tutorialreturnbutton' => get_string('tutorialreturnbutton', 'local_groupimport'),
+        'tutorialreturndismiss' => get_string('tutorialreturndismiss', 'local_groupimport'),
+        'tutorialguidedpaneltitle' => get_string('tutorialguidedpaneltitle', 'local_groupimport'),
+        'tutorialguidedpanelclose' => get_string('tutorialguidedpanelclose', 'local_groupimport'),
+        'tutorialguidedpanelminimize' => get_string('tutorialguidedpanelminimize', 'local_groupimport'),
+        'tutorialguidedpanelexpand' => get_string('tutorialguidedpanelexpand', 'local_groupimport'),
+        'tutorialguidedpanelprogress' => get_string('tutorialguidedpanelprogress', 'local_groupimport', (object)[
+            'done' => '__done__',
+            'total' => '__total__',
+        ]),
+        'tutorialguidedpanelhint' => get_string('tutorialguidedpanelhint', 'local_groupimport'),
+        'tutorialguidedpanelcomplete' => get_string('tutorialguidedpanelcomplete', 'local_groupimport'),
+        'tutorialguidedpanelfeedbackstructure' => get_string('tutorialguidedpanelfeedbackstructure', 'local_groupimport'),
+        'tutorialguidedpanelfeedbackparticipants' => get_string('tutorialguidedpanelfeedbackparticipants', 'local_groupimport'),
+        'tutorialguidedpanelfeedbackfilters' => get_string('tutorialguidedpanelfeedbackfilters', 'local_groupimport'),
+        'tutorialguidedpaneldescstructure' => get_string('tutorialguidedpaneldescstructure', 'local_groupimport'),
+        'tutorialguidedpaneldescparticipants' => get_string('tutorialguidedpaneldescparticipants', 'local_groupimport'),
+        'tutorialguidedpaneldescfilters' => get_string('tutorialguidedpaneldescfilters', 'local_groupimport'),
+        'tutorialguidedstart' => get_string('tutorialguidedstart', 'local_groupimport'),
+        'tutorialguidedtrydrag' => get_string('tutorialguidedtrydrag', 'local_groupimport'),
+        'tutorialguidedtryselection' => get_string('tutorialguidedtryselection', 'local_groupimport'),
+        'tutorialguidedtrycontext' => get_string('tutorialguidedtrycontext', 'local_groupimport'),
+        'tutorialguidedcreategrouping' => get_string('tutorialguidedcreategrouping', 'local_groupimport'),
+        'tutorialguidedaddgrouptogrouping' => get_string('tutorialguidedaddgrouptogrouping', 'local_groupimport'),
+        'tutorialguidedverifygrouping' => get_string('tutorialguidedverifygrouping', 'local_groupimport'),
+        'tutorialguidedgroupingtitle' => get_string('tutorialguidedgroupingtitle', 'local_groupimport'),
+        'tutorialguidedactionstitle' => get_string('tutorialguidedactionstitle', 'local_groupimport'),
+        'tutorialguidedgroupingdesccreate' => get_string('tutorialguidedgroupingdesccreate', 'local_groupimport'),
+        'tutorialguidedgroupingdescadd' => get_string('tutorialguidedgroupingdescadd', 'local_groupimport'),
+        'tutorialguidedgroupingdescverify' => get_string('tutorialguidedgroupingdescverify', 'local_groupimport'),
+        'tutorialguidedactionsdescdrag' => get_string('tutorialguidedactionsdescdrag', 'local_groupimport'),
+        'tutorialguidedactionsdescselection' => get_string('tutorialguidedactionsdescselection', 'local_groupimport'),
+        'tutorialguidedactionsdesccontext' => get_string('tutorialguidedactionsdesccontext', 'local_groupimport'),
+        'tutorialguidedfeedbackgroupingcreate' => get_string('tutorialguidedfeedbackgroupingcreate', 'local_groupimport'),
+        'tutorialguidedfeedbackgroupingadd' => get_string('tutorialguidedfeedbackgroupingadd', 'local_groupimport'),
+        'tutorialguidedfeedbackgroupingverify' => get_string('tutorialguidedfeedbackgroupingverify', 'local_groupimport'),
+        'tutorialguidedfeedbackactionsdrag' => get_string('tutorialguidedfeedbackactionsdrag', 'local_groupimport'),
+        'tutorialguidedfeedbackactionsselection' => get_string('tutorialguidedfeedbackactionsselection', 'local_groupimport'),
+        'tutorialguidedfeedbackactionscontext' => get_string('tutorialguidedfeedbackactionscontext', 'local_groupimport'),
+        'tutorialtargetmissing' => get_string('tutorialtargetmissing', 'local_groupimport'),
+        'tutorialdiscoverbutton' => get_string('tutorialdiscoverbutton', 'local_groupimport'),
+        'tutorialdiscoverdismiss' => get_string('tutorialdiscoverdismiss', 'local_groupimport'),
+        'tutorialdiscovertext' => get_string('tutorialdiscovertext', 'local_groupimport'),
+        'tutorialdiscovertitle' => get_string('tutorialdiscovertitle', 'local_groupimport'),
+        'selectresults' => get_string('selectresults', 'local_groupimport'),
+        'tutorialvisualcontext' => get_string('tutorialvisualcontext', 'local_groupimport'),
+        'tutorialvisualcopy' => get_string('tutorialvisualcopy', 'local_groupimport'),
+        'tutorialvisualdemo' => get_string('tutorialvisualdemo', 'local_groupimport'),
+        'tutorialvisualdrag' => get_string('tutorialvisualdrag', 'local_groupimport'),
+        'tutorialvisualduplicate' => get_string('tutorialvisualduplicate', 'local_groupimport'),
+        'tutorialvisualgroupingmeta' => get_string('tutorialvisualgroupingmeta', 'local_groupimport'),
+        'tutorialvisualgroupmeta' => get_string('tutorialvisualgroupmeta', 'local_groupimport'),
+        'tutorialvisualmobile' => get_string('tutorialvisualmobile', 'local_groupimport'),
+        'tutorialvisualmove' => get_string('tutorialvisualmove', 'local_groupimport'),
+        'tutorialvisualparticipantmeta' => get_string('tutorialvisualparticipantmeta', 'local_groupimport'),
+        'tutorialvisualrecipes' => get_string('tutorialvisualrecipes', 'local_groupimport'),
+        'tutorialvisualsearch' => get_string('tutorialvisualsearch', 'local_groupimport'),
+        'tutorialvisualselect' => get_string('tutorialvisualselect', 'local_groupimport'),
+        'tutorialvisualactionbutton' => get_string('tutorialvisualactionbutton', 'local_groupimport'),
+        'tutorialvisualcontextdesc' => get_string('tutorialvisualcontextdesc', 'local_groupimport'),
+        'tutorialvisualdestination' => get_string('tutorialvisualdestination', 'local_groupimport'),
+        'tutorialvisualemptycoursecreate' => get_string('tutorialvisualemptycoursecreate', 'local_groupimport'),
+        'tutorialvisualemptycourseexample' => get_string('tutorialvisualemptycourseexample', 'local_groupimport'),
+        'tutorialvisualgroupids' => get_string('tutorialvisualgroupids', 'local_groupimport'),
+        'tutorialvisualguidedone' => get_string('tutorialvisualguidedone', 'local_groupimport'),
+        'tutorialvisualguidedthree' => get_string('tutorialvisualguidedthree', 'local_groupimport'),
+        'tutorialvisualguidedtwo' => get_string('tutorialvisualguidedtwo', 'local_groupimport'),
+        'tutorialvisualidentifierchips' => get_string('tutorialvisualidentifierchips', 'local_groupimport'),
+        'tutorialvisualkeyboardspace' => get_string('tutorialvisualkeyboardspace', 'local_groupimport'),
+        'tutorialvisualkeyboardtab' => get_string('tutorialvisualkeyboardtab', 'local_groupimport'),
+        'tutorialvisualpasteids' => get_string('tutorialvisualpasteids', 'local_groupimport'),
+        'tutorialvisualrightclick' => get_string('tutorialvisualrightclick', 'local_groupimport'),
+        'tutorialvisualshortcutcontext' => get_string('tutorialvisualshortcutcontext', 'local_groupimport'),
+        'tutorialvisualshortcutdrag' => get_string('tutorialvisualshortcutdrag', 'local_groupimport'),
+        'tutorialvisualshortcutkeyboard' => get_string('tutorialvisualshortcutkeyboard', 'local_groupimport'),
+        'tutorialvisualshortcutselect' => get_string('tutorialvisualshortcutselect', 'local_groupimport'),
+        'tutorialvisualshortcuttext' => get_string('tutorialvisualshortcuttext', 'local_groupimport'),
+        'tutorialvisualworkflowdirect' => get_string('tutorialvisualworkflowdirect', 'local_groupimport'),
+        'tutorialvisualworkflowmany' => get_string('tutorialvisualworkflowmany', 'local_groupimport'),
+        'tutorialvisualworkflowprecise' => get_string('tutorialvisualworkflowprecise', 'local_groupimport'),
+        'tutorialvisualworkflowreview' => get_string('tutorialvisualworkflowreview', 'local_groupimport'),
+        'tutorialvisualtextadd' => get_string('tutorialvisualtextadd', 'local_groupimport'),
+        'tutorialvisualrolebadge' => get_string('tutorialvisualrolebadge', 'local_groupimport'),
+        'tutorialvisualgroupbadge' => get_string('tutorialvisualgroupbadge', 'local_groupimport'),
+        'tutorialvisualgroupingbadge' => get_string('tutorialvisualgroupingbadge', 'local_groupimport'),
+        'tutorialvisualstudentone' => get_string('tutorialvisualstudentone', 'local_groupimport'),
+        'tutorialvisualstudenttwo' => get_string('tutorialvisualstudenttwo', 'local_groupimport'),
+        'tutorialvisualstudentthree' => get_string('tutorialvisualstudentthree', 'local_groupimport'),
+        'tutorialvisualstudentfour' => get_string('tutorialvisualstudentfour', 'local_groupimport'),
+        'tutorialvisualassignmentgroupa' => get_string('tutorialvisualassignmentgroupa', 'local_groupimport'),
+        'tutorialvisualassignmentgroupb' => get_string('tutorialvisualassignmentgroupb', 'local_groupimport'),
+        'tutorialvisualassignmentgrouping' => get_string('tutorialvisualassignmentgrouping', 'local_groupimport'),
+        'tutorialvisualstructurestepone' => get_string('tutorialvisualstructurestepone', 'local_groupimport'),
+        'tutorialvisualstructuresteptwo' => get_string('tutorialvisualstructuresteptwo', 'local_groupimport'),
+        'tutorialvisualstructurestepthree' => get_string('tutorialvisualstructurestepthree', 'local_groupimport'),
+        'tutorialvisualtakeawayone' => get_string('tutorialvisualtakeawayone', 'local_groupimport'),
+        'tutorialvisualtakeawaytwo' => get_string('tutorialvisualtakeawaytwo', 'local_groupimport'),
+        'tutorialvisualtakeawaythree' => get_string('tutorialvisualtakeawaythree', 'local_groupimport'),
+        'tutorialvisualtakeawayfour' => get_string('tutorialvisualtakeawayfour', 'local_groupimport'),
+        'tutorialvisualcompletionone' => get_string('tutorialvisualcompletionone', 'local_groupimport'),
+        'tutorialvisualcompletiontwo' => get_string('tutorialvisualcompletiontwo', 'local_groupimport'),
+        'tutorialvisualcompletionthree' => get_string('tutorialvisualcompletionthree', 'local_groupimport'),
+        'tutorialvisualcompletionfour' => get_string('tutorialvisualcompletionfour', 'local_groupimport'),
+        'tutorialvisualmistakeone' => get_string('tutorialvisualmistakeone', 'local_groupimport'),
+        'tutorialvisualmistaketwo' => get_string('tutorialvisualmistaketwo', 'local_groupimport'),
+        'tutorialvisualmistakethree' => get_string('tutorialvisualmistakethree', 'local_groupimport'),
+        'tutorialcategoryactions' => get_string('tutorialcategoryactions', 'local_groupimport'),
+        'tutorialcategorybasics' => get_string('tutorialcategorybasics', 'local_groupimport'),
+        'tutorialcategorycards' => get_string('tutorialcategorycards', 'local_groupimport'),
+        'tutorialcategorypractice' => get_string('tutorialcategorypractice', 'local_groupimport'),
+        'tutorialstepof' => get_string('tutorialstepof', 'local_groupimport', (object)[
+            'current' => '__current__',
+            'total' => '__total__',
+        ]),
+        'tutorialsteps' => [
+            [
+                'icon' => 'fa-sitemap',
+                'category' => get_string('tutorialcategorybasics', 'local_groupimport'),
+                'title' => get_string('tutorialconceptstitle', 'local_groupimport'),
+                'content' => get_string('tutorialconceptscontent', 'local_groupimport'),
+                'visualconcepts' => true,
+                'highlightselector' => '[data-easystud-tree]',
+                'highlightmode' => 'structure',
+            ],
+            [
+                'icon' => 'fa-route',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialfirststructuretitle', 'local_groupimport'),
+                'content' => get_string('tutorialfirststructurecontent', 'local_groupimport'),
+                'visualfirststructure' => true,
+                'highlightselector' => '.local-groupimport-easystud-create-row',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:create-group',
+            ],
+            [
+                'icon' => 'fa-list-ol',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialguidedmodetitle', 'local_groupimport'),
+                'content' => get_string('tutorialguidedmodecontent', 'local_groupimport'),
+                'visualguided' => true,
+            ],
+            [
+                'icon' => 'fa-filter',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialfilterstitle', 'local_groupimport'),
+                'content' => get_string('tutorialfilterscontent', 'local_groupimport'),
+                'visualfilters' => true,
+                'highlightselector' => '[data-easystud-filters]',
+                'highlightmode' => 'participants',
+                'highlightopen' => '[data-easystud-advanced-filters-toggle="participants"]',
+            ],
+            [
+                'icon' => 'fa-id-badge',
+                'category' => get_string('tutorialcategorycards', 'local_groupimport'),
+                'title' => get_string('tutorialparticipantcardtitle', 'local_groupimport'),
+                'content' => get_string('tutorialparticipantcardcontent', 'local_groupimport'),
+                'visualparticipantcard' => true,
+                'highlightselector' => '[data-easystud-participant-list]',
+                'highlightmode' => 'participants',
+                'highlightopen' => 'tutorial:participant-details',
+            ],
+            [
+                'icon' => 'fa-users',
+                'category' => get_string('tutorialcategorycards', 'local_groupimport'),
+                'title' => get_string('tutorialgroupcardtitle', 'local_groupimport'),
+                'content' => get_string('tutorialgroupcardcontent', 'local_groupimport'),
+                'visualgroupcard' => true,
+                'highlightselector' => '[data-easystud-structure-groups]',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:first-group',
+            ],
+            [
+                'icon' => 'fa-layer-group',
+                'category' => get_string('tutorialcategorycards', 'local_groupimport'),
+                'title' => get_string('tutorialgroupingcardtitle', 'local_groupimport'),
+                'content' => get_string('tutorialgroupingcardcontent', 'local_groupimport'),
+                'visualgroupingcard' => true,
+                'highlightselector' => '[data-easystud-tree]',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:first-grouping',
+            ],
+            [
+                'icon' => 'fa-graduation-cap',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialassignmentpracticetitle', 'local_groupimport'),
+                'content' => get_string('tutorialassignmentpracticecontent', 'local_groupimport'),
+                'visualassignment' => true,
+                'highlightselector' => '[data-easystud-tree]',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:first-grouping',
+            ],
+            [
+                'icon' => 'fa-seedling',
+                'category' => get_string('tutorialcategorybasics', 'local_groupimport'),
+                'title' => get_string('tutorialemptycoursetitle', 'local_groupimport'),
+                'content' => get_string('tutorialemptycoursecontent', 'local_groupimport'),
+                'visualemptycourse' => true,
+                'highlightselector' => '.local-groupimport-easystud-create-row',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:create-grouping',
+            ],
+            [
+                'icon' => 'fa-at',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialtextaddtitle', 'local_groupimport'),
+                'content' => get_string('tutorialtextaddcontent', 'local_groupimport'),
+                'visualtextadd' => true,
+                'highlightselector' => '[data-easystud-structure-groups]',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:add-users-text',
+            ],
+            [
+                'icon' => 'fa-mouse-pointer',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialcontextmenutitle', 'local_groupimport'),
+                'content' => get_string('tutorialcontextmenucontent', 'local_groupimport'),
+                'visualcontextmenu' => true,
+                'highlightselector' => '[data-easystud-participant-list]',
+                'highlightmode' => 'participants',
+            ],
+            [
+                'icon' => 'fa-list-check',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialselectionmodaltitle', 'local_groupimport'),
+                'content' => get_string('tutorialselectionmodalcontent', 'local_groupimport'),
+                'visualactionmodal' => true,
+                'highlightselector' => '.local-groupimport-easystud__panel-actions',
+                'highlightmode' => 'both',
+            ],
+            [
+                'icon' => 'fa-arrows-alt',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialactionstitle', 'local_groupimport'),
+                'content' => get_string('tutorialactionscontent', 'local_groupimport'),
+                'visualactions' => true,
+                'highlightselector' => '.local-groupimport-easystud__panel-actions',
+                'highlightmode' => 'both',
+            ],
+            [
+                'icon' => 'fa-keyboard',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialkeyboardtitle', 'local_groupimport'),
+                'content' => get_string('tutorialkeyboardcontent', 'local_groupimport'),
+                'visualkeyboard' => true,
+                'highlightselector' => '[data-easystud-participant-list]',
+                'highlightmode' => 'participants',
+            ],
+            [
+                'icon' => 'fa-compass',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialworkflowtitle', 'local_groupimport'),
+                'content' => get_string('tutorialworkflowcontent', 'local_groupimport'),
+                'visualworkflow' => true,
+            ],
+            [
+                'icon' => 'fa-bolt',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialshortcutstitle', 'local_groupimport'),
+                'content' => get_string('tutorialshortcutscontent', 'local_groupimport'),
+                'visualshortcuts' => true,
+            ],
+            [
+                'icon' => 'fa-magic',
+                'category' => get_string('tutorialcategoryactions', 'local_groupimport'),
+                'title' => get_string('tutorialcreationtitle', 'local_groupimport'),
+                'content' => get_string('tutorialcreationcontent', 'local_groupimport'),
+                'visualcreation' => true,
+                'highlightselector' => '.local-groupimport-easystud-create-row',
+                'highlightmode' => 'structure',
+                'highlightopen' => 'tutorial:create-group',
+            ],
+            [
+                'icon' => 'fa-exclamation-triangle',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialmistakestitle', 'local_groupimport'),
+                'content' => get_string('tutorialmistakescontent', 'local_groupimport'),
+                'visualmistakes' => true,
+            ],
+            [
+                'icon' => 'fa-check-circle',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialtakeawaytitle', 'local_groupimport'),
+                'content' => get_string('tutorialtakeawaycontent', 'local_groupimport'),
+                'visualtakeaway' => true,
+            ],
+            [
+                'icon' => 'fa-flag-checkered',
+                'category' => get_string('tutorialcategorypractice', 'local_groupimport'),
+                'title' => get_string('tutorialcompletiontitle', 'local_groupimport'),
+                'content' => get_string('tutorialcompletioncontent', 'local_groupimport'),
+                'visualcompletion' => true,
+            ],
+        ],
         'selectionmodelabel' => get_string('selectionmode', 'local_groupimport'),
         'participantstitle' => get_string('participants', 'local_groupimport'),
         'participantscountlabel' => get_string('participantscount', 'local_groupimport', count($users)),
+        'layoutmodetoggles' => [
+            [
+                'icon' => 'fa-users',
+                'label' => get_string('layoutmodeparticipants', 'local_groupimport'),
+                'class' => 'btn btn-outline-secondary btn-sm local-groupimport-easystud__layout-mode-button',
+                'attribute' => 'data-easystud-layout-mode="participants" aria-pressed="false"',
+            ],
+            [
+                'icon' => 'fa-columns',
+                'label' => get_string('layoutmodeoverview', 'local_groupimport'),
+                'class' => 'btn btn-outline-secondary btn-sm local-groupimport-easystud__layout-mode-button',
+                'attribute' => 'data-easystud-layout-mode="both" aria-pressed="true"',
+            ],
+            [
+                'icon' => 'fa-sitemap',
+                'label' => get_string('layoutmodestructure', 'local_groupimport'),
+                'class' => 'btn btn-outline-secondary btn-sm local-groupimport-easystud__layout-mode-button',
+                'attribute' => 'data-easystud-layout-mode="structure" aria-pressed="false"',
+            ],
+        ],
         'participantactions' => [
-            [
-                'icon' => 'fa-eye',
-                'label' => get_string('viewparticipantdetails', 'local_groupimport'),
-                'class' => 'btn btn-outline-secondary btn-sm',
-                'attribute' => 'data-easystud-open-selected-user="1"',
-                'disabled' => true,
-            ],
-            [
-                'icon' => 'fa-user-times',
-                'label' => get_string('removefromcoursefuture', 'local_groupimport'),
-                'class' => 'btn btn-outline-danger btn-sm',
-                'attribute' => 'data-easystud-remove-selected-users="1"',
-                'disabled' => true,
-            ],
             [
                 'icon' => 'fa-compress',
                 'label' => get_string('compactparticipants', 'local_groupimport'),
                 'class' => 'btn btn-outline-secondary btn-sm',
-                'attribute' => 'data-easystud-density-toggle="1" aria-pressed="false"',
+                'attribute' => 'data-easystud-density-toggle="1" aria-pressed="' .
+                    ($compactparticipantsdefault ? 'true' : 'false') . '" ' .
+                    'data-compact-label="' . s(get_string('compactparticipants', 'local_groupimport')) . '" ' .
+                    'data-detailed-label="' . s(get_string('detailedparticipants', 'local_groupimport')) . '"',
                 'disabled' => false,
             ],
             [
                 'icon' => 'fa-arrow-right',
                 'label' => get_string('moveselectedparticipants', 'local_groupimport'),
-                'class' => 'btn btn-outline-primary btn-sm',
+                'class' => 'btn btn-outline-primary btn-sm local-groupimport-easystud__participant-move-action',
                 'attribute' => 'data-easystud-move-selected-participants="1"',
                 'disabled' => true,
             ],
+            [
+                'icon' => 'fa-trash',
+                'label' => get_string('deletegroupsselection', 'local_groupimport'),
+                'class' => 'btn btn-outline-danger btn-sm local-groupimport-easystud__participant-group-action local-groupimport-easystud__participant-group-action--first',
+                'attribute' => 'data-easystud-delete-selected-groups="1"',
+                'disabled' => true,
+            ],
+            [
+                'icon' => 'fa-arrow-right',
+                'label' => get_string('movegroupsselection', 'local_groupimport'),
+                'class' => 'btn btn-outline-primary btn-sm local-groupimport-easystud__participant-group-action',
+                'attribute' => 'data-easystud-move-selected-groups="1"',
+                'disabled' => true,
+            ],
         ],
-        'roleoptions' => local_groupimport_build_select_options(
-            ['' => get_string('allroles', 'local_groupimport')] + local_groupimport_role_filter_options($users)
-        ),
-        'groupoptions' => local_groupimport_build_select_options(
-            ['' => get_string('allgroups', 'local_groupimport')] + local_groupimport_group_filter_options($groups)
-        ),
+        'roleoptions' => local_groupimport_build_select_options($rolefilteroptions),
+        'rolefilterchoices' => local_groupimport_build_select_options($rolefilteroptions),
+        'groupoptions' => local_groupimport_build_select_options($groupfilteroptions),
+        'groupingoptions' => local_groupimport_build_select_options($groupingfilteroptions),
+        'hasroles' => !empty($rolefilteroptions),
+        'hasgroups' => !empty($groupfilteroptions),
+        'hasgroupings' => !empty($groupingfilteroptions),
         'searchplaceholder' => get_string('searchparticipants', 'local_groupimport'),
+        'searchlabel' => get_string('searchparticipantslabel', 'local_groupimport'),
+        'searchstructureplaceholder' => get_string('searchstructure', 'local_groupimport'),
+        'searchstructurelabel' => get_string('searchstructurelabel', 'local_groupimport'),
+        'searchgroupsplaceholder' => get_string('searchgroups', 'local_groupimport'),
+        'searchgroupslabel' => get_string('searchgroupslabel', 'local_groupimport'),
+        'searchgroupingsplaceholder' => get_string('searchgroupings', 'local_groupimport'),
+        'searchgroupingslabel' => get_string('searchgroupingslabel', 'local_groupimport'),
+        'rolesfilterlabel' => get_string('rolesfilterlabel', 'local_groupimport'),
+        'groupsfilterlabel' => get_string('groupsfilterlabel', 'local_groupimport'),
+        'groupingsfilterlabel' => get_string('groupingsfilterlabel', 'local_groupimport'),
+        'groupscolumnlabel' => get_string('groupscolumnlabel', 'local_groupimport'),
+        'groupingscolumnlabel' => get_string('groupingscolumnlabel', 'local_groupimport'),
+        'resetfilterslabel' => get_string('resetfilters', 'local_groupimport'),
+        'showungroupedlabel' => get_string('showungroupedgroups', 'local_groupimport'),
+        'onlyshowungroupedlabel' => get_string('onlyshowungroupedgroups', 'local_groupimport'),
         'noparticipantsstate' => get_string('noparticipantsstate', 'local_groupimport'),
         'participants' => [],
-        'groupstructuretitle' => get_string('groupstructure', 'local_groupimport'),
+        'groupstructuretitle' => get_string('groupsandgroupings', 'local_groupimport'),
         'groupstructuresummarylabel' => get_string('groupstructuresummary', 'local_groupimport', (object)[
             'groupings' => count($groupings),
             'groups' => count($groups),
@@ -290,6 +770,32 @@ function local_groupimport_build_manage_template_data(
                 'class' => 'btn btn-outline-primary btn-sm',
                 'attribute' => 'data-easystud-move-selected-groups="1"',
             ],
+            [
+                'icon' => 'fa-unlink',
+                'label' => get_string('removegroupsfromgroupings', 'local_groupimport'),
+                'class' => 'btn btn-outline-secondary btn-sm',
+                'attribute' => 'data-easystud-remove-selected-groups-from-groupings="1"',
+            ],
+        ],
+        'participantgroupactions' => [
+            [
+                'icon' => 'fa-trash',
+                'label' => get_string('deletegroupsselection', 'local_groupimport'),
+                'class' => 'btn btn-outline-danger btn-sm',
+                'attribute' => 'data-easystud-delete-selected-groups="1"',
+            ],
+            [
+                'icon' => 'fa-user-minus',
+                'label' => get_string('deletemembersselection', 'local_groupimport'),
+                'class' => 'btn btn-outline-danger btn-sm',
+                'attribute' => 'data-easystud-delete-selected-members="1"',
+            ],
+            [
+                'icon' => 'fa-arrow-right',
+                'label' => get_string('movegroupsselection', 'local_groupimport'),
+                'class' => 'btn btn-outline-primary btn-sm',
+                'attribute' => 'data-easystud-move-selected-groups="1"',
+            ],
         ],
         'quickcreateurl' => (new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]))->out(false),
         'sesskey' => sesskey(),
@@ -297,9 +803,11 @@ function local_groupimport_build_manage_template_data(
         'newgroupingplaceholder' => get_string('newgroupingplaceholder', 'local_groupimport'),
         'creategrouplabel' => get_string('creategroup', 'local_groupimport'),
         'creategroupinglabel' => get_string('creategrouping', 'local_groupimport'),
-        'nogroupstructurestate' => get_string('nogroupstructurestate', 'local_groupimport'),
+        'nogroupingsavailable' => get_string('nogroupingsavailable', 'local_groupimport'),
         'groupings' => [],
         'ungroupedgroups' => [],
+        'participantfocusgroups' => [],
+        'structurefocusgroups' => [],
         'groupswithoutgrouping' => get_string('groupswithoutgrouping', 'local_groupimport'),
         'clipboarddesc' => get_string('clipboardtools_desc', 'local_groupimport'),
         'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
@@ -310,9 +818,17 @@ function local_groupimport_build_manage_template_data(
         'movedestinationgroup' => get_string('movedestinationgroup', 'local_groupimport'),
         'movedestinationgrouping' => get_string('movedestinationgrouping', 'local_groupimport'),
         'moveconfirm' => get_string('moveconfirm', 'local_groupimport'),
+        'movegroupremoveorigin' => get_string('movegroupremoveorigin', 'local_groupimport'),
+        'groupdropmode' => get_string('groupdropmode', 'local_groupimport'),
+        'groupdropmodedesc' => get_string('groupdropmodedesc', 'local_groupimport'),
+        'groupdropcopy' => get_string('groupdropcopy', 'local_groupimport'),
+        'groupdropmove' => get_string('groupdropmove', 'local_groupimport'),
+        'morefilters' => get_string('morefilters', 'local_groupimport'),
         'deleteconfirmationtitle' => get_string('deleteconfirmationtitle', 'local_groupimport'),
         'confirmdeletegroups' => get_string('confirmdeletegroups', 'local_groupimport'),
         'confirmdeletegroupings' => get_string('confirmdeletegroupings', 'local_groupimport'),
+        'clearselectionlabel' => get_string('contextclearselection', 'local_groupimport'),
+        'removefromgroupinglabel' => get_string('removegroupfromgrouping', 'local_groupimport'),
         'confirmlabel' => get_string('confirm', 'local_groupimport'),
         'cancellabel' => get_string('cancel'),
         'contextactions' => local_groupimport_build_context_actions_template_data($alloweduserfields),
@@ -320,7 +836,7 @@ function local_groupimport_build_manage_template_data(
 
     foreach ($users as $user) {
         $searchtext = core_text::strtolower($user['fullname'] . ' ' . $user['email'] . ' ' .
-            implode(' ', $user['roles']) . ' ' . implode(' ', $user['groups']));
+            implode(' ', $user['roles']) . ' ' . implode(' ', $user['groups']) . ' ' . implode(' ', $user['groupings'] ?? []));
         $templatedata['participants'][] = [
             'id' => $user['id'],
             'fullname' => $user['fullname'],
@@ -331,6 +847,7 @@ function local_groupimport_build_manage_template_data(
             'searchtext' => $searchtext,
             'roletext' => core_text::strtolower(implode('|', $user['roles'])),
             'groupidscsv' => implode(',', $user['groupids']),
+            'groupingidscsv' => implode(',', $user['groupingids'] ?? []),
             'rolesmeta' => local_groupimport_build_meta_tags_template_data(
                 get_string('roleslabel', 'local_groupimport'),
                 $user['roles'],
@@ -343,24 +860,131 @@ function local_groupimport_build_manage_template_data(
                 'local-groupimport-easystud-token local-groupimport-easystud-token--group',
                 get_string('nogroup', 'local_groupimport')
             ),
+            'groupingsmeta' => local_groupimport_build_meta_tags_template_data(
+                get_string('groupingslabel', 'local_groupimport'),
+                $user['groupings'] ?? [],
+                'local-groupimport-easystud-token local-groupimport-easystud-token--grouping',
+                get_string('nogrouping', 'local_groupimport')
+            ),
             'viewdetailslabel' => get_string('viewparticipantdetails', 'local_groupimport'),
             'draghint' => get_string('draghintparticipant', 'local_groupimport'),
         ];
     }
 
     foreach ($groupings as $grouping) {
-        $templatedata['groupings'][] = local_groupimport_build_grouping_template_data($course->id, $grouping, $groups, $users);
+        $templatedata['groupings'][] = local_groupimport_build_grouping_template_data($course->id, $grouping, $groups, $users, $groupings);
     }
 
     foreach ($ungroupedgroupids as $groupid) {
         if (isset($groups[$groupid])) {
-            $templatedata['ungroupedgroups'][] = local_groupimport_build_group_template_data($course->id, $groups[$groupid], $users);
+        $templatedata['ungroupedgroups'][] = local_groupimport_build_group_template_data($course->id, $groups[$groupid], $users, false, $groupings);
         }
     }
 
-    $templatedata['hasgroupstructure'] = !empty($templatedata['groupings']) || !empty($templatedata['ungroupedgroups']);
+    $templatedata['participantfocusgroups'] = local_groupimport_build_group_catalog_template_data(
+        $course->id,
+        $groups,
+        $groupings,
+        $users
+    );
+    $templatedata['structurefocusgroups'] = $templatedata['participantfocusgroups'];
 
     return $templatedata;
+}
+
+/**
+ * Build a flat group catalog for the participant focus layout.
+ *
+ * @param int $courseid Course id.
+ * @param array $groups Groups keyed by id.
+ * @param array $groupings Groupings keyed by id.
+ * @param array $users Users keyed by id.
+ * @return array
+ */
+function local_groupimport_build_group_catalog_template_data(int $courseid, array $groups, array $groupings, array $users): array {
+    $groupingtitles = [];
+    foreach ($groupings as $grouping) {
+        foreach ($grouping['groupids'] as $groupid) {
+            $groupingtitles[(int)$groupid][] = $grouping['name'];
+        }
+    }
+
+    $result = [];
+    foreach ($groups as $group) {
+        $item = local_groupimport_build_group_template_data($courseid, $group, $users, false, $groupings);
+        $groupingnames = $groupingtitles[(int)$group['id']] ?? [];
+        $item['groupingidscsv'] = implode(',', $group['groupingids'] ?? []);
+        $item['hasnogrouping'] = empty($group['groupingids']);
+        $item['groupingtags'] = array_map(static function(string $name): array {
+            return ['label' => $name];
+        }, $groupingnames);
+        $item['searchtext'] = core_text::strtolower(trim($item['searchtext'] . ' ' . implode(' ', $groupingnames)));
+        $result[] = $item;
+    }
+
+    usort($result, static function(array $left, array $right): int {
+        return strnatcasecmp($left['name'], $right['name']);
+    });
+
+    return $result;
+}
+
+/**
+ * Prepare the tertiary navigation HTML for the embedded EasyStud header.
+ *
+ * @param string $navigationhtml Raw rendered navigation HTML.
+ * @param string $currentlabel Current page label.
+ * @return string
+ */
+function local_groupimport_prepare_navigation_html(string $navigationhtml, string $currentlabel): string {
+    if (trim($navigationhtml) === '') {
+        return $navigationhtml;
+    }
+
+    $previous = libxml_use_internal_errors(true);
+    $document = new DOMDocument();
+    $loaded = $document->loadHTML(
+        '<?xml encoding="utf-8" ?><div id="local-groupimport-nav-root">' . $navigationhtml . '</div>',
+        LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+    );
+
+    if (!$loaded) {
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+        return $navigationhtml;
+    }
+
+    $xpath = new DOMXPath($document);
+    $root = $document->getElementById('local-groupimport-nav-root');
+    $toggle = $xpath->query(
+        "//*[contains(concat(' ', normalize-space(@class), ' '), ' select-menu ')]" .
+        "//*[contains(concat(' ', normalize-space(@class), ' '), ' dropdown-toggle ')]"
+    )->item(0);
+
+    if ($toggle instanceof DOMElement && trim($toggle->textContent) === '') {
+        $toggle->appendChild($document->createTextNode($currentlabel));
+    }
+
+    $selecteditems = $xpath->query(
+        "//*[contains(concat(' ', normalize-space(@class), ' '), ' dropdown-item ')][@aria-selected='true']"
+    );
+    foreach ($selecteditems as $selecteditem) {
+        if ($selecteditem instanceof DOMElement && trim($selecteditem->textContent) === $currentlabel) {
+            $selecteditem->parentNode?->removeChild($selecteditem);
+        }
+    }
+
+    $html = '';
+    if ($root instanceof DOMElement) {
+        foreach ($root->childNodes as $child) {
+            $html .= $document->saveHTML($child);
+        }
+    }
+
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous);
+
+    return $html !== '' ? $html : $navigationhtml;
 }
 
 /**
@@ -519,12 +1143,22 @@ function local_groupimport_build_meta_tags_template_data(string $label, array $i
  * @param array $grouping Grouping data.
  * @param array $groups Group data.
  * @param array $users User data.
+ * @param array $allgroupings All grouping data.
  * @return array
  */
-function local_groupimport_build_grouping_template_data(int $courseid, array $grouping, array $groups, array $users): array {
+function local_groupimport_build_grouping_template_data(int $courseid, array $grouping, array $groups, array $users, array $allgroupings = []): array {
+    $searchparts = [$grouping['name']];
     $result = [
         'id' => $grouping['id'],
         'name' => $grouping['name'],
+        'description' => $grouping['description'] ?? '',
+        'rawdescription' => $grouping['rawdescription'] ?? '',
+        'idnumber' => $grouping['idnumber'] ?? '',
+        'configdata' => $grouping['configdata'] ?? '',
+        'nativeurl' => (new moodle_url('/group/grouping.php', [
+            'courseid' => $courseid,
+            'id' => $grouping['id'],
+        ]))->out(false),
         'countlabel' => get_string('groupscount', 'local_groupimport', $grouping['groupcount']),
         'counttemplate' => get_string('groupscount', 'local_groupimport', '__count__'),
         'sesskey' => sesskey(),
@@ -534,6 +1168,7 @@ function local_groupimport_build_grouping_template_data(int $courseid, array $gr
         'rawname' => $grouping['rawname'],
         'renamelabel' => get_string('rename', 'local_groupimport'),
         'savelabel' => get_string('save'),
+        'cancellabel' => get_string('cancel'),
         'addgroupslabel' => get_string('addgroupstogrouping', 'local_groupimport'),
         'pastegroupsplaceholder' => get_string('pastegroupsplaceholder', 'local_groupimport'),
         'addgroupsbutton' => get_string('addgroups', 'local_groupimport'),
@@ -542,9 +1177,13 @@ function local_groupimport_build_grouping_template_data(int $courseid, array $gr
 
     foreach ($grouping['groupids'] as $groupid) {
         if (isset($groups[$groupid])) {
-            $result['groups'][] = local_groupimport_build_group_template_data($courseid, $groups[$groupid], $users, true);
+            $groupdata = local_groupimport_build_group_template_data($courseid, $groups[$groupid], $users, true, $allgroupings);
+            $result['groups'][] = $groupdata;
+            $searchparts[] = $groupdata['searchtext'];
         }
     }
+
+    $result['searchtext'] = core_text::strtolower(trim(implode(' ', $searchparts)));
 
     return $result;
 }
@@ -556,12 +1195,37 @@ function local_groupimport_build_grouping_template_data(int $courseid, array $gr
  * @param array $group Group data.
  * @param array $users User data.
  * @param bool $withingrouping True when the group is rendered inside a grouping.
+ * @param array $groupings Grouping data.
  * @return array
  */
-function local_groupimport_build_group_template_data(int $courseid, array $group, array $users, bool $withingrouping = false): array {
+function local_groupimport_build_group_template_data(
+    int $courseid,
+    array $group,
+    array $users,
+    bool $withingrouping = false,
+    array $groupings = []
+): array {
+    $searchparts = [$group['name']];
+    $groupingnames = [];
+    foreach ($group['groupingids'] ?? [] as $groupingid) {
+        if (isset($groupings[$groupingid])) {
+            $groupingnames[] = $groupings[$groupingid]['name'];
+            $searchparts[] = $groupings[$groupingid]['name'];
+        }
+    }
     $result = [
         'id' => $group['id'],
         'name' => $group['name'],
+        'description' => $group['description'] ?? '',
+        'rawdescription' => $group['rawdescription'] ?? '',
+        'idnumber' => $group['idnumber'] ?? '',
+        'enrolmentkey' => !empty($group['enrolmentkey']) ? '1' : '0',
+        'picture' => $group['picture'] ?? '',
+        'hidepicture' => !empty($group['hidepicture']) ? '1' : '0',
+        'nativeurl' => (new moodle_url('/group/group.php', [
+            'courseid' => $courseid,
+            'id' => $group['id'],
+        ]))->out(false),
         'membercountlabel' => get_string('memberscount', 'local_groupimport', $group['membercount']),
         'sesskey' => sesskey(),
         'renameurl' => (new moodle_url('/local/groupimport/manage.php', ['id' => $courseid]))->out(false),
@@ -570,10 +1234,16 @@ function local_groupimport_build_group_template_data(int $courseid, array $group
         'rawname' => $group['rawname'],
         'renamelabel' => get_string('rename', 'local_groupimport'),
         'savelabel' => get_string('save'),
+        'cancellabel' => get_string('cancel'),
         'addemailstolabel' => get_string('addemailstogroup', 'local_groupimport'),
         'pasteemailsplaceholder' => get_string('pasteemailsplaceholder', 'local_groupimport'),
         'addemailsbutton' => get_string('addemails', 'local_groupimport'),
         'withingrouping' => $withingrouping,
+        'groupingidscsv' => implode(',', $group['groupingids'] ?? []),
+        'hasnogrouping' => empty($group['groupingids']),
+        'groupingtags' => array_map(static function(string $name): array {
+            return ['label' => $name];
+        }, $groupingnames),
         'removefromgroupinglabel' => get_string('removegroupfromgrouping', 'local_groupimport'),
         'members' => [],
         'hasmembers' => !empty($group['memberids']),
@@ -582,15 +1252,20 @@ function local_groupimport_build_group_template_data(int $courseid, array $group
 
     foreach ($group['memberids'] as $userid) {
         if (isset($users[$userid])) {
+            $searchparts[] = $users[$userid]['fullname'];
+            $searchparts[] = $users[$userid]['email'] ?? '';
             $result['members'][] = [
                 'groupid' => $group['id'],
                 'userid' => $users[$userid]['id'],
                 'fullname' => $users[$userid]['fullname'],
+                'email' => $users[$userid]['email'] ?? '',
                 'removeuserlabel' => get_string('removeuserfromgroup', 'local_groupimport', $users[$userid]['fullname']),
                 'selectableid' => $group['id'] . ':' . $users[$userid]['id'],
             ];
         }
     }
+
+    $result['searchtext'] = core_text::strtolower(trim(implode(' ', $searchparts)));
 
     return $result;
 }
@@ -609,14 +1284,56 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
             'label' => get_string('viewparticipantdetails', 'local_groupimport'),
         ],
         'clear-selection' => [
-            'contexts' => 'participant',
+            'contexts' => 'participant group grouping member',
             'icon' => 'fa-times-circle',
             'label' => get_string('contextclearselection', 'local_groupimport'),
+            'multilabel' => get_string('contextclearselection', 'local_groupimport'),
+        ],
+        'participant-move-selected' => [
+            'contexts' => 'participant',
+            'icon' => 'fa-arrow-right',
+            'label' => get_string('contextmoveparticipant', 'local_groupimport'),
+            'multilabel' => get_string('contextmoveparticipants', 'local_groupimport'),
+        ],
+        'copy-participant-name' => [
+            'contexts' => 'participant member',
+            'icon' => 'fa-id-card',
+            'label' => get_string('contextcopyfullname', 'local_groupimport'),
+            'multilabel' => get_string('contextcopyselectedfullnames', 'local_groupimport'),
+        ],
+        'copy-participant-id' => [
+            'contexts' => 'participant member',
+            'icon' => 'fa-hashtag',
+            'label' => get_string('contextcopyuserid', 'local_groupimport'),
+            'multilabel' => get_string('contextcopyselecteduserids', 'local_groupimport'),
         ],
         'group-paste-emails' => [
             'contexts' => 'group',
             'icon' => 'fa-envelope-open-text',
             'label' => get_string('contextaddemails', 'local_groupimport'),
+        ],
+        'group-add-copied-users' => [
+            'contexts' => 'group',
+            'icon' => 'fa-clipboard-check',
+            'label' => get_string('contextaddcopiedusers', 'local_groupimport'),
+        ],
+        'group-move-selected' => [
+            'contexts' => 'group',
+            'icon' => 'fa-arrow-right',
+            'label' => get_string('movegroupsselection', 'local_groupimport'),
+            'multilabel' => get_string('movegroupsselection', 'local_groupimport'),
+        ],
+        'group-remove-from-grouping' => [
+            'contexts' => 'group',
+            'icon' => 'fa-unlink',
+            'label' => get_string('removegroupfromgrouping', 'local_groupimport'),
+            'multilabel' => get_string('removegroupsfromgroupings', 'local_groupimport'),
+        ],
+        'group-delete-selected' => [
+            'contexts' => 'group',
+            'icon' => 'fa-trash',
+            'label' => get_string('deletegroupsselection', 'local_groupimport'),
+            'multilabel' => get_string('deletegroupsselection', 'local_groupimport'),
         ],
         'group-focus-rename' => [
             'contexts' => 'group',
@@ -627,11 +1344,23 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
             'contexts' => 'group',
             'icon' => 'fa-copy',
             'label' => get_string('contextcopygroupname', 'local_groupimport'),
+            'multilabel' => get_string('contextcopyselectedgroupnames', 'local_groupimport'),
         ],
         'grouping-paste-groups' => [
             'contexts' => 'grouping',
             'icon' => 'fa-layer-group',
             'label' => get_string('contextaddgroups', 'local_groupimport'),
+        ],
+        'grouping-add-copied-groups' => [
+            'contexts' => 'grouping',
+            'icon' => 'fa-clipboard-check',
+            'label' => get_string('contextaddcopiedgroups', 'local_groupimport'),
+        ],
+        'grouping-select-groups' => [
+            'contexts' => 'grouping',
+            'icon' => 'fa-check-square',
+            'label' => get_string('contextselectgroupinggroups', 'local_groupimport'),
+            'multilabel' => get_string('contextselectgroupingsgroups', 'local_groupimport'),
         ],
         'grouping-focus-rename' => [
             'contexts' => 'grouping',
@@ -647,11 +1376,12 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
             'contexts' => 'member',
             'icon' => 'fa-user-minus',
             'label' => get_string('contextremovemember', 'local_groupimport'),
+            'multilabel' => get_string('contextremoveselectedmembers', 'local_groupimport'),
         ],
-        'copy-member-name' => [
-            'contexts' => 'member',
-            'icon' => 'fa-copy',
-            'label' => get_string('contextcopymembername', 'local_groupimport'),
+        'paste-field' => [
+            'contexts' => 'paste-field',
+            'icon' => 'fa-paste',
+            'label' => get_string('contextpaste', 'local_groupimport'),
         ],
     ];
 
@@ -659,9 +1389,12 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
     foreach ($alloweduserfields as $fieldkey => $fieldlabel) {
         $result[] = [
             'action' => 'copy-participant-field',
-            'contexts' => 'participant',
+            'contexts' => 'participant member',
             'icon' => $fieldkey === 'email' ? 'fa-at' : 'fa-copy',
             'label' => get_string('contextcopyfield', 'local_groupimport', $fieldlabel),
+            'multilabel' => $fieldkey === 'email'
+                ? get_string('contextcopyselectedemails', 'local_groupimport')
+                : get_string('contextcopyfieldselection', 'local_groupimport', $fieldlabel),
             'fieldkey' => $fieldkey,
         ];
     }
@@ -672,6 +1405,7 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
             'contexts' => $definition['contexts'],
             'icon' => $definition['icon'],
             'label' => $definition['label'],
+            'multilabel' => $definition['multilabel'] ?? '',
             'fieldkey' => '',
         ];
     }
@@ -906,7 +1640,7 @@ function local_groupimport_render_group_member(int $groupid, array $user): strin
     return html_writer::tag('li',
         html_writer::span(s($user['fullname']), 'local-groupimport-easystud-member__name') .
         html_writer::tag('button',
-            html_writer::span('&times;', '', ['aria-hidden' => 'true']),
+            html_writer::span('&minus;', '', ['aria-hidden' => 'true']),
             [
                 'type' => 'button',
                 'class' => 'btn btn-link p-0 local-groupimport-easystud-member__remove',
@@ -995,7 +1729,7 @@ function local_groupimport_render_clipboard_modal(): string {
             html_writer::span('&times;', '', ['aria-hidden' => 'true']),
             [
                 'type' => 'button',
-                'class' => 'btn btn-link p-0 local-groupimport-easystud-modal__close',
+                'class' => 'local-groupimport-easystud-modal__close',
                 'data-easystud-close-clipboard' => '1',
                 'aria-label' => get_string('closebuttontitle'),
             ]
@@ -1021,15 +1755,21 @@ function local_groupimport_render_participant_modal(): string {
         ]) .
         html_writer::start_div('local-groupimport-easystud-modal__dialog local-groupimport-easystud-modal__dialog--user') .
         html_writer::start_div('local-groupimport-easystud-modal__header') .
+        html_writer::start_div('local-groupimport-easystud-settings-modal__heading') .
+        html_writer::span('', 'local-groupimport-easystud-settings-modal__icon fa fa-user', ['aria-hidden' => 'true']) .
+        html_writer::start_div() .
+        html_writer::span('EasyStud', 'local-groupimport-easystud-settings-modal__eyebrow') .
         html_writer::tag('h3', get_string('participantdetails', 'local_groupimport'), [
             'id' => 'local-groupimport-easystud-user-title',
             'class' => 'h5 mb-0',
         ]) .
+        html_writer::end_div() .
+        html_writer::end_div() .
         html_writer::tag('button',
             html_writer::span('&times;', '', ['aria-hidden' => 'true']),
             [
                 'type' => 'button',
-                'class' => 'btn btn-link p-0 local-groupimport-easystud-modal__close',
+                'class' => 'local-groupimport-easystud-modal__close',
                 'data-easystud-close-user-modal' => '1',
                 'aria-label' => get_string('closebuttontitle'),
             ]
@@ -1103,11 +1843,6 @@ function local_groupimport_render_context_menu(): string {
             'contexts' => 'member',
             'icon' => 'fa-user-minus',
             'label' => get_string('contextremovemember', 'local_groupimport'),
-        ],
-        'copy-member-name' => [
-            'contexts' => 'member',
-            'icon' => 'fa-copy',
-            'label' => get_string('contextcopymembername', 'local_groupimport'),
         ],
     ];
 
@@ -1198,11 +1933,11 @@ function local_groupimport_render_meta_tags(string $label, array $items, string 
         }
 
         if (count($items) > $visiblemax) {
-            $out .= html_writer::tag('button', '…', [
+            $out .= html_writer::tag('button', '+0', [
                 'type' => 'button',
                 'class' => 'btn btn-link p-0 local-groupimport-easystud-tags-toggle',
                 'data-easystud-toggle-tags' => '1',
-                'data-more-label' => '…',
+                'data-more-label' => '+0',
                 'data-less-label' => get_string('showless', 'local_groupimport'),
             ]);
         }
@@ -1212,4 +1947,52 @@ function local_groupimport_render_meta_tags(string $label, array $items, string 
     $out .= html_writer::end_div();
 
     return $out;
+}
+
+/**
+ * Extract group or grouping names from a separated quick-create field.
+ *
+ * @param string $text Raw field value.
+ * @return array
+ */
+function local_groupimport_extract_create_names(string $text): array {
+    $parts = preg_split('/[\r\n,;|]+/u', $text);
+    $names = [];
+    foreach ($parts ?: [] as $part) {
+        $part = trim($part);
+        if ($part === '') {
+            continue;
+        }
+
+        if (preg_match('/^(.*?)([#@])\s*\*\s*(\d+)$/u', $part, $matches)) {
+            $prefix = rtrim($matches[1]);
+            $marker = $matches[2];
+            $count = max(0, min(200, (int)$matches[3]));
+            for ($index = 1; $index <= $count; $index++) {
+                $suffix = $marker === '#' ? (string)$index : local_groupimport_number_to_letters($index);
+                $names[] = trim($prefix . ' ' . $suffix);
+            }
+            continue;
+        }
+
+        $names[] = $part;
+    }
+
+    return array_values(array_unique($names));
+}
+
+/**
+ * Convert a 1-based number into A, B, ..., Z, AA, AB...
+ *
+ * @param int $number Number.
+ * @return string
+ */
+function local_groupimport_number_to_letters(int $number): string {
+    $letters = '';
+    while ($number > 0) {
+        $number--;
+        $letters = chr(65 + ($number % 26)) . $letters;
+        $number = intdiv($number, 26);
+    }
+    return $letters;
 }

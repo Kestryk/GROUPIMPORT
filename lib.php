@@ -98,17 +98,6 @@ function local_groupimport_extend_settings_navigation(settings_navigation $setti
         return;
     }
 
-    if (!$usersnode->find('local_groupimport_easystud', navigation_node::TYPE_CUSTOM)) {
-        $usersnode->add(
-            get_string('easystudmanager', 'local_groupimport'),
-            local_groupimport_get_manager_url($courseid),
-            navigation_node::TYPE_CUSTOM,
-            null,
-            'local_groupimport_easystud',
-            new pix_icon('i/groups', '')
-        );
-    }
-
     local_groupimport_configure_participants_node($usersnode, $courseid);
 }
 
@@ -149,6 +138,7 @@ function local_groupimport_require_navigation_js(int $courseid): void {
         local_groupimport_get_manager_url($courseid)->out(false),
         local_groupimport_get_native_participants_url($courseid)->out(false),
         get_string('easystudmanager', 'local_groupimport'),
+        get_string('nativeparticipantsmenu', 'local_groupimport'),
     ]);
 }
 
@@ -161,15 +151,4 @@ function local_groupimport_require_navigation_js(int $courseid): void {
  */
 function local_groupimport_configure_participants_node(navigation_node $participantsnode, int $courseid): void {
     $participantsnode->action = local_groupimport_get_manager_url($courseid);
-
-    if (!$participantsnode->find('local_groupimport_nativeparticipants', navigation_node::TYPE_CUSTOM)) {
-        $participantsnode->add(
-            get_string('nativeparticipants', 'local_groupimport'),
-            local_groupimport_get_native_participants_url($courseid),
-            navigation_node::TYPE_CUSTOM,
-            null,
-            'local_groupimport_nativeparticipants',
-            new pix_icon('i/users', '')
-        );
-    }
 }

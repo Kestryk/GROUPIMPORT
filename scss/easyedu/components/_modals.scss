@@ -1,0 +1,16 @@
+// EasyEdu modal surfaces.
+//
+// Use this on the modal dialog element, then keep plugin-specific headers,
+// layouts and content in the plugin component files. This gives each plugin a
+// common shell while preserving functional independence.
+//
+// Theme override tokens:
+// --easyedu-surface, --easyedu-modal-border, --easyedu-modal-radius,
+// --easyedu-modal-shadow.
+
+@mixin modal-surface {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-modal-border);
+  border-radius: var(--easyedu-modal-radius);
+  box-shadow: var(--easyedu-modal-shadow);
+}

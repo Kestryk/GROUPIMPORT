@@ -1,19 +1,56 @@
 <div
-    class="local-groupimport-easystud"
+    class="local-groupimport-easystud local-groupimport-easystud--booting{{#compactparticipantsdefault}} local-groupimport-easystud--compact-users{{/compactparticipantsdefault}}"
     id="local-groupimport-easystud"
+    data-easystud-course-id="{{courseid}}"
     data-easystud-detail-labels="{{detaillabelsjson}}"
 >
-    {{{navigationhtml}}}
-
     <div class="local-groupimport-easystud__notifications" data-easystud-notifications="1" aria-live="polite"></div>
+
+    <div class="local-groupimport-easystud-discovery" data-easystud-discovery="1" hidden>
+        <div class="local-groupimport-easystud-discovery__icon">
+            <span class="fa fa-compass" aria-hidden="true"></span>
+        </div>
+        <div class="local-groupimport-easystud-discovery__text">
+            <strong>{{tutorialdiscovertitle}}</strong>
+            <span>{{tutorialdiscovertext}}</span>
+        </div>
+        <div class="local-groupimport-easystud-discovery__actions">
+            <button type="button" class="btn btn-primary btn-sm" data-easystud-discovery-start="1">
+                <span class="fa fa-play-circle me-1" aria-hidden="true"></span>
+                <span>{{tutorialdiscoverbutton}}</span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm local-groupimport-easystud-discovery__dismiss"
+                data-easystud-discovery-dismiss="1"
+                aria-label="{{tutorialdiscoverdismiss}}"
+            >
+                <span class="fa fa-times" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
 
     <div class="local-groupimport-easystud__header">
         <div>
             <span class="local-groupimport-easystud__eyebrow">{{eyebrow}}</span>
-            <h2 class="h3 mb-1">{{title}}</h2>
+            <div class="local-groupimport-easystud__navigation">
+                {{{navigationhtml}}}
+            </div>
             <p class="text-muted mb-0">{{description}}</p>
         </div>
         <div class="local-groupimport-easystud__header-actions">
+            <button
+                type="button"
+                class="local-groupimport-easystud-tour-button"
+                data-easystud-open-tutorial="1"
+                aria-haspopup="dialog"
+                aria-label="{{tutoriallabel}}"
+                data-easystud-hover-help="{{tutoriallabel}}"
+            >
+                <span class="local-groupimport-easystud-discovery__icon local-groupimport-easystud-tour-button__icon" aria-hidden="true">
+                    <span class="fa fa-compass" aria-hidden="true"></span>
+                </span>
+            </button>
             <a class="btn btn-outline-secondary" href="{{nativeparticipantsurl}}">{{nativeparticipantslabel}}</a>
             <a class="btn btn-outline-primary ms-2" href="{{csvurl}}">{{csvlabel}}</a>
             <button
@@ -28,8 +65,35 @@
         </div>
     </div>
 
+    <div class="local-groupimport-easystud__layout-toggles">
+        <div class="btn-group local-groupimport-easystud__layout-mode-group" role="group" aria-label="{{selectionmodelabel}}">
+            {{#layoutmodetoggles}}
+                <button
+                    type="button"
+                    class="{{class}}"
+                    {{{attribute}}}
+                >
+                    <span class="fa {{icon}}" aria-hidden="true"></span>
+                    <span>{{label}}</span>
+                </button>
+            {{/layoutmodetoggles}}
+        </div>
+        <div class="local-groupimport-easystud__clear-selection-frame" data-easystud-clear-selection-frame="1" hidden>
+            <span class="local-groupimport-easystud__clear-selection-count" data-easystud-clear-selection-count="1"></span>
+            <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm local-groupimport-easystud__clear-selection"
+                data-easystud-clear-all-selection="1"
+                hidden
+            >
+                <span class="fa fa-times-circle me-2" aria-hidden="true"></span>
+                <span>{{clearselectionlabel}}</span>
+            </button>
+        </div>
+    </div>
+
     <div class="local-groupimport-easystud__layout">
-        <div class="local-groupimport-easystud__panel local-groupimport-easystud__panel--participants card">
+        <div class="local-groupimport-easystud__panel local-groupimport-easystud__panel--participants card" data-easystud-participants-panel="1">
             <div class="card-body">
                 <div class="local-groupimport-easystud__panel-heading">
                     <div class="local-groupimport-easystud__panel-title-wrap">
@@ -51,136 +115,450 @@
                     </div>
                 </div>
 
-                <div class="local-groupimport-easystud__filters" data-easystud-filters="1">
-                    <select class="form-select custom-select" data-easystud-role-filter="1" name="rolefilter">
-                        {{#roleoptions}}
-                            <option value="{{value}}">{{label}}</option>
-                        {{/roleoptions}}
-                    </select>
-                    <select class="form-select custom-select" data-easystud-group-filter="1" name="groupfilter">
-                        {{#groupoptions}}
-                            <option value="{{value}}">{{label}}</option>
-                        {{/groupoptions}}
-                    </select>
-                    <input
-                        type="search"
-                        class="form-control local-groupimport-easystud__search"
-                        placeholder="{{searchplaceholder}}"
-                        data-easystud-search="1"
-                    >
-                </div>
-
-                <div
-                    class="local-groupimport-easystud__participant-list"
-                    data-easystud-participant-list="1"
-                    data-empty-filtered-label="{{noparticipantsstate}}"
-                >
-                    {{#participants}}
-                        <div
-                            class="local-groupimport-easystud-user"
-                            tabindex="0"
-                            data-easystud-user="1"
-                            data-selectable-type="participant"
-                            data-selectable-id="{{id}}"
-                            data-user-id="{{id}}"
-                            data-user-email="{{email}}"
-                            data-user-detail="{{userdetailjson}}"
-                            data-user-copy-fields="{{usercopyfieldsjson}}"
-                            data-search-text="{{searchtext}}"
-                            data-role-text="{{roletext}}"
-                            data-group-ids="{{groupidscsv}}"
-                            draggable="true"
-                        >
-                            <label class="local-groupimport-easystud-selector" aria-label="{{selectionmodelabel}}">
-                                <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
-                                <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
-                            </label>
-                            <div class="local-groupimport-easystud-user__rail">
-                                <span
-                                    class="local-groupimport-easystud-user__drag-handle"
-                                    data-easystud-hover-help="{{draghint}}"
-                                    aria-hidden="true"
-                                >
-                                    <span class="fa fa-arrows" aria-hidden="true"></span>
-                                </span>
-                                <div class="local-groupimport-easystud-user__avatar">{{{profileimage}}}</div>
+                <div class="local-groupimport-easystud__participant-content" data-easystud-participant-content="1">
+                    <div class="local-groupimport-easystud__participant-main">
+                        <div class="local-groupimport-easystud__filters" data-easystud-filters="1">
+                            <div class="local-groupimport-easystud-column-heading local-groupimport-easystud-column-heading--participants">
+                                <span class="local-groupimport-easystud-column-heading__title">{{participantstitle}}</span>
                             </div>
-                            <div class="local-groupimport-easystud-user__main">
-                                <div class="local-groupimport-easystud-user__headline">
-                                    <strong class="local-groupimport-easystud-user__name">{{fullname}}</strong>
+                            <div class="local-groupimport-easystud__search-row">
+                                <label class="local-groupimport-easystud__search-field" aria-label="{{searchlabel}}">
+                                    <span class="fa fa-search" aria-hidden="true"></span>
+                                    <input
+                                        type="search"
+                                        class="form-control local-groupimport-easystud__search"
+                                        placeholder="{{searchplaceholder}}"
+                                        data-easystud-search="1"
+                                    >
+                                </label>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm local-groupimport-easystud__filters-reset"
+                                    data-easystud-reset-filters="1"
+                                >{{resetfilterslabel}}</button>
+                            </div>
+
+                            <div class="local-groupimport-easystud-advanced-filters" data-easystud-advanced-filters="participants">
+                                <div class="local-groupimport-easystud__filters-grid">
+                                    <div class="local-groupimport-easystud__filter-group local-groupimport-easystud__filter-group--roles">
+                                        <span class="local-groupimport-easystud__filter-label">{{rolesfilterlabel}}</span>
+                                        <div class="local-groupimport-easystud__role-toggle-wrap" data-easystud-role-toggle-wrap="1">
+                                            <div class="local-groupimport-easystud__role-toggle" data-easystud-role-toggle="1">
+                                                {{#rolefilterchoices}}
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-secondary btn-sm"
+                                                        data-easystud-role-choice="{{value}}"
+                                                        aria-pressed="false"
+                                                    >{{label}}</button>
+                                                {{/rolefilterchoices}}
+                                            </div>
+                                            <select
+                                                class="form-select custom-select local-groupimport-easystud__role-select"
+                                                data-easystud-role-filter="1"
+                                                name="rolefilter"
+                                                multiple
+                                                hidden
+                                            >
+                                                {{#roleoptions}}
+                                                    <option value="{{value}}">{{label}}</option>
+                                                {{/roleoptions}}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="local-groupimport-easystud__filter-group local-groupimport-easystud__filter-group--groups">
+                                        <label class="local-groupimport-easystud__filter-label" for="local-groupimport-group-filter">{{groupsfilterlabel}}</label>
+                                        <select
+                                            id="local-groupimport-group-filter"
+                                            class="form-select custom-select"
+                                            data-easystud-group-filter="1"
+                                            name="groupfilter"
+                                            multiple
+                                        >
+                                            {{#groupoptions}}
+                                                <option value="{{value}}">{{label}}</option>
+                                            {{/groupoptions}}
+                                        </select>
+                                    </div>
+
+                                    <div class="local-groupimport-easystud__filter-group local-groupimport-easystud__filter-group--groupings local-groupimport-easystud__filter-group--participant-only">
+                                        <label class="local-groupimport-easystud__filter-label" for="local-groupimport-grouping-filter">{{groupingsfilterlabel}}</label>
+                                        <select
+                                            id="local-groupimport-grouping-filter"
+                                            class="form-select custom-select"
+                                            data-easystud-grouping-filter="1"
+                                            name="groupingfilter"
+                                            multiple
+                                        >
+                                            {{#groupingoptions}}
+                                                <option value="{{value}}">{{label}}</option>
+                                            {{/groupingoptions}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="local-groupimport-easystud-advanced-filters__control">
+                                <span class="local-groupimport-easystud-advanced-filters__more" data-easystud-advanced-filters-more="participants">{{morefilters}}</span>
+                                <button
+                                    type="button"
+                                    class="local-groupimport-easystud-group__members-toggle local-groupimport-easystud-advanced-filters__toggle"
+                                    data-easystud-advanced-filters-toggle="participants"
+                                    aria-expanded="false"
+                                >
+                                    <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div
+                            class="local-groupimport-easystud__participant-list"
+                            data-easystud-participant-list="1"
+                            data-empty-filtered-label="{{noparticipantsstate}}"
+                        >
+                            {{#participants}}
+                                <div
+                                    class="local-groupimport-easystud-user"
+                                    tabindex="0"
+                                    data-easystud-user="1"
+                                    data-selectable-type="participant"
+                                    data-selectable-id="{{id}}"
+                                    data-user-id="{{id}}"
+                                    data-user-email="{{email}}"
+                                    data-user-detail="{{userdetailjson}}"
+                                    data-user-copy-fields="{{usercopyfieldsjson}}"
+                                    data-search-text="{{searchtext}}"
+                                    data-role-text="{{roletext}}"
+                                    data-group-ids="{{groupidscsv}}"
+                                    data-grouping-ids="{{groupingidscsv}}"
+                                    draggable="true"
+                                >
+                                    <label class="local-groupimport-easystud-selector" aria-label="{{selectionmodelabel}}">
+                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                    </label>
+                                    <div class="local-groupimport-easystud-user__rail">
+                                        <div class="local-groupimport-easystud-user__avatar">{{{profileimage}}}</div>
+                                    </div>
+                                    <div class="local-groupimport-easystud-user__main">
+                                        <div class="local-groupimport-easystud-user__headline">
+                                            <div class="local-groupimport-easystud-user__headline-main">
+                                                <strong class="local-groupimport-easystud-user__name">{{fullname}}</strong>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="btn btn-link p-0 local-groupimport-easystud-user__detail-button"
+                                                data-easystud-open-user="{{id}}"
+                                                aria-label="{{viewdetailslabel}}"
+                                                data-easystud-hover-help="{{viewdetailslabel}}"
+                                            >
+                                                <span class="fa fa-eye" aria-hidden="true"></span>
+                                            </button>
+                                        </div>
+                                        <span class="local-groupimport-easystud-user__email">{{email}}</span>
+                                        <div class="local-groupimport-easystud-user__meta">
+                                            {{#rolesmeta}}
+                                                <div class="local-groupimport-easystud-user__meta-group local-groupimport-easystud-user__meta-group--inline">
+                                                    <span class="local-groupimport-easystud-user__meta-label">{{label}}</span>
+                                                    <div class="local-groupimport-easystud-user__meta-tags">
+                                                        {{#tokens}}
+                                                            <span
+                                                                class="{{class}}"
+                                                                {{#hidden}}hidden{{/hidden}}
+                                                                {{#extra}}data-easystud-extra-tag="1"{{/extra}}
+                                                            >{{label}}</span>
+                                                        {{/tokens}}
+                                                        {{#hasmore}}
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-link p-0 local-groupimport-easystud-tags-toggle local-groupimport-easystud-token"
+                                                                    data-easystud-toggle-tags="1"
+                                                                    data-more-label="+0"
+                                                                    data-less-label="{{showless}}"
+                                                            >+0</button>
+                                                        {{/hasmore}}
+                                                    </div>
+                                                </div>
+                                            {{/rolesmeta}}
+                                            {{#groupsmeta}}
+                                                <div class="local-groupimport-easystud-user__meta-group local-groupimport-easystud-user__meta-group--inline">
+                                                    <span class="local-groupimport-easystud-user__meta-label">{{label}}</span>
+                                                    <div class="local-groupimport-easystud-user__meta-tags">
+                                                        {{#tokens}}
+                                                            <span
+                                                                class="{{class}}"
+                                                                {{#hidden}}hidden{{/hidden}}
+                                                                {{#extra}}data-easystud-extra-tag="1"{{/extra}}
+                                                            >{{label}}</span>
+                                                        {{/tokens}}
+                                                        {{#hasmore}}
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-link p-0 local-groupimport-easystud-tags-toggle local-groupimport-easystud-token"
+                                                                    data-easystud-toggle-tags="1"
+                                                                    data-more-label="+0"
+                                                                    data-less-label="{{showless}}"
+                                                            >+0</button>
+                                                        {{/hasmore}}
+                                                    </div>
+                                                </div>
+                                            {{/groupsmeta}}
+                                            {{#groupingsmeta}}
+                                                <div class="local-groupimport-easystud-user__meta-group local-groupimport-easystud-user__meta-group--inline">
+                                                    <span class="local-groupimport-easystud-user__meta-label">{{label}}</span>
+                                                    <div class="local-groupimport-easystud-user__meta-tags">
+                                                        {{#tokens}}
+                                                            <span
+                                                                class="{{class}}"
+                                                                {{#hidden}}hidden{{/hidden}}
+                                                                {{#extra}}data-easystud-extra-tag="1"{{/extra}}
+                                                            >{{label}}</span>
+                                                        {{/tokens}}
+                                                        {{#hasmore}}
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-link p-0 local-groupimport-easystud-tags-toggle local-groupimport-easystud-token"
+                                                                    data-easystud-toggle-tags="1"
+                                                                    data-more-label="+0"
+                                                                    data-less-label="{{showless}}"
+                                                            >+0</button>
+                                                        {{/hasmore}}
+                                                    </div>
+                                                </div>
+                                            {{/groupingsmeta}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {{/participants}}
+                            {{^participants}}
+                                <div class="local-groupimport-easystud__empty-state" data-easystud-empty-state="participants">
+                                    <span class="fa fa-users" aria-hidden="true"></span>
+                                    <p class="mb-0">{{noparticipantsstate}}</p>
+                                </div>
+                            {{/participants}}
+                        </div>
+                    </div>
+
+                    <div class="local-groupimport-easystud-participant-groups" data-easystud-participant-groups-panel="1" hidden>
+                        <div class="local-groupimport-easystud-participant-groups__create">
+                            <div class="local-groupimport-easystud-column-heading">
+                                <span class="local-groupimport-easystud-column-heading__title">{{groupscolumnlabel}}</span>
+                            </div>
+                            <div class="local-groupimport-easystud-create-card__topline">
+                                <form method="post" action="{{quickcreateurl}}" class="local-groupimport-easystud-create">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <input type="hidden" name="action" value="creategroup">
+                                    <input
+                                        type="text"
+                                        name="groupname"
+                                        class="form-control"
+                                        placeholder="{{newgroupplaceholder}}"
+                                    >
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary local-groupimport-easystud-icon-button"
+                                        aria-label="{{creategrouplabel}}"
+                                        data-easystud-hover-help="{{creategrouplabel}}"
+                                    >
+                                        <span class="fa fa-plus" aria-hidden="true"></span>
+                                    </button>
+                                </form>
+                                <label class="local-groupimport-easystud__search-field local-groupimport-easystud__search-field--catalog" aria-label="{{searchgroupslabel}}">
+                                    <span class="fa fa-search" aria-hidden="true"></span>
+                                    <input
+                                        type="search"
+                                        class="form-control local-groupimport-easystud__search"
+                                        placeholder="{{searchgroupsplaceholder}}"
+                                        data-easystud-catalog-search="participants"
+                                    >
+                                </label>
+                            </div>
+                            <div class="local-groupimport-easystud-advanced-filters" data-easystud-advanced-filters="participant-groups">
+                                <div class="local-groupimport-easystud-group-catalog-filters">
+                                    <div class="local-groupimport-easystud__filter-group">
+                                        <label class="local-groupimport-easystud__filter-label" for="local-groupimport-participant-catalog-grouping-filter">{{groupingsfilterlabel}}</label>
+                                        <select
+                                            id="local-groupimport-participant-catalog-grouping-filter"
+                                            class="form-select custom-select"
+                                            data-easystud-catalog-grouping-filter="participants"
+                                            multiple
+                                            aria-label="{{groupingsfilterlabel}}"
+                                        >
+                                            {{#groupingoptions}}
+                                                <option value="{{value}}">{{label}}</option>
+                                            {{/groupingoptions}}
+                                        </select>
+                                    </div>
+                                    <label class="local-groupimport-easystud-toggle-check">
+                                        <input type="checkbox" data-easystud-catalog-show-ungrouped="participants">
+                                        <span>{{onlyshowungroupedlabel}}</span>
+                                    </label>
                                     <button
                                         type="button"
-                                        class="btn btn-link p-0 local-groupimport-easystud-user__detail-button"
-                                        data-easystud-open-user="{{id}}"
-                                        aria-label="{{viewdetailslabel}}"
-                                        data-easystud-hover-help="{{viewdetailslabel}}"
-                                    >
-                                        <span class="fa fa-eye" aria-hidden="true"></span>
-                                    </button>
-                                </div>
-                                <span class="local-groupimport-easystud-user__email">{{email}}</span>
-                                <div class="local-groupimport-easystud-user__meta">
-                                    {{#rolesmeta}}
-                                        <div class="local-groupimport-easystud-user__meta-group local-groupimport-easystud-user__meta-group--inline">
-                                            <span class="local-groupimport-easystud-user__meta-label">{{label}}</span>
-                                            <div class="local-groupimport-easystud-user__meta-tags">
-                                                {{#tokens}}
-                                                    <span
-                                                        class="{{class}}"
-                                                        {{#hidden}}hidden{{/hidden}}
-                                                        {{#extra}}data-easystud-extra-tag="1"{{/extra}}
-                                                    >{{label}}</span>
-                                                {{/tokens}}
-                                                {{#hasmore}}
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-link p-0 local-groupimport-easystud-tags-toggle"
-                                                        data-easystud-toggle-tags="1"
-                                                        data-more-label="..."
-                                                        data-less-label="{{showless}}"
-                                                    >...</button>
-                                                {{/hasmore}}
-                                            </div>
-                                        </div>
-                                    {{/rolesmeta}}
-                                    {{#groupsmeta}}
-                                        <div class="local-groupimport-easystud-user__meta-group local-groupimport-easystud-user__meta-group--inline">
-                                            <span class="local-groupimport-easystud-user__meta-label">{{label}}</span>
-                                            <div class="local-groupimport-easystud-user__meta-tags">
-                                                {{#tokens}}
-                                                    <span
-                                                        class="{{class}}"
-                                                        {{#hidden}}hidden{{/hidden}}
-                                                        {{#extra}}data-easystud-extra-tag="1"{{/extra}}
-                                                    >{{label}}</span>
-                                                {{/tokens}}
-                                                {{#hasmore}}
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-link p-0 local-groupimport-easystud-tags-toggle"
-                                                        data-easystud-toggle-tags="1"
-                                                        data-more-label="..."
-                                                        data-less-label="{{showless}}"
-                                                    >...</button>
-                                                {{/hasmore}}
-                                            </div>
-                                        </div>
-                                    {{/groupsmeta}}
+                                        class="btn btn-outline-secondary btn-sm local-groupimport-easystud__filters-reset local-groupimport-easystud__filters-reset--catalog"
+                                        data-easystud-reset-catalog-filters="participants"
+                                    >{{resetfilterslabel}}</button>
                                 </div>
                             </div>
+                            <div class="local-groupimport-easystud-advanced-filters__control">
+                                <span class="local-groupimport-easystud-advanced-filters__more" data-easystud-advanced-filters-more="participant-groups">{{morefilters}}</span>
+                                <button
+                                    type="button"
+                                    class="local-groupimport-easystud-group__members-toggle local-groupimport-easystud-advanced-filters__toggle"
+                                    data-easystud-advanced-filters-toggle="participant-groups"
+                                    aria-expanded="false"
+                                >
+                                    <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                </button>
+                            </div>
                         </div>
-                    {{/participants}}
-                    {{^participants}}
-                        <div class="local-groupimport-easystud__empty-state" data-easystud-empty-state="participants">
-                            <span class="fa fa-users" aria-hidden="true"></span>
-                            <p class="mb-0">{{noparticipantsstate}}</p>
+                        <div class="local-groupimport-easystud-participant-groups__list">
+                            {{#participantfocusgroups}}
+                                <div
+                                    class="local-groupimport-easystud-group local-groupimport-easystud-group--catalog"
+                                    data-easystud-group-id="{{id}}"
+                                    data-easystud-user-drop="{{id}}"
+                                    data-selectable-type="group"
+                                    data-selectable-id="{{id}}"
+                                    data-grouping-ids="{{groupingidscsv}}"
+                                    data-has-no-grouping="{{#hasnogrouping}}1{{/hasnogrouping}}{{^hasnogrouping}}0{{/hasnogrouping}}"
+                                    data-search-text="{{searchtext}}"
+                                    data-easystud-advanced-type="group"
+                                    data-easystud-advanced-name="{{name}}"
+                                    data-easystud-advanced-description="{{description}}"
+                                    data-easystud-advanced-raw-description="{{rawdescription}}"
+                                    data-easystud-advanced-idnumber="{{idnumber}}"
+                                    data-easystud-advanced-native-url="{{nativeurl}}"
+                                    data-easystud-advanced-picture="{{picture}}"
+                                    data-easystud-advanced-enrolment-key="{{enrolmentkey}}"
+                                    data-easystud-advanced-hide-picture="{{hidepicture}}"
+                                    data-easystud-advanced-count="{{membercountlabel}}"
+                                    draggable="true"
+                                >
+                                    <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
+                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                    </label>
+                                    <div class="local-groupimport-easystud-group__header">
+                                        <span class="local-groupimport-easystud-group__name">{{name}}</span>
+                                        {{#groupingtags.0}}
+                                            <span class="local-groupimport-easystud-group__groupings local-groupimport-easystud-group__groupings--inline">
+                                                {{#groupingtags}}
+                                                    <span class="local-groupimport-easystud-token local-groupimport-easystud-token--grouping">{{label}}</span>
+                                                {{/groupingtags}}
+                                            </span>
+                                        {{/groupingtags.0}}
+                                        <span class="badge bg-light text-dark">{{membercountlabel}}</span>
+                                        <button
+                                            type="button"
+                                            class="btn btn-link p-0 local-groupimport-easystud-group__mail-button"
+                                            data-easystud-toggle-group-email="{{id}}"
+                                            aria-label="{{addemailstolabel}}"
+                                            data-easystud-hover-help="{{addemailstolabel}}"
+                                        >
+                                            <span class="fa fa-at" aria-hidden="true"></span>
+                                        </button>
+                                        <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename" data-easystud-rename-form="1">
+                                            <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                            <input type="hidden" name="action" value="{{renameaction}}">
+                                            <input type="hidden" name="{{renameidname}}" value="{{id}}">
+                                            <button
+                                                type="button"
+                                                class="btn btn-link p-0 local-groupimport-easystud-rename__toggle"
+                                                data-easystud-rename-toggle="1"
+                                                aria-label="{{renamelabel}}"
+                                                data-easystud-hover-help="{{renamelabel}}"
+                                            >
+                                                <span class="fa fa-pen" aria-hidden="true"></span>
+                                            </button>
+                                            <div class="local-groupimport-easystud-rename__edit" hidden>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    class="form-control form-control-sm"
+                                                    value="{{rawname}}"
+                                                    aria-label="{{renamelabel}}"
+                                                >
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-rename-cancel="1">{{cancellabel}}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <ul class="local-groupimport-easystud-group__members" data-easystud-group-members="{{id}}">
+                                        {{#members}}
+                                            <li
+                                                class="local-groupimport-easystud-member"
+                                                data-easystud-member-id="{{userid}}"
+                                                data-member-key="{{selectableid}}"
+                                                data-selectable-type="member"
+                                                data-selectable-id="{{selectableid}}"
+                                            >
+                                                <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--member" aria-label="{{selectionmodelabel}}">
+                                                    <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                                    <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                                </label>
+                                                <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-link p-0 local-groupimport-easystud-member__remove"
+                                                    data-easystud-remove-member="1"
+                                                    data-group-id="{{groupid}}"
+                                                    data-user-id="{{userid}}"
+                                                    aria-label="{{removeuserlabel}}"
+                                                    title="{{removeuserlabel}}"
+                                                    data-easystud-hover-help="{{removeuserlabel}}"
+                                                >
+                                                    <span aria-hidden="true">&minus;</span>
+                                                </button>
+                                            </li>
+                                        {{/members}}
+                                        {{^hasmembers}}
+                                            <li class="local-groupimport-easystud-tree__empty">{{nomemberslabel}}</li>
+                                        {{/hasmembers}}
+                                    </ul>
+                                    <span
+                                        class="local-groupimport-easystud-group__members-more"
+                                        data-easystud-group-members-more="1"
+                                        hidden
+                                    >...</span>
+                                    <button
+                                        type="button"
+                                        class="local-groupimport-easystud-group__members-toggle"
+                                        data-easystud-group-members-toggle="1"
+                                        hidden
+                                    >
+                                        <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                    </button>
+                                    <div class="local-groupimport-easystud-group-email" data-easystud-group-email-panel="{{id}}" hidden>
+                                        <textarea
+                                            class="form-control form-control-sm"
+                                            rows="3"
+                                            placeholder="{{pasteemailsplaceholder}}"
+                                            data-easystud-group-email-box="{{id}}"
+                                        ></textarea>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-primary mt-2"
+                                            data-easystud-add-group-emails="{{id}}"
+                                        >
+                                            <span class="fa fa-plus me-1" aria-hidden="true"></span>
+                                            <span>{{addemailsbutton}}</span>
+                                        </button>
+                                        <div
+                                            class="local-groupimport-easystud-group-email__result"
+                                            data-easystud-group-email-result="{{id}}"
+                                            aria-live="polite"
+                                        ></div>
+                                    </div>
+                                </div>
+                            {{/participantfocusgroups}}
                         </div>
-                    {{/participants}}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="local-groupimport-easystud__panel local-groupimport-easystud__panel--structure card">
+        <div class="local-groupimport-easystud__panel local-groupimport-easystud__panel--structure card" data-easystud-structure-panel="1">
             <div class="card-body">
                 <div class="local-groupimport-easystud__panel-heading">
                     <div class="local-groupimport-easystud__panel-title-wrap">
@@ -203,249 +581,137 @@
                 </div>
 
                 <div class="local-groupimport-easystud-create-row">
-                    <form method="post" action="{{quickcreateurl}}" class="local-groupimport-easystud-create">
-                        <input type="hidden" name="sesskey" value="{{sesskey}}">
-                        <input type="hidden" name="action" value="creategroup">
-                        <input
-                            type="text"
-                            name="groupname"
-                            class="form-control"
-                            placeholder="{{newgroupplaceholder}}"
-                        >
-                        <button
-                            type="submit"
-                            class="btn btn-primary local-groupimport-easystud-icon-button"
-                            aria-label="{{creategrouplabel}}"
-                            data-easystud-hover-help="{{creategrouplabel}}"
-                        >
-                            <span class="fa fa-plus" aria-hidden="true"></span>
-                        </button>
-                    </form>
-                    <form method="post" action="{{quickcreateurl}}" class="local-groupimport-easystud-create">
-                        <input type="hidden" name="sesskey" value="{{sesskey}}">
-                        <input type="hidden" name="action" value="creategrouping">
-                        <input
-                            type="text"
-                            name="groupingname"
-                            class="form-control"
-                            placeholder="{{newgroupingplaceholder}}"
-                        >
-                        <button
-                            type="submit"
-                            class="btn btn-outline-primary local-groupimport-easystud-icon-button"
-                            aria-label="{{creategroupinglabel}}"
-                            data-easystud-hover-help="{{creategroupinglabel}}"
-                        >
-                            <span class="fa fa-plus" aria-hidden="true"></span>
-                        </button>
-                    </form>
+                    <div class="local-groupimport-easystud-create-card local-groupimport-easystud-create-card--group">
+                        <div class="local-groupimport-easystud-column-heading local-groupimport-easystud-column-heading--structure">
+                            <span class="local-groupimport-easystud-column-heading__title">{{groupscolumnlabel}}</span>
+                        </div>
+                        <div class="local-groupimport-easystud-create-card__topline">
+                            <form method="post" action="{{quickcreateurl}}" class="local-groupimport-easystud-create">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                <input type="hidden" name="action" value="creategroup">
+                                <input
+                                    type="text"
+                                    name="groupname"
+                                    class="form-control"
+                                    placeholder="{{newgroupplaceholder}}"
+                                >
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary local-groupimport-easystud-icon-button"
+                                    aria-label="{{creategrouplabel}}"
+                                    data-easystud-hover-help="{{creategrouplabel}}"
+                                >
+                                    <span class="fa fa-plus" aria-hidden="true"></span>
+                                </button>
+                            </form>
+                            <label class="local-groupimport-easystud__search-field local-groupimport-easystud__search-field--structure" aria-label="{{searchgroupslabel}}">
+                                <span class="fa fa-search" aria-hidden="true"></span>
+                                <input
+                                    type="search"
+                                    class="form-control local-groupimport-easystud__search"
+                                    placeholder="{{searchgroupsplaceholder}}"
+                                    data-easystud-structure-group-search="1"
+                                >
+                            </label>
+                        </div>
+                        <div class="local-groupimport-easystud-advanced-filters" data-easystud-advanced-filters="structure-groups">
+                            <div class="local-groupimport-easystud-group-catalog-filters local-groupimport-easystud-group-catalog-filters--structure">
+                                <div class="local-groupimport-easystud__filter-group">
+                                    <label class="local-groupimport-easystud__filter-label" for="local-groupimport-structure-catalog-grouping-filter">{{groupingsfilterlabel}}</label>
+                                    <select
+                                        id="local-groupimport-structure-catalog-grouping-filter"
+                                        class="form-select custom-select"
+                                        data-easystud-catalog-grouping-filter="structure"
+                                        multiple
+                                        aria-label="{{groupingsfilterlabel}}"
+                                    >
+                                        {{#groupingoptions}}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {{/groupingoptions}}
+                                    </select>
+                                </div>
+                                <label class="local-groupimport-easystud-toggle-check">
+                                    <input type="checkbox" data-easystud-catalog-show-ungrouped="structure">
+                                    <span>{{onlyshowungroupedlabel}}</span>
+                                </label>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm local-groupimport-easystud__filters-reset local-groupimport-easystud__filters-reset--catalog"
+                                    data-easystud-reset-catalog-filters="structure"
+                                >{{resetfilterslabel}}</button>
+                            </div>
+                        </div>
+                        <div class="local-groupimport-easystud-advanced-filters__control">
+                            <span class="local-groupimport-easystud-advanced-filters__more" data-easystud-advanced-filters-more="structure-groups">{{morefilters}}</span>
+                            <button
+                                type="button"
+                                class="local-groupimport-easystud-group__members-toggle local-groupimport-easystud-advanced-filters__toggle"
+                                data-easystud-advanced-filters-toggle="structure-groups"
+                                aria-expanded="false"
+                            >
+                                <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="local-groupimport-easystud-create-card local-groupimport-easystud-create-card--grouping">
+                        <div class="local-groupimport-easystud-column-heading local-groupimport-easystud-column-heading--structure">
+                            <span class="local-groupimport-easystud-column-heading__title">{{groupingscolumnlabel}}</span>
+                        </div>
+                        <div class="local-groupimport-easystud-create-card__topline">
+                            <form method="post" action="{{quickcreateurl}}" class="local-groupimport-easystud-create local-groupimport-easystud-create--grouping">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                <input type="hidden" name="action" value="creategrouping">
+                                <input
+                                    type="text"
+                                    name="groupingname"
+                                    class="form-control"
+                                    placeholder="{{newgroupingplaceholder}}"
+                                >
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-primary local-groupimport-easystud-icon-button"
+                                    aria-label="{{creategroupinglabel}}"
+                                    data-easystud-hover-help="{{creategroupinglabel}}"
+                                >
+                                    <span class="fa fa-plus" aria-hidden="true"></span>
+                                </button>
+                            </form>
+                            <label class="local-groupimport-easystud__search-field local-groupimport-easystud__search-field--structure" aria-label="{{searchgroupingslabel}}">
+                                <span class="fa fa-search" aria-hidden="true"></span>
+                                <input
+                                    type="search"
+                                    class="form-control local-groupimport-easystud__search"
+                                    placeholder="{{searchgroupingsplaceholder}}"
+                                    data-easystud-structure-grouping-search="1"
+                                >
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="local-groupimport-easystud-tree" data-easystud-tree="1">
-                    {{#groupings}}
-                        <div
-                            class="local-groupimport-easystud-tree__section"
-                            data-easystud-grouping-id="{{id}}"
-                            data-easystud-grouping-drop="{{id}}"
-                            data-selectable-type="grouping"
-                            data-selectable-id="{{id}}"
-                        >
-                            <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--section" aria-label="{{selectionmodelabel}}">
-                                <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
-                                <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
-                            </label>
-                            <div class="local-groupimport-easystud-grouping__header">
-                                <button
-                                    type="button"
-                                    class="local-groupimport-easystud-tree__toggle"
-                                    data-easystud-collapse-toggle="1"
-                                    aria-expanded="true"
-                                >
-                                    <span class="fa fa-chevron-down" aria-hidden="true"></span>
-                                    <span class="local-groupimport-easystud-grouping__name">{{name}}</span>
-                                    <span class="badge bg-secondary text-white" data-count-template="{{counttemplate}}">{{countlabel}}</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="btn btn-link p-0 local-groupimport-easystud-group__mail-button"
-                                    data-easystud-toggle-grouping-groups="{{id}}"
-                                    aria-label="{{addgroupslabel}}"
-                                    data-easystud-hover-help="{{addgroupslabel}}"
-                                >
-                                    <span class="fa fa-layer-group" aria-hidden="true"></span>
-                                </button>
-                            </div>
-
-                            <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename">
-                                <input type="hidden" name="sesskey" value="{{sesskey}}">
-                                <input type="hidden" name="action" value="{{renameaction}}">
-                                <input type="hidden" name="{{renameidname}}" value="{{id}}">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    class="form-control form-control-sm"
-                                    value="{{rawname}}"
-                                    aria-label="{{renamelabel}}"
-                                >
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
-                            </form>
-
-                            <div class="local-groupimport-easystud-group-email" data-easystud-grouping-groups-panel="{{id}}" hidden>
-                                <textarea
-                                    class="form-control form-control-sm"
-                                    rows="3"
-                                    placeholder="{{pastegroupsplaceholder}}"
-                                    data-easystud-grouping-groups-box="{{id}}"
-                                ></textarea>
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-outline-primary mt-2"
-                                    data-easystud-add-grouping-groups="{{id}}"
-                                >
-                                    <span class="fa fa-plus me-1" aria-hidden="true"></span>
-                                    <span>{{addgroupsbutton}}</span>
-                                </button>
+                    <div class="local-groupimport-easystud-structure-groups" data-easystud-structure-groups="1" hidden>
+                        <div class="local-groupimport-easystud-structure-groups__list">
+                            {{#structurefocusgroups}}
                                 <div
-                                    class="local-groupimport-easystud-group-email__result"
-                                    data-easystud-grouping-groups-result="{{id}}"
-                                    aria-live="polite"
-                                ></div>
-                            </div>
-
-                            <div class="local-groupimport-easystud-tree__children">
-                                {{#groups}}
-                                    <div
-                                        class="local-groupimport-easystud-group"
-                                        data-easystud-group-id="{{id}}"
-                                        data-easystud-user-drop="{{id}}"
-                                        data-selectable-type="group"
-                                        data-selectable-id="{{id}}"
-                                        draggable="true"
-                                    >
-                                        <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
-                                            <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
-                                            <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
-                                        </label>
-                                        <div class="local-groupimport-easystud-group__header">
-                                            <span class="local-groupimport-easystud-group__drag-handle" aria-hidden="true">
-                                                <span class="fa fa-arrows" aria-hidden="true"></span>
-                                            </span>
-                                            <span class="local-groupimport-easystud-group__name">{{name}}</span>
-                                            <span class="badge bg-light text-dark">{{membercountlabel}}</span>
-                                            <button
-                                                type="button"
-                                                class="btn btn-link p-0 local-groupimport-easystud-group__mail-button"
-                                                data-easystud-toggle-group-email="{{id}}"
-                                                aria-label="{{addemailstolabel}}"
-                                                data-easystud-hover-help="{{addemailstolabel}}"
-                                            >
-                                                <span class="fa fa-at" aria-hidden="true"></span>
-                                            </button>
-                                            {{#withingrouping}}
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-link p-0 local-groupimport-easystud-group__unlink-button"
-                                                    data-easystud-remove-from-grouping="{{id}}"
-                                                    aria-label="{{removefromgroupinglabel}}"
-                                                    data-easystud-hover-help="{{removefromgroupinglabel}}"
-                                                >
-                                                    <span class="fa fa-unlink" aria-hidden="true"></span>
-                                                </button>
-                                            {{/withingrouping}}
-                                        </div>
-
-                                        <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename">
-                                            <input type="hidden" name="sesskey" value="{{sesskey}}">
-                                            <input type="hidden" name="action" value="{{renameaction}}">
-                                            <input type="hidden" name="{{renameidname}}" value="{{id}}">
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                class="form-control form-control-sm"
-                                                value="{{rawname}}"
-                                                aria-label="{{renamelabel}}"
-                                            >
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
-                                        </form>
-
-                                        <ul class="local-groupimport-easystud-group__members" data-easystud-group-members="{{id}}">
-                                            {{#members}}
-                                                <li
-                                                    class="local-groupimport-easystud-member"
-                                                    data-easystud-member-id="{{userid}}"
-                                                    data-member-key="{{selectableid}}"
-                                                    data-selectable-type="member"
-                                                    data-selectable-id="{{selectableid}}"
-                                                >
-                                                    <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--member" aria-label="{{selectionmodelabel}}">
-                                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
-                                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
-                                                    </label>
-                                                    <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-link p-0 local-groupimport-easystud-member__remove"
-                                                        data-easystud-remove-member="1"
-                                                        data-group-id="{{groupid}}"
-                                                        data-user-id="{{userid}}"
-                                                        aria-label="{{removeuserlabel}}"
-                                                        title="{{removeuserlabel}}"
-                                                        data-easystud-hover-help="{{removeuserlabel}}"
-                                                    >
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </li>
-                                            {{/members}}
-                                            {{^hasmembers}}
-                                                <li class="text-muted">{{nomemberslabel}}</li>
-                                            {{/hasmembers}}
-                                        </ul>
-
-                                        <div class="local-groupimport-easystud-group-email" data-easystud-group-email-panel="{{id}}" hidden>
-                                            <textarea
-                                                class="form-control form-control-sm"
-                                                rows="3"
-                                                placeholder="{{pasteemailsplaceholder}}"
-                                                data-easystud-group-email-box="{{id}}"
-                                            ></textarea>
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-primary mt-2"
-                                                data-easystud-add-group-emails="{{id}}"
-                                            >
-                                                <span class="fa fa-plus me-1" aria-hidden="true"></span>
-                                                <span>{{addemailsbutton}}</span>
-                                            </button>
-                                            <div
-                                                class="local-groupimport-easystud-group-email__result"
-                                                data-easystud-group-email-result="{{id}}"
-                                                aria-live="polite"
-                                            ></div>
-                                        </div>
-                                    </div>
-                                {{/groups}}
-                            </div>
-                        </div>
-                    {{/groupings}}
-
-                    <div class="local-groupimport-easystud-tree__section local-groupimport-easystud-tree__section--ungrouped" data-easystud-grouping-drop="0">
-                        <button
-                            type="button"
-                            class="local-groupimport-easystud-tree__toggle"
-                            data-easystud-collapse-toggle="1"
-                            aria-expanded="true"
-                        >
-                            <span class="fa fa-chevron-down" aria-hidden="true"></span>
-                            <span>{{groupswithoutgrouping}}</span>
-                        </button>
-                        <div class="local-groupimport-easystud-tree__children">
-                            {{#ungroupedgroups}}
-                                <div
-                                    class="local-groupimport-easystud-group"
+                                    class="local-groupimport-easystud-group local-groupimport-easystud-group--catalog"
                                     data-easystud-group-id="{{id}}"
                                     data-easystud-user-drop="{{id}}"
                                     data-selectable-type="group"
                                     data-selectable-id="{{id}}"
+                                    data-grouping-ids="{{groupingidscsv}}"
+                                    data-has-no-grouping="{{#hasnogrouping}}1{{/hasnogrouping}}{{^hasnogrouping}}0{{/hasnogrouping}}"
+                                    data-search-text="{{searchtext}}"
+                                    data-easystud-advanced-type="group"
+                                    data-easystud-advanced-name="{{name}}"
+                                    data-easystud-advanced-description="{{description}}"
+                                    data-easystud-advanced-raw-description="{{rawdescription}}"
+                                    data-easystud-advanced-idnumber="{{idnumber}}"
+                                    data-easystud-advanced-native-url="{{nativeurl}}"
+                                    data-easystud-advanced-picture="{{picture}}"
+                                    data-easystud-advanced-enrolment-key="{{enrolmentkey}}"
+                                    data-easystud-advanced-hide-picture="{{hidepicture}}"
+                                    data-easystud-advanced-count="{{membercountlabel}}"
                                     draggable="true"
                                 >
                                     <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
@@ -453,10 +719,14 @@
                                         <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
                                     </label>
                                     <div class="local-groupimport-easystud-group__header">
-                                        <span class="local-groupimport-easystud-group__drag-handle" aria-hidden="true">
-                                            <span class="fa fa-arrows" aria-hidden="true"></span>
-                                        </span>
                                         <span class="local-groupimport-easystud-group__name">{{name}}</span>
+                                        {{#groupingtags.0}}
+                                            <span class="local-groupimport-easystud-group__groupings local-groupimport-easystud-group__groupings--inline">
+                                                {{#groupingtags}}
+                                                    <span class="local-groupimport-easystud-token local-groupimport-easystud-token--grouping">{{label}}</span>
+                                                {{/groupingtags}}
+                                            </span>
+                                        {{/groupingtags.0}}
                                         <span class="badge bg-light text-dark">{{membercountlabel}}</span>
                                         <button
                                             type="button"
@@ -467,21 +737,201 @@
                                         >
                                             <span class="fa fa-at" aria-hidden="true"></span>
                                         </button>
+                                        <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename" data-easystud-rename-form="1">
+                                            <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                            <input type="hidden" name="action" value="{{renameaction}}">
+                                            <input type="hidden" name="{{renameidname}}" value="{{id}}">
+                                            <button
+                                                type="button"
+                                                class="btn btn-link p-0 local-groupimport-easystud-rename__toggle"
+                                                data-easystud-rename-toggle="1"
+                                                aria-label="{{renamelabel}}"
+                                                data-easystud-hover-help="{{renamelabel}}"
+                                            >
+                                                <span class="fa fa-pen" aria-hidden="true"></span>
+                                            </button>
+                                            <div class="local-groupimport-easystud-rename__edit" hidden>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    class="form-control form-control-sm"
+                                                    value="{{rawname}}"
+                                                    aria-label="{{renamelabel}}"
+                                                >
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-rename-cancel="1">{{cancellabel}}</button>
+                                            </div>
+                                        </form>
                                     </div>
-
-                                    <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename">
-                                        <input type="hidden" name="sesskey" value="{{sesskey}}">
-                                        <input type="hidden" name="action" value="{{renameaction}}">
-                                        <input type="hidden" name="{{renameidname}}" value="{{id}}">
-                                        <input
-                                            type="text"
-                                            name="name"
+                                    <ul class="local-groupimport-easystud-group__members" data-easystud-group-members="{{id}}">
+                                        {{#members}}
+                                            <li
+                                                class="local-groupimport-easystud-member"
+                                                data-easystud-member-id="{{userid}}"
+                                                data-member-key="{{selectableid}}"
+                                                data-selectable-type="member"
+                                                data-selectable-id="{{selectableid}}"
+                                            >
+                                                <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--member" aria-label="{{selectionmodelabel}}">
+                                                    <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                                    <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                                </label>
+                                                <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-link p-0 local-groupimport-easystud-member__remove"
+                                                    data-easystud-remove-member="1"
+                                                    data-group-id="{{groupid}}"
+                                                    data-user-id="{{userid}}"
+                                                    aria-label="{{removeuserlabel}}"
+                                                    title="{{removeuserlabel}}"
+                                                    data-easystud-hover-help="{{removeuserlabel}}"
+                                                >
+                                                    <span aria-hidden="true">&minus;</span>
+                                                </button>
+                                            </li>
+                                        {{/members}}
+                                        {{^hasmembers}}
+                                            <li class="local-groupimport-easystud-tree__empty">{{nomemberslabel}}</li>
+                                        {{/hasmembers}}
+                                    </ul>
+                                    <span
+                                        class="local-groupimport-easystud-group__members-more"
+                                        data-easystud-group-members-more="1"
+                                        hidden
+                                    >...</span>
+                                    <button
+                                        type="button"
+                                        class="local-groupimport-easystud-group__members-toggle"
+                                        data-easystud-group-members-toggle="1"
+                                        hidden
+                                    >
+                                        <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                    </button>
+                                    <div class="local-groupimport-easystud-group-email" data-easystud-group-email-panel="{{id}}" hidden>
+                                        <textarea
                                             class="form-control form-control-sm"
-                                            value="{{rawname}}"
-                                            aria-label="{{renamelabel}}"
+                                            rows="3"
+                                            placeholder="{{pasteemailsplaceholder}}"
+                                            data-easystud-group-email-box="{{id}}"
+                                        ></textarea>
+                                        <div class="local-groupimport-easystud-inline-actions">
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-primary"
+                                                data-easystud-add-group-emails="{{id}}"
+                                            >
+                                                <span class="fa fa-plus me-1" aria-hidden="true"></span>
+                                                <span>{{addemailsbutton}}</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-cancel-group-email="1">{{cancellabel}}</button>
+                                        </div>
+                                        <div
+                                            class="local-groupimport-easystud-group-email__result"
+                                            data-easystud-group-email-result="{{id}}"
+                                            aria-live="polite"
+                                        ></div>
+                                    </div>
+                                </div>
+                            {{/structurefocusgroups}}
+                        </div>
+                    </div>
+                    <div class="local-groupimport-easystud-tree__section local-groupimport-easystud-tree__section--ungrouped" data-easystud-grouping-drop="0">
+                        <button
+                            type="button"
+                            class="local-groupimport-easystud-tree__toggle"
+                            data-easystud-collapse-toggle="1"
+                            aria-expanded="false"
+                        >
+                            <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                            <span>{{groupswithoutgrouping}}</span>
+                        </button>
+                        <div class="local-groupimport-easystud-container-search" data-easystud-container-search-panel="ungrouped" hidden>
+                            <div class="local-groupimport-easystud-container-search__row">
+                                <label class="local-groupimport-easystud__search-field local-groupimport-easystud-container-search__field" aria-label="{{searchgroupslabel}}">
+                                    <span class="fa fa-search" aria-hidden="true"></span>
+                                    <input
+                                        type="search"
+                                        class="form-control"
+                                        placeholder="{{searchgroupsplaceholder}}"
+                                        data-easystud-container-group-search="ungrouped"
+                                    >
+                                </label>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-container-search-cancel="ungrouped">{{cancellabel}}</button>
+                            </div>
+                        </div>
+                        <div class="local-groupimport-easystud-tree__children" data-easystud-container-group-list="ungrouped" hidden>
+                            {{#ungroupedgroups}}
+                                <div
+                                    class="local-groupimport-easystud-group"
+                                    data-easystud-group-id="{{id}}"
+                                    data-easystud-user-drop="{{id}}"
+                                    data-selectable-type="group"
+                                    data-selectable-id="{{id}}"
+                                    data-grouping-ids="{{groupingidscsv}}"
+                                    data-has-no-grouping="{{#hasnogrouping}}1{{/hasnogrouping}}{{^hasnogrouping}}0{{/hasnogrouping}}"
+                                    data-search-text="{{searchtext}}"
+                                    data-easystud-advanced-type="group"
+                                    data-easystud-advanced-name="{{name}}"
+                                    data-easystud-advanced-description="{{description}}"
+                                    data-easystud-advanced-raw-description="{{rawdescription}}"
+                                    data-easystud-advanced-idnumber="{{idnumber}}"
+                                    data-easystud-advanced-native-url="{{nativeurl}}"
+                                    data-easystud-advanced-picture="{{picture}}"
+                                    data-easystud-advanced-enrolment-key="{{enrolmentkey}}"
+                                    data-easystud-advanced-hide-picture="{{hidepicture}}"
+                                    data-easystud-advanced-count="{{membercountlabel}}"
+                                    draggable="true"
+                                >
+                                    <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
+                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                    </label>
+                                    <div class="local-groupimport-easystud-group__header">
+                                        <span class="local-groupimport-easystud-group__name">{{name}}</span>
+                                        {{#groupingtags.0}}
+                                            <span class="local-groupimport-easystud-group__groupings local-groupimport-easystud-group__groupings--inline">
+                                                {{#groupingtags}}
+                                                    <span class="local-groupimport-easystud-token local-groupimport-easystud-token--grouping">{{label}}</span>
+                                                {{/groupingtags}}
+                                            </span>
+                                        {{/groupingtags.0}}
+                                        <span class="badge bg-light text-dark">{{membercountlabel}}</span>
+                                        <button
+                                            type="button"
+                                            class="btn btn-link p-0 local-groupimport-easystud-group__mail-button"
+                                            data-easystud-toggle-group-email="{{id}}"
+                                            aria-label="{{addemailstolabel}}"
+                                            data-easystud-hover-help="{{addemailstolabel}}"
                                         >
-                                        <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
-                                    </form>
+                                            <span class="fa fa-at" aria-hidden="true"></span>
+                                        </button>
+                                        <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename" data-easystud-rename-form="1">
+                                            <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                            <input type="hidden" name="action" value="{{renameaction}}">
+                                            <input type="hidden" name="{{renameidname}}" value="{{id}}">
+                                            <button
+                                                type="button"
+                                                class="btn btn-link p-0 local-groupimport-easystud-rename__toggle"
+                                                data-easystud-rename-toggle="1"
+                                                aria-label="{{renamelabel}}"
+                                                data-easystud-hover-help="{{renamelabel}}"
+                                            >
+                                                <span class="fa fa-pen" aria-hidden="true"></span>
+                                            </button>
+                                            <div class="local-groupimport-easystud-rename__edit" hidden>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    class="form-control form-control-sm"
+                                                    value="{{rawname}}"
+                                                    aria-label="{{renamelabel}}"
+                                                >
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-rename-cancel="1">{{cancellabel}}</button>
+                                            </div>
+                                        </form>
+                                    </div>
 
                                     <ul class="local-groupimport-easystud-group__members" data-easystud-group-members="{{id}}">
                                         {{#members}}
@@ -507,14 +957,27 @@
                                                     title="{{removeuserlabel}}"
                                                     data-easystud-hover-help="{{removeuserlabel}}"
                                                 >
-                                                    <span aria-hidden="true">&times;</span>
+                                                    <span aria-hidden="true">&minus;</span>
                                                 </button>
                                             </li>
                                         {{/members}}
                                         {{^hasmembers}}
-                                            <li class="text-muted">{{nomemberslabel}}</li>
+                                            <li class="local-groupimport-easystud-tree__empty">{{nomemberslabel}}</li>
                                         {{/hasmembers}}
                                     </ul>
+                                    <span
+                                        class="local-groupimport-easystud-group__members-more"
+                                        data-easystud-group-members-more="1"
+                                        hidden
+                                    >...</span>
+                                    <button
+                                        type="button"
+                                        class="local-groupimport-easystud-group__members-toggle"
+                                        data-easystud-group-members-toggle="1"
+                                        hidden
+                                    >
+                                        <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                    </button>
 
                                     <div class="local-groupimport-easystud-group-email" data-easystud-group-email-panel="{{id}}" hidden>
                                         <textarea
@@ -539,16 +1002,1054 @@
                                     </div>
                                 </div>
                             {{/ungroupedgroups}}
+                            {{^ungroupedgroups}}
+                                <div class="local-groupimport-easystud-tree__empty">{{nogroupsavailable}}</div>
+                            {{/ungroupedgroups}}
                         </div>
                     </div>
-                    {{^hasgroupstructure}}
-                        <div class="local-groupimport-easystud__empty-state local-groupimport-easystud__empty-state--structure">
-                            <span class="fa fa-layer-group" aria-hidden="true"></span>
-                            <p class="mb-0">{{nogroupstructurestate}}</p>
+
+                    <div class="local-groupimport-easystud-tree__groupings">
+                    {{#groupings}}
+                        <div
+                            class="local-groupimport-easystud-tree__section"
+                            data-easystud-grouping-id="{{id}}"
+                            data-easystud-grouping-drop="{{id}}"
+                            data-selectable-type="grouping"
+                            data-selectable-id="{{id}}"
+                            data-search-text="{{searchtext}}"
+                            data-easystud-advanced-type="grouping"
+                            data-easystud-advanced-name="{{name}}"
+                            data-easystud-advanced-description="{{description}}"
+                            data-easystud-advanced-raw-description="{{rawdescription}}"
+                            data-easystud-advanced-idnumber="{{idnumber}}"
+                            data-easystud-advanced-native-url="{{nativeurl}}"
+                            data-easystud-advanced-config="{{configdata}}"
+                            data-easystud-advanced-count="{{countlabel}}"
+                        >
+                            <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--section" aria-label="{{selectionmodelabel}}">
+                                <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                            </label>
+                            <div class="local-groupimport-easystud-grouping__header">
+                                <button
+                                    type="button"
+                                    class="local-groupimport-easystud-tree__toggle"
+                                    data-easystud-collapse-toggle="1"
+                                    aria-expanded="false"
+                                >
+                                    <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                                    <span class="local-groupimport-easystud-grouping__name">{{name}}</span>
+                                    <span class="badge bg-secondary text-white" data-count-template="{{counttemplate}}">{{countlabel}}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-link p-0 local-groupimport-easystud-group__mail-button"
+                                    data-easystud-toggle-grouping-groups="{{id}}"
+                                    aria-label="{{addgroupslabel}}"
+                                    data-easystud-hover-help="{{addgroupslabel}}"
+                                >
+                                    <span class="fa fa-layer-group" aria-hidden="true"></span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-link p-0 local-groupimport-easystud-container-search__toggle"
+                                    data-easystud-container-search-toggle="{{id}}"
+                                    aria-label="{{searchgroupslabel}}"
+                                    data-easystud-hover-help="{{searchgroupslabel}}"
+                                >
+                                    <span class="fa fa-search" aria-hidden="true"></span>
+                                </button>
+                                <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename" data-easystud-rename-form="1">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <input type="hidden" name="action" value="{{renameaction}}">
+                                    <input type="hidden" name="{{renameidname}}" value="{{id}}">
+                                    <button
+                                        type="button"
+                                        class="btn btn-link p-0 local-groupimport-easystud-rename__toggle"
+                                        data-easystud-rename-toggle="1"
+                                        aria-label="{{renamelabel}}"
+                                        data-easystud-hover-help="{{renamelabel}}"
+                                    >
+                                        <span class="fa fa-pen" aria-hidden="true"></span>
+                                    </button>
+                                    <div class="local-groupimport-easystud-rename__edit" hidden>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            class="form-control form-control-sm"
+                                            value="{{rawname}}"
+                                            aria-label="{{renamelabel}}"
+                                        >
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-rename-cancel="1">{{cancellabel}}</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="local-groupimport-easystud-container-search" data-easystud-container-search-panel="{{id}}" hidden>
+                                <div class="local-groupimport-easystud-container-search__row">
+                                    <label class="local-groupimport-easystud__search-field local-groupimport-easystud-container-search__field" aria-label="{{searchgroupslabel}}">
+                                        <span class="fa fa-search" aria-hidden="true"></span>
+                                        <input
+                                            type="search"
+                                            class="form-control"
+                                            placeholder="{{searchgroupsplaceholder}}"
+                                            data-easystud-container-group-search="{{id}}"
+                                        >
+                                    </label>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-container-search-cancel="{{id}}">{{cancellabel}}</button>
+                                </div>
+                            </div>
+
+                            <div class="local-groupimport-easystud-group-email" data-easystud-grouping-groups-panel="{{id}}" hidden>
+                                <textarea
+                                    class="form-control form-control-sm"
+                                    rows="3"
+                                    placeholder="{{pastegroupsplaceholder}}"
+                                    data-easystud-grouping-groups-box="{{id}}"
+                                ></textarea>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-primary mt-2"
+                                    data-easystud-add-grouping-groups="{{id}}"
+                                >
+                                    <span class="fa fa-plus me-1" aria-hidden="true"></span>
+                                    <span>{{addgroupsbutton}}</span>
+                                </button>
+                                <div
+                                    class="local-groupimport-easystud-group-email__result"
+                                    data-easystud-grouping-groups-result="{{id}}"
+                                    aria-live="polite"
+                                ></div>
+                            </div>
+
+                            <div class="local-groupimport-easystud-tree__children local-groupimport-easystud-grouping__groups" data-easystud-container-group-list="{{id}}" hidden>
+                                {{#groups}}
+                                    <div
+                                        class="local-groupimport-easystud-group"
+                                        data-easystud-group-id="{{id}}"
+                                        data-easystud-user-drop="{{id}}"
+                                        data-selectable-type="group"
+                                        data-selectable-id="{{id}}"
+                                        data-grouping-ids="{{groupingidscsv}}"
+                                        data-has-no-grouping="{{#hasnogrouping}}1{{/hasnogrouping}}{{^hasnogrouping}}0{{/hasnogrouping}}"
+                                        data-search-text="{{searchtext}}"
+                                        data-easystud-advanced-type="group"
+                                        data-easystud-advanced-name="{{name}}"
+                                        data-easystud-advanced-description="{{description}}"
+                                        data-easystud-advanced-raw-description="{{rawdescription}}"
+                                        data-easystud-advanced-idnumber="{{idnumber}}"
+                                        data-easystud-advanced-native-url="{{nativeurl}}"
+                                        data-easystud-advanced-picture="{{picture}}"
+                                        data-easystud-advanced-enrolment-key="{{enrolmentkey}}"
+                                        data-easystud-advanced-hide-picture="{{hidepicture}}"
+                                        data-easystud-advanced-count="{{membercountlabel}}"
+                                        draggable="true"
+                                    >
+                                        <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--group" aria-label="{{selectionmodelabel}}">
+                                            <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                            <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                        </label>
+                                        <div class="local-groupimport-easystud-group__header">
+                                            <span class="local-groupimport-easystud-group__name">{{name}}</span>
+                                            {{#groupingtags.0}}
+                                                <span class="local-groupimport-easystud-group__groupings local-groupimport-easystud-group__groupings--inline">
+                                                    {{#groupingtags}}
+                                                        <span class="local-groupimport-easystud-token local-groupimport-easystud-token--grouping">{{label}}</span>
+                                                    {{/groupingtags}}
+                                                </span>
+                                            {{/groupingtags.0}}
+                                            <span class="badge bg-light text-dark">{{membercountlabel}}</span>
+                                            <button
+                                                type="button"
+                                                class="btn btn-link p-0 local-groupimport-easystud-group__mail-button"
+                                                data-easystud-toggle-group-email="{{id}}"
+                                                aria-label="{{addemailstolabel}}"
+                                                data-easystud-hover-help="{{addemailstolabel}}"
+                                            >
+                                                <span class="fa fa-at" aria-hidden="true"></span>
+                                            </button>
+                                            <form method="post" action="{{renameurl}}" class="local-groupimport-easystud-rename" data-easystud-rename-form="1">
+                                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                                <input type="hidden" name="action" value="{{renameaction}}">
+                                                <input type="hidden" name="{{renameidname}}" value="{{id}}">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-link p-0 local-groupimport-easystud-rename__toggle"
+                                                    data-easystud-rename-toggle="1"
+                                                    aria-label="{{renamelabel}}"
+                                                    data-easystud-hover-help="{{renamelabel}}"
+                                                >
+                                                    <span class="fa fa-pen" aria-hidden="true"></span>
+                                                </button>
+                                                <div class="local-groupimport-easystud-rename__edit" hidden>
+                                                    <input
+                                                        type="text"
+                                                        name="name"
+                                                        class="form-control form-control-sm"
+                                                        value="{{rawname}}"
+                                                        aria-label="{{renamelabel}}"
+                                                    >
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary">{{savelabel}}</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-rename-cancel="1">{{cancellabel}}</button>
+                                                </div>
+                                            </form>
+                                            {{#withingrouping}}
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-link p-0 local-groupimport-easystud-group__unlink-button"
+                                                    data-easystud-remove-from-grouping="{{id}}"
+                                                    aria-label="{{removefromgroupinglabel}}"
+                                                    data-easystud-hover-help="{{removefromgroupinglabel}}"
+                                                >
+                                                    <span class="fa fa-unlink" aria-hidden="true"></span>
+                                                </button>
+                                            {{/withingrouping}}
+                                        </div>
+
+                                        <ul class="local-groupimport-easystud-group__members" data-easystud-group-members="{{id}}">
+                                            {{#members}}
+                                                <li
+                                                    class="local-groupimport-easystud-member"
+                                                    data-easystud-member-id="{{userid}}"
+                                                    data-member-key="{{selectableid}}"
+                                                    data-selectable-type="member"
+                                                    data-selectable-id="{{selectableid}}"
+                                                >
+                                                    <label class="local-groupimport-easystud-selector local-groupimport-easystud-selector--member" aria-label="{{selectionmodelabel}}">
+                                                        <input type="checkbox" data-easystud-selector-input="1" tabindex="-1">
+                                                        <span class="local-groupimport-easystud-selector__ui" aria-hidden="true"></span>
+                                                    </label>
+                                                    <span class="local-groupimport-easystud-member__name">{{fullname}}</span>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-link p-0 local-groupimport-easystud-member__remove"
+                                                        data-easystud-remove-member="1"
+                                                        data-group-id="{{groupid}}"
+                                                        data-user-id="{{userid}}"
+                                                        aria-label="{{removeuserlabel}}"
+                                                        title="{{removeuserlabel}}"
+                                                        data-easystud-hover-help="{{removeuserlabel}}"
+                                                    >
+                                                        <span aria-hidden="true">&minus;</span>
+                                                    </button>
+                                                </li>
+                                            {{/members}}
+                                        {{^hasmembers}}
+                                            <li class="local-groupimport-easystud-tree__empty">{{nomemberslabel}}</li>
+                                        {{/hasmembers}}
+                                    </ul>
+                                        <span
+                                            class="local-groupimport-easystud-group__members-more"
+                                            data-easystud-group-members-more="1"
+                                            hidden
+                                        >...</span>
+                                        <button
+                                            type="button"
+                                            class="local-groupimport-easystud-group__members-toggle"
+                                            data-easystud-group-members-toggle="1"
+                                            hidden
+                                        >
+                                            <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                                        </button>
+
+                                        <div class="local-groupimport-easystud-group-email" data-easystud-group-email-panel="{{id}}" hidden>
+                                            <textarea
+                                                class="form-control form-control-sm"
+                                                rows="3"
+                                                placeholder="{{pasteemailsplaceholder}}"
+                                                data-easystud-group-email-box="{{id}}"
+                                            ></textarea>
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-primary mt-2"
+                                                data-easystud-add-group-emails="{{id}}"
+                                            >
+                                                <span class="fa fa-plus me-1" aria-hidden="true"></span>
+                                                <span>{{addemailsbutton}}</span>
+                                            </button>
+                                            <div
+                                                class="local-groupimport-easystud-group-email__result"
+                                                data-easystud-group-email-result="{{id}}"
+                                                aria-live="polite"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                {{/groups}}
+                                {{^groups}}
+                                    <div class="local-groupimport-easystud-tree__empty">{{nogroupsingrouping}}</div>
+                                {{/groups}}
+                            </div>
+                            <button
+                                type="button"
+                                class="local-groupimport-easystud-group__members-toggle local-groupimport-easystud-grouping__groups-toggle"
+                                data-easystud-grouping-groups-toggle="{{id}}"
+                                hidden
+                            >
+                                <span class="fa fa-chevron-down" aria-hidden="true"></span>
+                            </button>
                         </div>
-                    {{/hasgroupstructure}}
+                    {{/groupings}}
+                    {{^groupings}}
+                        <div
+                            class="local-groupimport-easystud-tree__empty local-groupimport-easystud-tree__empty--filtered"
+                            data-easystud-managed-empty="structure-groupings"
+                        >{{nogroupingsavailable}}</div>
+                    {{/groupings}}
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div
+        class="local-groupimport-easystud-modal"
+        data-easystud-tutorial-modal="1"
+        data-missing-target-message="{{tutorialtargetmissing}}"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="local-groupimport-easystud-tutorial-title"
+    >
+        <div class="local-groupimport-easystud-modal__dialog local-groupimport-easystud-modal__dialog--tutorial">
+            <div class="local-groupimport-easystud-modal__header local-groupimport-easystud-tutorial__header">
+                <div class="local-groupimport-easystud-tutorial__title-wrap">
+                    <span class="local-groupimport-easystud-tutorial__hero-icon fa fa-question" aria-hidden="true"></span>
+                    <div>
+                        <h3 id="local-groupimport-easystud-tutorial-title" class="h5 mb-0">{{tutorialtitle}}</h3>
+                        <p class="mb-0">{{tutorialintro}}</p>
+                    </div>
+                </div>
+                <div class="local-groupimport-easystud-tutorial__map-flow" aria-label="{{tutorialmaptitle}}">
+                    <span class="local-groupimport-easystud-tutorial__map-item local-groupimport-easystud-tutorial__map-item--participant">
+                        <span class="fa fa-user" aria-hidden="true"></span>
+                        <span>{{tutorialparticipantlabel}}</span>
+                    </span>
+                    <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__map-arrow" aria-hidden="true"></span>
+                    <span class="local-groupimport-easystud-tutorial__map-item local-groupimport-easystud-tutorial__map-item--group">
+                        <span class="fa fa-users" aria-hidden="true"></span>
+                        <span>{{tutorialgrouplabel}}</span>
+                    </span>
+                    <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__map-arrow" aria-hidden="true"></span>
+                    <span class="local-groupimport-easystud-tutorial__map-item local-groupimport-easystud-tutorial__map-item--grouping">
+                        <span class="fa fa-layer-group" aria-hidden="true"></span>
+                        <span>{{tutorialgroupinglabel}}</span>
+                    </span>
+                </div>
+                <button
+                    type="button"
+                    class="local-groupimport-easystud-modal__close"
+                    data-easystud-close-tutorial="1"
+                    aria-label="{{#str}} closebuttontitle, core {{/str}}"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="local-groupimport-easystud-modal__body local-groupimport-easystud-tutorial">
+                <div class="local-groupimport-easystud-tutorial__nav-wrap">
+                    <button
+                        type="button"
+                        class="local-groupimport-easystud-tutorial__nav-arrow local-groupimport-easystud-tutorial__nav-arrow--prev"
+                        data-easystud-tutorial-nav-scroll="-1"
+                        aria-label="{{tutorialnavprevious}}"
+                    >
+                        <span class="fa fa-chevron-left" aria-hidden="true"></span>
+                    </button>
+                    <div class="local-groupimport-easystud-tutorial__nav" role="tablist" aria-label="{{tutorialtitle}}">
+                        {{#tutorialsteps}}
+                            <button
+                                type="button"
+                                class="local-groupimport-easystud-tutorial__nav-item"
+                                data-easystud-tutorial-nav="1"
+                                role="tab"
+                            >
+                                <span class="fa {{icon}}" aria-hidden="true"></span>
+                                <span class="local-groupimport-easystud-tutorial__nav-copy">
+                                    <small>{{category}}</small>
+                                    <span>{{title}}</span>
+                                </span>
+                            </button>
+                        {{/tutorialsteps}}
+                    </div>
+                    <button
+                        type="button"
+                        class="local-groupimport-easystud-tutorial__nav-arrow local-groupimport-easystud-tutorial__nav-arrow--next"
+                        data-easystud-tutorial-nav-scroll="1"
+                        aria-label="{{tutorialnavnext}}"
+                    >
+                        <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="local-groupimport-easystud-tutorial__progress-wrap">
+                    <div class="local-groupimport-easystud-tutorial__progress-track" aria-hidden="true">
+                        <span data-easystud-tutorial-progress-bar="1"></span>
+                    </div>
+                </div>
+                <div class="local-groupimport-easystud-tutorial__steps">
+                    {{#tutorialsteps}}
+                        <section class="local-groupimport-easystud-tutorial__step" data-easystud-tutorial-step="1">
+                            <div class="local-groupimport-easystud-tutorial__step-icon">
+                                <span class="fa {{icon}}" aria-hidden="true"></span>
+                            </div>
+                            <div>
+                                <div class="local-groupimport-easystud-tutorial__step-heading">
+                                    <h4>{{title}}</h4>
+                                    {{#highlightselector}}
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary btn-sm local-groupimport-easystud-tutorial__show"
+                                            data-easystud-tutorial-highlight="{{highlightselector}}"
+                                            {{#highlightmode}}data-easystud-tutorial-mode="{{highlightmode}}"{{/highlightmode}}
+                                            {{#highlightopen}}data-easystud-tutorial-open="{{highlightopen}}"{{/highlightopen}}
+                                        >
+                                            <span class="fa fa-location-arrow me-1" aria-hidden="true"></span>
+                                            <span>{{tutorialshowinview}}</span>
+                                        </button>
+                                    {{/highlightselector}}
+                                </div>
+                                <p>{{content}}</p>
+                                {{#visualconcepts}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--flow" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__mini-card local-groupimport-easystud-tutorial__mini-card--participant">
+                                            <span class="fa fa-user"></span>
+                                            <strong>{{tutorialparticipantlabel}}</strong>
+                                        </span>
+                                        <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__visual-arrow"></span>
+                                        <span class="local-groupimport-easystud-tutorial__mini-card local-groupimport-easystud-tutorial__mini-card--group">
+                                            <span class="fa fa-users"></span>
+                                            <strong>{{tutorialgrouplabel}}</strong>
+                                            <small>3</small>
+                                        </span>
+                                        <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__visual-arrow"></span>
+                                        <span class="local-groupimport-easystud-tutorial__mini-card local-groupimport-easystud-tutorial__mini-card--grouping">
+                                            <span class="fa fa-layer-group"></span>
+                                            <strong>{{tutorialgroupinglabel}}</strong>
+                                            <small>2</small>
+                                        </span>
+                                    </div>
+                                {{/visualconcepts}}
+                                {{#visualfirststructure}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--first-structure" aria-hidden="true">
+                                        <span>
+                                            <strong>1</strong>
+                                            <span>{{tutorialvisualstructurestepone}}</span>
+                                        </span>
+                                        <span>
+                                            <strong>2</strong>
+                                            <span>{{tutorialvisualstructuresteptwo}}</span>
+                                        </span>
+                                        <span>
+                                            <strong>3</strong>
+                                            <span>{{tutorialvisualstructurestepthree}}</span>
+                                        </span>
+                                    </div>
+                                {{/visualfirststructure}}
+                                {{#visualguided}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--guided">
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="main"
+                                            data-easystud-guided-step="0"
+                                            data-easystud-guided-title="{{tutorialguidedpaneltitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedpaneldescstructure}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackstructure}}"
+                                            data-easystud-guided-target=".local-groupimport-easystud-create-row"
+                                            data-easystud-guided-mode="structure"
+                                            data-easystud-guided-open="tutorial:create-group"
+                                        >
+                                            <strong>1</strong>
+                                            <span>{{tutorialvisualguidedone}}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="main"
+                                            data-easystud-guided-step="1"
+                                            data-easystud-guided-title="{{tutorialguidedpaneltitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedpaneldescparticipants}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackparticipants}}"
+                                            data-easystud-guided-target="[data-easystud-structure-groups]"
+                                            data-easystud-guided-mode="participants"
+                                            data-easystud-guided-open="tutorial:first-group"
+                                        >
+                                            <strong>2</strong>
+                                            <span>{{tutorialvisualguidedtwo}}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="main"
+                                            data-easystud-guided-step="2"
+                                            data-easystud-guided-title="{{tutorialguidedpaneltitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedpaneldescfilters}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackfilters}}"
+                                            data-easystud-guided-target="[data-easystud-filters]"
+                                            data-easystud-guided-mode="participants"
+                                            data-easystud-guided-open="[data-easystud-advanced-filters-toggle=&quot;participants&quot;]"
+                                        >
+                                            <strong>3</strong>
+                                            <span>{{tutorialvisualguidedthree}}</span>
+                                        </button>
+                                    </div>
+                                    <div class="local-groupimport-easystud-tutorial__guided-preview" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__guided-preview-header">
+                                            <strong>{{tutorialguidedpaneltitle}}</strong>
+                                            <span>0/3</span>
+                                        </div>
+                                        <span><strong>1</strong>{{tutorialvisualguidedone}}</span>
+                                        <span><strong>2</strong>{{tutorialvisualguidedtwo}}</span>
+                                        <span><strong>3</strong>{{tutorialvisualguidedthree}}</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary local-groupimport-easystud-tutorial__start-guided"
+                                        data-easystud-guided-action="1"
+                                        data-easystud-guided-path="main"
+                                        data-easystud-guided-step="0"
+                                        data-easystud-guided-title="{{tutorialguidedpaneltitle}}"
+                                        data-easystud-guided-desc="{{tutorialguidedpaneldescstructure}}"
+                                        data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackstructure}}"
+                                        data-easystud-guided-target=".local-groupimport-easystud-create-row"
+                                        data-easystud-guided-mode="structure"
+                                        data-easystud-guided-open="tutorial:create-group"
+                                    >
+                                        <span class="fa fa-play me-1" aria-hidden="true"></span>
+                                        <span>{{tutorialguidedstart}}</span>
+                                    </button>
+                                {{/visualguided}}
+                                {{#visualemptycourse}}
+                                    <div class="local-groupimport-easystud-tutorial__guided-label">{{tutorialguidedgroupingtitle}}</div>
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--guided">
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="grouping"
+                                            data-easystud-guided-step="0"
+                                            data-easystud-guided-title="{{tutorialguidedgroupingtitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedgroupingdesccreate}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedfeedbackgroupingcreate}}"
+                                            data-easystud-guided-target=".local-groupimport-easystud-create-row"
+                                            data-easystud-guided-mode="structure"
+                                            data-easystud-guided-open="tutorial:create-grouping"
+                                        >
+                                            <strong>1</strong>
+                                            <span>{{tutorialguidedcreategrouping}}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="grouping"
+                                            data-easystud-guided-step="1"
+                                            data-easystud-guided-title="{{tutorialguidedgroupingtitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedgroupingdescadd}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedfeedbackgroupingadd}}"
+                                            data-easystud-guided-target="[data-easystud-tree]"
+                                            data-easystud-guided-mode="structure"
+                                            data-easystud-guided-open="tutorial:first-grouping-add-groups"
+                                        >
+                                            <strong>2</strong>
+                                            <span>{{tutorialguidedaddgrouptogrouping}}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="grouping"
+                                            data-easystud-guided-step="2"
+                                            data-easystud-guided-title="{{tutorialguidedgroupingtitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedgroupingdescverify}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedfeedbackgroupingverify}}"
+                                            data-easystud-guided-target="[data-easystud-tree]"
+                                            data-easystud-guided-mode="structure"
+                                            data-easystud-guided-open="tutorial:first-grouping"
+                                        >
+                                            <strong>3</strong>
+                                            <span>{{tutorialguidedverifygrouping}}</span>
+                                        </button>
+                                    </div>
+                                    <div class="local-groupimport-easystud-tutorial__guided-preview" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__guided-preview-header">
+                                            <strong>{{tutorialguidedgroupingtitle}}</strong>
+                                            <span>0/3</span>
+                                        </div>
+                                        <span><strong>1</strong>{{tutorialguidedcreategrouping}}</span>
+                                        <span><strong>2</strong>{{tutorialguidedaddgrouptogrouping}}</span>
+                                        <span><strong>3</strong>{{tutorialguidedverifygrouping}}</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary local-groupimport-easystud-tutorial__start-guided"
+                                        data-easystud-guided-action="1"
+                                        data-easystud-guided-path="grouping"
+                                        data-easystud-guided-step="0"
+                                        data-easystud-guided-title="{{tutorialguidedgroupingtitle}}"
+                                        data-easystud-guided-desc="{{tutorialguidedgroupingdesccreate}}"
+                                        data-easystud-guided-feedback="{{tutorialguidedfeedbackgroupingcreate}}"
+                                        data-easystud-guided-target=".local-groupimport-easystud-create-row"
+                                        data-easystud-guided-mode="structure"
+                                        data-easystud-guided-open="tutorial:create-grouping"
+                                    >
+                                        <span class="fa fa-play me-1" aria-hidden="true"></span>
+                                        <span>{{tutorialguidedstart}}</span>
+                                    </button>
+                                {{/visualemptycourse}}
+                                {{#visualcards}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--cards" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__sample-card local-groupimport-easystud-tutorial__sample-card--participant">
+                                            <span class="fa fa-user"></span>
+                                            <strong>{{tutorialparticipantlabel}}</strong>
+                                            <small>{{tutorialvisualparticipantmeta}}</small>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__sample-card local-groupimport-easystud-tutorial__sample-card--group">
+                                            <span class="fa fa-users"></span>
+                                            <strong>{{tutorialgrouplabel}}</strong>
+                                            <small>{{tutorialvisualgroupmeta}}</small>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__sample-card local-groupimport-easystud-tutorial__sample-card--grouping">
+                                            <span class="fa fa-layer-group"></span>
+                                            <strong>{{tutorialgroupinglabel}}</strong>
+                                            <small>{{tutorialvisualgroupingmeta}}</small>
+                                        </span>
+                                    </div>
+                                {{/visualcards}}
+                                {{#visualparticipantcard}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--card-detail" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__sample-card local-groupimport-easystud-tutorial__sample-card--participant">
+                                            <span class="fa fa-user"></span>
+                                            <strong>{{tutorialparticipantlabel}}</strong>
+                                            <small>{{tutorialvisualparticipantmeta}}</small>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__badge-row">
+                                            <span class="local-groupimport-easystud-token local-groupimport-easystud-token--role">{{tutorialvisualrolebadge}}</span>
+                                            <span class="local-groupimport-easystud-token local-groupimport-easystud-token--group">{{tutorialvisualgroupbadge}}</span>
+                                            <span class="local-groupimport-easystud-token local-groupimport-easystud-token--grouping">{{tutorialvisualgroupingbadge}}</span>
+                                        </span>
+                                    </div>
+                                {{/visualparticipantcard}}
+                                {{#visualgroupcard}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--card-detail" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__sample-card local-groupimport-easystud-tutorial__sample-card--group">
+                                            <span class="fa fa-users"></span>
+                                            <strong>{{tutorialgrouplabel}}</strong>
+                                            <small>{{tutorialvisualgroupmeta}}</small>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__mini-list">
+                                            <span>{{tutorialvisualstudentone}}</span>
+                                            <span>{{tutorialvisualstudenttwo}}</span>
+                                        </span>
+                                    </div>
+                                {{/visualgroupcard}}
+                                {{#visualgroupingcard}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--card-detail" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__sample-card local-groupimport-easystud-tutorial__sample-card--grouping">
+                                            <span class="fa fa-layer-group"></span>
+                                            <strong>{{tutorialgroupinglabel}}</strong>
+                                            <small>{{tutorialvisualgroupingmeta}}</small>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__badge-row">
+                                            <span class="local-groupimport-easystud-token local-groupimport-easystud-token--group">{{tutorialvisualassignmentgroupa}}</span>
+                                            <span class="local-groupimport-easystud-token local-groupimport-easystud-token--group">{{tutorialvisualassignmentgroupb}}</span>
+                                        </span>
+                                    </div>
+                                {{/visualgroupingcard}}
+                                {{#visualassignment}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--assignment" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__assignment-team">
+                                            <span>{{tutorialvisualstudentone}}</span>
+                                            <span>{{tutorialvisualstudenttwo}}</span>
+                                        </span>
+                                        <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__visual-arrow"></span>
+                                        <span class="local-groupimport-easystud-tutorial__mini-card local-groupimport-easystud-tutorial__mini-card--group">
+                                            <span class="fa fa-users"></span>
+                                            <strong>{{tutorialvisualassignmentgroupa}}</strong>
+                                        </span>
+                                        <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__visual-arrow"></span>
+                                        <span class="local-groupimport-easystud-tutorial__mini-card local-groupimport-easystud-tutorial__mini-card--grouping">
+                                            <span class="fa fa-layer-group"></span>
+                                            <strong>{{tutorialvisualassignmentgrouping}}</strong>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__assignment-team">
+                                            <span>{{tutorialvisualstudentthree}}</span>
+                                            <span>{{tutorialvisualstudentfour}}</span>
+                                        </span>
+                                        <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__visual-arrow"></span>
+                                        <span class="local-groupimport-easystud-tutorial__mini-card local-groupimport-easystud-tutorial__mini-card--group">
+                                            <span class="fa fa-users"></span>
+                                            <strong>{{tutorialvisualassignmentgroupb}}</strong>
+                                        </span>
+                                    </div>
+                                {{/visualassignment}}
+                                {{#visualactions}}
+                                    <div class="local-groupimport-easystud-tutorial__guided-label">{{tutorialguidedactionstitle}}</div>
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--actions" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__demo-drag">
+                                            <span class="local-groupimport-easystud-tutorial__demo-ghost local-groupimport-easystud-tutorial__demo-ghost--participant">
+                                                <span class="fa fa-user"></span>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__demo-card local-groupimport-easystud-tutorial__demo-card--participant">
+                                                <span class="fa fa-user"></span>
+                                                <span>{{tutorialparticipantlabel}}</span>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__demo-track">
+                                                <span class="fa fa-arrow-right"></span>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__demo-card local-groupimport-easystud-tutorial__demo-card--group">
+                                                <span class="fa fa-users"></span>
+                                                <span>{{tutorialgrouplabel}}</span>
+                                            </span>
+                                        </div>
+                                        <div class="local-groupimport-easystud-tutorial__demo-drag local-groupimport-easystud-tutorial__demo-drag--grouping">
+                                            <span class="local-groupimport-easystud-tutorial__demo-ghost local-groupimport-easystud-tutorial__demo-ghost--group">
+                                                <span class="fa fa-users"></span>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__demo-card local-groupimport-easystud-tutorial__demo-card--group">
+                                                <span class="fa fa-users"></span>
+                                                <span>{{tutorialgrouplabel}}</span>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__demo-track">
+                                                <span class="fa fa-arrow-right"></span>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__demo-card local-groupimport-easystud-tutorial__demo-card--grouping">
+                                                <span class="fa fa-layer-group"></span>
+                                                <span>{{tutorialgroupinglabel}}</span>
+                                            </span>
+                                        </div>
+                                        <div class="local-groupimport-easystud-tutorial__demo-selection">
+                                            <span><span class="fa fa-check-square"></span>{{tutorialvisualselect}}</span>
+                                            <span><span class="fa fa-arrow-right"></span>{{tutorialvisualmove}}</span>
+                                        </div>
+                                        <div class="local-groupimport-easystud-tutorial__demo-menu">
+                                            <span class="local-groupimport-easystud-tutorial__demo-menu-title"><span class="fa fa-bars"></span>{{tutorialvisualcontext}}</span>
+                                            <span><span class="fa fa-copy"></span>{{tutorialvisualcopy}}</span>
+                                            <span><span class="fa fa-arrow-right"></span>{{tutorialvisualmove}}</span>
+                                            <span><span class="fa fa-clone"></span>{{tutorialvisualduplicate}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--guided">
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="actions"
+                                            data-easystud-guided-step="0"
+                                            data-easystud-guided-title="{{tutorialguidedactionstitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedactionsdescdrag}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedfeedbackactionsdrag}}"
+                                            data-easystud-guided-target="[data-easystud-participant-list]"
+                                            data-easystud-guided-mode="participants"
+                                            data-easystud-guided-open="tutorial:first-group"
+                                        >
+                                            <strong>1</strong>
+                                            <span>{{tutorialguidedtrydrag}}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="actions"
+                                            data-easystud-guided-step="1"
+                                            data-easystud-guided-title="{{tutorialguidedactionstitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedactionsdescselection}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedfeedbackactionsselection}}"
+                                            data-easystud-guided-target=".local-groupimport-easystud__panel-actions"
+                                            data-easystud-guided-mode="both"
+                                        >
+                                            <strong>2</strong>
+                                            <span>{{tutorialguidedtryselection}}</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-easystud-guided-action="1"
+                                            data-easystud-guided-path="actions"
+                                            data-easystud-guided-step="2"
+                                            data-easystud-guided-title="{{tutorialguidedactionstitle}}"
+                                            data-easystud-guided-desc="{{tutorialguidedactionsdesccontext}}"
+                                            data-easystud-guided-feedback="{{tutorialguidedfeedbackactionscontext}}"
+                                            data-easystud-guided-target="[data-easystud-participant-list]"
+                                            data-easystud-guided-mode="participants"
+                                        >
+                                            <strong>3</strong>
+                                            <span>{{tutorialguidedtrycontext}}</span>
+                                        </button>
+                                    </div>
+                                    <div class="local-groupimport-easystud-tutorial__guided-preview" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__guided-preview-header">
+                                            <strong>{{tutorialguidedactionstitle}}</strong>
+                                            <span>0/3</span>
+                                        </div>
+                                        <span><strong>1</strong>{{tutorialguidedtrydrag}}</span>
+                                        <span><strong>2</strong>{{tutorialguidedtryselection}}</span>
+                                        <span><strong>3</strong>{{tutorialguidedtrycontext}}</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary local-groupimport-easystud-tutorial__start-guided"
+                                        data-easystud-guided-action="1"
+                                        data-easystud-guided-path="actions"
+                                        data-easystud-guided-step="0"
+                                        data-easystud-guided-title="{{tutorialguidedactionstitle}}"
+                                        data-easystud-guided-desc="{{tutorialguidedactionsdescdrag}}"
+                                        data-easystud-guided-feedback="{{tutorialguidedfeedbackactionsdrag}}"
+                                        data-easystud-guided-target="[data-easystud-participant-list]"
+                                        data-easystud-guided-mode="participants"
+                                        data-easystud-guided-open="tutorial:first-group"
+                                    >
+                                        <span class="fa fa-play me-1" aria-hidden="true"></span>
+                                        <span>{{tutorialguidedstart}}</span>
+                                    </button>
+                                {{/visualactions}}
+                                {{#visualtextadd}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--text-add" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__text-panel">
+                                            <span class="local-groupimport-easystud-tutorial__text-title"><span class="fa fa-at"></span>{{tutorialvisualtextadd}}</span>
+                                            <div class="local-groupimport-easystud-tutorial__fake-input">{{tutorialvisualpasteids}}</div>
+                                            <div class="local-groupimport-easystud-tutorial__chip-row">
+                                                <span>{{tutorialvisualstudentone}}</span>
+                                                <span>{{tutorialvisualstudenttwo}}</span>
+                                                <span>{{tutorialvisualidentifierchips}}</span>
+                                            </div>
+                                        </div>
+                                        <span class="fa fa-arrow-right local-groupimport-easystud-tutorial__visual-arrow"></span>
+                                        <div class="local-groupimport-easystud-tutorial__text-panel">
+                                            <span class="local-groupimport-easystud-tutorial__text-title"><span class="fa fa-layer-group"></span>{{tutorialvisualgroupids}}</span>
+                                            <div class="local-groupimport-easystud-tutorial__fake-input">12, 18, 21</div>
+                                            <div class="local-groupimport-easystud-tutorial__chip-row">
+                                                <span>{{tutorialvisualassignmentgroupa}}</span>
+                                                <span>{{tutorialvisualassignmentgroupb}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {{/visualtextadd}}
+                                {{#visualcontextmenu}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--context-menu" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__mouse-demo">
+                                            <span class="local-groupimport-easystud-tutorial__mouse-card">
+                                                <span class="fa fa-user"></span>
+                                                <strong>{{tutorialparticipantlabel}}</strong>
+                                            </span>
+                                            <span class="local-groupimport-easystud-tutorial__mouse-pointer">
+                                                <span class="local-groupimport-easystud-tutorial__mouse-click"></span>
+                                            </span>
+                                        </div>
+                                        <div class="local-groupimport-easystud-tutorial__demo-menu local-groupimport-easystud-tutorial__demo-menu--context">
+                                            <span class="local-groupimport-easystud-tutorial__demo-menu-title"><span class="fa fa-mouse-pointer"></span>{{tutorialvisualrightclick}}</span>
+                                            <span><span class="fa fa-copy"></span>{{tutorialvisualcopy}}</span>
+                                            <span><span class="fa fa-arrow-right"></span>{{tutorialvisualmove}}</span>
+                                            <span><span class="fa fa-check-square"></span>{{tutorialvisualselect}}</span>
+                                        </div>
+                                        <span class="local-groupimport-easystud-tutorial__context-note">{{tutorialvisualcontextdesc}}</span>
+                                    </div>
+                                {{/visualcontextmenu}}
+                                {{#visualactionmodal}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--action-modal" aria-hidden="true">
+                                        <div class="local-groupimport-easystud-tutorial__selection-stack">
+                                            <span><span class="fa fa-check-square"></span>{{tutorialvisualstudentone}}</span>
+                                            <span><span class="fa fa-check-square"></span>{{tutorialvisualstudenttwo}}</span>
+                                        </div>
+                                        <span class="local-groupimport-easystud-tutorial__fake-button"><span class="fa fa-arrow-right"></span>{{tutorialvisualactionbutton}}</span>
+                                        <div class="local-groupimport-easystud-tutorial__modal-preview">
+                                            <strong>{{tutorialvisualdestination}}</strong>
+                                            <span>{{tutorialvisualassignmentgroupa}}</span>
+                                            <span>{{tutorialvisualassignmentgroupb}}</span>
+                                        </div>
+                                    </div>
+                                {{/visualactionmodal}}
+                                {{#visualkeyboard}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--keyboard" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__key">Tab</span>
+                                        <span>{{tutorialvisualkeyboardtab}}</span>
+                                        <span class="local-groupimport-easystud-tutorial__key">Space</span>
+                                        <span>{{tutorialvisualkeyboardspace}}</span>
+                                        <span class="local-groupimport-easystud-tutorial__key">Shift</span>
+                                        <span>{{tutorialvisualselect}}</span>
+                                    </div>
+                                {{/visualkeyboard}}
+                                {{#visualworkflow}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--workflow" aria-hidden="true">
+                                        <span><span class="fa fa-arrows-alt"></span>{{tutorialvisualworkflowdirect}}</span>
+                                        <span><span class="fa fa-check-square"></span>{{tutorialvisualworkflowmany}}</span>
+                                        <span><span class="fa fa-at"></span>{{tutorialvisualworkflowprecise}}</span>
+                                        <span><span class="fa fa-filter"></span>{{tutorialvisualworkflowreview}}</span>
+                                    </div>
+                                {{/visualworkflow}}
+                                {{#visualshortcuts}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--shortcuts" aria-hidden="true">
+                                        <span><span class="fa fa-mouse-pointer"></span>{{tutorialvisualshortcutcontext}}</span>
+                                        <span><span class="fa fa-check-square"></span>{{tutorialvisualshortcutselect}}</span>
+                                        <span><span class="fa fa-keyboard"></span>{{tutorialvisualshortcutkeyboard}}</span>
+                                        <span><span class="fa fa-arrows-alt"></span>{{tutorialvisualshortcutdrag}}</span>
+                                        <span><span class="fa fa-at"></span>{{tutorialvisualshortcuttext}}</span>
+                                    </div>
+                                {{/visualshortcuts}}
+                                {{#visualfilters}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--filters" aria-hidden="true">
+                                        <span class="local-groupimport-easystud-tutorial__fake-search">
+                                            <span class="fa fa-search"></span>
+                                            <span>{{tutorialvisualsearch}}</span>
+                                        </span>
+                                        <span class="local-groupimport-easystud-tutorial__fake-button">{{selectresults}}</span>
+                                        <span class="local-groupimport-easystud-tutorial__fake-button">{{morefilters}}</span>
+                                        <span class="local-groupimport-easystud-token local-groupimport-easystud-token--role">{{tutorialvisualrolebadge}}</span>
+                                        <span class="local-groupimport-easystud-token local-groupimport-easystud-token--group">{{tutorialvisualgroupbadge}}</span>
+                                    </div>
+                                {{/visualfilters}}
+                                {{#visualcreation}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--formula" aria-hidden="true">
+                                        <code>Devoir #*4</code>
+                                        <span class="fa fa-arrow-right"></span>
+                                        <span class="local-groupimport-easystud-tutorial__formula-result">Devoir 1</span>
+                                        <span class="local-groupimport-easystud-tutorial__formula-result">Devoir 2</span>
+                                        <span class="local-groupimport-easystud-tutorial__formula-result">Devoir 3</span>
+                                        <span class="local-groupimport-easystud-tutorial__formula-result">Devoir 4</span>
+                                    </div>
+                                {{/visualcreation}}
+                                {{#visualnext}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--next" aria-hidden="true">
+                                        <span><span class="fa fa-film"></span>{{tutorialvisualdemo}}</span>
+                                        <span><span class="fa fa-magic"></span>{{tutorialvisualrecipes}}</span>
+                                        <span><span class="fa fa-mobile-alt"></span>{{tutorialvisualmobile}}</span>
+                                    </div>
+                                {{/visualnext}}
+                                {{#visualtakeaway}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--takeaway" aria-hidden="true">
+                                        <span><span class="fa fa-user"></span>{{tutorialvisualtakeawayone}}</span>
+                                        <span><span class="fa fa-users"></span>{{tutorialvisualtakeawaytwo}}</span>
+                                        <span><span class="fa fa-layer-group"></span>{{tutorialvisualtakeawaythree}}</span>
+                                        <span><span class="fa fa-graduation-cap"></span>{{tutorialvisualtakeawayfour}}</span>
+                                    </div>
+                                {{/visualtakeaway}}
+                                {{#visualcompletion}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--completion" aria-hidden="true">
+                                        <span><span class="fa fa-check-circle"></span>{{tutorialvisualcompletionone}}</span>
+                                        <span><span class="fa fa-users-cog"></span>{{tutorialvisualcompletiontwo}}</span>
+                                        <span><span class="fa fa-search"></span>{{tutorialvisualcompletionthree}}</span>
+                                        <span><span class="fa fa-broom"></span>{{tutorialvisualcompletionfour}}</span>
+                                    </div>
+                                {{/visualcompletion}}
+                                {{#visualmistakes}}
+                                    <div class="local-groupimport-easystud-tutorial__visual local-groupimport-easystud-tutorial__visual--mistakes" aria-hidden="true">
+                                        <span><span class="fa fa-ban"></span>{{tutorialvisualmistakeone}}</span>
+                                        <span><span class="fa fa-random"></span>{{tutorialvisualmistaketwo}}</span>
+                                        <span><span class="fa fa-layer-group"></span>{{tutorialvisualmistakethree}}</span>
+                                    </div>
+                                {{/visualmistakes}}
+                            </div>
+                        </section>
+                    {{/tutorialsteps}}
+                </div>
+                <div class="local-groupimport-easystud-modal__footer local-groupimport-easystud-tutorial__footer">
+                    <span class="local-groupimport-easystud-tutorial__progress" data-easystud-tutorial-progress="1" data-progress-label="{{tutorialstepof}}"></span>
+                    <div class="local-groupimport-easystud-tutorial__footer-actions">
+                        <button type="button" class="btn btn-outline-secondary" data-easystud-tutorial-prev="1">{{tutorialprevious}}</button>
+                        <button type="button" class="btn btn-primary" data-easystud-tutorial-next="1" data-finish-label="{{tutorialfinish}}">{{tutorialnext}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="local-groupimport-easystud-tutorial-return" data-easystud-tutorial-return="1" hidden>
+        <div class="local-groupimport-easystud-tutorial-return__text">
+            <strong>{{tutorialreturntitle}}</strong>
+            <span>{{tutorialreturndesc}}</span>
+        </div>
+        <div class="local-groupimport-easystud-tutorial-return__actions">
+            <button type="button" class="btn btn-primary btn-sm" data-easystud-return-to-tutorial="1">
+                <span class="fa fa-question-circle me-1" aria-hidden="true"></span>
+                <span>{{tutorialreturnbutton}}</span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm local-groupimport-easystud-tutorial-return__dismiss"
+                data-easystud-dismiss-tutorial-return="1"
+                aria-label="{{tutorialreturndismiss}}"
+            >
+                <span class="fa fa-times" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="local-groupimport-easystud-guided-panel" data-easystud-guided-panel="1" hidden>
+        <div class="local-groupimport-easystud-guided-panel__header">
+            <div>
+                <strong>{{tutorialguidedpaneltitle}}</strong>
+                <span data-easystud-guided-progress="1" data-progress-label="{{tutorialguidedpanelprogress}}"></span>
+            </div>
+            <button
+                type="button"
+                class="local-groupimport-easystud-guided-panel__minimize"
+                data-easystud-guided-minimize="1"
+                data-minimize-label="{{tutorialguidedpanelminimize}}"
+                data-expand-label="{{tutorialguidedpanelexpand}}"
+                aria-label="{{tutorialguidedpanelminimize}}"
+                aria-expanded="true"
+            >
+                <span class="fa fa-minus" aria-hidden="true"></span>
+            </button>
+            <button
+                type="button"
+                class="local-groupimport-easystud-guided-panel__close"
+                data-easystud-guided-close="1"
+                aria-label="{{tutorialguidedpanelclose}}"
+            >
+                <span class="fa fa-times" aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="local-groupimport-easystud-guided-panel__steps">
+            <button
+                type="button"
+                data-easystud-guided-panel-step="0"
+                data-easystud-guided-target=".local-groupimport-easystud-create-row"
+                data-easystud-guided-mode="structure"
+                data-easystud-guided-open="tutorial:create-group"
+                data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackstructure}}"
+            >
+                <span class="local-groupimport-easystud-guided-panel__index">1</span>
+                <span>
+                    <strong>{{tutorialvisualguidedone}}</strong>
+                    <small>{{tutorialguidedpaneldescstructure}}</small>
+                </span>
+            </button>
+            <button
+                type="button"
+                data-easystud-guided-panel-step="1"
+                data-easystud-guided-target="[data-easystud-structure-groups]"
+                data-easystud-guided-mode="participants"
+                data-easystud-guided-open="tutorial:first-group"
+                data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackparticipants}}"
+            >
+                <span class="local-groupimport-easystud-guided-panel__index">2</span>
+                <span>
+                    <strong>{{tutorialvisualguidedtwo}}</strong>
+                    <small>{{tutorialguidedpaneldescparticipants}}</small>
+                </span>
+            </button>
+            <button
+                type="button"
+                data-easystud-guided-panel-step="2"
+                data-easystud-guided-target="[data-easystud-filters]"
+                data-easystud-guided-mode="participants"
+                data-easystud-guided-open="[data-easystud-advanced-filters-toggle=&quot;participants&quot;]"
+                data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackfilters}}"
+            >
+                <span class="local-groupimport-easystud-guided-panel__index">3</span>
+                <span>
+                    <strong>{{tutorialvisualguidedthree}}</strong>
+                    <small>{{tutorialguidedpaneldescfilters}}</small>
+                </span>
+            </button>
+        </div>
+        <div
+            class="local-groupimport-easystud-guided-panel__message"
+            data-easystud-guided-message="1"
+            data-complete-message="{{tutorialguidedpanelcomplete}}"
+        >
+            <span class="fa fa-location-arrow" aria-hidden="true"></span>
+            <span>{{tutorialguidedpanelhint}}</span>
+        </div>
+        <div class="local-groupimport-easystud-guided-panel__footer">
+            <button type="button" class="btn btn-outline-primary btn-sm" data-easystud-guided-return="1">
+                <span class="fa fa-question-circle me-1" aria-hidden="true"></span>
+                <span>{{tutorialreturnbutton}}</span>
+            </button>
         </div>
     </div>
 
@@ -560,12 +2061,12 @@
         aria-modal="true"
         aria-labelledby="local-groupimport-easystud-clipboard-title"
     >
-        <div class="local-groupimport-easystud-modal__dialog">
+        <div class="local-groupimport-easystud-modal__dialog local-groupimport-easystud-modal__dialog--confirm">
             <div class="local-groupimport-easystud-modal__header">
                 <h3 id="local-groupimport-easystud-clipboard-title" class="h5 mb-0">{{clipboardlabel}}</h3>
                 <button
                     type="button"
-                    class="btn btn-link p-0 local-groupimport-easystud-modal__close"
+                    class="local-groupimport-easystud-modal__close"
                     data-easystud-close-clipboard="1"
                     aria-label="{{#str}} closebuttontitle, core {{/str}}"
                 >
@@ -599,10 +2100,16 @@
     >
         <div class="local-groupimport-easystud-modal__dialog local-groupimport-easystud-modal__dialog--user">
             <div class="local-groupimport-easystud-modal__header">
-                <h3 id="local-groupimport-easystud-user-title" class="h5 mb-0">{{participantdetailstitle}}</h3>
+                <div class="local-groupimport-easystud-settings-modal__heading">
+                    <span class="local-groupimport-easystud-settings-modal__icon fa fa-user" aria-hidden="true"></span>
+                    <div>
+                        <span class="local-groupimport-easystud-settings-modal__eyebrow">EasyStud</span>
+                        <h3 id="local-groupimport-easystud-user-title" class="h5 mb-0">{{participantdetailstitle}}</h3>
+                    </div>
+                </div>
                 <button
                     type="button"
-                    class="btn btn-link p-0 local-groupimport-easystud-modal__close"
+                    class="local-groupimport-easystud-modal__close"
                     data-easystud-close-user-modal="1"
                     aria-label="{{#str}} closebuttontitle, core {{/str}}"
                 >
@@ -626,7 +2133,7 @@
                 <h3 id="local-groupimport-easystud-confirm-title" class="h5 mb-0">{{deleteconfirmationtitle}}</h3>
                 <button
                     type="button"
-                    class="btn btn-link p-0 local-groupimport-easystud-modal__close"
+                    class="local-groupimport-easystud-modal__close"
                     data-easystud-close-confirm-modal="1"
                     aria-label="{{#str}} closebuttontitle, core {{/str}}"
                 >
@@ -656,7 +2163,7 @@
                 <h3 id="local-groupimport-easystud-move-title" class="h5 mb-0">{{movedialogtitle}}</h3>
                 <button
                     type="button"
-                    class="btn btn-link p-0 local-groupimport-easystud-modal__close"
+                    class="local-groupimport-easystud-modal__close"
                     data-easystud-close-move-modal="1"
                     aria-label="{{#str}} closebuttontitle, core {{/str}}"
                 >
@@ -677,6 +2184,16 @@
                     class="form-select custom-select"
                     data-easystud-move-destination="1"
                 ></select>
+                <div
+                    class="local-groupimport-easystud-tree__empty local-groupimport-easystud-move-modal__empty"
+                    data-easystud-move-empty="1"
+                    tabindex="-1"
+                    hidden
+                ></div>
+                <label class="local-groupimport-easystud-toggle-check local-groupimport-easystud-move-origin-check" data-easystud-move-origin-wrap="1" hidden>
+                    <input type="checkbox" data-easystud-move-remove-origin="1">
+                    <span>{{movegroupremoveorigin}}</span>
+                </label>
                 <div class="local-groupimport-easystud-modal__footer">
                     <button type="button" class="btn btn-outline-secondary" data-easystud-close-move-modal="1">{{cancellabel}}</button>
                     <button type="button" class="btn btn-primary" data-easystud-confirm-move="1">{{moveconfirm}}</button>
@@ -691,11 +2208,13 @@
                 type="button"
                 data-easystud-context-action="{{action}}"
                 data-easystud-contexts="{{contexts}}"
+                data-easystud-context-label="{{label}}"
+                {{#multilabel}}data-easystud-context-multi-label="{{multilabel}}"{{/multilabel}}
                 {{#fieldkey}}data-easystud-context-field="{{fieldkey}}"{{/fieldkey}}
                 role="menuitem"
             >
                 <span class="fa {{icon}}" aria-hidden="true"></span>
-                <span>{{label}}</span>
+                <span data-easystud-context-text="1">{{label}}</span>
             </button>
         {{/contextactions}}
     </div>

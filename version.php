@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_groupimport';
-$plugin->version = 2026061400;   // YYYYMMDDXX. EasyStud UI work on Moodle 5.1.
+$plugin->version = 2026061901;   // YYYYMMDDXX. Import history foundation on Moodle 5.1.
 $plugin->requires = 2025100600;  // Moodle 5.1 minimum.
 $plugin->maturity = MATURITY_BETA;
 $plugin->release = '0.3.0-beta';

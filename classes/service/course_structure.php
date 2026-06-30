@@ -49,7 +49,12 @@ class course_structure {
             'u.lastname ASC, u.firstname ASC, u.id ASC'
         );
 
-        $groups = groups_get_all_groups($course->id, 0, 0, 'g.id, g.courseid, g.name, g.description');
+        $groups = groups_get_all_groups(
+            $course->id,
+            0,
+            0,
+            'g.id, g.courseid, g.idnumber, g.name, g.description, g.descriptionformat, g.enrolmentkey, g.picture, g.hidepicture'
+        );
         $groupings = groups_get_all_groupings($course->id);
         $memberships = self::get_group_memberships($course->id);
         $roles = self::get_user_roles($context);
@@ -58,13 +63,21 @@ class course_structure {
         $useritems = [];
         foreach ($users as $user) {
             $usergroups = $memberships['byuser'][$user->id] ?? [];
+            $usergroupings = [];
+            foreach ($usergroups as $groupid) {
+                foreach ($groupingmemberships['bygroup'][$groupid] ?? [] as $groupingid) {
+                    if (isset($groupings[$groupingid])) {
+                        $usergroupings[$groupingid] = format_string($groupings[$groupingid]->name);
+                    }
+                }
+            }
             $useritems[$user->id] = [
                 'id' => (int)$user->id,
                 'fullname' => fullname($user),
                 'email' => (string)$user->email,
                 'profileimage' => $OUTPUT->user_picture($user, [
                     'courseid' => $course->id,
-                    'size' => 35,
+                    'size' => 100,
                     'link' => false,
                 ]),
                 'profileurl' => (new \moodle_url('/user/profile.php', ['id' => $user->id, 'course' => $course->id]))->out(false),
@@ -81,16 +94,27 @@ class course_structure {
                     return isset($groups[$groupid]) ? format_string($groups[$groupid]->name) : '';
                 }, $usergroups)),
                 'groupids' => array_values(array_map('intval', $usergroups)),
+                'groupings' => array_values($usergroupings),
+                'groupingids' => array_values(array_map('intval', array_keys($usergroupings))),
             ];
         }
 
         $groupitems = [];
         foreach ($groups as $group) {
             $memberids = $memberships['bygroup'][$group->id] ?? [];
+            $pictureurl = get_group_picture_url($group, $course->id, true);
             $groupitems[$group->id] = [
                 'id' => (int)$group->id,
                 'name' => format_string($group->name),
                 'rawname' => (string)$group->name,
+                'idnumber' => (string)($group->idnumber ?? ''),
+                'description' => format_text((string)($group->description ?? ''), $group->descriptionformat ?? FORMAT_HTML, [
+                    'context' => $context,
+                ]),
+                'rawdescription' => (string)($group->description ?? ''),
+                'enrolmentkey' => !empty($group->enrolmentkey),
+                'picture' => !empty($pictureurl) ? $pictureurl->out(false) : '',
+                'hidepicture' => !empty($group->hidepicture),
                 'memberids' => array_values(array_map('intval', $memberids)),
                 'membercount' => count($memberids),
                 'groupingids' => array_values(array_map('intval', $groupingmemberships['bygroup'][$group->id] ?? [])),
@@ -104,6 +128,12 @@ class course_structure {
                 'id' => (int)$grouping->id,
                 'name' => format_string($grouping->name),
                 'rawname' => (string)$grouping->name,
+                'idnumber' => (string)($grouping->idnumber ?? ''),
+                'description' => format_text((string)($grouping->description ?? ''), $grouping->descriptionformat ?? FORMAT_HTML, [
+                    'context' => $context,
+                ]),
+                'rawdescription' => (string)($grouping->description ?? ''),
+                'configdata' => (string)($grouping->configdata ?? ''),
                 'groupids' => array_values(array_map('intval', $groupids)),
                 'groupcount' => count($groupids),
             ];

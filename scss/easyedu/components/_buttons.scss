@@ -1,0 +1,27 @@
+// EasyEdu buttons and compact action controls.
+//
+// These mixins complement Moodle/Bootstrap button classes without replacing
+// them. Include them on plugin-specific selectors such as create buttons,
+// toolbar actions or square icon buttons.
+//
+// Theme override tokens:
+// --easyedu-control-radius, --easyedu-control-height.
+
+@mixin icon-button {
+  align-items: center;
+  border-radius: var(--easyedu-control-radius);
+  display: inline-flex;
+  justify-content: center;
+  line-height: 1;
+  min-height: var(--easyedu-control-height);
+  min-width: var(--easyedu-control-height);
+}
+
+@mixin action-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
+  justify-content: center;
+  line-height: 1.2;
+  min-height: var(--easyedu-control-height);
+}

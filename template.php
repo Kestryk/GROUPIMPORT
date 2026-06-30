@@ -43,12 +43,12 @@ if (get_string_manager()->string_exists('templatename', 'local_groupimport')) {
 // Build CSV content.
 $fh = fopen('php://temp', 'w+');
 
-// Header row: use "useridentifier" (not username).
-fputcsv($fh, ['useridentifier', 'groupname', 'groupingname'], ';');
+// Header row: use teacher-friendly labels recognised by the automatic importer.
+fputcsv($fh, ['student', 'group', 'grouping'], ';');
 
 // Example rows.
-fputcsv($fh, ['user002', 'Groupe A', 'TD Semaine 1'], ';');
-fputcsv($fh, ['user003', 'Groupe B', 'TD Semaine 2'], ';');
+fputcsv($fh, ['test.etudiant.01@example.com', 'Groupe A', 'TD Semaine 1'], ';');
+fputcsv($fh, ['test.etudiant.02', 'Groupe B', 'TD Semaine 2'], ';');
 
 rewind($fh);
 $content = stream_get_contents($fh);

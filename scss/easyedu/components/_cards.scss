@@ -1,0 +1,51 @@
+// EasyEdu object cards and identity rails.
+//
+// Use `object-card` for draggable/selectable entities such as participants,
+// groups, layers, banners or any object manipulated by the user. Use
+// `identity-rail` when the card needs a coloured left rail with a masked icon.
+//
+// Theme override tokens:
+// --easyedu-surface, --easyedu-card-border, --easyedu-card-radius,
+// --easyedu-card-shadow, --easyedu-identity-border-width,
+// --easyedu-identity-size, --easyedu-identity-icon-color.
+
+@mixin object-card($identity-color) {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-card-border);
+  border-left: var(--easyedu-identity-border-width) solid $identity-color;
+  border-radius: var(--easyedu-card-radius);
+  box-shadow: var(--easyedu-card-shadow);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+@mixin identity-rail($icon, $icon-color: var(--easyedu-identity-icon-color)) {
+  &::before {
+    align-items: center;
+    background-color: $icon-color;
+    content: "";
+    display: inline-flex;
+    height: var(--easyedu-identity-size);
+    justify-content: center;
+    left: calc(var(--easyedu-identity-border-width) / -2);
+    line-height: 1;
+    mask-image: $icon;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.16s ease;
+    width: var(--easyedu-identity-size);
+    z-index: 3;
+    -webkit-mask-image: $icon;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+  }
+}

@@ -1,0 +1,25 @@
+// EasyEdu overlays, drag targets and hover help surfaces.
+//
+// Drag/drop and tooltip styles are intentionally token-driven because these are
+// often the first pieces Moodle themes need to tune for accessibility contrast.
+//
+// Theme override tokens:
+// --easyedu-accent, --easyedu-tooltip-bg, --easyedu-tooltip-border,
+// --easyedu-tooltip-text, --easyedu-tooltip-shadow, --easyedu-tooltip-glow.
+
+@mixin drop-target-overlay($color: var(--easyedu-accent)) {
+  border-color: $color;
+  border-style: dashed;
+  box-shadow: 0 0 0 0.22rem color-mix(in srgb, #{$color} 18%, transparent);
+  position: relative;
+}
+
+@mixin tooltip-surface {
+  background:
+    radial-gradient(circle at 1.2rem 0.6rem, var(--easyedu-tooltip-glow), transparent 5.5rem),
+    var(--easyedu-tooltip-bg);
+  border: 1px solid var(--easyedu-tooltip-border);
+  border-radius: 0.64rem;
+  box-shadow: var(--easyedu-tooltip-shadow);
+  color: var(--easyedu-tooltip-text);
+}

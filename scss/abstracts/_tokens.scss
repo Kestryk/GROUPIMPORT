@@ -1,0 +1,9 @@
+@use "../easyedu/tokens" as easyedu;
+
+.local-groupimport-easystud {
+  @include easyedu.token-defaults;
+  @include easyedu.groupimport-compat-tokens;
+
+  color: var(--local-groupimport-easystud-text);
+  margin: 1.5rem 0;
+}

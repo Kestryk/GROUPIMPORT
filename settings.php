@@ -58,12 +58,4 @@ if ($hassiteconfig) {
         $fieldoptions
     ));
 
-    // 2) Default field selection.
-    $settings->add(new admin_setting_configselect(
-        'local_groupimport/defaultuserfield',
-        get_string('defaultuserfield', 'local_groupimport'),
-        get_string('defaultuserfield_desc', 'local_groupimport'),
-        'username',
-        $fieldoptions
-    ));
 }

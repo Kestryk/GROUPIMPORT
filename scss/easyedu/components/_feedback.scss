@@ -1,0 +1,47 @@
+// EasyEdu feedback elements: badges, tokens and empty states.
+//
+// Use token pills for semantic tags, count badges for item totals, and empty
+// states when a list has no data or no search results. Prefer plugin-specific
+// labels/text while reusing these visual primitives.
+//
+// Theme override tokens:
+// --easyedu-count-bg, --easyedu-count-border, --easyedu-count-text,
+// --easyedu-empty-bg-start, --easyedu-empty-bg-end, --easyedu-empty-border,
+// --easyedu-text-muted.
+
+@mixin token-pill($bg, $border, $text) {
+  align-items: center;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 999px;
+  color: $text;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  min-height: 1.45rem;
+  padding: 0.16rem 0.54rem;
+}
+
+@mixin count-badge($bg: var(--easyedu-count-bg), $border: var(--easyedu-count-border), $text: var(--easyedu-count-text)) {
+  background: $bg !important;
+  border: 1px solid $border !important;
+  border-radius: 999px;
+  color: $text !important;
+  font-weight: 700;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+@mixin empty-state {
+  align-items: center;
+  background: linear-gradient(180deg, var(--easyedu-empty-bg-start) 0%, var(--easyedu-empty-bg-end) 100%);
+  border: 1px dashed var(--easyedu-empty-border);
+  border-radius: 0.85rem;
+  color: var(--easyedu-text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  justify-content: center;
+  padding: 0.9rem 1rem;
+  text-align: center;
+}

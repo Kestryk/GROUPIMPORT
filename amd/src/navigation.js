@@ -40,6 +40,21 @@ const isNativeParticipantsUrl = (url, courseId) => {
         url.searchParams.get('local_groupimport_native') !== '1';
 };
 
+// Check whether a URL is the explicit Moodle participants page bypassing EasyStud.
+const isExplicitNativeParticipantsUrl = (url, courseId) => {
+    if (!url) {
+        return false;
+    }
+    return url.pathname.endsWith('/user/index.php') &&
+        url.searchParams.get('id') === courseId.toString() &&
+        url.searchParams.get('local_groupimport_native') === '1';
+};
+
+// Check whether a URL points at any Moodle enrolled users page for the current course.
+const isAnyParticipantsUrl = (url, courseId) => {
+    return isNativeParticipantsUrl(url, courseId) || isExplicitNativeParticipantsUrl(url, courseId);
+};
+
 // Redirect old/native participant entry points to EasyStud unless the native view was explicitly requested.
 const redirectNativeParticipantsPage = (courseId, managerUrl) => {
     const current = parseUrl(window.location.href);
@@ -59,7 +74,7 @@ const replaceSecondaryParticipantsLinks = (courseId, managerUrl) => {
 };
 
 // Add EasyStud as the first option in Moodle's participant tertiary menu.
-const enhanceParticipantsDropdown = (courseId, managerUrl, nativeParticipantsUrl, managerLabel) => {
+const enhanceParticipantsDropdown = (courseId, managerUrl, nativeParticipantsUrl, managerLabel, nativeParticipantsLabel) => {
     const input = document.querySelector('input[name="participantsnavigation"]');
     if (!input) {
         return;
@@ -68,35 +83,49 @@ const enhanceParticipantsDropdown = (courseId, managerUrl, nativeParticipantsUrl
     const menu = input.closest('.dropdown.select-menu');
     const listbox = menu ? menu.querySelector('[role="listbox"]') : null;
     const firstGroup = listbox ? listbox.querySelector('ul[role="group"]') : null;
-    if (!menu || !firstGroup || firstGroup.querySelector('[data-local-groupimport-easystud-option]')) {
+    if (!menu || !firstGroup) {
         return;
     }
 
-    firstGroup.querySelectorAll('[role="option"][data-value]').forEach(option => {
+    const nativeOptions = Array.from(listbox.querySelectorAll('[role="option"][data-value]')).filter(option => {
         const url = parseUrl(option.getAttribute('data-value'));
-        if (isNativeParticipantsUrl(url, courseId)) {
-            option.setAttribute('data-value', nativeParticipantsUrl);
-        }
+        return isAnyParticipantsUrl(url, courseId);
     });
+    const nativeOption = nativeOptions[0] || document.createElement('li');
+    nativeOptions.slice(1).forEach(option => option.remove());
 
-if (isNativeParticipantsUrl(parseUrl(input.value), courseId)) {
-    input.value = nativeParticipantsUrl;
-}
-
-    const option = document.createElement('li');
-    option.className = 'dropdown-item';
-    option.setAttribute('role', 'option');
-    option.setAttribute('data-value', managerUrl);
-    option.setAttribute('data-local-groupimport-easystud-option', '1');
-    option.textContent = managerLabel;
-    option.addEventListener('click', event => {
+    nativeOption.className = 'dropdown-item';
+    nativeOption.setAttribute('role', 'option');
+    nativeOption.setAttribute('data-value', nativeParticipantsUrl);
+    nativeOption.setAttribute('data-local-groupimport-native-option', '1');
+    nativeOption.textContent = nativeParticipantsLabel || 'Enrolled users (Moodle)';
+    nativeOption.onclick = event => {
         event.preventDefault();
-        window.location.href = managerUrl;
-    });
+        window.location.href = nativeParticipantsUrl;
+    };
+
+    if (isAnyParticipantsUrl(parseUrl(input.value), courseId)) {
+        input.value = nativeParticipantsUrl;
+    }
+
+    let option = firstGroup.querySelector('[data-local-groupimport-easystud-option]');
+    if (!option) {
+        option = document.createElement('li');
+        option.className = 'dropdown-item';
+        option.setAttribute('role', 'option');
+        option.setAttribute('data-value', managerUrl);
+        option.setAttribute('data-local-groupimport-easystud-option', '1');
+        option.addEventListener('click', event => {
+            event.preventDefault();
+            window.location.href = managerUrl;
+        });
+    }
+    option.textContent = managerLabel;
 
     const groupLabel = firstGroup.querySelector('li[role="presentation"]');
     const insertBeforeNode = groupLabel ? groupLabel.nextSibling : null;
     firstGroup.insertBefore(option, insertBeforeNode);
+    firstGroup.insertBefore(nativeOption, option.nextSibling);
 };
 
 // Navigate when a participant navigation select_menu option is chosen.
@@ -124,12 +153,12 @@ const bindParticipantsNavigationSelector = () => {
 };
 
 // Initialise EasyStud navigation integration.
-export const init = (courseId, managerUrl, nativeParticipantsUrl, managerLabel) => {
+export const init = (courseId, managerUrl, nativeParticipantsUrl, managerLabel, nativeParticipantsLabel) => {
     redirectNativeParticipantsPage(courseId, managerUrl);
 
     const enhance = () => {
         replaceSecondaryParticipantsLinks(courseId, managerUrl);
-        enhanceParticipantsDropdown(courseId, managerUrl, nativeParticipantsUrl, managerLabel);
+        enhanceParticipantsDropdown(courseId, managerUrl, nativeParticipantsUrl, managerLabel, nativeParticipantsLabel);
     };
 
     enhance();

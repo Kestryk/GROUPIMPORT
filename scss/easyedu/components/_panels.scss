@@ -1,0 +1,23 @@
+// EasyEdu panels and filter shells.
+//
+// Use these mixins for large management containers, side-by-side columns and
+// filter boxes. They intentionally emit CSS only where a plugin includes them,
+// so each Moodle plugin can keep its own root selector.
+//
+// Theme override tokens:
+// --easyedu-surface, --easyedu-surface-soft, --easyedu-border,
+// --easyedu-radius, --easyedu-shadow, --easyedu-shadow-soft.
+
+@mixin panel-shell {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-border);
+  border-radius: calc(var(--easyedu-radius) + 0.2rem);
+  box-shadow: var(--easyedu-shadow);
+}
+
+@mixin filter-shell {
+  background: var(--easyedu-surface-soft);
+  border: 1px solid var(--easyedu-filter-border);
+  border-radius: var(--easyedu-radius);
+  box-shadow: var(--easyedu-shadow-soft);
+}

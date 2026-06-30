@@ -36,8 +36,6 @@ class import_form extends \moodleform {
      * @return void
      */
     public function definition(): void {
-        global $DB;
-
         $mform = $this->_form;
 
         // Retrieve the course id passed via customdata.
@@ -47,70 +45,19 @@ class import_form extends \moodleform {
         $mform->addElement('hidden', 'id', $courseid);
         $mform->setType('id', PARAM_INT);
 
-        // CSV file.
+        // Import file.
         $mform->addElement(
             'filepicker',
             'importfile',
             get_string('importfile', 'local_groupimport'),
             null,
-            ['accepted_types' => ['.csv']]
+            ['accepted_types' => ['.csv', '.xls', '.xlsx']]
         );
         $mform->addRule('importfile', null, 'required', null, 'client');
 
-        // User identification field selection.
-        $config = get_config('local_groupimport');
+        $submitlabel = $this->_customdata['submitlabel'] ?? get_string('previewimport', 'local_groupimport');
 
-        // All possible fields.
-        $alloptions = [
-            'username' => get_string('username'),
-            'email' => get_string('email'),
-            'idnumber' => get_string('idnumber'),
-        ];
-
-        $customfields = $DB->get_records('user_info_field', null, 'name ASC');
-        foreach ($customfields as $field) {
-            $key = 'profile_field_' . $field->shortname;
-            $alloptions[$key] = format_string($field->name);
-        }
-
-        // Fields allowed in admin settings.
-        if (!empty($config->alloweduserfields)) {
-            $allowed = array_map('trim', explode(',', $config->alloweduserfields));
-            $allowed = array_filter($allowed, static function(string $value): bool {
-                return $value !== '';
-            });
-        } else {
-            // Fallback: username only.
-            $allowed = ['username'];
-        }
-
-        // Keep only allowed fields that still exist.
-        $options = array_intersect_key($alloptions, array_flip($allowed));
-
-        // Ensure there is always at least one option.
-        if (empty($options)) {
-            $options = ['username' => get_string('username')];
-            $allowed = ['username'];
-        }
-
-        // Default field.
-        $defaultuserfield = 'username';
-        if (!empty($config->defaultuserfield) && isset($options[$config->defaultuserfield])) {
-            $defaultuserfield = $config->defaultuserfield;
-        } else if (!empty($allowed) && isset($options[reset($allowed)])) {
-            $defaultuserfield = reset($allowed);
-        }
-
-        $mform->addElement(
-            'select',
-            'userfield',
-            get_string('userfield', 'local_groupimport'),
-            $options
-        );
-        $mform->setDefault('userfield', $defaultuserfield);
-        $mform->addHelpButton('userfield', 'userfield', 'local_groupimport');
-
-        // Submit button.
-        $this->add_action_buttons(false, get_string('submitimport', 'local_groupimport'));
+        // Submit button. The import is only executed after the preview confirmation.
+        $this->add_action_buttons(false, $submitlabel);
     }
 }

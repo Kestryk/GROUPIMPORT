@@ -1,0 +1,19 @@
+// EasyEdu form-related primitives.
+//
+// `dropdown-menu` styles custom menus opened by plugin controls. Keep native
+// Moodle form controls in place where possible, then use tokens to make their
+// focus states and menu surfaces consistent.
+//
+// Theme override tokens:
+// --easyedu-surface, --easyedu-dropdown-border, --easyedu-dropdown-radius,
+// --easyedu-dropdown-shadow.
+
+@mixin dropdown-menu {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-dropdown-border);
+  border-radius: var(--easyedu-dropdown-radius);
+  box-shadow: var(--easyedu-dropdown-shadow);
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.35rem;
+}
