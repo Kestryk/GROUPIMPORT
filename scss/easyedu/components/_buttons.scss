@@ -25,3 +25,53 @@
   line-height: 1.2;
   min-height: var(--easyedu-control-height);
 }
+
+@mixin action-menu-trigger {
+  @include icon-button;
+
+  background: var(--easyedu-surface-soft);
+  border: 1px solid var(--easyedu-dropdown-border);
+  border-radius: 0.55rem;
+  color: var(--easyedu-text-muted);
+  min-height: 1.78rem;
+  min-width: 1.92rem;
+  padding: 0.16rem 0.34rem;
+
+  &:hover,
+  &:focus-visible,
+  &[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--easyedu-primary-soft) 72%, #fff 28%);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 36%, #fff 64%);
+    box-shadow: 0 0 0 0.16rem color-mix(in srgb, var(--easyedu-primary) 16%, transparent);
+    color: var(--easyedu-primary-strong);
+    outline: 0;
+  }
+}
+
+@mixin action-menu-trigger-icon {
+  background: linear-gradient(currentColor, currentColor) center / 0.82rem 0.11rem no-repeat;
+  display: inline-block;
+  height: 0.66rem;
+  line-height: 1;
+  position: relative;
+  width: 0.9rem;
+
+  &::before,
+  &::after {
+    background: currentColor;
+    border-radius: 999px;
+    content: "";
+    height: 0.11rem;
+    left: 0.04rem;
+    position: absolute;
+    width: 0.82rem;
+  }
+
+  &::before {
+    top: 0.12rem;
+  }
+
+  &::after {
+    bottom: 0.12rem;
+  }
+}

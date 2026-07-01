@@ -1274,6 +1274,8 @@ const ensureNestedGroupActionMenus = root => {
             if (!label) {
                 return;
             }
+            button.removeAttribute('data-easystud-hover-help');
+            button.removeAttribute('title');
             const labelNode = document.createElement('span');
             labelNode.className = 'local-groupimport-easystud-group__actions-menu-label';
             labelNode.textContent = label;
@@ -1525,7 +1527,7 @@ const ensurePanelActionOverflowControls = actions => {
         toggle.setAttribute('data-easystud-panel-actions-toggle', '1');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.setAttribute('aria-label', 'More actions');
-        toggle.innerHTML = '<span aria-hidden="true">...</span>';
+        toggle.innerHTML = '<span class="local-groupimport-easystud-action-grip" aria-hidden="true"></span>';
         actions.appendChild(toggle);
     }
     if (!menu) {
@@ -6172,6 +6174,11 @@ const bindHoverPopovers = root => {
     let activeTip = null;
     let activeNode = null;
 
+    root.querySelectorAll('[data-easystud-hover-help][title]').forEach(node => {
+        node.setAttribute('data-easystud-native-title', node.getAttribute('title') || '');
+        node.removeAttribute('title');
+    });
+
     const removeTip = () => {
         if (activeTip) {
             activeTip.remove();
@@ -6195,7 +6202,7 @@ const bindHoverPopovers = root => {
         activeTip.className = 'popover ' + hoverPopoverClass + ' ' + hoverPopoverClass + '--top show';
         activeTip.classList.toggle(hoverPopoverClass + '--long', content.length > 110);
         activeTip.setAttribute('role', 'tooltip');
-        activeTip.innerHTML = '<div class="popover-arrow"></div><div class="popover-body">' + content + '</div>';
+        activeTip.innerHTML = '<div class="popover-arrow"></div><div class="popover-body">' + escapeHtml(content) + '</div>';
         document.body.appendChild(activeTip);
 
         const rect = node.getBoundingClientRect();

@@ -1,9 +1,15 @@
 @use "../easyedu" as easyedu;
 
 .local-groupimport-easystud-hover-popover {
-  --local-groupimport-easystud-tooltip-bg: #f8fbfd;
-  --local-groupimport-easystud-tooltip-border: #cfe0ec;
-  --local-groupimport-easystud-tooltip-text: #31485f;
+  --easyedu-tooltip-bg: linear-gradient(135deg, #183a59 0%, #1f6b57 100%);
+  --easyedu-tooltip-border: rgba(255, 255, 255, 0.28);
+  --easyedu-tooltip-glow: rgba(255, 255, 255, 0.14);
+  --easyedu-tooltip-shadow:
+    0 0.7rem 1.6rem rgba(20, 44, 67, 0.2),
+    0 0.08rem 0.24rem rgba(12, 28, 44, 0.16);
+  --easyedu-tooltip-text: #fff;
+  --local-groupimport-easystud-tooltip-arrow-bg: #1b4e5a;
+  --local-groupimport-easystud-tooltip-arrow-border: rgba(255, 255, 255, 0.28);
   @include easyedu.tooltip-surface;
 
   animation: local-groupimport-easystud-tooltip-in 150ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -21,8 +27,8 @@
     width: 0.72rem;
 
     &::before {
-      background: var(--local-groupimport-easystud-tooltip-bg);
-      border: 1px solid var(--local-groupimport-easystud-tooltip-border);
+      background: var(--local-groupimport-easystud-tooltip-arrow-bg);
+      border: 1px solid var(--local-groupimport-easystud-tooltip-arrow-border);
       content: "";
       height: 0.5rem;
       position: absolute;
@@ -42,7 +48,7 @@
 
   .popover-body {
     background: transparent;
-    color: var(--local-groupimport-easystud-tooltip-text);
+    color: var(--easyedu-tooltip-text);
     font-size: 0.76rem;
     font-weight: 540;
     letter-spacing: 0.005em;

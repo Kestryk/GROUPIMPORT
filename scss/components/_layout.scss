@@ -249,21 +249,17 @@
   }
 
   &__panel-actions-more {
-    align-items: center;
-    border-radius: 0.5rem;
-    display: inline-flex;
-    font-size: 1.18rem;
-    font-weight: 700;
-    justify-content: center;
-    min-height: 1.72rem;
-    min-width: 2rem;
-    padding: 0 0.36rem 0.12rem !important;
+    @include easyedu.action-menu-trigger;
 
     span {
-      display: block;
-      line-height: 1;
       margin: 0 !important;
     }
+  }
+
+  &-action-grip {
+    @include easyedu.action-menu-trigger-icon;
+
+    margin: 0 !important;
   }
 
   &__panel-actions-menu {

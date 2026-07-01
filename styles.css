@@ -377,19 +377,53 @@
 }
 .local-groupimport-easystud__panel-actions-more {
   align-items: center;
-  border-radius: 0.5rem;
+  border-radius: var(--easyedu-control-radius);
   display: inline-flex;
-  font-size: 1.18rem;
-  font-weight: 700;
   justify-content: center;
-  min-height: 1.72rem;
-  min-width: 2rem;
-  padding: 0 0.36rem 0.12rem !important;
+  line-height: 1;
+  min-height: var(--easyedu-control-height);
+  min-width: var(--easyedu-control-height);
+  background: var(--easyedu-surface-soft);
+  border: 1px solid var(--easyedu-dropdown-border);
+  border-radius: 0.55rem;
+  color: var(--easyedu-text-muted);
+  min-height: 1.78rem;
+  min-width: 1.92rem;
+  padding: 0.16rem 0.34rem;
+}
+.local-groupimport-easystud__panel-actions-more:hover, .local-groupimport-easystud__panel-actions-more:focus-visible, .local-groupimport-easystud__panel-actions-more[aria-expanded=true] {
+  background: color-mix(in srgb, var(--easyedu-primary-soft) 72%, #fff 28%);
+  border-color: color-mix(in srgb, var(--easyedu-primary) 36%, #fff 64%);
+  box-shadow: 0 0 0 0.16rem color-mix(in srgb, var(--easyedu-primary) 16%, transparent);
+  color: var(--easyedu-primary-strong);
+  outline: 0;
 }
 .local-groupimport-easystud__panel-actions-more span {
-  display: block;
-  line-height: 1;
   margin: 0 !important;
+}
+.local-groupimport-easystud-action-grip {
+  background: linear-gradient(currentColor, currentColor) center/0.82rem 0.11rem no-repeat;
+  display: inline-block;
+  height: 0.66rem;
+  line-height: 1;
+  position: relative;
+  width: 0.9rem;
+  margin: 0 !important;
+}
+.local-groupimport-easystud-action-grip::before, .local-groupimport-easystud-action-grip::after {
+  background: currentColor;
+  border-radius: 999px;
+  content: "";
+  height: 0.11rem;
+  left: 0.04rem;
+  position: absolute;
+  width: 0.82rem;
+}
+.local-groupimport-easystud-action-grip::before {
+  top: 0.12rem;
+}
+.local-groupimport-easystud-action-grip::after {
+  bottom: 0.12rem;
 }
 .local-groupimport-easystud__panel-actions-menu {
   background: var(--easyedu-surface);
@@ -1943,11 +1977,11 @@
   box-sizing: border-box;
   content: "";
   display: none;
-  left: calc(var(--local-groupimport-easystud-identity-border-width) * -1);
+  left: calc(var(--local-groupimport-easystud-identity-border-width) * -1 + 1px);
   pointer-events: none;
   position: absolute;
   top: -1px;
-  width: var(--local-groupimport-easystud-identity-border-width);
+  width: calc(var(--local-groupimport-easystud-identity-border-width) - 1px);
   z-index: 2;
 }
 .local-groupimport-easystud-tree__section[data-easystud-grouping-id]:focus-within {
@@ -6948,9 +6982,15 @@
 }
 
 .local-groupimport-easystud-hover-popover {
-  --local-groupimport-easystud-tooltip-bg: #f8fbfd;
-  --local-groupimport-easystud-tooltip-border: #cfe0ec;
-  --local-groupimport-easystud-tooltip-text: #31485f;
+  --easyedu-tooltip-bg: linear-gradient(135deg, #183a59 0%, #1f6b57 100%);
+  --easyedu-tooltip-border: rgba(255, 255, 255, 0.28);
+  --easyedu-tooltip-glow: rgba(255, 255, 255, 0.14);
+  --easyedu-tooltip-shadow:
+    0 0.7rem 1.6rem rgba(20, 44, 67, 0.2),
+    0 0.08rem 0.24rem rgba(12, 28, 44, 0.16);
+  --easyedu-tooltip-text: #fff;
+  --local-groupimport-easystud-tooltip-arrow-bg: #1b4e5a;
+  --local-groupimport-easystud-tooltip-arrow-border: rgba(255, 255, 255, 0.28);
   background: radial-gradient(circle at 1.2rem 0.6rem, var(--easyedu-tooltip-glow), transparent 5.5rem), var(--easyedu-tooltip-bg);
   border: 1px solid var(--easyedu-tooltip-border);
   border-radius: 0.64rem;
@@ -6971,8 +7011,8 @@
   width: 0.72rem;
 }
 .local-groupimport-easystud-hover-popover .popover-arrow::before {
-  background: var(--local-groupimport-easystud-tooltip-bg);
-  border: 1px solid var(--local-groupimport-easystud-tooltip-border);
+  background: var(--local-groupimport-easystud-tooltip-arrow-bg);
+  border: 1px solid var(--local-groupimport-easystud-tooltip-arrow-border);
   content: "";
   height: 0.5rem;
   position: absolute;
@@ -6988,7 +7028,7 @@
 }
 .local-groupimport-easystud-hover-popover .popover-body {
   background: transparent;
-  color: var(--local-groupimport-easystud-tooltip-text);
+  color: var(--easyedu-tooltip-text);
   font-size: 0.76rem;
   font-weight: 540;
   letter-spacing: 0.005em;

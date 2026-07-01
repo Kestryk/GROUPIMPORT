@@ -531,11 +531,13 @@
         box-sizing: border-box;
         content: "";
         display: none;
-        left: calc(var(--local-groupimport-easystud-identity-border-width) * -1);
+        left: calc(
+          (var(--local-groupimport-easystud-identity-border-width) * -1) + 1px
+        );
         pointer-events: none;
         position: absolute;
         top: -1px;
-        width: var(--local-groupimport-easystud-identity-border-width);
+        width: calc(var(--local-groupimport-easystud-identity-border-width) - 1px);
         z-index: 2;
       }
     }
