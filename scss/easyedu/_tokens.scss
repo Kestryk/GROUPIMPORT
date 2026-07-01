@@ -13,12 +13,16 @@
   --easyedu-gap: 1rem;
   --easyedu-radius: 0.75rem;
   --easyedu-radius-sm: 0.5rem;
+  --easyedu-radius-lg: 1rem;
 
   // Global surfaces and text.
   --easyedu-border: #d7dfe8;
   --easyedu-border-strong: #b9c6d4;
+  --easyedu-focus-ring: rgba(15, 108, 191, 0.22);
+  --easyedu-focus-ring-accent: rgba(27, 127, 90, 0.22);
   --easyedu-shadow: 0 0.45rem 1.25rem rgba(31, 42, 55, 0.08);
   --easyedu-shadow-soft: 0 0.25rem 0.8rem rgba(31, 42, 55, 0.05);
+  --easyedu-shadow-strong: 0 0.9rem 2.2rem rgba(31, 42, 55, 0.16);
   --easyedu-text: #1f2a37;
   --easyedu-text-muted: #5c6c7d;
   --easyedu-surface: #fff;
@@ -34,6 +38,11 @@
   --easyedu-warning-soft: #fff4df;
   --easyedu-danger-soft: #fdecec;
   --easyedu-danger: #a12b2b;
+  --easyedu-success: #1f7a4d;
+  --easyedu-success-soft: #e9f7ef;
+  --easyedu-warning: #9a650f;
+  --easyedu-info: #0f6cbf;
+  --easyedu-info-soft: #eaf3fb;
 
   // Component-level defaults. Moodle themes should prefer these before changing
   // individual plugin selectors.
@@ -45,6 +54,8 @@
   --easyedu-count-text: #6d7f91;
   --easyedu-control-height: 2.35rem;
   --easyedu-control-radius: 0.72rem;
+  --easyedu-control-border: #c8d6e3;
+  --easyedu-control-focus-border: #8abce3;
   --easyedu-dropdown-border: #cbdcea;
   --easyedu-dropdown-radius: 0.78rem;
   --easyedu-dropdown-shadow: 0 0.85rem 1.8rem rgba(31, 42, 55, 0.16);
@@ -55,6 +66,9 @@
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
   --easyedu-modal-shadow: 0 1.15rem 3.2rem rgba(22, 45, 68, 0.24);
+  --easyedu-modal-header-bg: linear-gradient(135deg, #f8fbff 0%, #eef7f1 100%);
+  --easyedu-modal-field-bg: rgba(255, 255, 255, 0.86);
+  --easyedu-modal-field-border: #d9e7f1;
   --easyedu-tooltip-bg: #f8fbfd;
   --easyedu-tooltip-border: #cfe0ec;
   --easyedu-tooltip-glow: rgba(12, 113, 194, 0.1);
@@ -62,6 +76,21 @@
     0 0.65rem 1.45rem rgba(31, 68, 104, 0.15),
     0 0.08rem 0.2rem rgba(31, 42, 55, 0.06);
   --easyedu-tooltip-text: #31485f;
+  --easyedu-table-header-bg: #f5f9fc;
+  --easyedu-table-row-border: #e1e9f1;
+  --easyedu-table-row-hover: #f9fcff;
+  --easyedu-table-success-bg: #f0f9f4;
+  --easyedu-table-warning-bg: #fff8e9;
+  --easyedu-table-error-bg: #fff1f1;
+  --easyedu-overlay-bg: rgba(255, 255, 255, 0.82);
+  --easyedu-overlay-plus-bg: var(--easyedu-accent);
+  --easyedu-overlay-plus-color: #fff;
+  --easyedu-image-preview-bg: #f7fbff;
+  --easyedu-image-preview-border: #d5e5f1;
+  --easyedu-motion-fast: 150ms;
+  --easyedu-motion-normal: 240ms;
+  --easyedu-motion-slow: 360ms;
+  --easyedu-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   // Semantic object colours. Plugins can remap these to their own domain:
   // participant/group/grouping in EasyStud, layer/banner/source in another UI.

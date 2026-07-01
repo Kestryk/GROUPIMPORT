@@ -1,0 +1,37 @@
+{
+  "name": "easyedu-ui-kit",
+  "version": "0.4.2",
+  "source": "git@github.com:Kestryk/easyedu-ui-kit.git",
+  "status": "stable",
+  "packages": {
+    "scss": {
+      "path": "scss/easyedu",
+      "description": "Reusable SCSS tokens, mixins and component primitives."
+    },
+    "guide": {
+      "path": "guide",
+      "description": "Reusable EasyEdu guide/tutorial foundation."
+    },
+    "docs": {
+      "path": "docs",
+      "description": "Architecture, component API and Moodle integration documentation."
+    }
+  },
+  "componentFamilies": [
+    "tokens",
+    "animations",
+    "panels",
+    "cards",
+    "buttons",
+    "forms",
+    "dropdowns",
+    "tooltips",
+    "modals",
+    "tables",
+    "badges",
+    "empty-states",
+    "drag-drop",
+    "guide",
+    "responsive"
+  ]
+}

@@ -1,5 +1,12 @@
 // EasyStud guide, guided checklist and tutorial visuals.
+@use "../easyedu" as easyedu;
+
 .local-groupimport-easystud {
+  // Keep the EasyStud tutorial markup plugin-owned while inheriting the shared
+  // EasyEdu guided checklist primitive. Local selectors below only carry the
+  // domain-specific refinements.
+  @include easyedu.guided-panel;
+
   &-tutorial__header {
     gap: 0.8rem;
     background: #f6f9fc;
@@ -1610,7 +1617,7 @@
     gap: 0.75rem;
     justify-content: space-between;
 
-    div {
+    > div:first-child {
       display: grid;
       gap: 0.08rem;
     }
@@ -1670,7 +1677,6 @@
     flex: 0 0 auto;
     height: 2rem;
     justify-content: center;
-    margin-left: auto;
     padding: 0;
     position: relative;
     width: 2rem;

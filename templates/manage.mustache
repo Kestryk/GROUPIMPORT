@@ -1967,42 +1967,45 @@
         </div>
     </div>
 
-    <div class="local-groupimport-easystud-guided-panel" data-easystud-guided-panel="1" hidden>
-        <div class="local-groupimport-easystud-guided-panel__header">
+    <div class="local-groupimport-easystud-guided-panel easyedu-guided-panel" data-easystud-guided-panel="1" hidden>
+        <div class="local-groupimport-easystud-guided-panel__header easyedu-guided-panel__header">
             <div>
                 <strong>{{tutorialguidedpaneltitle}}</strong>
                 <span data-easystud-guided-progress="1" data-progress-label="{{tutorialguidedpanelprogress}}"></span>
             </div>
-            <button
-                type="button"
-                class="local-groupimport-easystud-guided-panel__minimize"
-                data-easystud-guided-minimize="1"
-                data-minimize-label="{{tutorialguidedpanelminimize}}"
-                data-expand-label="{{tutorialguidedpanelexpand}}"
-                aria-label="{{tutorialguidedpanelminimize}}"
-                aria-expanded="true"
-            >
-                <span class="fa fa-minus" aria-hidden="true"></span>
-            </button>
-            <button
-                type="button"
-                class="local-groupimport-easystud-guided-panel__close"
-                data-easystud-guided-close="1"
-                aria-label="{{tutorialguidedpanelclose}}"
-            >
-                <span class="fa fa-times" aria-hidden="true"></span>
-            </button>
+            <div class="easyedu-guided-panel__header-actions">
+                <button
+                    type="button"
+                    class="local-groupimport-easystud-guided-panel__minimize easyedu-guided-panel__minimize"
+                    data-easystud-guided-minimize="1"
+                    data-minimize-label="{{tutorialguidedpanelminimize}}"
+                    data-expand-label="{{tutorialguidedpanelexpand}}"
+                    aria-label="{{tutorialguidedpanelminimize}}"
+                    aria-expanded="true"
+                >
+                    <span class="fa fa-minus" aria-hidden="true"></span>
+                </button>
+                <button
+                    type="button"
+                    class="local-groupimport-easystud-guided-panel__close easyedu-guided-panel__close"
+                    data-easystud-guided-close="1"
+                    aria-label="{{tutorialguidedpanelclose}}"
+                >
+                    <span class="fa fa-times" aria-hidden="true"></span>
+                </button>
+            </div>
         </div>
-        <div class="local-groupimport-easystud-guided-panel__steps">
+        <div class="local-groupimport-easystud-guided-panel__steps easyedu-guided-panel__steps">
             <button
                 type="button"
+                class="easyedu-guided-panel__step"
                 data-easystud-guided-panel-step="0"
                 data-easystud-guided-target=".local-groupimport-easystud-create-row"
                 data-easystud-guided-mode="structure"
                 data-easystud-guided-open="tutorial:create-group"
                 data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackstructure}}"
             >
-                <span class="local-groupimport-easystud-guided-panel__index">1</span>
+                <span class="local-groupimport-easystud-guided-panel__index easyedu-guided-panel__index">1</span>
                 <span>
                     <strong>{{tutorialvisualguidedone}}</strong>
                     <small>{{tutorialguidedpaneldescstructure}}</small>
@@ -2010,13 +2013,14 @@
             </button>
             <button
                 type="button"
+                class="easyedu-guided-panel__step"
                 data-easystud-guided-panel-step="1"
                 data-easystud-guided-target="[data-easystud-structure-groups]"
                 data-easystud-guided-mode="participants"
                 data-easystud-guided-open="tutorial:first-group"
                 data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackparticipants}}"
             >
-                <span class="local-groupimport-easystud-guided-panel__index">2</span>
+                <span class="local-groupimport-easystud-guided-panel__index easyedu-guided-panel__index">2</span>
                 <span>
                     <strong>{{tutorialvisualguidedtwo}}</strong>
                     <small>{{tutorialguidedpaneldescparticipants}}</small>
@@ -2024,13 +2028,14 @@
             </button>
             <button
                 type="button"
+                class="easyedu-guided-panel__step"
                 data-easystud-guided-panel-step="2"
                 data-easystud-guided-target="[data-easystud-filters]"
                 data-easystud-guided-mode="participants"
                 data-easystud-guided-open="[data-easystud-advanced-filters-toggle=&quot;participants&quot;]"
                 data-easystud-guided-feedback="{{tutorialguidedpanelfeedbackfilters}}"
             >
-                <span class="local-groupimport-easystud-guided-panel__index">3</span>
+                <span class="local-groupimport-easystud-guided-panel__index easyedu-guided-panel__index">3</span>
                 <span>
                     <strong>{{tutorialvisualguidedthree}}</strong>
                     <small>{{tutorialguidedpaneldescfilters}}</small>
@@ -2038,14 +2043,14 @@
             </button>
         </div>
         <div
-            class="local-groupimport-easystud-guided-panel__message"
+            class="local-groupimport-easystud-guided-panel__message easyedu-guided-panel__message"
             data-easystud-guided-message="1"
             data-complete-message="{{tutorialguidedpanelcomplete}}"
         >
             <span class="fa fa-location-arrow" aria-hidden="true"></span>
             <span>{{tutorialguidedpanelhint}}</span>
         </div>
-        <div class="local-groupimport-easystud-guided-panel__footer">
+        <div class="local-groupimport-easystud-guided-panel__footer easyedu-guided-panel__footer">
             <button type="button" class="btn btn-outline-primary btn-sm" data-easystud-guided-return="1">
                 <span class="fa fa-question-circle me-1" aria-hidden="true"></span>
                 <span>{{tutorialreturnbutton}}</span>

@@ -1,0 +1,80 @@
+// EasyEdu dropdowns, context menus and overflow action menus.
+
+@mixin menu-surface {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-dropdown-border);
+  border-radius: var(--easyedu-dropdown-radius);
+  box-shadow: var(--easyedu-dropdown-shadow);
+  color: var(--easyedu-text);
+  display: grid;
+  gap: 0.18rem;
+  min-width: 12rem;
+  padding: 0.35rem;
+  z-index: 1052;
+}
+
+@mixin menu-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0.58rem;
+  color: var(--easyedu-text);
+  display: flex;
+  gap: 0.52rem;
+  justify-content: flex-start;
+  line-height: 1.25;
+  min-height: 2.1rem;
+  padding: 0.42rem 0.58rem;
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+
+  .fa {
+    color: var(--easyedu-text-muted);
+    flex: 0 0 auto;
+    text-align: center;
+    width: 1rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--easyedu-primary-soft);
+    color: var(--easyedu-primary-strong);
+    outline: 0;
+
+    .fa {
+      color: var(--easyedu-primary);
+    }
+  }
+
+  &[aria-disabled="true"],
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+  }
+}
+
+@mixin context-menu {
+  @include menu-surface;
+
+  position: fixed;
+
+  [role="menuitem"],
+  button,
+  a {
+    @include menu-item;
+  }
+}
+
+@mixin overflow-action-menu {
+  @include menu-surface;
+
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+
+  button,
+  a {
+    @include menu-item;
+  }
+}

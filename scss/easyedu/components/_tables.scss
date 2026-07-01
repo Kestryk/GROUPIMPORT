@@ -1,0 +1,80 @@
+// EasyEdu data tables, preview reports and status rows.
+
+@mixin data-table {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-card-border);
+  border-radius: var(--easyedu-card-radius);
+  box-shadow: var(--easyedu-card-shadow);
+  overflow: hidden;
+  width: 100%;
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  th {
+    background: var(--easyedu-table-header-bg);
+    border-bottom: 1px solid var(--easyedu-table-row-border);
+    color: var(--easyedu-text);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.62rem 0.7rem;
+    text-transform: uppercase;
+  }
+
+  td {
+    border-bottom: 1px solid var(--easyedu-table-row-border);
+    color: var(--easyedu-text-muted);
+    padding: 0.58rem 0.7rem;
+    vertical-align: top;
+  }
+
+  tbody tr:hover {
+    background: var(--easyedu-table-row-hover);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+@mixin table-status-row($variant) {
+  @if $variant == success {
+    background: var(--easyedu-table-success-bg);
+  } @else if $variant == warning {
+    background: var(--easyedu-table-warning-bg);
+  } @else if $variant == error {
+    background: var(--easyedu-table-error-bg);
+  } @else {
+    background: var(--easyedu-table-row-hover);
+  }
+}
+
+@mixin preview-table {
+  @include data-table;
+
+  .easyedu-table__row--success {
+    @include table-status-row(success);
+  }
+
+  .easyedu-table__row--warning {
+    @include table-status-row(warning);
+  }
+
+  .easyedu-table__row--error {
+    @include table-status-row(error);
+  }
+}
+
+@mixin table-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}

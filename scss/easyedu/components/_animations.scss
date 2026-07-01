@@ -1,0 +1,120 @@
+// Shared EasyEdu motion primitives.
+//
+// These keyframes are plugin-neutral equivalents of the motion language first
+// developed in EasyStud: modal entrance, slide transitions, expand/collapse,
+// tutorial feedback, drag/drop pulses and success states.
+
+@mixin motion-keyframes {
+  @at-root (without: rule) {
+    @keyframes easyedu-modal-in {
+      from {
+        opacity: 0;
+        transform: translateY(0.55rem) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes easyedu-modal-out {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(0.35rem) scale(0.99);
+      }
+    }
+
+    @keyframes easyedu-slide-in {
+      from {
+        opacity: 0;
+        transform: translateX(0.45rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes easyedu-pop-in {
+      0% {
+        opacity: 0;
+        transform: translateY(0.35rem) scale(0.96);
+      }
+      70% {
+        opacity: 1;
+        transform: translateY(-0.04rem) scale(1.015);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes easyedu-success-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(31, 122, 77, 0.24);
+        transform: scale(0.985);
+      }
+      45% {
+        box-shadow: 0 0 0 0.45rem rgba(31, 122, 77, 0.1);
+        transform: scale(1.02);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(31, 122, 77, 0);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes easyedu-drop-pulse {
+      0%,
+      100% {
+        opacity: 0.72;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.025);
+      }
+    }
+
+    @keyframes easyedu-busy-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes easyedu-demo-cursor-click {
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+      40% {
+        transform: translate(0.35rem, 0.2rem) scale(1);
+      }
+      48% {
+        transform: translate(0.35rem, 0.2rem) scale(0.92);
+      }
+      56% {
+        transform: translate(0.35rem, 0.2rem) scale(1);
+      }
+    }
+  }
+}
+
+@mixin transition-standard($properties...) {
+  transition-duration: var(--easyedu-motion-normal);
+  transition-property: $properties;
+  transition-timing-function: var(--easyedu-motion-ease);
+}
+
+@mixin expandable-region {
+  overflow: hidden;
+  transition:
+    max-height var(--easyedu-motion-slow) var(--easyedu-motion-ease),
+    opacity var(--easyedu-motion-normal) ease,
+    transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
+}

@@ -7,6 +7,7 @@
 // Theme override tokens:
 // --easyedu-surface, --easyedu-dropdown-border, --easyedu-dropdown-radius,
 // --easyedu-dropdown-shadow.
+@use "feedback";
 
 @mixin dropdown-menu {
   background: var(--easyedu-surface);
@@ -16,4 +17,228 @@
   display: grid;
   gap: 0.18rem;
   padding: 0.35rem;
+}
+
+@mixin search-field {
+  align-items: center;
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-control-border);
+  border-radius: var(--easyedu-control-radius);
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: var(--easyedu-control-height);
+  padding: 0 0.68rem;
+  transition:
+    border-color var(--easyedu-motion-fast) ease,
+    box-shadow var(--easyedu-motion-fast) ease;
+
+  .fa {
+    color: var(--easyedu-text-muted);
+  }
+
+  input {
+    border: 0;
+    box-shadow: none;
+    min-width: 0;
+    padding: 0;
+
+    &:focus {
+      box-shadow: none;
+      outline: 0;
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--easyedu-control-focus-border);
+    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+  }
+}
+
+@mixin segmented-toggle {
+  background: var(--easyedu-surface-strong);
+  border: 1px solid var(--easyedu-card-border);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 0.18rem;
+  padding: 0.22rem;
+
+  .btn,
+  button {
+    border: 0;
+    border-radius: 999px;
+    color: var(--easyedu-text-muted);
+    font-weight: 700;
+    min-height: 2.1rem;
+
+    &.active,
+    &[aria-pressed="true"] {
+      background: var(--easyedu-surface);
+      box-shadow: 0 0.2rem 0.48rem rgba(31, 42, 55, 0.1);
+      color: var(--easyedu-primary-strong);
+    }
+  }
+}
+
+@mixin toggle-check {
+  align-items: center;
+  background: var(--easyedu-surface-soft);
+  border: 1px solid var(--easyedu-control-border);
+  border-radius: var(--easyedu-control-radius);
+  color: var(--easyedu-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  gap: 0.55rem;
+  min-height: var(--easyedu-control-height);
+  padding: 0.35rem 0.65rem;
+
+  input {
+    height: 1px;
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  span {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.5rem;
+  }
+
+  span::before {
+    background: #e8eef5;
+    border: 1px solid var(--easyedu-control-border);
+    border-radius: 999px;
+    content: "";
+    height: 0.95rem;
+    width: 1.72rem;
+  }
+
+  input:checked + span::before {
+    background: var(--easyedu-accent);
+    border-color: var(--easyedu-accent);
+    box-shadow: inset 0.76rem 0 0 #fff;
+  }
+}
+
+@mixin advanced-filter-box {
+  @include search-field;
+
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 0.7rem;
+}
+
+@mixin more-filters-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--easyedu-text-muted);
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 760;
+  gap: 0.35rem;
+  justify-content: center;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--easyedu-primary-strong);
+    outline: 0;
+  }
+}
+
+@mixin filepicker {
+  align-items: center;
+  background: var(--easyedu-surface-soft);
+  border: 2px dashed var(--easyedu-control-border);
+  border-radius: var(--easyedu-radius-lg);
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
+  min-height: 8rem;
+  padding: 1rem;
+  position: relative;
+  text-align: center;
+  transition:
+    background-color var(--easyedu-motion-fast) ease,
+    border-color var(--easyedu-motion-fast) ease,
+    box-shadow var(--easyedu-motion-fast) ease;
+
+  input[type="file"] {
+    inset: 0;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  &:hover,
+  &:focus-within,
+  &.is-drag-over {
+    background: #fff;
+    border-color: var(--easyedu-accent);
+    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring-accent);
+  }
+}
+
+@mixin filepicker-icon {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--easyedu-card-border);
+  border-radius: 0.85rem;
+  color: var(--easyedu-primary);
+  display: inline-flex;
+  font-size: 1.25rem;
+  height: 2.8rem;
+  justify-content: center;
+  line-height: 1;
+  width: 2.8rem;
+}
+
+@mixin detected-token-input {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-control-border);
+  border-radius: var(--easyedu-control-radius);
+  display: grid;
+  gap: 0.45rem;
+  min-height: var(--easyedu-control-height);
+  padding: 0.45rem;
+
+  input,
+  textarea {
+    border: 0;
+    box-shadow: none;
+    min-height: 2rem;
+    resize: vertical;
+
+    &:focus {
+      box-shadow: none;
+      outline: 0;
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--easyedu-control-focus-border);
+    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+  }
+}
+
+@mixin detected-token-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: 1.7rem;
+}
+
+@mixin detected-token($variant: success) {
+  @if $variant == warning {
+    @include feedback.token-pill(var(--easyedu-warning-soft), #ead7bf, var(--easyedu-warning));
+  } @else if $variant == error {
+    @include feedback.token-pill(var(--easyedu-danger-soft), #efc5c5, var(--easyedu-danger));
+  } @else {
+    @include feedback.token-pill(var(--easyedu-success-soft), #c7e3d1, var(--easyedu-success));
+  }
 }

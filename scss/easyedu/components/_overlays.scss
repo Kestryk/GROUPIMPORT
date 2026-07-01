@@ -1,25 +1,93 @@
-// EasyEdu overlays, drag targets and hover help surfaces.
+// EasyEdu overlays, drag targets and file-drop surfaces.
 //
 // Drag/drop and tooltip styles are intentionally token-driven because these are
 // often the first pieces Moodle themes need to tune for accessibility contrast.
 //
 // Theme override tokens:
-// --easyedu-accent, --easyedu-tooltip-bg, --easyedu-tooltip-border,
-// --easyedu-tooltip-text, --easyedu-tooltip-shadow, --easyedu-tooltip-glow.
+// --easyedu-accent, --easyedu-overlay-bg, --easyedu-overlay-plus-bg,
+// --easyedu-overlay-plus-color.
 
 @mixin drop-target-overlay($color: var(--easyedu-accent)) {
   border-color: $color;
-  border-style: dashed;
   box-shadow: 0 0 0 0.22rem color-mix(in srgb, #{$color} 18%, transparent);
   position: relative;
+
+  &::after {
+    align-items: center;
+    background: var(--easyedu-overlay-bg);
+    border-radius: inherit;
+    content: "";
+    display: flex;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 2;
+  }
+
+  &::before {
+    align-items: center;
+    background: var(--easyedu-overlay-plus-bg);
+    border-radius: 999px;
+    color: var(--easyedu-overlay-plus-color);
+    content: "+";
+    display: flex;
+    font-size: 1.1rem;
+    font-weight: 800;
+    height: 2rem;
+    justify-content: center;
+    left: 50%;
+    line-height: 1;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 2rem;
+    z-index: 3;
+  }
 }
 
-@mixin tooltip-surface {
-  background:
-    radial-gradient(circle at 1.2rem 0.6rem, var(--easyedu-tooltip-glow), transparent 5.5rem),
-    var(--easyedu-tooltip-bg);
-  border: 1px solid var(--easyedu-tooltip-border);
-  border-radius: 0.64rem;
-  box-shadow: var(--easyedu-tooltip-shadow);
-  color: var(--easyedu-tooltip-text);
+@mixin file-drop-overlay {
+  align-items: center;
+  background: color-mix(in srgb, var(--easyedu-surface) 88%, transparent);
+  border: 2px dashed var(--easyedu-accent);
+  border-radius: var(--easyedu-radius-lg);
+  color: var(--easyedu-accent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+@mixin drag-stack-preview {
+  opacity: 1;
+  position: relative;
+
+  &::after,
+  &::before {
+    background: inherit;
+    border: inherit;
+    border-radius: inherit;
+    box-shadow: var(--easyedu-card-shadow);
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+  }
+
+  &::before {
+    transform: translate(0.28rem, 0.28rem);
+  }
+
+  &::after {
+    transform: translate(0.52rem, 0.52rem);
+  }
+}
+
+@mixin drag-disabled-zone {
+  filter: grayscale(0.25) saturate(0.72);
+  opacity: 0.46;
+  pointer-events: none;
 }

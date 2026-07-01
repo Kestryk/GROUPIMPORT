@@ -1,0 +1,37 @@
+// EasyEdu pagination and list tools.
+
+@mixin pagination-bar {
+  align-items: center;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  min-height: 2.4rem;
+  padding: 0.2rem 0;
+}
+
+@mixin pagination-controls {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.28rem;
+  justify-content: center;
+
+  button,
+  a {
+    align-items: center;
+    border-radius: 0.58rem;
+    display: inline-flex;
+    font-size: 0.78rem;
+    justify-content: center;
+    min-height: 1.85rem;
+    min-width: 1.85rem;
+    padding: 0.2rem 0.45rem;
+  }
+}
+
+@mixin list-tools {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  min-width: 0;
+}

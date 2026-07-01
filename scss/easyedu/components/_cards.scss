@@ -20,6 +20,11 @@
     border-color 0.18s ease,
     box-shadow 0.22s ease,
     transform 0.22s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, #{$identity-color} 32%, var(--easyedu-card-border) 68%);
+    box-shadow: var(--easyedu-shadow-soft);
+  }
 }
 
 @mixin identity-rail($icon, $icon-color: var(--easyedu-identity-icon-color)) {
@@ -48,4 +53,90 @@
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: contain;
   }
+}
+
+@mixin card-header-row {
+  align-items: center;
+  display: flex;
+  gap: 0.55rem;
+  min-width: 0;
+
+  > :first-child {
+    min-width: 0;
+  }
+}
+
+@mixin card-title {
+  color: var(--easyedu-text);
+  font-size: 0.98rem;
+  font-weight: 720;
+  line-height: 1.25;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin selectable-card($identity-color) {
+  cursor: pointer;
+
+  &.is-selected,
+  &[aria-selected="true"] {
+    background: color-mix(in srgb, #{$identity-color} 13%, var(--easyedu-surface) 87%);
+    border-color: color-mix(in srgb, #{$identity-color} 48%, var(--easyedu-card-border) 52%);
+    border-left-color: $identity-color;
+    box-shadow: 0 0.45rem 1.1rem color-mix(in srgb, #{$identity-color} 18%, transparent);
+  }
+}
+
+@mixin expanded-card {
+  overflow: hidden;
+  transition:
+    background-color var(--easyedu-motion-normal) var(--easyedu-motion-ease),
+    border-color var(--easyedu-motion-normal) var(--easyedu-motion-ease),
+    box-shadow var(--easyedu-motion-normal) var(--easyedu-motion-ease),
+    max-height var(--easyedu-motion-slow) var(--easyedu-motion-ease);
+
+  &.is-expanded {
+    box-shadow: var(--easyedu-shadow);
+  }
+}
+
+@mixin drag-handle($color: var(--easyedu-identity-icon-color)) {
+  &::after {
+    background: $color;
+    content: "";
+    height: 0.95rem;
+    left: calc(var(--easyedu-identity-border-width) / -2);
+    mask-image: var(--easyedu-drag-handle);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity var(--easyedu-motion-fast) ease;
+    width: 0.7rem;
+    z-index: 4;
+    -webkit-mask-image: var(--easyedu-drag-handle);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+  }
+
+  &:hover::before {
+    opacity: 0;
+  }
+
+  &:hover::after {
+    opacity: 0.92;
+  }
+}
+
+@mixin disabled-card {
+  filter: saturate(0.72);
+  opacity: 0.58;
+  pointer-events: none;
 }

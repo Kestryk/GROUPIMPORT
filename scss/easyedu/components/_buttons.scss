@@ -15,6 +15,17 @@
   line-height: 1;
   min-height: var(--easyedu-control-height);
   min-width: var(--easyedu-control-height);
+  transition:
+    background-color var(--easyedu-motion-fast) ease,
+    border-color var(--easyedu-motion-fast) ease,
+    box-shadow var(--easyedu-motion-fast) ease,
+    color var(--easyedu-motion-fast) ease,
+    transform var(--easyedu-motion-fast) ease;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+    outline: 0;
+  }
 }
 
 @mixin action-button {
@@ -24,6 +35,48 @@
   justify-content: center;
   line-height: 1.2;
   min-height: var(--easyedu-control-height);
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    background: var(--easyedu-surface-soft);
+    border-color: var(--easyedu-card-border);
+    color: var(--easyedu-text-muted);
+    cursor: not-allowed;
+    opacity: 0.62;
+  }
+}
+
+@mixin close-button {
+  @include icon-button;
+
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-card-border);
+  color: var(--easyedu-text-muted);
+  height: 2.3rem;
+  min-height: 2.3rem;
+  min-width: 2.3rem;
+  padding: 0;
+  width: 2.3rem;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--easyedu-danger-soft);
+    border-color: color-mix(in srgb, var(--easyedu-danger) 22%, #fff 78%);
+    color: var(--easyedu-danger);
+  }
+}
+
+@mixin overflow-button {
+  @include icon-button;
+
+  background: var(--easyedu-surface-soft);
+  border: 1px solid var(--easyedu-card-border);
+  color: var(--easyedu-text-muted);
+  font-size: 1.1rem;
+  font-weight: 800;
+  min-height: 2rem;
+  min-width: 2.15rem;
+  padding: 0 0.42rem;
 }
 
 @mixin action-menu-trigger {
