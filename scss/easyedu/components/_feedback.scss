@@ -55,6 +55,30 @@
   }
 }
 
+// Compact identity badge shown beside a card title. Use for a single important
+// user/custom-field label that must survive compact card density without
+// competing visually with count badges or action buttons.
+@mixin identity-badge(
+  $bg: var(--easyedu-primary-soft),
+  $border: color-mix(in srgb, var(--easyedu-primary) 22%, #fff 78%),
+  $text: var(--easyedu-primary-strong)
+) {
+  @include token-pill($bg, $border, $text);
+
+  flex: 0 1 auto;
+  font-size: 0.68rem;
+  font-weight: 760;
+  justify-content: center;
+  line-height: 1.15;
+  max-width: min(11rem, 34%);
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.18rem 0.52rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @mixin empty-state {
   align-items: center;
   background: linear-gradient(180deg, var(--easyedu-empty-bg-start) 0%, var(--easyedu-empty-bg-end) 100%);

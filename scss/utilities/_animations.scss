@@ -1,3 +1,7 @@
+@use "../easyedu" as easyedu;
+
+@include easyedu.motion-keyframes;
+
 @keyframes local-groupimport-easystud-card-open {
   from {
     opacity: 0.78;
@@ -165,6 +169,18 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes local-groupimport-easystud-page-item-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-0.12rem);
   }
 }
 

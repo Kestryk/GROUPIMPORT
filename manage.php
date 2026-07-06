@@ -215,9 +215,17 @@ function local_groupimport_build_manage_template_data(
     moodle_url $nativeparticipantsurl,
     string $navigationhtml
 ): array {
+    global $CFG;
+
     $alloweduserfields = local_groupimport_get_allowed_user_field_definitions();
     $users = local_groupimport_enrich_users_with_copy_fields($users, $alloweduserfields);
+    $customuserfields = local_groupimport_get_custom_user_field_definitions();
+    $participantdisplay = local_groupimport_get_participant_display_settings($customuserfields);
+    $users = local_groupimport_enrich_users_with_participant_display_fields($users, $participantdisplay, $customuserfields);
     $compactparticipantsdefault = count($users) > 5;
+    $context = context_course::instance($course->id);
+    $canmessageparticipants = !empty($CFG->messaging) &&
+        has_all_capabilities(['moodle/site:sendmessage', 'moodle/course:bulkmessaging'], $context);
     $navigationhtml = local_groupimport_prepare_navigation_html(
         $navigationhtml,
         get_string('easystudmanager', 'local_groupimport')
@@ -331,6 +339,7 @@ function local_groupimport_build_manage_template_data(
         'advancedsettingsdescription' => get_string('description'),
         'moveconfirmone' => get_string('moveconfirmone', 'local_groupimport'),
         'moveconfirmmany' => get_string('moveconfirmmany', 'local_groupimport'),
+        'messagesendunavailable' => get_string('cannotsendmessages', 'core_message'),
     ];
 
     $rolefilteroptions = local_groupimport_role_filter_options($users);
@@ -694,6 +703,14 @@ function local_groupimport_build_manage_template_data(
                 'disabled' => false,
             ],
             [
+                'icon' => 'fa-comment-dots',
+                'label' => get_string('messageselectadd'),
+                'class' => 'btn btn-outline-secondary btn-sm',
+                'attribute' => 'data-easystud-message-selected-participants="1"',
+                'disabled' => true,
+                'hidden' => !$canmessageparticipants,
+            ],
+            [
                 'icon' => 'fa-arrow-right',
                 'label' => get_string('moveselectedparticipants', 'local_groupimport'),
                 'class' => 'btn btn-outline-primary btn-sm local-groupimport-easystud__participant-move-action',
@@ -831,17 +848,28 @@ function local_groupimport_build_manage_template_data(
         'removefromgroupinglabel' => get_string('removegroupfromgrouping', 'local_groupimport'),
         'confirmlabel' => get_string('confirm', 'local_groupimport'),
         'cancellabel' => get_string('cancel'),
-        'contextactions' => local_groupimport_build_context_actions_template_data($alloweduserfields),
+        'contextactions' => local_groupimport_build_context_actions_template_data($alloweduserfields, $canmessageparticipants),
     ];
 
     foreach ($users as $user) {
+        $customsearchvalues = [];
+        foreach ($user['participantdisplayfields'] ?? [] as $field) {
+            $customsearchvalues[] = $field['label'];
+            $customsearchvalues[] = $field['value'];
+        }
+        if (!empty($user['primarybadge']['value'])) {
+            $customsearchvalues[] = $user['primarybadge']['label'];
+            $customsearchvalues[] = $user['primarybadge']['value'];
+        }
         $searchtext = core_text::strtolower($user['fullname'] . ' ' . $user['email'] . ' ' .
-            implode(' ', $user['roles']) . ' ' . implode(' ', $user['groups']) . ' ' . implode(' ', $user['groupings'] ?? []));
+            implode(' ', $user['roles']) . ' ' . implode(' ', $user['groups']) . ' ' .
+            implode(' ', $user['groupings'] ?? []) . ' ' . implode(' ', $customsearchvalues));
         $templatedata['participants'][] = [
             'id' => $user['id'],
             'fullname' => $user['fullname'],
             'email' => $user['email'],
             'profileimage' => $user['profileimage'],
+            'primarybadge' => $user['primarybadge'] ?? null,
             'userdetailjson' => json_encode($user),
             'usercopyfieldsjson' => json_encode($user['copyfields'] ?? []),
             'searchtext' => $searchtext,
@@ -866,6 +894,7 @@ function local_groupimport_build_manage_template_data(
                 'local-groupimport-easystud-token local-groupimport-easystud-token--grouping',
                 get_string('nogrouping', 'local_groupimport')
             ),
+            'customfieldsmeta' => $user['customfieldsmeta'] ?? [],
             'viewdetailslabel' => get_string('viewparticipantdetails', 'local_groupimport'),
             'draghint' => get_string('draghintparticipant', 'local_groupimport'),
         ];
@@ -1019,6 +1048,186 @@ function local_groupimport_get_allowed_user_field_definitions(): array {
     }
 
     return $result;
+}
+
+/**
+ * Return custom user profile fields keyed like Moodle profile field form names.
+ *
+ * @return array Field key => field label.
+ */
+function local_groupimport_get_custom_user_field_definitions(): array {
+    global $DB;
+
+    $definitions = [];
+    $customfields = $DB->get_records('user_info_field', null, 'name ASC', 'id, shortname, name');
+    foreach ($customfields as $field) {
+        $definitions['profile_field_' . $field->shortname] = format_string($field->name);
+    }
+
+    return $definitions;
+}
+
+/**
+ * Normalise a stored colour value before it is injected into inline CSS variables.
+ *
+ * @param string|null $colour Stored colour.
+ * @param string $fallback Fallback colour.
+ * @return string Safe hex colour.
+ */
+function local_groupimport_normalise_hex_colour(?string $colour, string $fallback): string {
+    $colour = trim((string)$colour);
+    if (preg_match('/^#[0-9a-fA-F]{6}$/', $colour)) {
+        return core_text::strtolower($colour);
+    }
+
+    return $fallback;
+}
+
+/**
+ * Read participant card display settings.
+ *
+ * @param array $customfields Available custom fields.
+ * @return array Normalised display settings.
+ */
+function local_groupimport_get_participant_display_settings(array $customfields): array {
+    $config = get_config('local_groupimport');
+    $primaryfield = !empty($config->participantprimarybadgefield) &&
+        isset($customfields[$config->participantprimarybadgefield])
+            ? $config->participantprimarybadgefield
+            : '';
+
+    $detailfields = [];
+    foreach (['participantdetailfield1', 'participantdetailfield2'] as $settingname) {
+        $fieldkey = !empty($config->{$settingname}) ? (string)$config->{$settingname} : '';
+        if ($fieldkey !== '' && isset($customfields[$fieldkey]) && $fieldkey !== $primaryfield &&
+                !in_array($fieldkey, $detailfields, true)) {
+            $detailfields[] = $fieldkey;
+        }
+    }
+
+    return [
+        'primaryfield' => $primaryfield,
+        'primarybgcolor' => local_groupimport_normalise_hex_colour(
+            $config->participantprimarybadgebgcolor ?? '',
+            '#e8f4ff'
+        ),
+        'primarytextcolor' => local_groupimport_normalise_hex_colour(
+            $config->participantprimarybadgetextcolor ?? '',
+            '#0b4f8a'
+        ),
+        'detailfields' => $detailfields,
+    ];
+}
+
+/**
+ * Load selected custom profile values for all displayed users.
+ *
+ * @param array $users User records.
+ * @param array $fieldkeys Selected custom field keys.
+ * @return array User id => field key => value.
+ */
+function local_groupimport_load_custom_user_field_values(array $users, array $fieldkeys): array {
+    global $DB;
+
+    if (empty($users) || empty($fieldkeys)) {
+        return [];
+    }
+
+    $shortnames = [];
+    foreach ($fieldkeys as $fieldkey) {
+        if (strpos($fieldkey, 'profile_field_') === 0) {
+            $shortnames[] = substr($fieldkey, strlen('profile_field_'));
+        }
+    }
+
+    if (empty($shortnames)) {
+        return [];
+    }
+
+    [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($users), SQL_PARAMS_NAMED, 'user');
+    [$fieldsql, $fieldparams] = $DB->get_in_or_equal($shortnames, SQL_PARAMS_NAMED, 'field');
+    $recordset = $DB->get_recordset_sql(
+        "SELECT d.id, d.userid, f.shortname, d.data
+           FROM {user_info_data} d
+           JOIN {user_info_field} f ON f.id = d.fieldid
+          WHERE d.userid $usersql
+            AND f.shortname $fieldsql",
+        $userparams + $fieldparams
+    );
+
+    $values = [];
+    foreach ($recordset as $record) {
+        $fieldkey = 'profile_field_' . $record->shortname;
+        $values[(int)$record->userid][$fieldkey] = trim((string)$record->data);
+    }
+    $recordset->close();
+
+    return $values;
+}
+
+/**
+ * Add participant card badge and detail metadata configured in plugin settings.
+ *
+ * @param array $users User records.
+ * @param array $settings Display settings.
+ * @param array $customfields Available custom fields.
+ * @return array Enriched users.
+ */
+function local_groupimport_enrich_users_with_participant_display_fields(
+    array $users,
+    array $settings,
+    array $customfields
+): array {
+    $selectedfields = array_values(array_unique(array_filter(array_merge(
+        [$settings['primaryfield'] ?? ''],
+        $settings['detailfields'] ?? []
+    ))));
+
+    if (empty($users) || empty($selectedfields)) {
+        return $users;
+    }
+
+    $values = local_groupimport_load_custom_user_field_values($users, $selectedfields);
+    foreach ($users as $userid => $user) {
+        $primaryfield = $settings['primaryfield'] ?? '';
+        if ($primaryfield !== '') {
+            $value = $values[(int)$userid][$primaryfield] ?? '';
+            if ($value !== '') {
+                $users[$userid]['primarybadge'] = [
+                    'label' => $customfields[$primaryfield],
+                    'value' => $value,
+                    'style' => '--local-groupimport-participant-badge-bg: ' . $settings['primarybgcolor'] .
+                        '; --local-groupimport-participant-badge-color: ' . $settings['primarytextcolor'] . ';',
+                ];
+            }
+        }
+
+        $displayfields = [];
+        $customfieldsmeta = [];
+        foreach ($settings['detailfields'] ?? [] as $fieldkey) {
+            $value = $values[(int)$userid][$fieldkey] ?? '';
+            if ($value === '') {
+                continue;
+            }
+
+            $displayfields[] = [
+                'key' => $fieldkey,
+                'label' => $customfields[$fieldkey],
+                'value' => $value,
+            ];
+            $customfieldsmeta[] = local_groupimport_build_meta_tags_template_data(
+                $customfields[$fieldkey],
+                [$value],
+                'local-groupimport-easystud-token local-groupimport-easystud-token--custom-info',
+                ''
+            );
+        }
+
+        $users[$userid]['participantdisplayfields'] = $displayfields;
+        $users[$userid]['customfieldsmeta'] = $customfieldsmeta;
+    }
+
+    return $users;
 }
 
 /**
@@ -1274,9 +1483,10 @@ function local_groupimport_build_group_template_data(
  * Build context menu action data for Mustache.
  *
  * @param array $alloweduserfields Allowed configured fields.
+ * @param bool $canmessageparticipants Whether current user can send bulk messages.
  * @return array
  */
-function local_groupimport_build_context_actions_template_data(array $alloweduserfields = []): array {
+function local_groupimport_build_context_actions_template_data(array $alloweduserfields = [], bool $canmessageparticipants = false): array {
     $actions = [
         'participant-open-details' => [
             'contexts' => 'participant',
@@ -1294,6 +1504,13 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
             'icon' => 'fa-arrow-right',
             'label' => get_string('contextmoveparticipant', 'local_groupimport'),
             'multilabel' => get_string('contextmoveparticipants', 'local_groupimport'),
+        ],
+        'participant-message-selected' => [
+            'contexts' => 'participant member',
+            'icon' => 'fa-comment-dots',
+            'label' => get_string('sendmessage', 'core_message'),
+            'multilabel' => get_string('messageselectadd'),
+            'enabled' => $canmessageparticipants,
         ],
         'copy-participant-name' => [
             'contexts' => 'participant member',
@@ -1400,6 +1617,9 @@ function local_groupimport_build_context_actions_template_data(array $alloweduse
     }
 
     foreach ($actions as $action => $definition) {
+        if (array_key_exists('enabled', $definition) && !$definition['enabled']) {
+            continue;
+        }
         $result[] = [
             'action' => $action,
             'contexts' => $definition['contexts'],

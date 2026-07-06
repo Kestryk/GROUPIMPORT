@@ -24,6 +24,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['adminidentifierscorefields'] = 'Champs Moodle standards';
+$string['adminidentifierscustomfields'] = 'Champs de profil personnalisés';
+$string['adminidentifiersherobody'] = 'Choisissez les identifiants que les enseignants peuvent utiliser dans les imports massifs, les vérifications par presse-papiers et les ajouts par collage. EasyStud compare chaque valeur avec tous les champs activés pour garder une détection automatique.';
+$string['adminidentifiersheroheading'] = 'Identification automatique des apprenants';
+$string['adminidentifiershowbody'] = 'Activez uniquement les champs fiables et suffisamment uniques sur votre plateforme. Email et username sont généralement de bons choix par défaut ; les champs de profil personnalisés doivent éviter les correspondances ambiguës.';
+$string['adminidentifiershowtitle'] = 'Comment EasyStud utilise ces champs';
+$string['adminidentifiersnocustomfields'] = 'Aucun champ de profil personnalisé n’est encore disponible.';
+$string['adminidentifierstitle'] = 'Paramètres d’identification EasyStud';
+$string['adminparticipantdisplayherobody'] = 'Choisissez les champs de profil personnalisés qui peuvent apparaître directement sur les cartes des participants. Un champ peut être mis en avant sous forme d’étiquette compacte à côté du nom, et deux champs supplémentaires peuvent apparaître dans les infos complètes.';
+$string['adminparticipantdisplayheroheading'] = 'Informations des cartes participants';
+$string['adminparticipantdisplayhowbody'] = 'Utilisez un champ court et fiable pour l’étiquette compacte. Les informations plus longues conviennent mieux aux champs d’infos complètes afin de garder les lignes compactes faciles à lire.';
+$string['adminparticipantdisplayhowtitle'] = 'Comment ces champs sont affichés';
+$string['adminparticipantdisplaytitle'] = 'Affichage des cartes participants EasyStud';
 $string['addemails'] = 'Ajouter utilisateurs';
 $string['addemailstogroup'] = 'Ajouter des étudiants par identifiant';
 $string['addgroups'] = 'Ajouter les groupes';
@@ -195,6 +208,16 @@ $string['norole'] = 'Aucun rôle';
 $string['participants'] = 'Participants';
 $string['participantscount'] = '{$a} participant(s)';
 $string['participantdetails'] = 'Détails du participant';
+$string['participantdetailfield1'] = 'Premier champ personnalisé en infos complètes';
+$string['participantdetailfield1_desc'] = 'Sélectionnez un champ de profil personnalisé à afficher dans les infos complètes de la carte participant. Les valeurs vides sont masquées.';
+$string['participantdetailfield2'] = 'Deuxième champ personnalisé en infos complètes';
+$string['participantdetailfield2_desc'] = 'Sélectionnez un champ de profil personnalisé supplémentaire à afficher dans les infos complètes de la carte participant. Les valeurs vides sont masquées.';
+$string['participantprimarybadgebgcolor'] = 'Couleur de fond de l’étiquette principale';
+$string['participantprimarybadgebgcolor_desc'] = 'Choisissez la couleur de fond de l’étiquette personnalisée compacte affichée à côté du nom des participants.';
+$string['participantprimarybadgefield'] = 'Champ de l’étiquette compacte du participant';
+$string['participantprimarybadgefield_desc'] = 'Sélectionnez un champ de profil personnalisé à afficher comme étiquette à côté du nom du participant, y compris en carte compacte. Les valeurs vides sont masquées.';
+$string['participantprimarybadgetextcolor'] = 'Couleur du texte de l’étiquette principale';
+$string['participantprimarybadgetextcolor_desc'] = 'Choisissez la couleur du texte de l’étiquette personnalisée compacte affichée à côté du nom des participants.';
 $string['layoutmodeoverview'] = 'Vue complète';
 $string['layoutmodeparticipants'] = 'Participants & groupes';
 $string['layoutmodestructure'] = 'Groupes & groupements';

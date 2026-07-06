@@ -1,3 +1,5 @@
+@use "../easyedu" as easyedu;
+
 @media (max-width: 768px) {
   .local-groupimport-easystud {
     --local-groupimport-easystud-identity-border-width: 1rem;
@@ -45,6 +47,21 @@
         height: 1.55rem;
         width: 1.55rem;
       }
+    }
+
+    &--participant-focus &__layout,
+    &--structure-focus &__layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &--participant-focus &__panel--structure,
+    &--structure-focus &__panel--participants {
+      border: 0;
+      display: none;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: none;
     }
 
     &-tutorial__map-flow {
@@ -571,6 +588,27 @@
       gap: 0.5rem;
     }
 
+    &--participant-focus &__filters-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__participant-content,
+    &__filters,
+    &__filters-grid,
+    &__filter-group,
+    &__search-row,
+    &-advanced-filters,
+    &-advanced-filters > * {
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    &__filter-group .form-select,
+    &__filter-group .custom-select,
+    &__filter-group select {
+      width: 100%;
+    }
+
     &__filter-label,
     &-column-heading__title {
       font-size: 0.68rem;
@@ -601,15 +639,26 @@
     }
 
     &-mobile-actions {
-      grid-template-columns: 1fr;
-    }
+      @include easyedu.mobile-action-tray-stacked;
 
-    &-mobile-actions__summary {
-      text-align: center;
+      box-sizing: border-box;
+      max-width: calc(100vw - 1.5rem);
     }
 
     &-mobile-actions__buttons {
-      justify-content: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+      overflow-x: visible;
+
+      .btn {
+        flex: 1 1 calc(50% - 0.42rem);
+        justify-content: center;
+        min-width: min(10rem, 100%);
+      }
+    }
+
+    &--has-selection {
+      padding-bottom: 8.4rem;
     }
 
     &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected {
@@ -635,7 +684,29 @@
 
     &-group__header {
       align-items: center;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+
+    &-group__name {
+      flex: 1 1 8rem;
+      min-width: 0;
+    }
+
+    &-group__groupings--inline {
+      flex: 1 1 100%;
+      max-width: 100%;
+      min-width: 0;
+      order: 8;
+    }
+
+    &-group__mail-button,
+    &-group__member-search-button,
+    &-group__duplicate-button,
+    &-group__settings-button,
+    &-group__unlink-button,
+    &-rename {
+      flex: 0 0 auto;
     }
 
     &-group__actions {
@@ -656,7 +727,9 @@
     &-pagination__select {
       font-size: 0.64rem;
       max-width: 7.8rem;
+      min-width: max-content;
       padding: 0 0.45rem;
+      width: auto !important;
     }
 
     &-modal {

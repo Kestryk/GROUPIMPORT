@@ -69,6 +69,10 @@
   --easyedu-modal-header-bg: linear-gradient(135deg, #f8fbff 0%, #eef7f1 100%);
   --easyedu-modal-field-bg: rgba(255, 255, 255, 0.86);
   --easyedu-modal-field-border: #d9e7f1;
+  --easyedu-guide-modal-width: 72rem;
+  --easyedu-guide-modal-height: min(90vh, 46rem);
+  --easyedu-guide-modal-max-height: calc(100vh - 2rem);
+  --easyedu-guide-modal-min-height: min(42rem, calc(100vh - 2rem));
   --easyedu-tooltip-bg: #f8fbfd;
   --easyedu-tooltip-border: #cfe0ec;
   --easyedu-tooltip-glow: rgba(12, 113, 194, 0.1);

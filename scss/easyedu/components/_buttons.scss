@@ -7,14 +7,66 @@
 // Theme override tokens:
 // --easyedu-control-radius, --easyedu-control-height.
 
-@mixin icon-button {
+@mixin button-size($size: regular) {
+  @if $size == small {
+    font-size: 0.78rem;
+    min-height: 1.9rem;
+    min-width: 1.9rem;
+    padding: 0.22rem 0.5rem;
+  } @else if $size == large {
+    font-size: 0.98rem;
+    min-height: 2.85rem;
+    min-width: 2.85rem;
+    padding: 0.48rem 0.95rem;
+  } @else {
+    font-size: 0.88rem;
+    min-height: var(--easyedu-control-height);
+    min-width: var(--easyedu-control-height);
+    padding: 0.36rem 0.75rem;
+  }
+}
+
+@mixin button-interaction-states(
+  $hover-bg: var(--easyedu-primary-soft),
+  $hover-border: var(--easyedu-control-focus-border),
+  $hover-color: var(--easyedu-primary-strong)
+) {
+  &:hover,
+  &:focus-visible,
+  &[aria-expanded="true"],
+  &[aria-pressed="true"],
+  &.active,
+  &.is-active {
+    background: $hover-bg;
+    border-color: $hover-border;
+    color: $hover-color;
+    outline: 0;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+  }
+
+  &:disabled,
+  &[aria-disabled="true"],
+  &.disabled {
+    background: var(--easyedu-surface-soft);
+    border-color: var(--easyedu-card-border);
+    color: var(--easyedu-text-muted);
+    cursor: not-allowed;
+    opacity: 0.62;
+    pointer-events: none;
+    transform: none;
+  }
+}
+
+@mixin icon-button($size: regular) {
   align-items: center;
   border-radius: var(--easyedu-control-radius);
   display: inline-flex;
   justify-content: center;
   line-height: 1;
-  min-height: var(--easyedu-control-height);
-  min-width: var(--easyedu-control-height);
+  @include button-size($size);
   transition:
     background-color var(--easyedu-motion-fast) ease,
     border-color var(--easyedu-motion-fast) ease,
@@ -28,26 +80,26 @@
   }
 }
 
-@mixin action-button {
+@mixin action-button($size: regular) {
   align-items: center;
   display: inline-flex;
   gap: 0.4rem;
   justify-content: center;
   line-height: 1.2;
-  min-height: var(--easyedu-control-height);
+  @include button-size($size);
+  @include button-interaction-states;
 
-  &:disabled,
-  &[aria-disabled="true"] {
-    background: var(--easyedu-surface-soft);
-    border-color: var(--easyedu-card-border);
-    color: var(--easyedu-text-muted);
-    cursor: not-allowed;
-    opacity: 0.62;
+  .fa {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    justify-content: center;
+    line-height: 1;
   }
 }
 
-@mixin close-button {
-  @include icon-button;
+@mixin close-button($size: regular) {
+  @include icon-button($size);
 
   background: var(--easyedu-surface);
   border: 1px solid var(--easyedu-card-border);
@@ -66,8 +118,8 @@
   }
 }
 
-@mixin overflow-button {
-  @include icon-button;
+@mixin overflow-button($size: regular) {
+  @include icon-button($size);
 
   background: var(--easyedu-surface-soft);
   border: 1px solid var(--easyedu-card-border);
@@ -79,8 +131,8 @@
   padding: 0 0.42rem;
 }
 
-@mixin action-menu-trigger {
-  @include icon-button;
+@mixin action-menu-trigger($size: small) {
+  @include icon-button($size);
 
   background: color-mix(in srgb, var(--easyedu-primary-soft) 62%, #fff 38%);
   border: 1px solid color-mix(in srgb, var(--easyedu-primary) 18%, #fff 82%);

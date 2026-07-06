@@ -134,3 +134,98 @@
   }
 
 }
+
+.local-groupimport-easystud-message-modal {
+  @include easyedu.native-modal-loading(".loading-icon", var(--local-groupimport-easystud-primary));
+
+  &.is-easyedu-animating .local-groupimport-easystud-message-modal__dialog {
+    animation: easyedu-modal-in 0.32s var(--easyedu-motion-ease) both;
+  }
+
+  &.is-closing .local-groupimport-easystud-message-modal__dialog {
+    animation: easyedu-modal-out 0.18s ease both;
+  }
+
+  .local-groupimport-easystud-message-modal__dialog {
+    height: min(58vh, 34rem);
+    max-width: min(48rem, calc(100vw - 2rem));
+    width: min(48rem, calc(100vw - 2rem));
+  }
+
+  .local-groupimport-easystud-message-modal__content {
+    @include easyedu.modal-surface;
+
+    border-color: var(--local-groupimport-easystud-border);
+    box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.24);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    background:
+      radial-gradient(circle at 2.6rem 1.2rem, rgba(72, 115, 173, 0.12), transparent 7rem),
+      linear-gradient(135deg, #f8fbff 0%, #eef7f1 100%);
+    border-bottom: 1px solid #d8e7f1;
+    padding: 0.9rem 1rem;
+  }
+
+  .modal-title {
+    color: #203244;
+    font-weight: 780;
+  }
+
+  .modal-body {
+    background: linear-gradient(180deg, #fff 0%, #f8fbfd 100%);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    padding: 1.2rem;
+  }
+
+  &.is-loading .modal-body {
+    min-height: 15rem;
+  }
+
+  .modal-body form,
+  .modal-body .form-group,
+  .modal-body .form-control-wrapper,
+  .modal-body .fitem,
+  .modal-body .felement,
+  .local-groupimport-easystud-message-modal__textarea-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .local-groupimport-easystud-message-modal__textarea-wrap {
+    margin: 0;
+    width: 100%;
+  }
+
+  .modal-footer {
+    background: #f8fbfd;
+    border-top: 1px solid #dce8f2;
+    padding: 0.8rem 1rem;
+  }
+
+  .local-groupimport-easystud-message-modal__textarea {
+    border-color: #cbdcea;
+    border-radius: 0.82rem;
+    display: block;
+    flex: 1 1 auto;
+    height: 100% !important;
+    min-height: 12rem;
+    resize: vertical;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    width: 100%;
+
+    &:focus {
+      border-color: #8abce3;
+      box-shadow: 0 0 0 0.18rem rgba(15, 108, 191, 0.16);
+    }
+  }
+}

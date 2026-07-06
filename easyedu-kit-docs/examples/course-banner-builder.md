@@ -58,6 +58,9 @@ init('[data-easyedu-guide-root]', {
   targets: {
     createLayer: '[data-easyedu-guide-target="create-layer"]',
     layerList: '[data-easyedu-guide-target="layer-list"]',
+    sourcePickers: '[data-easyedu-guide-target="source-pickers"]',
+    sourcePicker: '[data-source-dropdown="category"]',
+    sourceParentPicker: '[data-source-dropdown="summary-sourceparent"]',
     saveBanner: '[data-easyedu-guide-target="save-banner"]'
   },
   paths: {
@@ -78,6 +81,36 @@ init('[data-easyedu-guide-root]', {
   }
 });
 ```
+
+For source-related guide steps, avoid targeting the Moodle page navigation,
+generic section headers or the configured-source table. The table can be empty
+when the user has not configured anything yet, so it is a poor onboarding
+target. The stable targets are the actual source UI elements:
+
+- `sourcePickers`: a plugin-owned wrapper such as
+  `data-easyedu-guide-target="source-pickers"` around the category and custom
+  field dropdowns;
+- `sourcePicker`: `[data-source-dropdown="category"]`, the primary "Choose a
+  source" dropdown;
+- `sourceParentPicker`: `[data-source-dropdown="summary-sourceparent"]`, the
+  configured source parent dropdown in the selected-source summary.
+
+If a guided path needs to wait for a real submit button but visually show the
+two dropdowns, keep `target` on the real action and use `highlightTarget` for
+the dropdown wrapper:
+
+```js
+{
+  id: 'select-source',
+  title: 'Select source',
+  target: 'selectSourceButton',
+  highlightTarget: 'sourcePickers',
+  completeOnClick: true
+}
+```
+
+Do not point the step at a nav item or an empty table only because it has the
+same text label.
 
 After a real action succeeds:
 

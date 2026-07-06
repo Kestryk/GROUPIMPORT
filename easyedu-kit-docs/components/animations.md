@@ -13,6 +13,22 @@ Reusable motion helpers:
   @include easyedu.expandable-region;
 }
 
+.my-card-details {
+  @include easyedu.content-reveal;
+}
+
+.my-new-card {
+  @include easyedu.card-open-motion;
+}
+
+.my-list.is-page-changing {
+  @include easyedu.paginated-list-motion;
+}
+
+.my-plugin-root {
+  @include easyedu.action-busy-indicator("data-my-plugin-busy-label");
+}
+
 .my-card {
   @include easyedu.transition-standard(background, border-color, box-shadow);
 }
@@ -22,4 +38,5 @@ Motion should be visible enough to explain state changes, but never required to
 understand the interface.
 
 Shared keyframes currently include modal transitions, slide entrance, pop-in,
-success pulse, drop pulse, busy spinner and demo cursor click.
+card/content reveal, pagination swap, success pulse, drop pulse, busy spinner,
+busy label pulse and demo cursor click.

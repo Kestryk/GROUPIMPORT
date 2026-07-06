@@ -74,3 +74,20 @@ document.dispatchEvent(new CustomEvent('easyedu:guide-step-complete', {
 
 Prefer completing steps after successful plugin actions, not only after users
 click checklist items. This makes the guide feel connected to the real UI.
+
+## 5. Refresh highlights after UI transitions
+
+If the action changes the page layout, refresh the guide once the interface has
+settled:
+
+```js
+document.dispatchEvent(new CustomEvent('easyedu:guide-refresh-highlight', {
+  detail: {
+    target: 'createBanner',
+    dock: true
+  }
+}));
+```
+
+Use this after opening panels, changing pages, applying filters, inserting Ajax
+content or any transition that can move the highlighted element.

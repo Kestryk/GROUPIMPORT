@@ -325,48 +325,15 @@
   }
 
   &__clear-selection-frame {
-    align-items: stretch;
-    background: linear-gradient(135deg, #fff 0%, #f5f9fc 100%);
-    border: 1px solid #c9dceb;
-    border-left: 0.28rem solid var(--local-groupimport-easystud-primary);
-    border-radius: 1.05rem;
-    bottom: 1.45rem;
-    box-shadow: 0 1rem 2.2rem rgba(31, 42, 55, 0.18);
-    display: grid;
-    gap: 0.35rem;
-    left: 1.25rem;
-    max-width: min(92vw, 23rem);
-    padding: 0.52rem;
-    position: fixed;
-    z-index: 1046;
-
-    &[hidden] {
-      display: none;
-    }
+    @include easyedu.sticky-selection-panel(var(--local-groupimport-easystud-primary));
   }
 
   &__clear-selection {
-    align-items: center;
-    background: #fff;
-    border-color: #cbdbea;
-    color: #40566e;
-    display: inline-flex;
-    gap: 0.35rem;
-    justify-content: center;
-    white-space: nowrap;
-
-    &[hidden] {
-      display: none;
-    }
+    @include easyedu.sticky-selection-button;
   }
 
   &__clear-selection-count {
-    color: #617487;
-    font-size: 0.72rem;
-    font-weight: 760;
-    line-height: 1;
-    padding: 0 0.22rem;
-    text-align: center;
+    @include easyedu.sticky-selection-count;
   }
 
   &__layout-mode-group {

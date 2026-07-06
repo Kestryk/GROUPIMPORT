@@ -30,6 +30,22 @@ const structureFocusClass = 'local-groupimport-easystud--structure-focus';
 const participantFocusClass = 'local-groupimport-easystud--participant-focus';
 const hoverPopoverClass = 'local-groupimport-easystud-hover-popover';
 const panelActionOverflowClass = 'local-groupimport-easystud__panel-action--overflow-hidden';
+const guideRefreshEvent = 'easyedu:guide-refresh-highlight';
+
+const requestGuideHighlightRefresh = (root, options = {}) => {
+    if (!root) {
+        return;
+    }
+
+    if (root.easystudGuideRefreshTimers) {
+        root.easystudGuideRefreshTimers.forEach(timer => window.clearTimeout(timer));
+    }
+
+    const detail = Object.assign({root, dock: true}, options);
+    root.easystudGuideRefreshTimers = [0, 160, 380, 760].map(delay => window.setTimeout(() => {
+        document.dispatchEvent(new CustomEvent(guideRefreshEvent, {detail}));
+    }, delay));
+};
 
 const onReady = callback => {
     if (document.readyState === 'loading') {
@@ -539,6 +555,7 @@ const renderGroupGroupingTags = (container, groupingnames) => {
     if (shouldSummarise) {
         summaryNode.type = 'button';
         summaryNode.setAttribute('aria-expanded', wasExpanded ? 'true' : 'false');
+        summaryNode.setAttribute('aria-label', summary + ': ' + groupingnames.join(', '));
         summaryNode.setAttribute('data-easystud-grouping-summary-toggle', '1');
     }
     container.appendChild(summaryNode);
@@ -623,6 +640,7 @@ const syncGroupGroupingOverflow = root => {
         }
         const expanded = group.classList.contains('is-groupings-expanded');
         toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        toggle.classList.toggle('is-expanded', expanded);
         details.hidden = !expanded;
     });
 };
@@ -701,6 +719,7 @@ const syncParticipantTagOverflow = root => {
         toggle = ensureTagToggle(container, root);
         syncTagToggleStyle(toggle, tokens[0]);
         toggle.hidden = false;
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 
         if (expanded) {
             toggle.textContent = '-';
@@ -732,6 +751,7 @@ const syncParticipantTagOverflow = root => {
             toggle.setAttribute('data-more-label', '+' + hidden);
         } else {
             toggle.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
         }
     });
 };
@@ -914,6 +934,7 @@ const scheduleGroupingResizeForGroup = group => {
     if (!grouping) {
         return;
     }
+    requestGuideHighlightRefresh(grouping.closest('#local-groupimport-easystud'));
     const sync = () => syncGroupingGroupsCollapsible(grouping);
     window.requestAnimationFrame(sync);
     [80, 180, 360, 520].forEach(delay => window.setTimeout(sync, delay));
@@ -955,6 +976,7 @@ const expandGroupingSection = grouping => {
     animateTreeChildren(children, true);
     if (root) {
         emitGuidedCompletion(root, 2, 'grouping');
+        requestGuideHighlightRefresh(root);
     }
 };
 
@@ -996,6 +1018,7 @@ const collapseGroupingSection = grouping => {
         groupsToggle.setAttribute('aria-expanded', 'false');
         groupsToggle.classList.remove('is-expanded');
     }
+    requestGuideHighlightRefresh(grouping.closest('#local-groupimport-easystud'));
 };
 
 const collapseAllGroupings = root => {
@@ -1129,6 +1152,7 @@ const applyCatalogSearch = root => {
     });
     syncFilteredEmptyStates(root);
     syncPagination(root);
+    scheduleResponsiveUiRefresh(root);
 };
 
 const applyStructureSearch = root => {
@@ -1139,6 +1163,7 @@ const applyStructureSearch = root => {
     });
     syncFilteredEmptyStates(root);
     syncPagination(root);
+    scheduleResponsiveUiRefresh(root);
 };
 
 const syncContainerGroupEmptyState = (root, list, query, visibleCount) => {
@@ -1191,6 +1216,7 @@ const applyContainerGroupSearch = root => {
             window.requestAnimationFrame(() => syncGroupingGroupsCollapsible(section));
         }
     });
+    scheduleResponsiveUiRefresh(root);
 };
 
 const ensureGroupMemberSearchControls = (root, group) => {
@@ -1350,6 +1376,7 @@ const applyGroupMemberSearch = root => {
         syncGroupMembersCollapsible(group);
         scheduleGroupingResizeForGroup(group);
     });
+    scheduleResponsiveUiRefresh(root);
 };
 
 const showNotification = (root, message, type) => {
@@ -1392,6 +1419,212 @@ const showNotification = (root, message, type) => {
     }
 
     showFallback();
+};
+
+const decorateNativeMessageModalNode = node => {
+    if (!node) {
+        return null;
+    }
+
+    node.classList.add('local-groupimport-easystud-message-modal', 'is-open');
+    node.classList.toggle('is-loading', !node.querySelector('#bulk-message'));
+
+    const dialog = node.querySelector('.modal-dialog');
+    if (dialog) {
+        dialog.classList.add('local-groupimport-easystud-message-modal__dialog');
+    }
+    const content = node.querySelector('.modal-content');
+    if (content) {
+        content.classList.add('local-groupimport-easystud-message-modal__content');
+    }
+    const textarea = node.querySelector('#bulk-message');
+    if (textarea) {
+        textarea.classList.add('local-groupimport-easystud-message-modal__textarea');
+        textarea.setAttribute('rows', '10');
+        textarea.removeAttribute('data-auto-rows');
+        textarea.removeAttribute('data-max-rows');
+        const wrapper = textarea.closest('p, .form-group, .mb-3');
+        if (wrapper) {
+            wrapper.classList.add('local-groupimport-easystud-message-modal__textarea-wrap');
+        }
+        node.classList.remove('is-loading');
+        node.removeAttribute('data-easystud-message-decorate-attempts');
+    } else {
+        const attempts = parseInt(node.getAttribute('data-easystud-message-decorate-attempts') || '0', 10) || 0;
+        if (attempts < 30) {
+            node.setAttribute('data-easystud-message-decorate-attempts', String(attempts + 1));
+            window.setTimeout(() => {
+                if (node.isConnected) {
+                    decorateNativeMessageModalNode(node);
+                }
+            }, 180);
+        }
+    }
+    if (textarea || node.getAttribute('data-easystud-message-animation-played') === '1') {
+        replayNativeMessageModalAnimation(node);
+    }
+    return node;
+};
+
+const replayNativeMessageModalAnimation = node => {
+    if (!node || node.getAttribute('data-easystud-message-animation-played') === '1') {
+        return;
+    }
+    const dialog = node.querySelector('.local-groupimport-easystud-message-modal__dialog');
+    if (!dialog) {
+        return;
+    }
+
+    node.setAttribute('data-easystud-message-animation-played', '1');
+    const playWhenVisible = attempts => {
+        const isvisible = node.classList.contains('show') || node.getAttribute('aria-hidden') === 'false' ||
+            node.offsetParent !== null;
+        if (!isvisible && attempts < 12) {
+            window.requestAnimationFrame(() => playWhenVisible(attempts + 1));
+            return;
+        }
+
+        node.classList.remove('is-easyedu-animating');
+        // Force a reflow so Moodle-native modals created before visibility can replay the EasyEdu entrance.
+        dialog.getBoundingClientRect();
+        node.classList.add('is-easyedu-animating');
+        window.setTimeout(() => {
+            node.classList.remove('is-easyedu-animating');
+        }, 420);
+    };
+
+    window.requestAnimationFrame(() => playWhenVisible(0));
+};
+
+const decorateNativeMessageModal = modal => {
+    if (!modal || !modal.getRoot) {
+        return modal;
+    }
+    const root = modal.getRoot();
+    const node = root && root.get ? root.get(0) : null;
+    decorateNativeMessageModalNode(node);
+    return modal;
+};
+
+const watchNativeMessageModal = () => {
+    if (typeof MutationObserver !== 'function' || !document.body) {
+        return () => {};
+    }
+
+    let observer = null;
+    let timeout = null;
+    const inspectNode = node => {
+        if (!node || node.nodeType !== 1) {
+            return;
+        }
+
+        const candidates = [];
+        if (node.matches && node.matches('.modal')) {
+            candidates.push(node);
+        }
+        if (node.closest) {
+            const closestModal = node.closest('.modal');
+            if (closestModal) {
+                candidates.push(closestModal);
+            }
+        }
+        if (node.querySelectorAll) {
+            node.querySelectorAll('.modal').forEach(candidate => candidates.push(candidate));
+        }
+
+        Array.from(new Set(candidates)).forEach(candidate => {
+            if (!candidate.classList.contains('local-groupimport-easystud-modal')) {
+                decorateNativeMessageModalNode(candidate);
+            }
+        });
+    };
+
+    observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(inspectNode);
+        });
+    });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
+    document.body.querySelectorAll('.modal.show').forEach(inspectNode);
+
+    const stop = () => {
+        if (observer) {
+            observer.disconnect();
+            observer = null;
+        }
+        if (timeout) {
+            window.clearTimeout(timeout);
+            timeout = null;
+        }
+    };
+    timeout = window.setTimeout(stop, 6000);
+    return stop;
+};
+
+const getUniqueParticipantIds = items => {
+    const seen = new Set();
+    const ids = [];
+    (items || []).forEach(item => {
+        const id = item ? (item.getAttribute('data-user-id') || item.getAttribute('data-easystud-member-id') || '') : '';
+        if (id && !seen.has(id)) {
+            seen.add(id);
+            ids.push(Number(id));
+        }
+    });
+    return ids;
+};
+
+const getSelectedMessageUserIds = (root, contextType = '', target = null) => {
+    if (contextType) {
+        return getUniqueParticipantIds(getParticipantItemsForContext(root, contextType, target));
+    }
+
+    const selectedUsers = getSelectedItems(root, 'participant');
+    if (selectedUsers.length) {
+        return getUniqueParticipantIds(selectedUsers);
+    }
+    return getUniqueParticipantIds(getSelectedItems(root, 'member'));
+};
+
+const openParticipantMessageModal = (root, userids) => {
+    const ids = (userids || []).filter(Boolean);
+    if (!ids.length) {
+        return Promise.resolve();
+    }
+    if (typeof require !== 'function') {
+        showNotification(root, (getLabels(root).messagesendunavailable || 'Cannot send messages'), 'error');
+        return Promise.resolve();
+    }
+    const stopWatchingMessageModal = watchNativeMessageModal();
+    const stopWatchingSoon = () => {
+        window.setTimeout(stopWatchingMessageModal, 5000);
+    };
+    return new Promise((resolve, reject) => {
+        require(['core_user/local/participants/bulkactions'], bulkactions => {
+            if (!bulkactions || !bulkactions.showSendMessage) {
+                stopWatchingSoon();
+                reject(new Error(getLabels(root).messagesendunavailable || 'Cannot send messages'));
+                return;
+            }
+            bulkactions.showSendMessage(ids)
+                .then(modal => {
+                    stopWatchingSoon();
+                    resolve(decorateNativeMessageModal(modal));
+                })
+                .catch(error => {
+                    stopWatchingSoon();
+                    reject(error);
+                });
+        }, error => {
+            stopWatchingSoon();
+            reject(error);
+        });
+    }).catch(error => {
+        showNotification(root, error.message || (getLabels(root).messagesendunavailable || 'Cannot send messages'), 'error');
+    });
 };
 
 const emitGuidedCompletion = (root, step, path = 'main') => {
@@ -1499,10 +1732,8 @@ const bindLayoutModeToggle = root => {
         updateRoleFilterMode(root);
         syncCatalogFilters(root);
         applyFilters(root);
-        scheduleGroupGroupingOverflow(root);
-        scheduleParticipantTagOverflow(root);
         updateSelectionActions(root);
-        schedulePanelActionOverflow(root);
+        scheduleResponsiveUiRefresh(root);
     };
 
     buttons.forEach(button => {
@@ -1600,6 +1831,30 @@ const syncPanelActionOverflow = root => {
 
 const schedulePanelActionOverflow = root => {
     window.requestAnimationFrame(() => syncPanelActionOverflow(root));
+};
+
+const scheduleResponsiveUiRefresh = (root, options = {}) => {
+    if (!root) {
+        return;
+    }
+    if (root.easystudResponsiveRefreshTimers) {
+        root.easystudResponsiveRefreshTimers.forEach(timer => window.clearTimeout(timer));
+    }
+
+    const refresh = () => {
+        syncResponsiveDragAvailability(root);
+        syncPagination(root);
+        syncAllGroupMembersCollapsible(root);
+        syncAllGroupingGroupsCollapsible(root);
+        scheduleGroupGroupingOverflow(root);
+        scheduleParticipantTagOverflow(root);
+        schedulePanelActionOverflow(root);
+        if (options.guide !== false) {
+            requestGuideHighlightRefresh(root);
+        }
+    };
+
+    root.easystudResponsiveRefreshTimers = [0, 180, 420].map(delay => window.setTimeout(refresh, delay));
 };
 
 const bindPanelActionOverflow = root => {
@@ -1728,6 +1983,7 @@ const moveGroupElementToGrouping = (root, groupid, groupingid) => {
     syncCatalogFilters(root);
     updateStructureSummary(root);
     updateStructureEmptyState(root);
+    requestGuideHighlightRefresh(root);
 };
 
 const copyGroupElementToGrouping = (root, sourceGroup, groupingid) => {
@@ -1760,6 +2016,7 @@ const copyGroupElementToGrouping = (root, sourceGroup, groupingid) => {
     syncCatalogFilters(root);
     updateStructureSummary(root);
     updateStructureEmptyState(root);
+    requestGuideHighlightRefresh(root);
 };
 
 const removeGroupsFromGroupings = (root, courseId, groups) => {
@@ -1783,6 +2040,7 @@ const removeGroupsFromGroupings = (root, courseId, groups) => {
     })).then(() => {
         clearSelectionState(root);
         updateSelectionActions(root);
+        requestGuideHighlightRefresh(root);
         showNotification(root, formatCountMessage(labels.groupsremovedfromgroupingscount, groupsToRemove.length), 'success');
         return groupsToRemove;
     });
@@ -1847,6 +2105,7 @@ const deleteGroupElement = (root, groupid) => {
         updateStructureEmptyState(root);
         syncPagination(root);
         updateSelectionActions(root);
+        requestGuideHighlightRefresh(root);
     };
 
     if (!groups.length) {
@@ -1880,6 +2139,7 @@ const deleteGroupingElement = (root, groupingid) => {
         syncStructurePlaceholders(root);
         applyContainerGroupSearch(root);
         updateSelectionActions(root);
+        requestGuideHighlightRefresh(root);
     };
     if (grouping) {
         animateElementRemoval(grouping, removeGrouping);
@@ -2905,6 +3165,7 @@ const applyAdvancedGroupUpdate = (root, data) => {
         }
     });
     scheduleGroupGroupingOverflow(root);
+    requestGuideHighlightRefresh(root);
 };
 
 const applyAdvancedGroupingUpdate = (root, data) => {
@@ -2936,6 +3197,7 @@ const applyAdvancedGroupingUpdate = (root, data) => {
         }
     });
     scheduleGroupGroupingOverflow(root);
+    requestGuideHighlightRefresh(root);
 };
 
 const insertGroupData = (root, groupdata) => {
@@ -2991,6 +3253,7 @@ const insertGroupData = (root, groupdata) => {
     applyContainerGroupSearch(root);
     updateStructureSummary(root);
     updateStructureEmptyState(root);
+    requestGuideHighlightRefresh(root);
 };
 
 const insertGroupingData = (root, groupingdata) => {
@@ -3030,6 +3293,7 @@ const insertGroupingData = (root, groupingdata) => {
     applyContainerGroupSearch(root);
     updateStructureSummary(root);
     updateStructureEmptyState(root);
+    requestGuideHighlightRefresh(root);
     return grouping;
 };
 
@@ -3604,6 +3868,7 @@ const bindPagination = root => {
                 collapseAllGroupings(root);
             }
             updateSelectionActions(root);
+            requestGuideHighlightRefresh(root);
             return;
         }
         const current = parseInt(list.getAttribute('data-easystud-page') || '0', 10) || 0;
@@ -3630,11 +3895,11 @@ const bindPagination = root => {
         }).length;
         const maxpage = Math.max(Math.ceil(total / config.limit) - 1, 0);
         nextpage = Math.max(0, Math.min(nextpage, maxpage));
-        list.classList.add('is-page-changing');
         list.setAttribute('data-easystud-page', nextpage);
         syncPagination(root);
+        scheduleResponsiveUiRefresh(root);
+
         if (pagination.getAttribute('data-easystud-pagination') === 'bottom') {
-            list.scrollTo({top: 0, behavior: 'smooth'});
             const topPagination = config.inside ?
                 list.querySelector(':scope > [data-easystud-pagination="top"]') :
                 list.previousElementSibling;
@@ -3642,7 +3907,6 @@ const bindPagination = root => {
                 topPagination : list;
             scrollTarget.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
         }
-        window.setTimeout(() => list.classList.remove('is-page-changing'), 260);
     });
 
     document.addEventListener('click', event => {
@@ -3684,6 +3948,7 @@ const applyFilters = root => {
     });
     syncPagination(root);
     updateParticipantEmptyState(root);
+    scheduleResponsiveUiRefresh(root);
 };
 
 const bindFilters = root => {
@@ -3749,6 +4014,7 @@ const bindFilters = root => {
             }
             applyFilters(root);
             updateRoleFilterMode(root);
+            requestGuideHighlightRefresh(root);
         });
     }
 
@@ -3985,7 +4251,7 @@ const getEnabledActionButton = (root, selector) => {
 
 const getMobileActionButton = (root, selector) => {
     return Array.from(root.querySelectorAll(selector)).find(button => {
-        return !button.disabled && button.getAttribute('aria-hidden') !== 'true';
+        return !button.disabled && !button.hidden && button.getAttribute('aria-hidden') !== 'true';
     }) || null;
 };
 
@@ -4008,6 +4274,8 @@ const ensureMobileActionBar = root => {
     bar = document.createElement('div');
     bar.className = 'local-groupimport-easystud-mobile-actions';
     bar.setAttribute('data-easystud-mobile-actions', '1');
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-live', 'polite');
     bar.hidden = true;
     bar.innerHTML =
         '<div class="local-groupimport-easystud-mobile-actions__summary" data-easystud-mobile-actions-summary></div>' +
@@ -4023,15 +4291,20 @@ const renderMobileActionBar = (root, counts, activetype) => {
     const total = counts.participant + counts.member + counts.group + counts.grouping;
 
     if (!buttons || !summary || !total) {
+        bar.removeAttribute('data-easystud-mobile-actions-type');
         bar.hidden = true;
         return;
     }
 
     const actionSelectors = [];
     if (activetype === 'participant') {
-        actionSelectors.push('[data-easystud-open-selected-user]', '[data-easystud-move-selected-participants]');
+        actionSelectors.push(
+            '[data-easystud-message-selected-participants]',
+            '[data-easystud-open-selected-user]',
+            '[data-easystud-move-selected-participants]'
+        );
     } else if (activetype === 'member') {
-        actionSelectors.push('[data-easystud-delete-selected-members]');
+        actionSelectors.push('[data-easystud-message-selected-participants]', '[data-easystud-delete-selected-members]');
     } else if (activetype === 'group') {
         actionSelectors.push(
             '[data-easystud-move-selected-groups]',
@@ -4049,6 +4322,7 @@ const renderMobileActionBar = (root, counts, activetype) => {
     }).filter(Boolean);
 
     if (!actions.length) {
+        bar.removeAttribute('data-easystud-mobile-actions-type');
         bar.hidden = true;
         return;
     }
@@ -4056,6 +4330,7 @@ const renderMobileActionBar = (root, counts, activetype) => {
     const labels = getLabels(root);
     const template = labels.selectioncounttemplate || '__count__ selected';
     summary.textContent = template.replace('__count__', String(total));
+    bar.setAttribute('data-easystud-mobile-actions-type', activetype || '');
     buttons.innerHTML = '';
     actions.forEach(action => {
         const button = document.createElement('button');
@@ -4143,6 +4418,10 @@ const updateSelectionActions = root => {
         moveParticipantsButton.disabled = selectedUsers.length === 0;
     }
 
+    root.querySelectorAll('[data-easystud-message-selected-participants]').forEach(button => {
+        button.disabled = selectedUsers.length === 0 && selectedMembers.length === 0;
+    });
+
     root.querySelectorAll('[data-easystud-move-selected-groups]').forEach(button => {
         button.disabled = selectedGroups.length === 0;
     });
@@ -4208,6 +4487,7 @@ const bindSelection = root => {
             emitGuidedCompletion(root, 2, 'grouping');
         }
         updateSelectionActions(root);
+        requestGuideHighlightRefresh(root);
     });
 
     root.addEventListener('change', event => {
@@ -4245,6 +4525,7 @@ const bindSelection = root => {
         }
         clearSelectionState(root);
         updateSelectionActions(root);
+        requestGuideHighlightRefresh(root);
     });
 
     root.addEventListener('click', event => {
@@ -4280,6 +4561,8 @@ const animateTreeChildren = (children, expand) => {
     if (!children) {
         return;
     }
+    const root = children.closest('#local-groupimport-easystud');
+    requestGuideHighlightRefresh(root);
 
     if (children.easystudTreeTransitionEnd) {
         children.removeEventListener('transitionend', children.easystudTreeTransitionEnd);
@@ -4333,6 +4616,7 @@ const animateTreeChildren = (children, expand) => {
         children.classList.remove('is-tree-animating');
         children.removeEventListener('transitionend', children.easystudTreeTransitionEnd);
         children.easystudTreeTransitionEnd = null;
+        requestGuideHighlightRefresh(root);
     };
     children.addEventListener('transitionend', children.easystudTreeTransitionEnd);
 };
@@ -4341,6 +4625,8 @@ const setInlinePanelOpen = (panel, open) => {
     if (!panel) {
         return;
     }
+    const root = panel.closest('#local-groupimport-easystud');
+    requestGuideHighlightRefresh(root);
 
     if (open) {
         panel.hidden = false;
@@ -4355,6 +4641,7 @@ const setInlinePanelOpen = (panel, open) => {
             }
             panel.style.maxHeight = '';
             panel.removeEventListener('transitionend', opened);
+            requestGuideHighlightRefresh(root);
         };
         panel.addEventListener('transitionend', opened);
         return;
@@ -4371,6 +4658,7 @@ const setInlinePanelOpen = (panel, open) => {
         panel.hidden = true;
         panel.style.maxHeight = '';
         panel.removeEventListener('transitionend', close);
+        requestGuideHighlightRefresh(root);
     };
     panel.addEventListener('transitionend', close);
     window.setTimeout(() => {
@@ -5393,6 +5681,14 @@ const bindMoveModal = (root, courseId) => {
     });
 };
 
+const bindParticipantMessaging = root => {
+    root.querySelectorAll('[data-easystud-message-selected-participants]').forEach(button => {
+        button.addEventListener('click', () => {
+            openParticipantMessageModal(root, getSelectedMessageUserIds(root));
+        });
+    });
+};
+
 const bindDuplicateActions = (root, courseId) => {
     root.addEventListener('click', event => {
         const groupButton = event.target.closest('[data-easystud-duplicate-group]');
@@ -5634,10 +5930,11 @@ const bindContextMenu = (root, courseId) => {
         window.clearTimeout(longPressTimer);
         longPressTimer = null;
         longPressPoint = null;
+        root.classList.remove('local-groupimport-easystud--long-press-armed');
     };
 
     root.addEventListener('pointerdown', event => {
-        if (!isResponsiveDragSuppressed() || event.button > 0 ||
+        if (!isResponsiveDragSuppressed() || event.pointerType === 'mouse' || event.button > 0 ||
                 event.target.closest('button, a, input, textarea, select, form, .local-groupimport-easystud-selector')) {
             return;
         }
@@ -5646,6 +5943,7 @@ const bindContextMenu = (root, courseId) => {
             return;
         }
         longPressPoint = {x: event.clientX, y: event.clientY};
+        root.classList.add('local-groupimport-easystud--long-press-armed');
         longPressTimer = window.setTimeout(() => {
             prepareContextSelection(item);
             suppressNextDocumentClick = true;
@@ -5709,6 +6007,8 @@ const bindContextMenu = (root, courseId) => {
             if (button) {
                 button.click();
             }
+        } else if (action === 'participant-message-selected') {
+            openParticipantMessageModal(root, getSelectedMessageUserIds(root, contextType, target));
         } else if (action === 'clear-selection') {
             clearSelection(root, contextType);
             updateSelectionActions(root);
@@ -6079,6 +6379,7 @@ const bindAdvancedFilters = root => {
         if (panel && panel.offsetParent !== null) {
             toggleAdvancedFilters(key);
             emitGuidedCompletion(root, 2);
+            scheduleResponsiveUiRefresh(root);
         }
     });
 };
@@ -6106,6 +6407,7 @@ const bindGroupMemberToggles = root => {
         toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
         syncGroupMembersCollapsible(group);
         scheduleGroupingResizeForGroup(group);
+        scheduleResponsiveUiRefresh(root);
     });
     root.addEventListener('click', event => {
         const groupingHeader = event.target.closest('.local-groupimport-easystud-grouping__header');
@@ -6130,6 +6432,7 @@ const bindGroupMemberToggles = root => {
         if (!expanded) {
             emitGuidedCompletion(root, 2, 'grouping');
         }
+        scheduleResponsiveUiRefresh(root);
     });
     syncAllGroupMembersCollapsible(root);
     syncAllGroupingGroupsCollapsible(root);
@@ -6150,7 +6453,7 @@ const bindTagToggles = root => {
             if (details) {
                 details.hidden = !expanded;
             }
-            scheduleGroupGroupingOverflow(root);
+            scheduleResponsiveUiRefresh(root);
             return;
         }
 
@@ -6166,7 +6469,7 @@ const bindTagToggles = root => {
 
         const expanded = toggle.getAttribute('data-expanded') === '1';
         toggle.setAttribute('data-expanded', expanded ? '0' : '1');
-        scheduleParticipantTagOverflow(root);
+        scheduleResponsiveUiRefresh(root);
     });
 };
 
@@ -6391,6 +6694,7 @@ const bindTutorialModal = root => {
     const guidedProgress = guidedPanel ? guidedPanel.querySelector('[data-easystud-guided-progress]') : null;
     const guidedMessage = guidedPanel ? guidedPanel.querySelector('[data-easystud-guided-message] span:last-child') : null;
     const guidedMessageIcon = guidedPanel ? guidedPanel.querySelector('[data-easystud-guided-message] .fa') : null;
+    const guidedDefaultMessage = guidedMessage ? guidedMessage.textContent : '';
     const guidedTitle = guidedPanel ? guidedPanel.querySelector('.local-groupimport-easystud-guided-panel__header strong') : null;
     const guidedDefaultTitle = guidedTitle ? guidedTitle.textContent : '';
     const guidedStartButtons = modal ?
@@ -6681,6 +6985,7 @@ const bindTutorialModal = root => {
             const message = activeStep ? activeStep.getAttribute('data-easystud-guided-feedback') : '';
             const completeMessage = messageBox ? messageBox.getAttribute('data-complete-message') : '';
             const isComplete = visibleSteps.length > 0 && guidedCompleted.size >= visibleSteps.length && !!completeMessage;
+            guidedPanel.classList.toggle('is-complete', isComplete);
             if (messageBox) {
                 messageBox.classList.toggle('is-complete', isComplete);
             }
@@ -6692,6 +6997,8 @@ const bindTutorialModal = root => {
                 guidedMessage.textContent = completeMessage;
             } else if (message) {
                 guidedMessage.textContent = message;
+            } else {
+                guidedMessage.textContent = guidedDefaultMessage;
             }
         }
     }
@@ -7266,8 +7573,7 @@ const bindOptionalTools = root => {
             const compact = !root.classList.contains(compactClass);
             root.classList.toggle(compactClass, compact);
             updateDensityToggle();
-            scheduleParticipantTagOverflow(root);
-            schedulePanelActionOverflow(root);
+            scheduleResponsiveUiRefresh(root);
         });
 
         updateDensityToggle();
@@ -7331,6 +7637,7 @@ export const init = (rootId, courseId) => {
             () => bindGroupingGroupActions(root, courseId),
             () => bindBulkActions(root, courseId),
             () => bindMoveModal(root, courseId),
+            () => bindParticipantMessaging(root),
             () => ensureDuplicateButtons(root),
             () => ensureAdvancedSettingsButtons(root),
             () => normaliseAllGroupGroupingTags(root),
@@ -7359,11 +7666,11 @@ export const init = (rootId, courseId) => {
             () => syncPagination(root),
             () => scheduleGroupGroupingOverflow(root),
             () => scheduleParticipantTagOverflow(root),
-            () => window.addEventListener('resize', () => scheduleGroupGroupingOverflow(root)),
-            () => window.addEventListener('resize', () => scheduleParticipantTagOverflow(root)),
-            () => window.addEventListener('resize', () => schedulePanelActionOverflow(root)),
-            () => window.addEventListener('resize', () => syncAllGroupingGroupsCollapsible(root)),
-            () => window.addEventListener('resize', () => syncResponsiveDragAvailability(root)),
+            () => {
+                const refreshResponsiveUi = () => scheduleResponsiveUiRefresh(root);
+                window.addEventListener('resize', refreshResponsiveUi);
+                window.addEventListener('orientationchange', refreshResponsiveUi);
+            },
             () => syncUngroupedState(root, getLabels(root)),
             () => root.querySelectorAll('[data-easystud-grouping-id]').forEach(section => {
                 syncGroupingChildrenState(section, getLabels(root));
@@ -7372,7 +7679,7 @@ export const init = (rootId, courseId) => {
             () => updateParticipantEmptyState(root),
         ].forEach(runSafely);
 
-        schedulePanelActionOverflow(root);
+        scheduleResponsiveUiRefresh(root, {guide: false});
         window.requestAnimationFrame(() => {
             window.requestAnimationFrame(() => {
                 root.classList.remove('local-groupimport-easystud--booting');

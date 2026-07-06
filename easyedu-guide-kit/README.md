@@ -100,6 +100,24 @@ document.dispatchEvent(new CustomEvent('easyedu:guide-step-complete', {
 The guide also supports plugin-specific events through each step's `completeOn`
 property.
 
+## Refreshing highlights after UI movement
+
+If a guided target moves after a filter, pagination change, card expansion or
+Ajax update, ask the guide to recalculate its highlight:
+
+```js
+document.dispatchEvent(new CustomEvent('easyedu:guide-refresh-highlight', {
+  detail: {
+    target: 'createLayer',
+    dock: true
+  }
+}));
+```
+
+`target` can be a configured target key or a CSS selector. If omitted, the guide
+refreshes the current highlighted target. Set `dock: false` only when the plugin
+needs to keep the checklist on its current side.
+
 ## First visit
 
 Use a plugin-specific `storageKey` so guides do not conflict between plugins.

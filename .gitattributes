@@ -2,3 +2,4 @@
 *.json text eol=lf
 *.mustache text eol=lf
 *.md text eol=lf
+/easyedu-kit-docs export-ignore

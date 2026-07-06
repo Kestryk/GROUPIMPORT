@@ -107,6 +107,7 @@
                                 class="{{class}}"
                                 {{{attribute}}}
                                 {{#disabled}}disabled{{/disabled}}
+                                {{#hidden}}hidden{{/hidden}}
                             >
                                 <span class="fa {{icon}} me-2" aria-hidden="true"></span>
                                 <span>{{label}}</span>
@@ -244,6 +245,13 @@
                                         <div class="local-groupimport-easystud-user__headline">
                                             <div class="local-groupimport-easystud-user__headline-main">
                                                 <strong class="local-groupimport-easystud-user__name">{{fullname}}</strong>
+                                                {{#primarybadge}}
+                                                    <span
+                                                        class="local-groupimport-easystud-user__primary-badge"
+                                                        style="{{style}}"
+                                                        title="{{label}}"
+                                                    >{{value}}</span>
+                                                {{/primarybadge}}
                                             </div>
                                             <button
                                                 type="button"
@@ -326,6 +334,29 @@
                                                     </div>
                                                 </div>
                                             {{/groupingsmeta}}
+                                            {{#customfieldsmeta}}
+                                                <div class="local-groupimport-easystud-user__meta-group local-groupimport-easystud-user__meta-group--inline">
+                                                    <span class="local-groupimport-easystud-user__meta-label">{{label}}</span>
+                                                    <div class="local-groupimport-easystud-user__meta-tags">
+                                                        {{#tokens}}
+                                                            <span
+                                                                class="{{class}}"
+                                                                {{#hidden}}hidden{{/hidden}}
+                                                                {{#extra}}data-easystud-extra-tag="1"{{/extra}}
+                                                            >{{label}}</span>
+                                                        {{/tokens}}
+                                                        {{#hasmore}}
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-link p-0 local-groupimport-easystud-tags-toggle local-groupimport-easystud-token local-groupimport-easystud-token--custom-info"
+                                                                    data-easystud-toggle-tags="1"
+                                                                    data-more-label="+0"
+                                                                    data-less-label="{{showless}}"
+                                                            >+0</button>
+                                                        {{/hasmore}}
+                                                    </div>
+                                                </div>
+                                            {{/customfieldsmeta}}
                                         </div>
                                     </div>
                                 </div>
@@ -572,6 +603,7 @@
                                 class="{{class}}"
                                 {{{attribute}}}
                                 {{#disabled}}disabled{{/disabled}}
+                                {{#hidden}}hidden{{/hidden}}
                             >
                                 <span class="fa {{icon}} me-2" aria-hidden="true"></span>
                                 <span>{{label}}</span>
@@ -2051,7 +2083,7 @@
             <span>{{tutorialguidedpanelhint}}</span>
         </div>
         <div class="local-groupimport-easystud-guided-panel__footer easyedu-guided-panel__footer">
-            <button type="button" class="btn btn-outline-primary btn-sm" data-easystud-guided-return="1">
+            <button type="button" class="btn btn-outline-primary btn-sm easyedu-guided-panel__return" data-easystud-guided-return="1">
                 <span class="fa fa-question-circle me-1" aria-hidden="true"></span>
                 <span>{{tutorialreturnbutton}}</span>
             </button>

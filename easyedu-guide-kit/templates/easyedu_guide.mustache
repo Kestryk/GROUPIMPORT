@@ -1,5 +1,5 @@
 <div class="easyedu-guide" data-easyedu-guide-root>
-    <button type="button" class="btn easyedu-guide__launcher" data-easyedu-guide-open="1">
+    <button type="button" class="btn easyedu-guide__launcher" data-easyedu-guide-open="1" aria-label="{{guideopenlabel}}">
         <span class="easyedu-guide__launcher-icon" aria-hidden="true">
             <span class="fa fa-compass" aria-hidden="true"></span>
         </span>
@@ -9,9 +9,28 @@
     <div class="easyedu-guide-modal" data-easyedu-guide-modal hidden role="dialog" aria-modal="true" aria-labelledby="easyedu-guide-title">
         <div class="easyedu-guide-modal__dialog">
             <header class="easyedu-guide-modal__header">
-                <div>
-                    <span class="easyedu-guide-modal__eyebrow">{{guideeyebrow}}</span>
-                    <h2 id="easyedu-guide-title">{{guidetitle}}</h2>
+                <div class="easyedu-guide-modal__title-wrap">
+                    <span class="easyedu-guide-modal__hero-icon fa fa-question" aria-hidden="true"></span>
+                    <div>
+                        <h2 id="easyedu-guide-title">{{guidetitle}}</h2>
+                        <p>{{guidesubtitle}}</p>
+                    </div>
+                </div>
+                <div class="easyedu-guide-modal__map-flow" aria-hidden="true">
+                    <span class="easyedu-guide-modal__map-item easyedu-guide-modal__map-item--source">
+                        <span class="fa fa-sitemap"></span>
+                        <span>{{guidemapsource}}</span>
+                    </span>
+                    <span class="easyedu-guide-modal__map-arrow fa fa-arrow-right"></span>
+                    <span class="easyedu-guide-modal__map-item easyedu-guide-modal__map-item--layer">
+                        <span class="fa fa-layer-group"></span>
+                        <span>{{guidemaplayers}}</span>
+                    </span>
+                    <span class="easyedu-guide-modal__map-arrow fa fa-arrow-right"></span>
+                    <span class="easyedu-guide-modal__map-item easyedu-guide-modal__map-item--banner">
+                        <span class="fa fa-image"></span>
+                        <span>{{guidemapbanner}}</span>
+                    </span>
                 </div>
                 <button type="button" class="btn easyedu-guide-modal__close" data-easyedu-guide-close="1" aria-label="{{guidecloselabel}}">
                     <span class="fa fa-times" aria-hidden="true"></span>
@@ -24,13 +43,25 @@
                 </button>
                 <nav class="easyedu-guide-modal__nav easyedu-guide-nav" data-easyedu-guide-nav aria-label="{{guidenavigationlabel}}">
                     {{#slides}}
-                        <button type="button" class="easyedu-guide-nav-item{{#hasguidedpath}} has-guided-path{{/hasguidedpath}}" data-easyedu-guide-nav-item="{{index}}">
-                            {{#hasguidedpath}}<span class="fa fa-route" aria-hidden="true"></span>{{/hasguidedpath}}
-                            {{^hasguidedpath}}<span class="fa fa-circle-info" aria-hidden="true"></span>{{/hasguidedpath}}
+                        <button
+                            type="button"
+                            class="easyedu-guide-nav-item{{#hasguidedpath}} has-guided-path{{/hasguidedpath}}"
+                            data-easyedu-guide-nav-item="{{index}}"
+                            {{#hasguidedpath}}data-easyedu-guided-label="{{guidebadgelabel}}"{{/hasguidedpath}}
+                            {{#requires}}data-easyedu-guide-requires="{{requires}}"{{/requires}}
+                            {{#requireslabel}}data-easyedu-guide-requires-label="{{requireslabel}}"{{/requireslabel}}
+                        >
+                            <span class="easyedu-guide-nav-item__icon" aria-hidden="true">
+                                <span class="fa {{navicon}}" aria-hidden="true"></span>
+                            </span>
                             <span class="easyedu-guide-nav-copy">
-                                {{#hasguidedpath}}<small>{{guideguidedpathlabel}}</small>{{/hasguidedpath}}
+                                {{#category}}<small>{{category}}</small>{{/category}}
+                                {{^category}}{{#hasguidedpath}}<small>{{guideguidedpathlabel}}</small>{{/hasguidedpath}}{{/category}}
                                 <span>{{title}}</span>
                             </span>
+                            {{#requires}}
+                                <span class="easyedu-guide-nav-item__requirement" aria-hidden="true">{{#requiresbadge}}{{requiresbadge}}{{/requiresbadge}}{{^requiresbadge}}{{guiderequiresbadge}}{{/requiresbadge}}</span>
+                            {{/requires}}
                         </button>
                     {{/slides}}
                 </nav>
@@ -39,45 +70,131 @@
                 </button>
             </div>
 
+            <div class="easyedu-guide-modal__progress">
+                <div class="easyedu-guide-modal__progress-track">
+                    <span
+                        class="easyedu-guide-modal__progress-bar"
+                        data-easyedu-guide-progress-bar
+                        role="progressbar"
+                        aria-label="{{guideprogresslabel}}"
+                        aria-valuemin="1"
+                        aria-valuemax="{{slidecount}}"
+                        aria-valuenow="1"
+                        style="width: {{initialprogress}}%;"
+                    ></span>
+                </div>
+                <span class="easyedu-guide-modal__progress-label" data-easyedu-guide-progress-label>1/{{slidecount}}</span>
+            </div>
+
             <div class="easyedu-guide-modal__body">
                 {{#slides}}
-                    <section class="easyedu-guide-slide" data-easyedu-guide-slide="{{index}}" hidden>
-                        <div class="easyedu-guide-slide__header">
-                            <h3>{{title}}</h3>
-                            {{#target}}
-                                <button type="button" class="btn btn-outline-secondary btn-sm" data-easyedu-guide-show-target="{{target}}">
-                                    {{guideshowinterfacelabel}}
+                    <section
+                        class="easyedu-guide-slide"
+                        data-easyedu-guide-slide="{{index}}"
+                        {{#requires}}data-easyedu-guide-requires="{{requires}}"{{/requires}}
+                        hidden
+                    >
+                        <span class="easyedu-guide-slide__icon fa {{icon}}" aria-hidden="true"></span>
+                        <div>
+                            <div class="easyedu-guide-slide__header">
+                                <h3>{{title}}</h3>
+                                {{#target}}
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-sm easyedu-guide-slide__show"
+                                        data-easyedu-guide-show-target="{{target}}"
+                                    >
+                                        <span class="fa fa-location-arrow" aria-hidden="true"></span>
+                                        <span>{{guideshowinterfacelabel}}</span>
+                                    </button>
+                                {{/target}}
+                            </div>
+                            <div class="easyedu-guide-slide__content">
+                                {{{content}}}
+                            </div>
+                            {{#requires}}
+                                <div class="easyedu-guide-slide__locked">
+                                    <span class="easyedu-guide-slide__locked-icon fa fa-lock" aria-hidden="true"></span>
+                                    <div>
+                                        <h4>{{requirestitle}}</h4>
+                                        <p>{{requirescontent}}</p>
+                                        {{#unlockpath}}
+                                            <button type="button" class="btn btn-primary easyedu-guide-slide__start easyedu-guide-slide__unlock" data-easyedu-guide-start-path="{{unlockpath}}">
+                                                <span class="fa fa-tasks" aria-hidden="true"></span>
+                                                <span>{{unlocklabel}}</span>
+                                            </button>
+                                        {{/unlockpath}}
+                                    </div>
+                                </div>
+                            {{/requires}}
+                            {{#hasvisualflow}}
+                                <div class="easyedu-guide-visual easyedu-guide-visual--flow" aria-hidden="true">
+                                    <span class="easyedu-guide-mini-card easyedu-guide-mini-card--source">
+                                        <span class="fa fa-sitemap"></span>
+                                        <strong>{{guidemapsource}}</strong>
+                                    </span>
+                                    <span class="easyedu-guide-flow-arrow fa fa-arrow-right"></span>
+                                    <span class="easyedu-guide-mini-card easyedu-guide-mini-card--layer">
+                                        <span class="fa fa-layer-group"></span>
+                                        <strong>{{guidemaplayers}}</strong>
+                                    </span>
+                                    <span class="easyedu-guide-flow-arrow fa fa-arrow-right"></span>
+                                    <span class="easyedu-guide-mini-card easyedu-guide-mini-card--banner">
+                                        <span class="fa fa-image"></span>
+                                        <strong>{{guidemapbanner}}</strong>
+                                    </span>
+                                </div>
+                            {{/hasvisualflow}}
+                            {{#guidedpath}}
+                                <button type="button" class="btn btn-primary easyedu-guide-slide__start" data-easyedu-guide-start-path="{{guidedpath}}">
+                                    <span class="fa fa-play" aria-hidden="true"></span>
+                                    <span>{{guidestartpathlabel}}</span>
                                 </button>
-                            {{/target}}
+                            {{/guidedpath}}
                         </div>
-                        <div class="easyedu-guide-slide__content">
-                            {{{content}}}
-                        </div>
-                        {{#guidedpath}}
-                            <button type="button" class="btn btn-primary easyedu-guide-slide__start" data-easyedu-guide-start-path="{{guidedpath}}">
-                                <span class="fa fa-play" aria-hidden="true"></span>
-                                <span>{{guidestartpathlabel}}</span>
-                            </button>
-                        {{/guidedpath}}
                     </section>
                 {{/slides}}
             </div>
 
             <footer class="easyedu-guide-modal__footer">
-                <button type="button" class="btn btn-outline-secondary" data-easyedu-guide-previous="1">{{guidepreviouslabel}}</button>
-                <button type="button" class="btn btn-primary" data-easyedu-guide-next="1">{{guidenextlabel}}</button>
+                <span class="easyedu-guide-modal__step-count" data-easyedu-guide-progress-label data-progress-label="{{guidesteplabel}}">1/{{slidecount}}</span>
+                <div class="easyedu-guide-modal__footer-actions">
+                    <button type="button" class="btn btn-outline-secondary" data-easyedu-guide-previous="1">{{guidepreviouslabel}}</button>
+                    <button type="button" class="btn btn-primary" data-easyedu-guide-next="1">{{guidenextlabel}}</button>
+                </div>
             </footer>
         </div>
     </div>
 
+    <aside class="easyedu-guide-interface-return" data-easyedu-guide-interface-return hidden>
+        <div class="easyedu-guide-interface-return__text">
+            <strong>{{guidereturnlabel}}</strong>
+            <span>{{guidereturndesc}}</span>
+        </div>
+        <div class="easyedu-guide-interface-return__actions">
+            <button type="button" class="btn btn-primary btn-sm easyedu-guide-interface-return__button" data-easyedu-guide-interface-return-button="1">
+                <span class="fa fa-question-circle" aria-hidden="true"></span>
+                <span>{{guidereturnbutton}}</span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm easyedu-guide-interface-return__dismiss"
+                data-easyedu-guide-interface-return-dismiss="1"
+                aria-label="{{guidereturndismiss}}"
+            >
+                <span class="fa fa-times" aria-hidden="true"></span>
+            </button>
+        </div>
+    </aside>
+
     <aside class="easyedu-guide-checklist easyedu-guided-panel" data-easyedu-guide-checklist hidden>
         <div class="easyedu-guide-checklist__header easyedu-guided-panel__header">
             <div>
-                <strong>{{guidechecklisttitle}}</strong>
-                <span>{{guideguidedpathlabel}}</span>
+                <strong data-easyedu-guide-checklist-title>{{guidechecklisttitle}}</strong>
+                <span data-easyedu-guide-checklist-subtitle>{{guideguidedpathlabel}}</span>
             </div>
             <div class="easyedu-guided-panel__header-actions">
-                <button type="button" class="btn btn-link easyedu-guided-panel__minimize" data-easyedu-guide-checklist-minimize="1" aria-label="{{guideminimizelabel}}">
+                <button type="button" class="btn btn-link easyedu-guided-panel__minimize" data-easyedu-guide-checklist-minimize="1" aria-label="{{guideminimizelabel}}" aria-expanded="true">
                     <span class="fa fa-minus" aria-hidden="true"></span>
                 </button>
                 <button type="button" class="btn btn-link easyedu-guided-panel__close" data-easyedu-guide-checklist-close="1" aria-label="{{guidecloselabel}}">
@@ -86,12 +203,19 @@
             </div>
         </div>
         <div class="easyedu-guide-checklist__items easyedu-guided-panel__steps" data-easyedu-guide-checklist-items></div>
-        <div class="easyedu-guide-checklist__complete easyedu-guided-panel__message" data-easyedu-guide-checklist-message>
-            <span class="fa fa-check-circle" aria-hidden="true"></span>
+        <div
+            class="easyedu-guide-checklist__complete easyedu-guided-panel__message"
+            data-easyedu-guide-checklist-message
+            data-complete-message="{{guidechecklistdonelabel}}"
+        >
+            <span class="fa fa-location-arrow" aria-hidden="true"></span>
             <span>{{guidechecklistdonelabel}}</span>
         </div>
         <div class="easyedu-guided-panel__footer">
-            <button type="button" class="btn btn-outline-primary btn-sm" data-easyedu-guide-checklist-return="1">{{guidereturnlabel}}</button>
+            <button type="button" class="btn btn-outline-primary btn-sm easyedu-guided-panel__return" data-easyedu-guide-checklist-return="1">
+                <span class="fa fa-question-circle" aria-hidden="true"></span>
+                <span>{{guidereturnlabel}}</span>
+            </button>
         </div>
     </aside>
 </div>

@@ -1,0 +1,327 @@
+// EasyStud administration settings page.
+//
+// This file only targets the Moodle admin settings page for this plugin. It
+// keeps Moodle's native admin form controls and applies the EasyEdu visual
+// language around them so settings remain accessible and theme-overridable.
+@use "../easyedu" as easyedu;
+
+#page-admin-setting-local_groupimport {
+  @include easyedu.token-defaults;
+  @include easyedu.groupimport-compat-tokens;
+
+  .settingsform {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 76rem;
+  }
+
+  #adminsettings {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: min(100%, 76rem);
+  }
+
+  .local-groupimport-admin-settings {
+    @include easyedu.panel-shell;
+
+    background:
+      radial-gradient(circle at 3rem 2.2rem, color-mix(in srgb, var(--easyedu-primary) 10%, transparent), transparent 8rem),
+      linear-gradient(135deg, #fff 0%, var(--easyedu-surface-soft) 100%);
+    display: grid;
+    gap: 1rem;
+    margin: 0.65rem 0 1.15rem;
+    overflow: hidden;
+    padding: 1rem;
+  }
+
+  .local-groupimport-admin-settings__hero {
+    align-items: flex-start;
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .local-groupimport-admin-settings__hero > .fa {
+    align-items: center;
+    background: linear-gradient(135deg, var(--easyedu-primary) 0%, var(--easyedu-accent) 100%);
+    border-radius: 0.95rem;
+    box-shadow: 0 0.45rem 1rem rgba(15, 108, 191, 0.18);
+    color: #fff;
+    display: inline-flex;
+    font-size: 1.05rem;
+    height: 2.75rem;
+    justify-content: center;
+    line-height: 1;
+    width: 2.75rem;
+  }
+
+  .local-groupimport-admin-settings__hero-copy {
+    min-width: 0;
+
+    h3 {
+      border: 0;
+      color: var(--easyedu-text);
+      font-size: 1.12rem;
+      font-weight: 780;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin: 0 0 0.35rem;
+    }
+
+    p {
+      color: var(--easyedu-text-muted);
+      font-size: 0.92rem;
+      line-height: 1.52;
+      margin: 0;
+      max-width: 58rem;
+    }
+  }
+
+  .local-groupimport-admin-settings__field-grid {
+    align-items: stretch;
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .local-groupimport-admin-settings__field-card {
+    @include easyedu.filter-shell;
+
+    align-content: start;
+    display: grid;
+    gap: 0.65rem;
+
+    h4 {
+      color: var(--easyedu-text-muted);
+      font-size: 0.76rem;
+      font-weight: 820;
+      letter-spacing: 0.035em;
+      line-height: 1.2;
+      margin: 0;
+      text-transform: uppercase;
+    }
+  }
+
+  .local-groupimport-admin-settings__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.42rem;
+  }
+
+  .local-groupimport-admin-settings__chip {
+    @include easyedu.token-pill(var(--easyedu-info-soft), #c8dff1, var(--easyedu-primary-strong));
+
+    gap: 0.38rem;
+    max-width: 100%;
+
+    .fa {
+      font-size: 0.72rem;
+      opacity: 0.82;
+    }
+  }
+
+  .local-groupimport-admin-settings__chip--custom {
+    background: var(--easyedu-accent-soft);
+    border-color: #c5e4d4;
+    color: color-mix(in srgb, var(--easyedu-accent) 82%, #000 18%);
+  }
+
+  .local-groupimport-admin-settings__chip-label,
+  .local-groupimport-admin-settings__chip-key {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .local-groupimport-admin-settings__chip-label {
+    max-width: 16rem;
+  }
+
+  .local-groupimport-admin-settings__chip-key {
+    color: color-mix(in srgb, currentColor 68%, #fff 32%);
+    font-size: 0.68rem;
+    font-weight: 760;
+    max-width: 12rem;
+  }
+
+  .local-groupimport-admin-settings__empty {
+    @include easyedu.inline-empty-state;
+
+    align-items: flex-start;
+    min-height: 2.7rem;
+    text-align: left;
+  }
+
+  .local-groupimport-admin-settings__hint {
+    align-items: flex-start;
+    background: color-mix(in srgb, var(--easyedu-accent-soft) 72%, #fff 28%);
+    border: 1px solid #c8e4d5;
+    border-radius: var(--easyedu-control-radius);
+    color: #315b48;
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.75rem 0.85rem;
+
+    strong {
+      color: color-mix(in srgb, var(--easyedu-accent) 76%, #000 24%);
+      font-size: 0.84rem;
+      font-weight: 820;
+      line-height: 1.25;
+    }
+
+    span {
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+  }
+
+  #admin-identifieroverview {
+    margin-bottom: 0.85rem;
+
+    .form-description,
+    .form-setting {
+      max-width: none;
+    }
+  }
+
+  #admin-participantdisplayoverview {
+    margin-bottom: 0.85rem;
+
+    .form-description,
+    .form-setting {
+      max-width: none;
+    }
+  }
+
+  #admin-alloweduserfields,
+  #admin-participantprimarybadgefield,
+  #admin-participantprimarybadgebgcolor,
+  #admin-participantprimarybadgetextcolor,
+  #admin-participantdetailfield1,
+  #admin-participantdetailfield2 {
+    @include easyedu.filter-shell;
+
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.75rem;
+    max-width: 100%;
+    width: 100%;
+
+    .form-label label {
+      color: var(--easyedu-text);
+      font-size: 0.98rem;
+      font-weight: 780;
+      letter-spacing: -0.005em;
+    }
+
+    .form-description {
+      color: var(--easyedu-text-muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      margin-top: 0.3rem;
+      max-width: 56rem;
+    }
+
+    .form-setting > div:first-child {
+      max-width: min(100%, 34rem);
+    }
+  }
+
+  #admin-participantprimarybadgefield,
+  #admin-participantprimarybadgebgcolor,
+  #admin-participantprimarybadgetextcolor,
+  #admin-participantdetailfield1,
+  #admin-participantdetailfield2 {
+    .form-setting > div:first-child {
+      max-width: min(100%, 22rem);
+    }
+  }
+
+  .local-groupimport-admin-settings--participant-display {
+    background:
+      radial-gradient(circle at 3rem 2.2rem, color-mix(in srgb, var(--easyedu-accent) 12%, transparent), transparent 8rem),
+      linear-gradient(135deg, #fff 0%, #f7fbf9 100%);
+
+    .local-groupimport-admin-settings__hero > .fa {
+      background: linear-gradient(135deg, var(--easyedu-accent) 0%, var(--easyedu-primary) 100%);
+    }
+  }
+
+  .local-groupimport-admin-settings__color-control {
+    @include easyedu.color-picker-control;
+  }
+
+  .local-groupimport-admin-settings__color-input {
+    @include easyedu.color-picker-input;
+  }
+
+  .local-groupimport-admin-settings__color-value {
+    @include easyedu.color-picker-value;
+  }
+
+  #adminsettings > .settingsform > .row:last-child {
+    justify-content: center;
+    margin-left: 0;
+    margin-right: 0;
+
+    > [class*="offset-"] {
+      flex: 0 0 auto;
+      margin-left: 0;
+      max-width: none;
+      padding-left: 0;
+      padding-right: 0;
+      width: auto;
+    }
+  }
+
+  select[name="s_local_groupimport_alloweduserfields[]"],
+  select[name="s_local_groupimport_participantprimarybadgefield"],
+  select[name="s_local_groupimport_participantdetailfield1"],
+  select[name="s_local_groupimport_participantdetailfield2"],
+  #id_s_local_groupimport_alloweduserfields {
+    background: var(--easyedu-surface);
+    border: 1px solid var(--easyedu-control-border);
+    border-radius: var(--easyedu-control-radius);
+    box-shadow: none;
+    display: block;
+    max-width: 100%;
+    min-height: 10.5rem;
+    padding: 0.35rem;
+    transition:
+      border-color var(--easyedu-motion-fast) ease,
+      box-shadow var(--easyedu-motion-fast) ease;
+    width: min(100%, 34rem) !important;
+
+    &:focus {
+      border-color: var(--easyedu-control-focus-border);
+      box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+      outline: 0;
+    }
+
+    option {
+      border-radius: 0.42rem;
+      margin: 0.08rem 0;
+      padding: 0.34rem 0.42rem;
+    }
+  }
+
+  select[name="s_local_groupimport_participantprimarybadgefield"],
+  select[name="s_local_groupimport_participantdetailfield1"],
+  select[name="s_local_groupimport_participantdetailfield2"] {
+    min-height: 2.7rem;
+    padding: 0.45rem 0.65rem;
+    width: min(100%, 22rem) !important;
+  }
+
+  @media (max-width: 48rem) {
+    .local-groupimport-admin-settings {
+      padding: 0.85rem;
+    }
+
+    .local-groupimport-admin-settings__hero,
+    .local-groupimport-admin-settings__field-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
