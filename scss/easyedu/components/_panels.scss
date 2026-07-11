@@ -52,6 +52,98 @@
   min-width: 0;
 }
 
+@mixin admin-section-panel {
+  background: linear-gradient(
+    180deg,
+    var(--easyedu-surface) 0%,
+    color-mix(in srgb, var(--easyedu-surface) 96%, var(--easyedu-primary-soft) 4%) 100%
+  );
+  border: 1px solid var(--easyedu-card-border);
+  border-radius: var(--easyedu-card-radius);
+  box-shadow: none;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@mixin admin-section-header($accent: var(--easyedu-primary)) {
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--easyedu-card-border) 68%, transparent 32%);
+  display: flex;
+  gap: 0.7rem;
+  min-height: 3.5rem;
+  padding: 0.78rem 0.9rem;
+
+  > .fa,
+  > [aria-hidden="true"] {
+    align-items: center;
+    background: color-mix(in srgb, $accent 10%, var(--easyedu-surface) 90%);
+    border-radius: 0.62rem;
+    color: $accent;
+    display: inline-flex;
+    flex: 0 0 2rem;
+    height: 2rem;
+    justify-content: center;
+    width: 2rem;
+  }
+}
+
+@mixin admin-option-list {
+  background: color-mix(in srgb, var(--easyedu-surface-soft) 58%, var(--easyedu-surface) 42%);
+  border-radius: 0.68rem;
+  display: grid;
+  gap: 0;
+  padding: 0.28rem 0.68rem;
+
+  > * {
+    border-bottom: 1px solid color-mix(in srgb, var(--easyedu-card-border) 52%, transparent 48%);
+    margin: 0;
+    min-width: 0;
+    padding: 0.56rem 0.12rem;
+  }
+
+  > *:last-child {
+    border-bottom: 0;
+  }
+}
+
+@mixin semantic-accent-panel($variant: primary, $rail-height: 0.35rem) {
+  @include panel-shell;
+
+  background: var(--easyedu-semantic-panel-bg);
+  box-shadow: var(--easyedu-shadow-soft);
+  overflow: visible;
+  position: relative;
+
+  @if $variant == success {
+    border-color: var(--easyedu-semantic-border-success);
+  } @else if $variant == warning {
+    border-color: var(--easyedu-semantic-border-warning);
+  } @else if $variant == danger {
+    border-color: var(--easyedu-semantic-border-danger);
+  } @else {
+    border-color: var(--easyedu-semantic-border-primary);
+  }
+
+  &::before {
+    background: var(--easyedu-semantic-rail-primary);
+    content: "";
+    height: $rail-height;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+
+    @if $variant == success {
+      background: var(--easyedu-semantic-rail-success);
+    } @else if $variant == warning {
+      background: var(--easyedu-semantic-rail-warning);
+    } @else if $variant == danger {
+      background: var(--easyedu-semantic-rail-danger);
+    }
+  }
+}
+
 @mixin split-layout($left: minmax(22rem, 0.95fr), $right: minmax(28rem, 1.35fr)) {
   align-items: stretch;
   display: grid;

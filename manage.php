@@ -43,9 +43,19 @@ $PAGE->set_pagetype('course-view-participants');
 $PAGE->set_secondary_active_tab('participants');
 $PAGE->set_title(get_string('easystudmanager', 'local_groupimport'));
 $PAGE->set_heading(format_string($course->fullname));
+$animationconfig = get_config('local_groupimport', 'enableanimations');
+$animationsenabled = $animationconfig === false ? true : (bool)$animationconfig;
+if (!$animationsenabled) {
+    $PAGE->add_body_class('local-groupimport-motion-disabled');
+    $PAGE->add_body_class('easyedu-motion-disabled');
+}
 $PAGE->requires->js_call_amd('local_groupimport/course_manager', 'init', [
     'local-groupimport-easystud',
     $course->id,
+]);
+$PAGE->requires->js_call_amd('local_groupimport/easyedu_guide', 'init', [
+    '[data-easyedu-guide-root]',
+    local_groupimport_build_easyedu_guide_js_config($course->id),
 ]);
 
 $action = optional_param('action', '', PARAM_ALPHA);
@@ -129,8 +139,7 @@ $nativeparticipantsurl = new moodle_url('/user/index.php', [
     'local_groupimport_native' => 1,
 ]);
 
-echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('local_groupimport/manage', local_groupimport_build_manage_template_data(
+$templatedata = local_groupimport_build_manage_template_data(
     $course,
     $users,
     $groups,
@@ -139,7 +148,12 @@ echo $OUTPUT->render_from_template('local_groupimport/manage', local_groupimport
     $csvurl,
     $nativeparticipantsurl,
     $OUTPUT->render_participants_tertiary_nav($course)
-));
+);
+$templatedata['animationsenabled'] = $animationsenabled;
+$templatedata['motionpolicy'] = $animationsenabled ? 'enabled' : 'disabled';
+
+echo $OUTPUT->header();
+echo $OUTPUT->render_from_template('local_groupimport/manage', $templatedata);
 
 echo $OUTPUT->footer();
 
@@ -336,7 +350,6 @@ function local_groupimport_build_manage_template_data(
         'advancedsettingshidepicture' => get_string('advancedsettingshidepicture', 'local_groupimport'),
         'advancedsettingsconfigdata' => get_string('advancedsettingsconfigdata', 'local_groupimport'),
         'advancedsettingsnotset' => get_string('advancedsettingsnotset', 'local_groupimport'),
-        'advancedsettingsdescription' => get_string('description'),
         'moveconfirmone' => get_string('moveconfirmone', 'local_groupimport'),
         'moveconfirmmany' => get_string('moveconfirmmany', 'local_groupimport'),
         'messagesendunavailable' => get_string('cannotsendmessages', 'core_message'),
@@ -720,7 +733,8 @@ function local_groupimport_build_manage_template_data(
             [
                 'icon' => 'fa-trash',
                 'label' => get_string('deletegroupsselection', 'local_groupimport'),
-                'class' => 'btn btn-outline-danger btn-sm local-groupimport-easystud__participant-group-action local-groupimport-easystud__participant-group-action--first',
+                'class' => 'btn btn-outline-danger btn-sm local-groupimport-easystud__participant-group-action ' .
+                    'local-groupimport-easystud__participant-group-action--first',
                 'attribute' => 'data-easystud-delete-selected-groups="1"',
                 'disabled' => true,
             ],
@@ -851,6 +865,9 @@ function local_groupimport_build_manage_template_data(
         'contextactions' => local_groupimport_build_context_actions_template_data($alloweduserfields, $canmessageparticipants),
     ];
 
+    $templatedata['useeasyeduguide'] = true;
+    $templatedata['easyeduguide'] = local_groupimport_build_easyedu_guide_template_data($templatedata);
+
     foreach ($users as $user) {
         $customsearchvalues = [];
         foreach ($user['participantdisplayfields'] ?? [] as $field) {
@@ -901,12 +918,24 @@ function local_groupimport_build_manage_template_data(
     }
 
     foreach ($groupings as $grouping) {
-        $templatedata['groupings'][] = local_groupimport_build_grouping_template_data($course->id, $grouping, $groups, $users, $groupings);
+        $templatedata['groupings'][] = local_groupimport_build_grouping_template_data(
+            $course->id,
+            $grouping,
+            $groups,
+            $users,
+            $groupings
+        );
     }
 
     foreach ($ungroupedgroupids as $groupid) {
         if (isset($groups[$groupid])) {
-        $templatedata['ungroupedgroups'][] = local_groupimport_build_group_template_data($course->id, $groups[$groupid], $users, false, $groupings);
+            $templatedata['ungroupedgroups'][] = local_groupimport_build_group_template_data(
+                $course->id,
+                $groups[$groupid],
+                $users,
+                false,
+                $groupings
+            );
         }
     }
 
@@ -919,6 +948,540 @@ function local_groupimport_build_manage_template_data(
     $templatedata['structurefocusgroups'] = $templatedata['participantfocusgroups'];
 
     return $templatedata;
+}
+
+/**
+ * Build the shared EasyEdu guide template data from the existing EasyStud tutorial data.
+ *
+ * @param array $templatedata EasyStud page template data.
+ * @return array
+ */
+function local_groupimport_build_easyedu_guide_template_data(array $templatedata): array {
+    $slides = [];
+    foreach ($templatedata['tutorialsteps'] as $index => $step) {
+        $slide = [
+            'index' => $index,
+            'navicon' => $step['icon'],
+            'icon' => $step['icon'],
+            'category' => $step['category'] ?? '',
+            'title' => $step['title'],
+            'content' => html_writer::tag('p', s($step['content'])),
+        ];
+
+        if (!empty($step['highlightselector'])) {
+            $slide['target'] = 'slide-' . $index;
+            $slide['targetselector'] = $step['highlightselector'];
+        }
+
+        if (!empty($step['visualconcepts'])) {
+            $slide['hasvisualflow'] = true;
+        } else if (!empty($step['visualkeyboard'])) {
+            $slide['visualkeys'] = [
+                'items' => [
+                    ['key' => 'Tab', 'label' => $templatedata['tutorialvisualkeyboardtab']],
+                    ['key' => 'Space', 'label' => $templatedata['tutorialvisualkeyboardspace']],
+                    ['key' => 'Shift', 'label' => $templatedata['tutorialvisualselect']],
+                ],
+            ];
+        } else if (!empty($step['visualparticipantcard']) || !empty($step['visualgroupcard']) ||
+                !empty($step['visualgroupingcard'])) {
+            $cardtype = !empty($step['visualparticipantcard']) ? 'participant' :
+                (!empty($step['visualgroupcard']) ? 'group' : 'grouping');
+            $cardicons = [
+                'participant' => 'fa-user',
+                'group' => 'fa-users',
+                'grouping' => 'fa-layer-group',
+            ];
+            $cardtitles = [
+                'participant' => $templatedata['tutorialparticipantlabel'],
+                'group' => $templatedata['tutorialgrouplabel'],
+                'grouping' => $templatedata['tutorialgroupinglabel'],
+            ];
+            $cardmeta = [
+                'participant' => $templatedata['tutorialvisualparticipantmeta'],
+                'group' => $templatedata['tutorialvisualgroupmeta'],
+                'grouping' => $templatedata['tutorialvisualgroupingmeta'],
+            ];
+            $carddetails = [
+                'participant' => [
+                    ['icon' => 'fa-user-tag', 'label' => $templatedata['tutorialvisualrolebadge'], 'type' => 'participant'],
+                    ['icon' => 'fa-users', 'label' => $templatedata['tutorialvisualgroupbadge'], 'type' => 'group'],
+                ],
+                'group' => [
+                    ['icon' => 'fa-user', 'label' => $templatedata['tutorialvisualstudentone'], 'type' => 'participant'],
+                    ['icon' => 'fa-user', 'label' => $templatedata['tutorialvisualstudenttwo'], 'type' => 'participant'],
+                ],
+                'grouping' => [
+                    ['icon' => 'fa-users', 'label' => $templatedata['tutorialvisualassignmentgroupa'], 'type' => 'group'],
+                    ['icon' => 'fa-users', 'label' => $templatedata['tutorialvisualassignmentgroupb'], 'type' => 'group'],
+                ],
+            ];
+            $slide['visualcarddetail'] = [
+                'card' => [
+                    'type' => $cardtype,
+                    'icon' => $cardicons[$cardtype],
+                    'title' => $cardtitles[$cardtype],
+                    'meta' => $cardmeta[$cardtype],
+                ],
+                'details' => $carddetails[$cardtype],
+            ];
+        } else if (!empty($step['visualfirststructure'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'workflow',
+                'items' => [
+                    ['icon' => 'fa-users', 'label' => $templatedata['tutorialvisualstructurestepone']],
+                    ['icon' => 'fa-layer-group', 'label' => $templatedata['tutorialvisualstructuresteptwo']],
+                    ['icon' => 'fa-arrow-right', 'label' => $templatedata['tutorialvisualstructurestepthree']],
+                ],
+            ];
+        } else if (!empty($step['visualfilters'])) {
+            $slide['visualfiltersdemo'] = [
+                'searchlabel' => $templatedata['tutorialvisualsearch'],
+                'actions' => [
+                    ['label' => $templatedata['selectresults']],
+                    ['label' => $templatedata['morefilters']],
+                ],
+                'badges' => [
+                    ['label' => $templatedata['tutorialvisualrolebadge'], 'type' => 'participant'],
+                    ['label' => $templatedata['tutorialvisualgroupbadge'], 'type' => 'group'],
+                ],
+            ];
+        } else if (!empty($step['visualassignment'])) {
+            $slide['visualassignment'] = [
+                'rows' => [
+                    ['items' => [
+                        [
+                            'type' => 'participant',
+                            'icon' => 'fa-user',
+                            'title' => $templatedata['tutorialvisualstudentone'],
+                            'arrowafter' => true,
+                        ],
+                        [
+                            'type' => 'group',
+                            'icon' => 'fa-users',
+                            'title' => $templatedata['tutorialvisualassignmentgroupa'],
+                            'arrowafter' => true,
+                        ],
+                        [
+                            'type' => 'grouping',
+                            'icon' => 'fa-layer-group',
+                            'title' => $templatedata['tutorialvisualassignmentgrouping'],
+                        ],
+                    ]],
+                    ['items' => [
+                        [
+                            'type' => 'participant',
+                            'icon' => 'fa-user',
+                            'title' => $templatedata['tutorialvisualstudenttwo'],
+                            'arrowafter' => true,
+                        ],
+                        [
+                            'type' => 'group',
+                            'icon' => 'fa-users',
+                            'title' => $templatedata['tutorialvisualassignmentgroupb'],
+                            'arrowafter' => true,
+                        ],
+                        [
+                            'type' => 'grouping',
+                            'icon' => 'fa-layer-group',
+                            'title' => $templatedata['tutorialvisualassignmentgrouping'],
+                        ],
+                    ]],
+                ],
+            ];
+        } else if (!empty($step['visualemptycourse'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'status',
+                'items' => [
+                    ['icon' => 'fa-seedling', 'label' => $templatedata['tutorialvisualemptycoursecreate']],
+                    ['icon' => 'fa-users', 'label' => $templatedata['tutorialvisualemptycourseexample']],
+                    ['icon' => 'fa-layer-group', 'label' => $templatedata['tutorialguidedcreategrouping']],
+                ],
+            ];
+        } else if (!empty($step['visualtextadd'])) {
+            $slide['visualpaste'] = [
+                'panels' => [
+                    [
+                        'icon' => 'fa-at',
+                        'title' => $templatedata['tutorialvisualtextadd'],
+                        'input' => $templatedata['tutorialvisualpasteids'],
+                        'chips' => [
+                            $templatedata['tutorialvisualstudentone'],
+                            $templatedata['tutorialvisualstudenttwo'],
+                            $templatedata['tutorialvisualidentifierchips'],
+                        ],
+                        'arrowafter' => true,
+                    ],
+                    [
+                        'icon' => 'fa-layer-group',
+                        'title' => $templatedata['tutorialvisualgroupids'],
+                        'input' => get_string('tutorialvisualgroupidsexample', 'local_groupimport'),
+                        'chips' => [
+                            $templatedata['tutorialvisualassignmentgroupa'],
+                            $templatedata['tutorialvisualassignmentgroupb'],
+                        ],
+                    ],
+                ],
+            ];
+        } else if (!empty($step['visualcontextmenu'])) {
+            $slide['visualcontextmenu'] = [
+                'cardicon' => 'fa-user',
+                'cardlabel' => $templatedata['tutorialparticipantlabel'],
+                'menutitle' => $templatedata['tutorialvisualrightclick'],
+                'items' => [
+                    ['icon' => 'fa-copy', 'label' => $templatedata['tutorialvisualcopy']],
+                    ['icon' => 'fa-arrow-right', 'label' => $templatedata['tutorialvisualmove']],
+                    ['icon' => 'fa-check-square', 'label' => $templatedata['tutorialvisualselect']],
+                ],
+                'note' => $templatedata['tutorialvisualcontextdesc'],
+            ];
+        } else if (!empty($step['visualactionmodal'])) {
+            $slide['visualactionflow'] = [
+                'selection' => [
+                    $templatedata['tutorialvisualstudentone'],
+                    $templatedata['tutorialvisualstudenttwo'],
+                ],
+                'actionicon' => 'fa-arrow-right',
+                'actionlabel' => $templatedata['tutorialvisualactionbutton'],
+                'destinationtitle' => $templatedata['tutorialvisualdestination'],
+                'destinations' => [
+                    $templatedata['tutorialvisualassignmentgroupa'],
+                    $templatedata['tutorialvisualassignmentgroupb'],
+                ],
+            ];
+        } else if (!empty($step['visualactions'])) {
+            $slide['visualdragdrop'] = [
+                'lanes' => [
+                    [
+                        'sourcetype' => 'participant',
+                        'sourceicon' => 'fa-user',
+                        'sourcelabel' => $templatedata['tutorialparticipantlabel'],
+                        'targeticon' => 'fa-users',
+                        'targetlabel' => $templatedata['tutorialgrouplabel'],
+                    ],
+                    [
+                        'sourcetype' => 'group',
+                        'sourceicon' => 'fa-users',
+                        'sourcelabel' => $templatedata['tutorialgrouplabel'],
+                        'targeticon' => 'fa-layer-group',
+                        'targetlabel' => $templatedata['tutorialgroupinglabel'],
+                    ],
+                ],
+                'selection' => [
+                    $templatedata['tutorialvisualstudentone'],
+                    $templatedata['tutorialvisualstudenttwo'],
+                ],
+                'menuitems' => [
+                    ['icon' => 'fa-copy', 'label' => $templatedata['tutorialvisualcopy']],
+                    ['icon' => 'fa-arrow-right', 'label' => $templatedata['tutorialvisualmove']],
+                    ['icon' => 'fa-mouse-pointer', 'label' => $templatedata['tutorialvisualrightclick']],
+                ],
+            ];
+        } else if (!empty($step['visualworkflow'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'workflow',
+                'items' => [
+                    ['icon' => 'fa-arrows-alt', 'label' => $templatedata['tutorialvisualworkflowdirect']],
+                    ['icon' => 'fa-check-square', 'label' => $templatedata['tutorialvisualworkflowmany']],
+                    ['icon' => 'fa-at', 'label' => $templatedata['tutorialvisualworkflowprecise']],
+                    ['icon' => 'fa-filter', 'label' => $templatedata['tutorialvisualworkflowreview']],
+                ],
+            ];
+        } else if (!empty($step['visualshortcuts'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'workflow',
+                'items' => [
+                    ['icon' => 'fa-mouse-pointer', 'label' => $templatedata['tutorialvisualshortcutcontext']],
+                    ['icon' => 'fa-check-square', 'label' => $templatedata['tutorialvisualshortcutselect']],
+                    ['icon' => 'fa-keyboard', 'label' => $templatedata['tutorialvisualshortcutkeyboard']],
+                    ['icon' => 'fa-at', 'label' => $templatedata['tutorialvisualshortcuttext']],
+                ],
+            ];
+        } else if (!empty($step['visualcreation'])) {
+            $slide['visualformula'] = [
+                'expression' => get_string('tutorialvisualcreationformula', 'local_groupimport'),
+                'results' => [
+                    get_string('tutorialvisualcreationresultone', 'local_groupimport'),
+                    get_string('tutorialvisualcreationresulttwo', 'local_groupimport'),
+                    get_string('tutorialvisualcreationresultthree', 'local_groupimport'),
+                    get_string('tutorialvisualcreationresultfour', 'local_groupimport'),
+                ],
+            ];
+        } else if (!empty($step['visualmistakes'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'warning-grid',
+                'items' => [
+                    ['icon' => 'fa-ban', 'label' => $templatedata['tutorialvisualmistakeone'], 'state' => 'warning'],
+                    ['icon' => 'fa-random', 'label' => $templatedata['tutorialvisualmistaketwo'], 'state' => 'warning'],
+                    ['icon' => 'fa-layer-group', 'label' => $templatedata['tutorialvisualmistakethree'], 'state' => 'warning'],
+                ],
+            ];
+        } else if (!empty($step['visualcompletion'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'status',
+                'items' => [
+                    ['icon' => 'fa-check-circle', 'label' => $templatedata['tutorialvisualcompletionone']],
+                    ['icon' => 'fa-users-cog', 'label' => $templatedata['tutorialvisualcompletiontwo']],
+                    ['icon' => 'fa-search', 'label' => $templatedata['tutorialvisualcompletionthree']],
+                    ['icon' => 'fa-broom', 'label' => $templatedata['tutorialvisualcompletionfour']],
+                ],
+            ];
+        } else if (!empty($step['visualtakeaway'])) {
+            $slide['visualsteps'] = [
+                'layout' => 'workflow',
+                'items' => [
+                    ['icon' => 'fa-user', 'label' => $templatedata['tutorialvisualtakeawayone']],
+                    ['icon' => 'fa-users', 'label' => $templatedata['tutorialvisualtakeawaytwo']],
+                    ['icon' => 'fa-layer-group', 'label' => $templatedata['tutorialvisualtakeawaythree']],
+                    ['icon' => 'fa-graduation-cap', 'label' => $templatedata['tutorialvisualtakeawayfour']],
+                ],
+            ];
+        }
+
+        if (!empty($step['visualguided'])) {
+            $slide['hasguidedpath'] = true;
+            $slide['guidedpath'] = 'first-structure';
+            $slide['guidedpathtitle'] = $templatedata['tutorialguidedpaneltitle'];
+            $slide['guidedpathcontent'] = $templatedata['tutorialguidedpanelhint'];
+            $slide['guidedpathsteps'] = [
+                'items' => [
+                    $templatedata['tutorialvisualguidedone'],
+                    $templatedata['tutorialvisualguidedtwo'],
+                    $templatedata['tutorialvisualguidedthree'],
+                ],
+            ];
+        } else if (!empty($step['visualemptycourse'])) {
+            $slide['hasguidedpath'] = true;
+            $slide['guidedpath'] = 'create-grouping';
+            $slide['guidedpathtitle'] = $templatedata['tutorialguidedgroupingtitle'];
+            $slide['guidedpathcontent'] = $templatedata['tutorialemptycoursecontent'];
+            $slide['guidedpathsteps'] = [
+                'items' => [
+                    $templatedata['tutorialguidedcreategrouping'],
+                    $templatedata['tutorialguidedaddgrouptogrouping'],
+                    $templatedata['tutorialguidedverifygrouping'],
+                ],
+            ];
+        } else if (!empty($step['visualactions'])) {
+            $slide['hasguidedpath'] = true;
+            $slide['guidedpath'] = 'try-actions';
+            $slide['guidedpathtitle'] = $templatedata['tutorialguidedactionstitle'];
+            $slide['guidedpathcontent'] = $templatedata['tutorialactionscontent'];
+            $slide['guidedpathsteps'] = [
+                'items' => [
+                    $templatedata['tutorialguidedtrydrag'],
+                    $templatedata['tutorialguidedtryselection'],
+                    $templatedata['tutorialguidedtrycontext'],
+                ],
+            ];
+        }
+
+        $slides[] = $slide;
+    }
+
+    $slidecount = max(1, count($slides));
+
+    return [
+        'rootclass' => 'local-groupimport-easystud-easyedu-guide',
+        'guideopenlabel' => $templatedata['tutoriallabel'],
+        'guidecloselabel' => get_string('closebuttontitle', 'core'),
+        'guidetitle' => $templatedata['tutorialtitle'],
+        'guidesubtitle' => $templatedata['tutorialintro'],
+        'guidepreviouslabel' => $templatedata['tutorialprevious'],
+        'guidenextlabel' => $templatedata['tutorialnext'],
+        'guidenavigationlabel' => $templatedata['tutorialtitle'],
+        'guideprogresslabel' => $templatedata['tutorialprogresslabel'],
+        'guidebadgelabel' => get_string('guidebadgelabel', 'local_groupimport'),
+        'guideguidedpathlabel' => $templatedata['tutorialguidedpaneltitle'],
+        'guiderequiresbadge' => get_string('guiderequiresbadge', 'local_groupimport'),
+        'guideshowinterfacelabel' => $templatedata['tutorialshowinview'],
+        'guidemapsource' => $templatedata['tutorialparticipantlabel'],
+        'guidemaplayers' => $templatedata['tutorialgrouplabel'],
+        'guidemapbanner' => $templatedata['tutorialgroupinglabel'],
+        'guidestartpathlabel' => $templatedata['tutorialguidedstart'],
+        'guidereturnlabel' => $templatedata['tutorialreturntitle'],
+        'guidereturndesc' => $templatedata['tutorialreturndesc'],
+        'guidereturnbutton' => $templatedata['tutorialreturnbutton'],
+        'guidereturndismiss' => $templatedata['tutorialreturndismiss'],
+        'guidechecklisttitle' => $templatedata['tutorialguidedpaneltitle'],
+        'guideminimizelabel' => $templatedata['tutorialguidedpanelminimize'],
+        'guidechecklisthint' => $templatedata['tutorialguidedpanelhint'],
+        'guidechecklistdonelabel' => $templatedata['tutorialguidedpanelcomplete'],
+        'guidesteplabel' => $templatedata['tutorialstepof'],
+        'slides' => $slides,
+        'slidecount' => $slidecount,
+        'initialprogress' => 100 / $slidecount,
+    ];
+}
+
+/**
+ * Build the shared EasyEdu guide AMD configuration.
+ *
+ * @param int $courseid Course id.
+ * @return array
+ */
+function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
+    return [
+        'storageKey' => 'local_groupimport.easyedu_guide.' . $courseid,
+        'firstVisit' => false,
+        'highlightAutoHideDelay' => 5200,
+        'highlightStyle' => 'pulse-blue',
+        'targets' => [
+            'createRow' => '.local-groupimport-easystud-create-row',
+            'groupCreateInput' => '.local-groupimport-easystud-create-row input[name="groupname"]',
+            'groupingCreateInput' => '.local-groupimport-easystud-create-row input[name="groupingname"]',
+            'filters' => '[data-easystud-filters]',
+            'layoutBoth' => '[data-easystud-layout-mode="both"]',
+            'layoutParticipants' => '[data-easystud-layout-mode="participants"]',
+            'layoutStructure' => '[data-easystud-layout-mode="structure"]',
+            'panelActions' => '.local-groupimport-easystud__panel-actions',
+            'participantFirstCard' => [
+                '[data-easystud-participant-list] [data-selectable-type="participant"]:not([hidden])',
+                '[data-easystud-participant-list]',
+            ],
+            'participantList' => '[data-easystud-participant-list]',
+            'participantGroupCard' => [
+                '[data-easystud-participant-groups-panel] [data-easystud-group-id]:not([hidden])',
+                '[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden])',
+                '[data-easystud-structure-groups]',
+            ],
+            'firstGrouping' => [
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])',
+                '[data-easystud-tree]',
+            ],
+            'firstGroupingToggle' => '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-collapse-toggle]',
+            'firstGroupingAddButton' => '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-toggle-grouping-groups]',
+            'firstGroupingAddPanel' => [
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-grouping-groups-panel]:not([hidden])',
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])',
+            ],
+            'firstGroupingAddBox' => [
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-grouping-groups-panel]:not([hidden]) textarea',
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-grouping-groups-panel]:not([hidden])',
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])',
+            ],
+            'structureGroups' => '[data-easystud-structure-groups]',
+            'tree' => '[data-easystud-tree]',
+        ],
+        'pathLabels' => [
+            'first-structure' => get_string('tutorialguidedpaneltitle', 'local_groupimport'),
+            'create-grouping' => get_string('tutorialguidedgroupingtitle', 'local_groupimport'),
+            'try-actions' => get_string('tutorialguidedactionstitle', 'local_groupimport'),
+        ],
+        'paths' => [
+            'first-structure' => [
+                [
+                    'id' => 'create-structure',
+                    'title' => get_string('tutorialvisualguidedone', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedpaneldescstructure', 'local_groupimport'),
+                    'target' => 'createRow',
+                    'highlightTarget' => 'groupCreateInput',
+                    'open' => 'layoutStructure',
+                    'feedback' => get_string('tutorialguidedpanelfeedbackstructure', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+                [
+                    'id' => 'add-participants',
+                    'title' => get_string('tutorialvisualguidedtwo', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedpaneldescparticipants', 'local_groupimport'),
+                    'target' => 'participantGroupCard',
+                    'open' => 'layoutParticipants',
+                    'openDelay' => 360,
+                    'feedback' => get_string('tutorialguidedpanelfeedbackparticipants', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+                [
+                    'id' => 'check-filters',
+                    'title' => get_string('tutorialvisualguidedthree', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedpaneldescfilters', 'local_groupimport'),
+                    'target' => 'filters',
+                    'open' => [
+                        ['target' => 'layoutParticipants', 'delay' => 320],
+                        ['target' => '[data-easystud-advanced-filters-toggle="participants"]', 'delay' => 220],
+                    ],
+                    'feedback' => get_string('tutorialguidedpanelfeedbackfilters', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+            ],
+            'create-grouping' => [
+                [
+                    'id' => 'create-grouping',
+                    'title' => get_string('tutorialguidedcreategrouping', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedgroupingdesccreate', 'local_groupimport'),
+                    'target' => 'createRow',
+                    'highlightTarget' => 'groupingCreateInput',
+                    'open' => 'layoutStructure',
+                    'feedback' => get_string('tutorialguidedfeedbackgroupingcreate', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+                [
+                    'id' => 'add-group-to-grouping',
+                    'title' => get_string('tutorialguidedaddgrouptogrouping', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedgroupingdescadd', 'local_groupimport'),
+                    'target' => 'firstGroupingAddPanel',
+                    'highlightTarget' => 'firstGroupingAddBox',
+                    'open' => [
+                        ['target' => 'layoutStructure', 'delay' => 320],
+                        ['target' => 'firstGroupingToggle', 'delay' => 360],
+                        ['target' => 'firstGroupingAddButton', 'delay' => 360],
+                    ],
+                    'feedback' => get_string('tutorialguidedfeedbackgroupingadd', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+                [
+                    'id' => 'verify-grouping',
+                    'title' => get_string('tutorialguidedverifygrouping', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedgroupingdescverify', 'local_groupimport'),
+                    'target' => 'firstGrouping',
+                    'open' => [
+                        ['target' => 'layoutStructure', 'delay' => 320],
+                        ['target' => 'firstGroupingToggle', 'delay' => 360],
+                    ],
+                    'feedback' => get_string('tutorialguidedfeedbackgroupingverify', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+            ],
+            'try-actions' => [
+                [
+                    'id' => 'try-drag',
+                    'title' => get_string('tutorialguidedtrydrag', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedactionsdescdrag', 'local_groupimport'),
+                    'target' => 'participantFirstCard',
+                    'open' => 'layoutBoth',
+                    'openDelay' => 320,
+                    'feedback' => get_string('tutorialguidedfeedbackactionsdrag', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+                [
+                    'id' => 'try-selection',
+                    'title' => get_string('tutorialguidedtryselection', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedactionsdescselection', 'local_groupimport'),
+                    'target' => 'panelActions',
+                    'open' => 'layoutBoth',
+                    'openDelay' => 320,
+                    'feedback' => get_string('tutorialguidedfeedbackactionsselection', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+                [
+                    'id' => 'try-context',
+                    'title' => get_string('tutorialguidedtrycontext', 'local_groupimport'),
+                    'description' => get_string('tutorialguidedactionsdesccontext', 'local_groupimport'),
+                    'target' => 'participantFirstCard',
+                    'open' => 'layoutBoth',
+                    'openDelay' => 320,
+                    'feedback' => get_string('tutorialguidedfeedbackactionscontext', 'local_groupimport'),
+                    'completionMode' => 'event',
+                ],
+            ],
+        ],
+        'labels' => [
+            'hint' => get_string('tutorialguidedpanelhint', 'local_groupimport'),
+            'complete' => get_string('tutorialguidedpanelcomplete', 'local_groupimport'),
+            'guidedPath' => get_string('tutorialguidedpaneltitle', 'local_groupimport'),
+            'visited' => get_string('visited', 'local_groupimport'),
+            'completeStepFirst' => get_string('guidesteplocked', 'local_groupimport'),
+        ],
+    ];
 }
 
 /**
@@ -1355,7 +1918,13 @@ function local_groupimport_build_meta_tags_template_data(string $label, array $i
  * @param array $allgroupings All grouping data.
  * @return array
  */
-function local_groupimport_build_grouping_template_data(int $courseid, array $grouping, array $groups, array $users, array $allgroupings = []): array {
+function local_groupimport_build_grouping_template_data(
+    int $courseid,
+    array $grouping,
+    array $groups,
+    array $users,
+    array $allgroupings = []
+): array {
     $searchparts = [$grouping['name']];
     $result = [
         'id' => $grouping['id'],
@@ -1486,7 +2055,10 @@ function local_groupimport_build_group_template_data(
  * @param bool $canmessageparticipants Whether current user can send bulk messages.
  * @return array
  */
-function local_groupimport_build_context_actions_template_data(array $alloweduserfields = [], bool $canmessageparticipants = false): array {
+function local_groupimport_build_context_actions_template_data(
+    array $alloweduserfields = [],
+    bool $canmessageparticipants = false
+): array {
     $actions = [
         'participant-open-details' => [
             'contexts' => 'participant',

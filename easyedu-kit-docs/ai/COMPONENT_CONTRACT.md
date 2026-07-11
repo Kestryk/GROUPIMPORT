@@ -3,6 +3,28 @@
 This document defines reusable component contracts that agents must preserve
 when moving UI from one plugin to another.
 
+## Inverse visual audit
+
+When a consuming plugin has a more complete visual result than the kit, audit
+the rendered plugin and promote the reusable finish into the canonical kit
+before copying it to another plugin.
+
+Must:
+
+- compare computed backgrounds, borders, radii, spacing and states;
+- preserve plugin-owned ids, `data-*`, DOM order and interaction classes;
+- use `context-modal-surface` plus a semantic variant for shared modal chrome;
+- use `semantic-accent-panel` for reusable coloured rails;
+- use `semantic-table-surface` or `sticky-data-table` without changing columns
+  or overflow ownership;
+- validate the source plugin still renders equivalently after extraction.
+
+Must not:
+
+- approximate an EasyStud gradient or rail with a new local value;
+- move crop, resize, drag/drop or sticky-preview behaviour into visual mixins;
+- hide action menus by applying unreviewed clipping to their parent surface.
+
 For guide visual parity, also use `ai/GUIDE_PARITY_CHECKLIST.md`. That checklist
 is mandatory when a guide implementation is compared with EasyStud, Course
 Banner Builder or another plugin using the same guide kit.
@@ -42,8 +64,15 @@ Must not:
 - replace the kit selector with a local style that only approximates it.
 
 Show-in-interface highlights are temporary. Guided checklist highlights are
-persistent by design and should remain active until the user closes the
-checklist, returns to the guide, or starts another checklist/path.
+temporary too, but only the highlight disappears: the checklist panel remains
+visible so the user can continue the guided path without the selector staying on
+screen indefinitely.
+
+The highlight controller must keep one active target, one auto-hide timer and
+one requestAnimationFrame refresh loop. It must not use competing hard timers,
+persistent suppressed states, or an unbounded document-wide MutationObserver.
+Use the shared `highlightStyle` option for visual variants such as
+`pulse-blue`; never fork the lifecycle code just to change the look.
 
 ## Guide: action target versus visual target
 
@@ -55,10 +84,16 @@ dropdown wrapper rather than an empty configured-source table.
 Must:
 
 - support `highlightTarget` on checklist steps;
+- support `targetselector` on slide-level show-in-interface buttons when the
+  concrete selector is known server-side;
 - resolve `highlightTarget` by configured target key or CSS selector;
 - keep `target` as the real action/completion target;
 - highlight `highlightTarget` when it is provided, otherwise fall back to
   `showTarget`, then `target`;
+- highlight the first available checklist step immediately when a guided path
+  starts;
+- keep the highlight layer above Moodle modal content and below the guided
+  checklist;
 - target stable controls such as dropdown wrappers, creation rows or buttons
   instead of empty result tables.
 
@@ -87,8 +122,62 @@ Must:
 Must not:
 
 - use long requirement text inside navigation badges;
-- use a `not-allowed` cursor on locked navigation cards;
+- use a pointer cursor on locked navigation cards because they remain clickable
+  to explain how to unlock the slide;
 - share the same path name for a normal guided path and an unlock path.
+
+## Guide: learning visuals and guided-path slides
+
+Must:
+
+- use kit-owned visual blocks for reusable guide illustrations;
+- use the kit scene catalogue for learning slides: `visualcards`,
+  `visualcarddetail`, `visualassignment`, `visualfiltersdemo`,
+  `visualpaste`, `visualcontextmenu`, `visualactionflow`,
+  `visualdragdrop`, `visualformula`, `visualsteps` and `visualkeys`;
+- use `.easyedu-guide-guided-card` for slides that launch a guided path;
+- keep the guided path explanation, step preview and start button in the same
+  card so the action does not feel detached from the slide content;
+- add any new cross-plugin animation or visual pattern to the kit before using
+  it in a plugin.
+- provide responsive and reduced-motion states for every animated scene.
+
+Must not:
+
+- copy EasyStud-only visual class names into another plugin;
+- create local guide animation keyframes when a kit animation exists;
+- leave guided-path slides as plain text plus an isolated button.
+
+## Runtime motion
+
+Canonical sources:
+
+- `motion/amd/src/easyedu_motion.js`
+- `motion/README.md`
+- `docs/components/animations.md`
+
+Must:
+
+- vendor and namespace the canonical controller instead of creating a second
+  plugin-specific motion engine;
+- expose `data-easyedu-motion-policy` in server-rendered markup;
+- let `prefers-reduced-motion` override the administrator policy;
+- use distance-aware disclosures for short search and paste panels;
+- use one atomic `swap` for full-view changes;
+- use fade-only swaps with zero translation and no height interpolation for
+  pagination inside scrollable columns;
+- await disclosure completion before focusing a field;
+- cancel completed Web Animation fill effects after cleanup;
+- batch DOM reads before writes and recalculate pagination only once per action;
+- test repeated open/close/open cycles and widths during pagination.
+
+Must not:
+
+- combine controller-owned height motion with CSS `max-height` transitions;
+- animate a disclosure and each auto-sized ancestor simultaneously;
+- translate a scrollable pagination list;
+- rebuild every sorted/paginated list for a checkbox-only state change;
+- use timeout chains to repair stale heights after an animation.
 
 ## Guide: checklist persistence
 
@@ -100,20 +189,33 @@ Must:
   `data-easyedu-guide-lock-message`;
 - use the same subtle striped locked visual language for blocked checklist
   steps and locked navigation cards;
-- fall back to `labels.completeStepFirst` and the required step title when a
-  dependent checklist step has no custom label;
+- show the required step title inside the blocked-step overlay so the user sees
+  exactly which checklist step unlocks the current one;
 - support `completeOnClick` for actions that reload the page;
+- require every checklist step to declare its completion ownership with
+  `completionMode` when it represents a real action;
+- keep `action`, `event` and `reload` steps pending when their checklist row
+  is clicked;
+- support `waitForCompletion` only as a compatibility alias while migrating
+  older plugin configurations;
+- complete event-owned steps through `easyedu:guide-step-complete` after the
+  underlying operation succeeds;
+- match `completeOnClick` targets from the clicked element with
+  `closest(selector)` so repeated controls such as dropdown options all work;
 - persist active path, active step, completed steps and active slide;
 - restore the checklist after reload;
+- clear checklist progress, highlights and return panels when the checklist is
+  closed or when the main guide is opened normally;
 - when minimized, display the pending active step and visited counter.
 
 Must not:
 
 - mark `completeOnClick` steps complete when the user only clicks the checklist;
+- mark action, event or reload steps complete from the checklist click;
+- resolve only the first matching `completeOnClick` target with `querySelector`;
 - lose the guide context after a real page reload;
 - show only a generic title in the minimized checklist.
-- auto-hide checklist highlights with a timer after the user clicks a guided
-  step.
+- close or hide the checklist when a guided highlight auto-hides.
 
 ## Compact action menus
 

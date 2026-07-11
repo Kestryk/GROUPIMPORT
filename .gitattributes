@@ -3,3 +3,6 @@
 *.mustache text eol=lf
 *.md text eol=lf
 /easyedu-kit-docs export-ignore
+/easyedu-motion-kit export-ignore
+/tools export-ignore
+/docs export-ignore

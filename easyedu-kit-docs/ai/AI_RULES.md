@@ -42,6 +42,10 @@ Avoid:
 - native `title` tooltips when the kit custom tooltip pattern is used;
 - absolute-position highlights for guide selectors;
 - local guide behaviour that diverges from the guide kit.
+- local admin navigation buttons outside `admin-primary-nav`;
+- applying standard nav/action button styles to the guide launcher;
+- admin navigation labels that wrap onto two lines instead of using the kit
+  non-wrapping rail.
 
 ## Required update set for reusable changes
 

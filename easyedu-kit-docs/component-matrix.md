@@ -13,18 +13,19 @@ Status values:
 | --- | --- | --- | --- | --- |
 | Tokens | `scss/abstracts/_tokens.scss`, `scss/easyedu/_tokens.scss` | `scss/easyedu/_tokens.scss`, `docs/tokens.md` | partial | Need more semantic tokens for guide, tables, drag/drop and responsive. |
 | Animations | `scss/utilities/_animations.scss` | `scss/easyedu/components/_animations.scss` | partial | Modal, slide, pop-in, card/content reveal, pagination swap, success, drag/drop and busy keyframes/mixins exist; exact per-component timing audit remains. |
-| Panels/layout | `scss/components/_layout.scss` | `components/_panels.scss`, `docs/components/panels.md` | partial | Panel/header/actions/split and sticky selection panel primitives exist; plugin-specific panel height orchestration remains. |
+| Panels/layout | `scss/components/_layout.scss`, `scss/views/_mass-import.scss` | `components/_panels.scss`, `docs/components/panels.md` | partial | Panel/header/actions/split, sticky selection and semantic accent rail primitives exist; plugin-specific panel height orchestration remains. |
 | Cards | `scss/components/_participants.scss`, `_structure.scss` | `components/_cards.scss`, `docs/components/cards.md` | partial | Base, rail, selected, expanded, drag-handle, reveal-toggle, preview fade lists, related-tag summaries, density transition and open identity rail primitives exist; domain-specific card layouts remain plugin-owned. |
-| Buttons/actions | `_layout.scss`, `_structure.scss`, `_forms.scss` | `components/_buttons.scss`, `docs/components/buttons.md` | partial | Icon/action/close/overflow triggers now include size and state primitives; plugin-specific toolbar overflow orchestration remains. |
+| Buttons/actions | `_layout.scss`, `_structure.scss`, `_forms.scss` | `components/_buttons.scss`, `docs/components/buttons.md` | partial | Icon/action/close/overflow triggers now include size, state, admin primary nav and admin secondary action primitives; plugin-specific toolbar orchestration remains. |
 | Forms/filters | `_forms.scss`, `_structure.scss` | `components/_forms.scss`, `docs/components/forms.md` | partial | Search, segmented toggle, toggle check, selection checkbox, inline reveal panel, more filters, filepicker, colour picker, native select and compact/admin multiselect primitives exist; token detection behaviour remains plugin-owned. |
 | Dropdowns/menus | `_forms.scss`, `_interaction.scss`, `_structure.scss` | `components/_menus.scss`, `docs/components/dropdowns.md` | partial | Menu/context/overflow surfaces include size variants and documented states; responsive long-press positioning remains plugin-owned. |
-| Tooltips | `scss/components/_tooltips.scss` | `components/_tooltips.scss`, `docs/components/tooltips.md` | partial | Hover bubble and help icon exist; placement variants remain. |
-| Modals | `_modals.scss`, `_settings-modal.scss`, `_tutorial.scss` | `components/_modals.scss`, `docs/components/modals.md` | partial | Surface/header/icon/section/confirm/settings/detail, destructive confirm, move destination, native-modal runtime animation and history-list primitives exist; plugin-specific body layouts remain. |
-| Tables/import | `scss/views/_mass-import.scss` | `components/_tables.scss`, `docs/components/tables.md` | partial | Data/preview/status rows, report summaries, report lists, preview notices and preview toolbars exist; selectable preview controls remain plugin-owned. |
+| Tooltips | `scss/components/_tooltips.scss` | `components/_tooltips.scss`, `docs/components/tooltips.md` | partial | Hover bubble, help icon and EasyStud-style custom popover surfaces exist; trigger timing remains plugin-owned. |
+| Modals | `_modals.scss`, `_settings-modal.scss`, `_tutorial.scss` | `components/_modals.scss`, `docs/components/modals.md` | partial | Surface/header/icon/section/confirm/settings/detail, contextual semantic chrome, native-modal runtime animation and history-list primitives exist; plugin-specific body layouts remain. |
+| Tables/import | `scss/views/_mass-import.scss` | `components/_tables.scss`, `docs/components/tables.md` | partial | Data/preview/status rows, semantic and sticky table surfaces, report summaries, notices and toolbars exist; selectable preview controls remain plugin-owned. |
+| Course Banner Builder preview editors | `local/course_banner_builder/scss/components/*` | `components/_course_banner_builder.scss`, `docs/examples/course-banner-builder.md` | partial | Wide preview modals, preview surfaces, side action lists, layer tables, source-chain controls, colour fields, linked range/number controls and help icons now have reusable primitives. JS interaction contracts remain plugin-owned. |
 | Badges/tokens | `_structure.scss`, `_participants.scss`, `_settings-modal.scss` | `components/_feedback.scss`, `docs/components/badges.md` | partial | Token, identity badge, count, filled count and overflow toggles exist; plugin-specific colours remain. |
 | Empty states | `_structure.scss`, `_participants.scss`, `_mass-import.scss` | `components/_feedback.scss`, `docs/components/empty-states.md` | partial | Base, inline and search variants exist; table-specific copy remains. |
 | Drag/drop | `_interaction.scss`, `_structure.scss`, `_tutorial.scss` | `components/_overlays.scss`, `docs/components/drag-drop.md` | partial | Drop overlay, insert drop target, modal file-drop state, file overlay, fixed drag preview, captured preview, stack preview, source placeholder, count badge and disabled zones exist; JS drag ghost behaviour remains plugin-owned. |
-| Guide | `_tutorial.scss`, `amd/src/course_manager.js` | `components/_guide.scss`, `guide/`, `docs/components/guide.md` | partial | Base, rich nav, show-in-interface buttons, guided panel feedback, completion message, minimised state, docking and public highlight refresh event exist; plugin-specific demo content remains. |
+| Guide | `_tutorial.scss`, `amd/src/course_manager.js` | `components/_guide.scss`, `guide/`, `docs/components/guide.md` | partial | Base, rich nav, show-in-interface buttons, guided panel feedback, completion message, minimised state, docking, public highlight refresh event and EasyStud-derived learning scenes exist; plugin-specific slide copy, target keys and event completion remain. |
 | Responsive | `scss/responsive/_mobile.scss`, `_desktop.scss` | `components/_responsive.scss`, `docs/components/responsive.md` | partial | Stack/action tray surface, summary/buttons, stacked narrow tray, cards/guide hooks and pagination layout helpers exist; filter orchestration remains plugin-owned. |
 | Orchestration | `amd/src/course_manager.js` | `docs/components/orchestration.md` | done | Behavioural contract exists for dynamic views, filters, pagination, Ajax mutations, responsive action trays and guided highlight refresh hooks. |
 
@@ -54,6 +55,14 @@ Plugins should no longer implement local selector/highlight logic. If a target
 can be empty, such as a configured-source table before setup, the plugin must
 expose a stable wrapper around the relevant controls and use that wrapper as the
 visual highlight target.
+
+The historical EasyStud learning scenes have also been converted into generic
+guide primitives. Reusable scenes should now be implemented as data-driven kit
+blocks (`visualassignment`, `visualdragdrop`, `visualpaste`,
+`visualcontextmenu`, `visualactionflow`, `visualformula`, `visualsteps`,
+`visualkeys` and related card/detail variants) rather than copied as
+plugin-prefixed HTML. These scenes intentionally favour a shared visual canvas,
+small semantic accents and explanatory motion over nested bordered cards.
 
 ### Reusable UI Components
 

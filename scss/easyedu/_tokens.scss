@@ -67,6 +67,24 @@
   --easyedu-modal-radius: 1rem;
   --easyedu-modal-shadow: 0 1.15rem 3.2rem rgba(22, 45, 68, 0.24);
   --easyedu-modal-header-bg: linear-gradient(135deg, #f8fbff 0%, #eef7f1 100%);
+  --easyedu-modal-body-bg: linear-gradient(180deg, #fff 0%, #f8fbfd 100%);
+  --easyedu-modal-footer-bg: #f8fbfd;
+  --easyedu-modal-primary-accent: #4873ad;
+  --easyedu-modal-success-accent: #1b7f5a;
+  --easyedu-modal-warning-accent: #9a650f;
+  --easyedu-modal-danger-accent: #a12b2b;
+  --easyedu-modal-header-primary-bg:
+    radial-gradient(circle at 4.5rem 1.6rem, rgba(72, 115, 173, 0.13), transparent 8rem),
+    linear-gradient(135deg, #f8fbff 0%, #eef5fb 100%);
+  --easyedu-modal-header-success-bg:
+    radial-gradient(circle at 4.5rem 1.6rem, rgba(27, 127, 90, 0.12), transparent 8rem),
+    linear-gradient(135deg, #f8fbff 0%, #eef7f1 100%);
+  --easyedu-modal-header-warning-bg:
+    radial-gradient(circle at 4.5rem 1.6rem, rgba(154, 101, 15, 0.12), transparent 8rem),
+    linear-gradient(135deg, #fffdf8 0%, #fff7e8 100%);
+  --easyedu-modal-header-danger-bg:
+    radial-gradient(circle at 4.5rem 1.6rem, rgba(161, 43, 43, 0.11), transparent 8rem),
+    linear-gradient(135deg, #fffaf8 0%, #fff1ef 100%);
   --easyedu-modal-field-bg: rgba(255, 255, 255, 0.86);
   --easyedu-modal-field-border: #d9e7f1;
   --easyedu-guide-modal-width: 72rem;
@@ -86,15 +104,25 @@
   --easyedu-table-success-bg: #f0f9f4;
   --easyedu-table-warning-bg: #fff8e9;
   --easyedu-table-error-bg: #fff1f1;
+  --easyedu-semantic-panel-bg: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+  --easyedu-semantic-border-primary: #cddbed;
+  --easyedu-semantic-border-success: #d8e6dd;
+  --easyedu-semantic-border-warning: #eadbbd;
+  --easyedu-semantic-border-danger: #ebcccc;
+  --easyedu-semantic-rail-primary: linear-gradient(90deg, #0f6cbf 0%, #5b9bd8 100%);
+  --easyedu-semantic-rail-success: linear-gradient(90deg, #1b7f5a 0%, #65a97f 100%);
+  --easyedu-semantic-rail-warning: linear-gradient(90deg, #9a650f 0%, #d2a34d 100%);
+  --easyedu-semantic-rail-danger: linear-gradient(90deg, #a12b2b 0%, #d86a62 100%);
   --easyedu-overlay-bg: rgba(255, 255, 255, 0.82);
   --easyedu-overlay-plus-bg: var(--easyedu-accent);
   --easyedu-overlay-plus-color: #fff;
   --easyedu-image-preview-bg: #f7fbff;
   --easyedu-image-preview-border: #d5e5f1;
-  --easyedu-motion-fast: 150ms;
-  --easyedu-motion-normal: 240ms;
-  --easyedu-motion-slow: 360ms;
+  --easyedu-motion-fast: 100ms;
+  --easyedu-motion-normal: 160ms;
+  --easyedu-motion-slow: 220ms;
   --easyedu-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --easyedu-motion-disclosure-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   // Semantic object colours. Plugins can remap these to their own domain:
   // participant/group/grouping in EasyStud, layer/banner/source in another UI.
@@ -163,10 +191,4 @@
   --local-groupimport-easystud-icon-group: var(--easyedu-icon-group);
   --local-groupimport-easystud-icon-grouping: var(--easyedu-icon-grouping);
   --local-groupimport-easystud-drag-handle: var(--easyedu-drag-handle);
-}
-
-// Generic opt-in class for examples, prototypes or Moodle theme previews.
-// Production plugins should include `token-defaults` on their own root selector.
-.easyedu-theme {
-  @include token-defaults;
 }

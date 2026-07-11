@@ -702,6 +702,12 @@ $PAGE->set_course($course);
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_title(get_string('groupimport', 'local_groupimport'));
 $PAGE->set_heading(format_string($course->fullname));
+$animationconfig = get_config('local_groupimport', 'enableanimations');
+$animationsenabled = $animationconfig === false ? true : (bool)$animationconfig;
+if (!$animationsenabled) {
+    $PAGE->add_body_class('local-groupimport-motion-disabled');
+    $PAGE->add_body_class('easyedu-motion-disabled');
+}
 $PAGE->requires->js_call_amd('local_groupimport/csv_import', 'init', [
     'local-groupimport-import',
     [
@@ -815,6 +821,7 @@ echo $OUTPUT->header();
 echo html_writer::start_div('local-groupimport-import' . ($preview !== null ? ' has-preview is-upload-collapsed' : ''), [
     'id' => 'local-groupimport-import',
     'data-region' => 'local-groupimport-import',
+    'data-easyedu-motion-policy' => $animationsenabled ? 'enabled' : 'disabled',
 ]);
 
 echo html_writer::tag('div',

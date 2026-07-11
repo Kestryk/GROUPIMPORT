@@ -129,3 +129,24 @@ the same public behaviour but replace the storage adapter in the plugin copy.
 The guide assumes the EasyEdu SCSS kit is present. Use the shared tokens instead
 of hard-coded colours whenever possible. Moodle themes should be able to
 override the public `--easyedu-*` variables on the plugin root.
+
+## Completion modes
+
+Set `completionMode` on every step that represents a real operation:
+
+- `informational`: showing the target can complete the step;
+- `action`: wait for a successful interface action;
+- `event`: wait for `easyedu:guide-step-complete` or `completeOn`;
+- `reload`: persist only because the successful action reloads the page.
+
+`waitForCompletion: true` remains available while migrating older guide
+configurations. Action, event and reload steps are never completed by clicking
+their checklist row.
+
+## Learning scenes
+
+The Mustache template includes reusable data-driven scenes for cards, card
+details, assignment flows, filters, identifier paste, context menus, action
+flows, drag and drop, creation formulas, workflows, status grids and keyboard
+shortcuts. Keep labels in plugin language files and add reusable scene markup
+and animations to the kit before using them in another plugin.

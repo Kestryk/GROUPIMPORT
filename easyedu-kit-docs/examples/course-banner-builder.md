@@ -1,7 +1,39 @@
 # Course Banner Builder Integration Notes
 
 This example describes how Course Banner Builder should consume EasyEdu UI Kit
-`v0.4.0`.
+`v0.4.1+`.
+
+## Preview-side accordions
+
+The trigger and its revealed panel form one component. Keep them adjacent in
+the DOM and preserve the plugin-owned `aria-expanded`, `aria-controls` and
+open/close events.
+
+```scss
+.my-image-trigger {
+  @include easyedu.preview-side-accordion-trigger(var(--easyedu-primary));
+}
+
+.my-image-panel {
+  @include easyedu.preview-side-accordion-panel(var(--easyedu-primary));
+}
+```
+
+Use a stable semantic accent for each editor family. Do not insert a second
+close button inside the revealed panel: the persistent trigger remains the
+accordion header and closes the panel.
+
+The trigger and panel must share the same accent rail, border colour and soft
+surface tint. A closed trigger remains visibly different from a command button,
+while an open trigger removes its lower radii and visually joins the panel.
+Use a compact icon tile and an end chevron to communicate disclosure state.
+Preview-side accordion triggers must remain positionally stable on hover and
+active states; command-button lift and press transforms do not apply to them.
+
+Banner format selectors use `format-choice-card`,
+`format-choice-card-hover` and `format-choice-card-selected`. These mixins style
+only the choice surface and must not alter the plugin-owned format skeleton
+dimensions used to explain the final page placement.
 
 ## Sync
 
@@ -38,6 +70,48 @@ This example describes how Course Banner Builder should consume EasyEdu UI Kit
 | Source picker dropdowns | `menu-surface`, `menu-item`, `dropdown-menu` |
 | Inline help | `hover-help-host`, `help-icon` |
 | Guide | `guide-shell`, `guide-rich-navigation`, `guide-visuals`, `guided-panel` |
+| Wide modal with preview | `modal-with-preview`, `preview-surface` |
+| Preview toolbar below a banner | `banner-preview-toolbar` |
+| Action buttons beside a preview | `banner-preview-side-actions`, `accordion-action-button` |
+| Layer/source tables | `layer-table`, `source-chain` |
+| Colour fields | `color-picker-field` |
+| Linked slider + number controls | `linked-range-number` |
+| Custom help bubbles | `help-tooltip`, `tooltip-surface` |
+
+## Guide scene mapping
+
+Course Banner Builder should use the shared guide learning scenes instead of
+plugin-local illustration markup. Recommended mapping:
+
+| Course Banner Builder guide topic | Shared guide scene |
+| --- | --- |
+| Source -> layers -> banner concept | `visualassignment` |
+| Source picker / configured source selection | `visualfiltersdemo` |
+| Source settings after choosing a source | `visualsteps` with `layout: status` |
+| Visual editor / preview interaction | `visualdragdrop` |
+| Layer table and layer guided path | `visualactionflow` |
+| Toolbar actions | `visualactionflow` |
+| Slideshow context / appearance / preview / save flow | `visualassignment`, `visualcards`, `visualfiltersdemo`, `visualactionflow` |
+
+Slides that launch a guided path should still include a compact visual scene
+when it helps explain the pending action. The scene should stay data-driven and
+use labels/icons only; do not duplicate the kit template in Course Banner
+Builder.
+
+## High-risk Course Banner Builder areas
+
+Course Banner Builder has interaction-heavy previews. The kit should style
+these surfaces without changing plugin-owned DOM hooks:
+
+- keep existing `data-*` attributes used by crop, drag, resize, undo and redo;
+- avoid changing preview positioning, z-index or transform calculations in a
+  visual-only pass;
+- apply shared style through scoped plugin selectors and mixins;
+- validate image crop/resize, border sliders, title dragging and slideshow
+  previews after every sizeable visual change.
+
+Prefer adding an adapter component in the plugin, for example
+`_easyedu-harmonisation.scss`, instead of rewriting older functional SCSS.
 
 ## Guide target naming
 

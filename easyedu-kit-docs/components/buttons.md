@@ -40,6 +40,30 @@ states.
 .my-compact-actions__icon {
   @include easyedu.action-menu-trigger-icon;
 }
+
+.my-admin-nav {
+  @include easyedu.admin-primary-nav;
+}
+
+.my-admin-nav__action {
+  @include easyedu.admin-primary-nav-action;
+}
+
+.my-admin-nav__format {
+  @include easyedu.admin-primary-nav-action(format);
+}
+
+.my-admin-nav__danger {
+  @include easyedu.admin-primary-nav-action(destructive);
+}
+
+.my-admin-secondary-actions {
+  @include easyedu.admin-secondary-actions;
+}
+
+.my-admin-secondary-action {
+  @include easyedu.admin-secondary-action;
+}
 ```
 
 ## Sizes
@@ -92,6 +116,51 @@ not a heavy primary button.
 </button>
 ```
 
+## Admin Primary Navigation
+
+Use `admin-primary-nav` for important plugin-level administration navigation:
+view switchers, format/settings entry points, import/export links, and one
+optional guide launcher. This is the right component for the first action row at
+the top of an admin page; do not style those controls as isolated dashed buttons.
+
+The guide launcher should sit inside the same container, before the navigation
+actions. The launcher keeps its own `guide-launcher-button` styling. Do not
+apply `admin-primary-nav-action` to `.easyedu-guide__launcher`.
+
+The component is a compact non-wrapping navigation rail. Labels must stay on one
+line; the container scrolls horizontally when the viewport is too narrow.
+
+```html
+<div class="my-admin-nav">
+  <button class="easyedu-guide__launcher" type="button">
+    <span class="easyedu-guide__launcher-icon">
+      <span class="fa fa-compass" aria-hidden="true"></span>
+    </span>
+    <span class="easyedu-guide__launcher-label">Open guide</span>
+  </button>
+  <a class="btn btn-outline-secondary my-admin-nav__action active" aria-current="page" href="#">Banners</a>
+  <a class="btn btn-outline-secondary my-admin-nav__action" href="#">Slideshow</a>
+  <button class="btn btn-outline-secondary my-admin-nav__format" type="button">Format</button>
+  <button class="btn btn-outline-danger my-admin-nav__danger" type="button">Delete settings</button>
+</div>
+```
+
+Rules:
+
+- Use `active`, `.is-active`, `[aria-current="page"]` or `[aria-pressed="true"]`
+  for the current view.
+- Use the `format` variant for format/settings modal entry points.
+- Use the `destructive` variant for reset/delete plugin-level actions.
+- Keep this as one responsive rail; never let nav button text wrap onto two
+  lines.
+
+## Admin Secondary Actions
+
+Use `admin-secondary-actions` for contextual action groups inside a view, such
+as enable/disable toggles, edit-title actions, or status controls. These buttons
+are deliberately rounder and calmer so users can distinguish actions from
+navigation.
+
 ## Usage Guide
 
 - Primary validation/save: keep Moodle `btn btn-primary`, add
@@ -104,6 +173,10 @@ not a heavy primary button.
 - Dense overflow trigger: use `action-menu-trigger(small)` with
   `action-menu-trigger-icon`.
 - Modal close action: use `close-button`; do not leave a raw `x` link.
+- Admin view switchers: use `admin-primary-nav` and
+  `admin-primary-nav-action`; never let labels wrap onto two lines.
+- Status/action rows inside an admin view: use `admin-secondary-actions` and
+  `admin-secondary-action`.
 
 ## Disabled Actions
 
@@ -126,8 +199,11 @@ Before accepting a plugin-local button style, check:
 - The close button is a styled button, never a raw `x` link.
 - The guide launcher and "Show in the interface" button use the guide contract,
   not a one-off local button style.
+- The guide launcher is never restyled as a standard admin nav action.
 - Compact overflow action rows use `action-menu-trigger` and
   `action-menu-trigger-icon`.
+- Plugin-level admin navigation uses `admin-primary-nav`; do not invent local
+  dashed or floating top navigation buttons.
 
 ## Errors To Avoid
 
@@ -138,3 +214,4 @@ Before accepting a plugin-local button style, check:
 - Do not duplicate hidden overflow actions in the visible row on responsive
   screens.
 - Do not put raw icon-only buttons in modals without `aria-label`.
+- Do not create local "pretty" admin nav buttons outside the kit contract.

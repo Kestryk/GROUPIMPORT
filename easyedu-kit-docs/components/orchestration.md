@@ -50,28 +50,31 @@ document.dispatchEvent(new CustomEvent('easyedu:guide-refresh-highlight', {
 
 ## Transition timing
 
-One refresh immediately after a click is often too early. Accordions,
-pagination, Ajax insertion and CSS transitions can still be moving.
+One refresh immediately after a click is often too early. Dispatch once after
+the DOM mutation and once from the shared motion promise. Do not use a delayed
+timer chain to guess when layout has settled.
 
 Recommended plugin helper:
 
 ```js
 const refreshGuideHighlight = () => {
-  [0, 160, 380, 760].forEach(delay => {
-    window.setTimeout(() => {
-      document.dispatchEvent(new CustomEvent('easyedu:guide-refresh-highlight', {
-        detail: {
-          dock: true
-        }
-      }));
-    }, delay);
-  });
+  document.dispatchEvent(new CustomEvent('easyedu:guide-refresh-highlight', {
+    detail: {dock: true}
+  }));
 };
+
+const transition = Motion.expand(panel);
+refreshGuideHighlight();
+transition.then(completed => {
+  if (completed) {
+    refreshGuideHighlight();
+  }
+});
 ```
 
-Call this helper after the plugin changes layout. If a component exposes a
-`transitionend` event, call the helper both when the transition starts and when
-it ends.
+For an immediate, non-animated mutation, batch the final refresh in one
+`requestAnimationFrame`. Do not mix `transitionend`, Web Animations and timeout
+callbacks for the same component.
 
 ## Recommended hook map
 
@@ -83,12 +86,11 @@ Filters and search:
 Dispatch after hidden states, empty states and pagination have been recomputed.
 
 Pagination:
-Dispatch after `data-page` or equivalent state changes, then again after the
-page transition class is removed.
+Dispatch after the fade-only `Motion.swap` resolves.
 
 Card/accordion expansion:
-Dispatch when expansion starts and on `transitionend`. For nested cards,
-dispatch after the parent container recalculates its height.
+Dispatch when expansion starts and after the `expand`, `collapse` or `resize`
+promise resolves. Do not animate or repeatedly recalculate auto-sized parents.
 
 Ajax create/move/delete:
 Dispatch after the DOM node is inserted or removed, badges/counts are updated,

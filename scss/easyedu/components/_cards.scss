@@ -45,7 +45,7 @@
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    transition: opacity 0.16s ease;
+    transition: opacity var(--easyedu-motion-fast) ease;
     width: var(--easyedu-identity-size);
     z-index: 3;
     -webkit-mask-image: $icon;
@@ -196,7 +196,6 @@
 // line so dense cards do not break when tag names are long.
 @mixin related-tags-details($offset: 1.85rem) {
   align-items: center;
-  animation: easyedu-content-open 0.26s ease both;
   display: grid;
   gap: 0.18rem;
   margin: 0.1rem 0 0.55rem $offset;
@@ -228,13 +227,7 @@
     background-color var(--easyedu-motion-fast) ease,
     border-color var(--easyedu-motion-fast) ease,
     box-shadow var(--easyedu-motion-normal) ease,
-    transform var(--easyedu-motion-normal) ease,
-    grid-template-columns 0.46s var(--easyedu-motion-ease),
-    gap 0.38s var(--easyedu-motion-ease),
-    max-height 0.52s var(--easyedu-motion-ease),
-    min-height 0.42s var(--easyedu-motion-ease),
-    padding 0.42s var(--easyedu-motion-ease);
-  will-change: max-height, padding;
+    transform var(--easyedu-motion-normal) ease;
 }
 
 @mixin selectable-card($identity-color) {
@@ -276,10 +269,7 @@
   max-height: $expanded-height;
   overflow: hidden;
   position: relative;
-  transition:
-    max-height var(--easyedu-motion-normal) var(--easyedu-motion-ease),
-    margin var(--easyedu-motion-fast) ease;
-  will-change: max-height;
+  transition: margin var(--easyedu-motion-fast) ease;
 
   &::after {
     background: linear-gradient(

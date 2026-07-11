@@ -107,18 +107,33 @@ Do not stop after matching colours or rough layout.
 - [ ] Completed steps show the kit completed state.
 - [ ] Locked steps show the kit locked state.
 - [ ] `requiresStep` disables dependent steps until prerequisite completion.
-- [ ] `requiresStepLabel` explains the dependency in one short phrase.
-- [ ] Locked steps display an overlay explaining which previous step is required.
+- [ ] Locked steps display an overlay named after the required previous step.
 - [ ] `completeOnClick` waits for the real target click, not the checklist click.
+- [ ] Every action-oriented step declares `completionMode`.
+- [ ] `action`, `event` and `reload` steps stay pending when their checklist
+      row is clicked.
+- [ ] Business success dispatches `easyedu:guide-step-complete` with stable
+      path and step identifiers.
+- [ ] The final checklist confirmation appears immediately after the last real
+      action completes.
 - [ ] Steps can use `highlightTarget` when the visual target should differ from
       the action/completion target.
 - [ ] Clicking a checklist step highlights `highlightTarget` when provided.
 - [ ] Closing the checklist clears the active highlight.
 - [ ] Returning from the checklist to the guide clears the active highlight.
-- [ ] Checklist highlights persist until explicit user cancellation.
-- [ ] Checklist highlights are not auto-hidden by a timer after the step click.
+- [ ] Checklist highlights auto-hide after a short delay.
+- [ ] Auto-hiding a checklist highlight leaves the checklist panel visible.
 - [ ] Checklist state persists across page reloads.
 - [ ] Restored checklist opens on the same path and next expected step.
+
+## Learning scenes
+
+- [ ] Rich slides use kit-owned data-driven scenes rather than plugin-prefixed
+      tutorial markup.
+- [ ] Card detail, assignment, filters, paste, context menu, action flow,
+      drag-and-drop and formula scenes retain their meaningful animation.
+- [ ] Every animated scene has responsive and reduced-motion behaviour.
+- [ ] Scene labels come from Moodle language strings.
 
 ## Locked slides and unlock paths
 

@@ -38,3 +38,24 @@ the reason is:
 - `domain layout`: the card body has plugin-specific information density;
 - `business state`: the visual state depends on Moodle permissions or data;
 - `temporary gap`: the kit primitive should be expanded in a future release.
+
+## Motion integration reference
+
+EasyStud vendors `motion/amd/src/easyedu_motion.js` as
+`local_groupimport/motion` and exposes the administrator policy on the manager
+root before JavaScript starts.
+
+- Participant compact/detail uses `Motion.resize` on the selected card only.
+- Group member lists use measured `resize` and leave grouping ancestors at
+  natural height.
+- Search and identifier panels use distance-aware `expand` / `collapse`, then
+  focus their field only after the returned promise completes.
+- Participants / complete / groups-and-groupings view changes use one atomic
+  `swap` with `exit: false` and `resize: false`.
+- Pagination and sorting use fade-only `swap` with both distances set to zero.
+- Selection changes update selection controls without rebuilding every page.
+
+The reference browser regression suite is
+`tools/playwright/motion-audit.spec.js` in the GroupImport plugin. It covers
+intermediate card height, repeated disclosures, reduced motion, compact panels,
+atomic view changes and pagination width stability.

@@ -42,6 +42,95 @@
   }
 }
 
+@mixin table-scroll-shell {
+  background: var(--easyedu-surface);
+  border: 1px solid var(--easyedu-card-border);
+  border-radius: var(--easyedu-card-radius);
+  position: relative;
+  width: 100%;
+}
+
+@mixin data-table-surface {
+  background: var(--easyedu-surface);
+  border: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+
+  thead th {
+    background:
+      linear-gradient(110deg, color-mix(in srgb, var(--easyedu-primary-soft) 42%, #fff 58%),
+        color-mix(in srgb, var(--easyedu-accent-soft) 20%, #fff 80%));
+    border-bottom: 1px solid var(--easyedu-table-row-border);
+    color: color-mix(in srgb, var(--easyedu-text) 88%, var(--easyedu-text-muted) 12%);
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+
+  tbody td {
+    border-bottom: 1px solid var(--easyedu-table-row-border);
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+
+  tbody tr:last-child > td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover > td {
+    background-color: color-mix(in srgb, var(--easyedu-table-row-hover) 72%, transparent 28%);
+  }
+
+  tbody tr:focus-within > td {
+    background-color: color-mix(in srgb, var(--easyedu-primary-soft) 42%, transparent 58%);
+  }
+}
+
+@mixin semantic-table-surface($variant: primary) {
+  @include data-table-surface;
+
+  @if $variant == success {
+    --easyedu-table-semantic-border: var(--easyedu-semantic-border-success);
+    --easyedu-table-semantic-rail: var(--easyedu-semantic-rail-success);
+  } @else if $variant == warning {
+    --easyedu-table-semantic-border: var(--easyedu-semantic-border-warning);
+    --easyedu-table-semantic-rail: var(--easyedu-semantic-rail-warning);
+  } @else if $variant == danger {
+    --easyedu-table-semantic-border: var(--easyedu-semantic-border-danger);
+    --easyedu-table-semantic-rail: var(--easyedu-semantic-rail-danger);
+  } @else {
+    --easyedu-table-semantic-border: var(--easyedu-semantic-border-primary);
+    --easyedu-table-semantic-rail: var(--easyedu-semantic-rail-primary);
+  }
+
+  border-top: 0.22rem solid var(--easyedu-table-semantic-border);
+}
+
+@mixin sticky-data-table($top: 0) {
+  @include data-table-surface;
+
+  thead th {
+    position: sticky;
+    top: $top;
+    z-index: 3;
+  }
+}
+
+@mixin table-locked-row {
+  cursor: default;
+
+  > td {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0,
+      transparent 0.42rem,
+      color-mix(in srgb, var(--easyedu-text-muted) 3.5%, transparent) 0.42rem,
+      color-mix(in srgb, var(--easyedu-text-muted) 3.5%, transparent) 0.72rem
+    );
+  }
+}
+
 @mixin table-status-row($variant) {
   @if $variant == success {
     background: var(--easyedu-table-success-bg);

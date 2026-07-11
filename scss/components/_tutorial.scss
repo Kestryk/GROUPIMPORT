@@ -1878,7 +1878,7 @@
 
   .is-tutorial-highlight {
     animation: local-groupimport-easystud-tutorial-highlight 5.2s ease both;
-    outline: 0.24rem solid rgba(12, 113, 194, 0.48);
+    outline: 0.24rem solid rgba(0, 115, 203, 0.68);
     outline-offset: 0.34rem;
     position: relative;
     z-index: 16;
@@ -1886,10 +1886,11 @@
 
   &-tutorial-highlight-overlay {
     animation: local-groupimport-easystud-tutorial-overlay 5.2s ease both;
-    border: 0.18rem solid rgba(41, 114, 77, 0.72);
+    border: 0.18rem solid rgba(0, 115, 203, 0.92);
     border-radius: 1rem;
     box-shadow:
-      0 0 0 0.42rem rgba(41, 114, 77, 0.16),
+      0 0 0 0.42rem rgba(0, 115, 203, 0.2),
+      0 0 1.2rem rgba(0, 115, 203, 0.38),
       0 1rem 2.4rem rgba(31, 68, 104, 0.18);
     pointer-events: none;
     position: fixed;

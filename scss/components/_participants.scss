@@ -47,9 +47,6 @@
       @include easyedu.drag-source-placeholder;
     }
 
-    &.is-details-transitioning {
-      animation: local-groupimport-easystud-participant-details-shift 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
   }
 
   &-selector {
@@ -79,7 +76,8 @@
     @include easyedu.density-transition;
   }
 
-  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected {
+  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected,
+  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-density-expanded {
     align-items: start;
     gap: 0.85rem;
     grid-template-columns: 5.9rem minmax(0, 1fr);
@@ -104,7 +102,7 @@
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%) scale(0.88);
-    transition: opacity 0.16s ease, transform 0.16s ease;
+    transition: opacity var(--easyedu-motion-fast) ease, transform var(--easyedu-motion-fast) ease;
     -webkit-mask-image: var(--local-groupimport-easystud-drag-handle);
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
@@ -217,7 +215,6 @@
 
   &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__rail {
     align-items: start;
-    @include easyedu.content-reveal(0.42s);
 
     display: grid;
     padding-top: 1.35rem;
@@ -231,8 +228,6 @@
   }
 
   &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__main {
-    @include easyedu.content-reveal(0.4s);
-
     display: block;
   }
 
@@ -369,8 +364,6 @@
   }
 
   &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__meta {
-    @include easyedu.content-reveal(0.44s);
-
     display: grid;
   }
 

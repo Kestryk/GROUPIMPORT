@@ -1,69 +1,21 @@
 @use "../easyedu" as easyedu;
 
 .local-groupimport-easystud-hover-popover {
-  --easyedu-tooltip-bg: linear-gradient(135deg, #183a59 0%, #1f6b57 100%);
-  --easyedu-tooltip-border: rgba(255, 255, 255, 0.28);
-  --easyedu-tooltip-glow: rgba(255, 255, 255, 0.14);
-  --easyedu-tooltip-shadow:
-    0 0.7rem 1.6rem rgba(20, 44, 67, 0.2),
-    0 0.08rem 0.24rem rgba(12, 28, 44, 0.16);
-  --easyedu-tooltip-text: #fff;
-  --local-groupimport-easystud-tooltip-arrow-bg: #1b4e5a;
-  --local-groupimport-easystud-tooltip-arrow-border: rgba(255, 255, 255, 0.28);
-  @include easyedu.tooltip-surface;
+  @include easyedu.popover-surface;
 
-  animation: local-groupimport-easystud-tooltip-in 150ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  display: block;
-  max-width: min(22rem, calc(100vw - 1.5rem));
-  pointer-events: none;
   position: absolute;
-  transform-origin: bottom center;
   z-index: 1095;
+}
 
-  .popover-arrow {
-    height: 0.72rem;
-    left: calc(50% - 0.36rem);
-    position: absolute;
-    width: 0.72rem;
+@include easyedu.positioned-popover-arrows(".local-groupimport-easystud-hover-popover");
 
-    &::before {
-      background: var(--local-groupimport-easystud-tooltip-arrow-bg);
-      border: 1px solid var(--local-groupimport-easystud-tooltip-arrow-border);
-      content: "";
-      height: 0.5rem;
-      position: absolute;
-      transform: rotate(45deg);
-      width: 0.5rem;
-    }
-  }
-
-  &--top .popover-arrow {
-    bottom: -0.32rem;
-
-    &::before {
-      border-left: 0;
-      border-top: 0;
-    }
-  }
+.local-groupimport-easystud-hover-popover--long {
+  max-width: min(28rem, calc(100vw - 1.5rem));
 
   .popover-body {
-    background: transparent;
-    color: var(--easyedu-tooltip-text);
-    font-size: 0.76rem;
-    font-weight: 540;
-    letter-spacing: 0.005em;
-    line-height: 1.38;
-    padding: 0.46rem 0.62rem 0.52rem;
-  }
-
-  &--long {
-    max-width: min(28rem, calc(100vw - 1.5rem));
-
-    .popover-body {
-      font-size: 0.71rem;
-      font-weight: 470;
-      line-height: 1.48;
-      padding: 0.52rem 0.66rem 0.56rem;
-    }
+    font-size: 0.71rem;
+    font-weight: 470;
+    line-height: 1.48;
+    padding: 0.52rem 0.66rem 0.56rem;
   }
 }

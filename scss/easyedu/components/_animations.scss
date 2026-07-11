@@ -169,9 +169,45 @@
 @mixin expandable-region {
   overflow: hidden;
   transition:
-    max-height var(--easyedu-motion-slow) var(--easyedu-motion-ease),
     opacity var(--easyedu-motion-normal) ease,
     transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
+}
+
+// Apply on the plugin root. The server policy and the visitor's operating
+// system preference both take precedence over component-level transitions.
+// Native Moodle modals mounted outside the root should inherit the companion
+// `easyedu-motion-disabled` body class from the page controller.
+@mixin motion-policy {
+  &[data-easyedu-motion-policy="disabled"],
+  &.is-easyedu-motion-off {
+    scroll-behavior: auto !important;
+
+    *,
+    *::before,
+    *::after {
+      animation-delay: 0s !important;
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-delay: 0s !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto !important;
+
+    *,
+    *::before,
+    *::after {
+      animation-delay: 0s !important;
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-delay: 0s !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
 }
 
 // Use this on detail blocks revealed inside cards, filters or inline forms.

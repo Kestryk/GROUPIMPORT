@@ -16,6 +16,49 @@
   overflow: hidden;
 }
 
+// Shared contextual chrome for plugin-owned or Moodle-native modal content.
+// The variant mixin below only changes public variables, so plugins can keep
+// their own modal dimensions and behavioural selectors.
+@mixin context-modal-surface(
+  $header-selector: ".modal-header",
+  $body-selector: ".modal-body",
+  $footer-selector: ".modal-footer"
+) {
+  @include modal-surface;
+
+  background: linear-gradient(180deg, #f7fbff 0%, var(--easyedu-surface) 11rem);
+
+  #{$header-selector} {
+    background: var(--easyedu-context-modal-header-bg, var(--easyedu-modal-header-bg));
+    border-bottom: 1px solid var(--easyedu-modal-border);
+  }
+
+  #{$body-selector} {
+    background: var(--easyedu-modal-body-bg);
+  }
+
+  #{$footer-selector} {
+    background: var(--easyedu-modal-footer-bg);
+    border-top: 1px solid var(--easyedu-modal-border);
+  }
+}
+
+@mixin context-modal-variant($variant: primary) {
+  @if $variant == success {
+    --easyedu-context-modal-accent: var(--easyedu-modal-success-accent);
+    --easyedu-context-modal-header-bg: var(--easyedu-modal-header-success-bg);
+  } @else if $variant == warning {
+    --easyedu-context-modal-accent: var(--easyedu-modal-warning-accent);
+    --easyedu-context-modal-header-bg: var(--easyedu-modal-header-warning-bg);
+  } @else if $variant == danger {
+    --easyedu-context-modal-accent: var(--easyedu-modal-danger-accent);
+    --easyedu-context-modal-header-bg: var(--easyedu-modal-header-danger-bg);
+  } @else {
+    --easyedu-context-modal-accent: var(--easyedu-modal-primary-accent);
+    --easyedu-context-modal-header-bg: var(--easyedu-modal-header-primary-bg);
+  }
+}
+
 // Apply the shared EasyEdu entrance/exit motion to a visible modal dialog.
 // Use it on plugin-owned modal roots or on Moodle native modal roots decorated
 // by JavaScript. The caller chooses the dialog selector so Bootstrap/Moodle
@@ -368,7 +411,10 @@
   overflow: visible;
   padding: 0.55rem 0.66rem;
   position: relative;
-  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    background-color var(--easyedu-motion-fast) ease,
+    border-color var(--easyedu-motion-fast) ease,
+    box-shadow var(--easyedu-motion-fast) ease;
   width: 100%;
 
   &::before {

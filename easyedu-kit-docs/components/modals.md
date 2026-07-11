@@ -30,6 +30,11 @@ EasyEdu modals use Moodle-compatible markup with a shared visual shell.
   @include easyedu.modal-section;
 }
 
+.my-context-modal {
+  @include easyedu.context-modal-surface;
+  @include easyedu.context-modal-variant(success);
+}
+
 .my-danger-modal {
   @include easyedu.destructive-confirmation-modal;
 }
@@ -53,6 +58,15 @@ EasyEdu modals use Moodle-compatible markup with a shared visual shell.
   When a Moodle native modal is created before it becomes visible, temporarily
   add `is-easyedu-animating` after it receives the visible state to replay the
   EasyEdu entrance motion.
+
+`context-modal-surface` owns only the shared header/body/footer chrome. The
+plugin keeps dimensions, internal grids, sticky regions and JS behaviour.
+Available variants are `primary`, `success`, `warning` and `danger`. Custom
+modal class names can be passed as the three selector arguments.
+
+Do not import the gradient alone. A complete import includes the shared border,
+body/footer surfaces and the semantic variant variables. Never change existing
+modal ids or `data-*` hooks to adopt this visual shell.
 
 ## Move/Copy Modal Structure
 

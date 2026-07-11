@@ -44,6 +44,14 @@ Tables are used for import previews, reports and dense administrative data.
 .my-status {
   @include easyedu.preview-status(#e8f6ee, #1f6748);
 }
+
+.my-source-table {
+  @include easyedu.semantic-table-surface(primary);
+}
+
+.my-sticky-table {
+  @include easyedu.sticky-data-table(0);
+}
 ```
 
 ## Variants
@@ -56,3 +64,13 @@ Tables are used for import previews, reports and dense administrative data.
 
 Use real table markup for tabular data. Keep status colours paired with text or
 icons so the result does not rely on colour alone.
+
+## Import contract
+
+- Apply `semantic-table-surface` directly to a real table when its existing
+  columns and DOM must remain untouched.
+- Apply `sticky-data-table` only inside a container that owns vertical scroll.
+- The plugin owns horizontal overflow, action-menu escape and sticky offsets.
+- Do not change `table-layout`, draggable row hooks, ids or `data-*` attributes
+  while adopting these surfaces.
+- Pair warning/error row colours with visible text or icons.

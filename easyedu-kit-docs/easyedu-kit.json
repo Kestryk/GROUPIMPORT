@@ -1,6 +1,6 @@
 {
   "name": "easyedu-ui-kit",
-  "version": "0.4.26",
+  "version": "0.4.28",
   "source": "git@github.com:Kestryk/easyedu-ui-kit.git",
   "status": "stable",
   "packages": {
@@ -15,6 +15,11 @@
     "guide": {
       "path": "guide",
       "description": "Reusable EasyEdu guide/tutorial foundation."
+    },
+    "motion": {
+      "path": "motion",
+      "description": "Cancellable AMD motion controller with reduced-motion and server-policy support.",
+      "documentation": "motion/README.md"
     },
     "docs": {
       "path": "docs",

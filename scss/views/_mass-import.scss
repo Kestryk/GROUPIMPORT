@@ -62,7 +62,6 @@
     display: grid;
     gap: 1.15rem;
     grid-template-columns: minmax(21rem, 0.88fr) minmax(25rem, 1.12fr);
-    transition: gap 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
   }
 
   &.has-preview &__grid {
@@ -74,37 +73,20 @@
   }
 
   &-card {
-    background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
-    border: 1px solid var(--local-groupimport-easystud-border);
-    border-radius: 0.95rem;
-    box-shadow: var(--local-groupimport-easystud-shadow-soft);
+    @include easyedu.semantic-accent-panel(primary);
+
     min-width: 0;
     overflow: visible;
     padding: 1rem;
-    position: relative;
-    transition: box-shadow 0.32s ease, padding 0.32s ease, transform 0.32s ease;
-
-    &::before {
-      background: linear-gradient(90deg, #0f6cbf 0%, #5b9bd8 100%);
-      content: "";
-      height: 0.35rem;
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
+    transition: box-shadow var(--easyedu-motion-normal) ease;
   }
 
   &-card--results {
-    border-color: #d8decf;
-
-    &::before {
-      background: linear-gradient(90deg, #1b7f5a 0%, #65a97f 100%);
-    }
+    @include easyedu.semantic-accent-panel(success);
   }
 
   &-card--upload {
-    border-color: #cddbed;
+    @include easyedu.semantic-accent-panel(primary);
   }
 
   &.has-preview &-card {
@@ -235,7 +217,6 @@
     gap: 0.7rem;
     margin: 0.65rem 0 1rem;
     padding: 0.85rem;
-    transition: margin 0.32s ease, padding 0.32s ease;
   }
 
   &.has-preview &-fields {
@@ -603,7 +584,7 @@
     gap: 0.5rem;
     min-width: 0;
     padding: 0 0.75rem;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    transition: border-color var(--easyedu-motion-fast) ease, box-shadow var(--easyedu-motion-fast) ease;
 
     .fa {
       color: var(--local-groupimport-easystud-primary);
@@ -768,16 +749,25 @@
     justify-content: center;
     min-width: 2rem;
     padding: 0;
-    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+    transition:
+      background-color var(--easyedu-motion-fast) ease,
+      border-color var(--easyedu-motion-fast) ease,
+      color var(--easyedu-motion-fast) ease;
     width: 2rem;
 
-    &:hover,
-    &:focus {
+    &:hover {
       background: #eef4fa;
       border-color: #bfd0e2;
       color: var(--local-groupimport-easystud-primary);
       text-decoration: none;
       transform: translateY(-1px);
+    }
+
+    &:focus {
+      background: #eef4fa;
+      border-color: #bfd0e2;
+      color: var(--local-groupimport-easystud-primary);
+      text-decoration: none;
     }
 
     &:focus-visible {

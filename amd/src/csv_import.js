@@ -21,6 +21,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import * as Motion from './motion';
+
 const hasFiles = event => {
     const types = event.dataTransfer ? Array.from(event.dataTransfer.types || []) : [];
     return types.indexOf('Files') !== -1;
@@ -218,7 +220,16 @@ const initUploadCollapse = root => {
     setUploadCollapsed(root, button, collapsed);
 
     button.addEventListener('click', () => {
-        setUploadCollapsed(root, button, !root.classList.contains('is-upload-collapsed'));
+        const grid = root.querySelector('.local-groupimport-import__grid');
+        const update = () => setUploadCollapsed(root, button, !root.classList.contains('is-upload-collapsed'));
+        if (grid) {
+            Motion.swap(grid, update, {
+                exitDuration: Motion.timing.fast,
+                enterDuration: Motion.timing.normal,
+            });
+        } else {
+            update();
+        }
     });
 };
 
@@ -331,12 +342,19 @@ const initHistoryModal = root => {
 
     const closeButtons = Array.from(modal.querySelectorAll('[data-local-groupimport-history-close]'));
     const close = () => {
-        modal.hidden = true;
-        open.focus();
+        const dialog = modal.querySelector('.local-groupimport-import-modal__dialog') || modal;
+        Motion.exit(dialog, {duration: Motion.timing.fast, distance: '0.2rem'}).then(completed => {
+            if (completed) {
+                modal.hidden = true;
+                open.focus();
+            }
+        });
     };
 
     open.addEventListener('click', () => {
         modal.hidden = false;
+        const dialog = modal.querySelector('.local-groupimport-import-modal__dialog') || modal;
+        Motion.enter(dialog, {duration: Motion.timing.slow, distance: '0.45rem'});
         const closeButton = modal.querySelector('[data-local-groupimport-history-close]');
         if (closeButton) {
             closeButton.focus();
@@ -361,6 +379,8 @@ export const init = (rootId) => {
     if (!root) {
         return;
     }
+
+    Motion.init(root);
 
     initUploadCollapse(root);
     initPreviewTools(root);

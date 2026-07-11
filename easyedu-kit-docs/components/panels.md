@@ -28,6 +28,14 @@ Panels are the large boxes that organise an EasyEdu management screen.
 .my-clear-selection-panel__count {
   @include easyedu.sticky-selection-count;
 }
+
+.my-import-panel {
+  @include easyedu.semantic-accent-panel(primary);
+}
+
+.my-results-panel {
+  @include easyedu.semantic-accent-panel(success);
+}
 ```
 
 ## Patterns
@@ -39,3 +47,8 @@ Panels are the large boxes that organise an EasyEdu management screen.
 - Use sticky selection panels for compact persistent feedback such as "3 items
   selected" plus one recovery action. On mobile, prefer `mobile-action-tray`
   instead so the panel does not compete with touch actions.
+- Use semantic accent panels when a management surface needs a persistent
+  meaning. `primary`, `success`, `warning` and `danger` share identical
+  geometry and differ only through public semantic tokens.
+- Keep plugin-specific layout, minimum heights and action menus outside the
+  mixin. If menus must escape the panel, retain `overflow: visible` locally.

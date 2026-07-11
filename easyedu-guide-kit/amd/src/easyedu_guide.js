@@ -6,6 +6,8 @@
 const DEFAULTS = {
   storageKey: 'easyedu.guide.seen',
   firstVisit: false,
+  highlightAutoHideDelay: 9000,
+  highlightStyle: 'default',
   targets: {},
   paths: {},
   unlockPaths: [],
@@ -51,12 +53,93 @@ const SELECTORS = {
 
 const HIGHLIGHT_TARGET_CLASS = 'is-easyedu-guide-highlight-target';
 
+const isMotionEnabled = root => {
+  const policyRoot = root && root.closest ? root.closest('[data-easyedu-motion-policy]') : null;
+  const disabledByAdmin = (policyRoot && policyRoot.getAttribute('data-easyedu-motion-policy') === 'disabled') ||
+    (document.body && document.body.classList.contains('easyedu-motion-disabled'));
+  const reducedByVisitor = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return !disabledByAdmin && !reducedByVisitor;
+};
+
+const getScrollBehavior = root => isMotionEnabled(root) ? 'smooth' : 'auto';
+
+const scrollAnimationTokens = new WeakMap();
+let windowScrollAnimationToken = null;
+
+const easeGuideScroll = progress => {
+  const safeProgress = Math.max(0, Math.min(progress, 1));
+  return safeProgress < 0.5 ?
+    4 * safeProgress * safeProgress * safeProgress :
+    1 - Math.pow(-2 * safeProgress + 2, 3) / 2;
+};
+
+const animateScrollTo = (root, scroller, top, duration = 520) => {
+  const reducedMotion = getScrollBehavior(root) === 'auto';
+  const isWindow = scroller === window;
+  const getCurrent = () => isWindow ? window.scrollY : scroller.scrollTop;
+  const setCurrent = value => {
+    if (isWindow) {
+      window.scrollTo(0, value);
+    } else {
+      scroller.scrollTop = value;
+    }
+  };
+
+  const maxTop = isWindow ?
+    Math.max(0, document.documentElement.scrollHeight - (window.innerHeight || document.documentElement.clientHeight)) :
+    Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+  const targetTop = Math.max(0, Math.min(top, maxTop));
+  const startTop = getCurrent();
+  const distance = targetTop - startTop;
+
+  if (reducedMotion || Math.abs(distance) < 1) {
+    setCurrent(targetTop);
+    return;
+  }
+
+  const token = Symbol('easyedu-scroll');
+  if (isWindow) {
+    windowScrollAnimationToken = token;
+  } else {
+    scrollAnimationTokens.set(scroller, token);
+  }
+
+  const startTime = performance.now();
+  const step = now => {
+    const activeToken = isWindow ? windowScrollAnimationToken : scrollAnimationTokens.get(scroller);
+    if (activeToken !== token) {
+      return;
+    }
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    setCurrent(startTop + distance * easeGuideScroll(progress));
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+};
+
 const mergeConfig = config => Object.assign({}, DEFAULTS, config || {}, {
   labels: Object.assign({}, DEFAULTS.labels, (config && config.labels) || {}),
   targets: Object.assign({}, DEFAULTS.targets, (config && config.targets) || {}),
   paths: Object.assign({}, DEFAULTS.paths, (config && config.paths) || {}),
   unlockPaths: Array.isArray(config && config.unlockPaths) ? config.unlockPaths : DEFAULTS.unlockPaths
 });
+
+const isVisibleElement = element => {
+  if (!element || element.hidden) {
+    return false;
+  }
+
+  const style = window.getComputedStyle(element);
+  if (style.display === 'none' || style.visibility === 'hidden') {
+    return false;
+  }
+
+  const rect = element.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0;
+};
 
 const getStorage = () => {
   try {
@@ -126,30 +209,76 @@ const saveChecklistProgress = (root, config, pathName, activeIndex = 0) => {
   });
 };
 
+const clearChecklistProgress = config => {
+  const state = loadGuideState(config);
+  saveGuideState(config, {
+    completed: {},
+    slideIndex: Number(state.slideIndex || 0)
+  });
+};
+
 const resolveTarget = (config, keyOrSelector) => {
   if (!keyOrSelector) {
     return null;
   }
 
+  if (Array.isArray(keyOrSelector)) {
+    const matches = keyOrSelector.map(item => resolveTarget(config, item)).filter(Boolean);
+    return matches.find(isVisibleElement) || matches[0] || null;
+  }
+
   const selector = config.targets[keyOrSelector] || keyOrSelector;
+  if (Array.isArray(selector)) {
+    return resolveTarget(config, selector);
+  }
+
   try {
-    return document.querySelector(selector);
+    const targets = Array.from(document.querySelectorAll(selector));
+    if (targets.length) {
+      return targets.find(isVisibleElement) || targets[0];
+    }
+  } catch (error) {
+    // Continue with the data-target fallback below.
+  }
+
+  try {
+    const escapedKey = window.CSS && window.CSS.escape ?
+      window.CSS.escape(keyOrSelector) :
+      String(keyOrSelector).replace(/"/g, '\\"');
+    return document.querySelector(`[data-easyedu-guide-target="${escapedKey}"]`);
   } catch (error) {
     return null;
   }
 };
 
+const eventMatchesTarget = (config, keyOrSelector, event) => {
+  if (!keyOrSelector || !event || !event.target || !event.target.closest) {
+    return false;
+  }
+
+  const selector = config.targets[keyOrSelector] || keyOrSelector;
+  try {
+    return !!event.target.closest(selector);
+  } catch (error) {
+    return false;
+  }
+};
+
 const createHighlight = root => {
-  let highlight = root.querySelector(SELECTORS.highlight);
+  if (!root.easyeduGuideId) {
+    root.easyeduGuideId = `easyedu-guide-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+  let highlight = document.querySelector(`${SELECTORS.highlight}[data-easyedu-guide-owner="${root.easyeduGuideId}"]`);
   if (highlight) {
     return highlight;
   }
 
   highlight = document.createElement('div');
   highlight.setAttribute('data-easyedu-guide-highlight', '1');
+  highlight.setAttribute('data-easyedu-guide-owner', root.easyeduGuideId);
   highlight.className = 'easyedu-guide-highlight';
   highlight.hidden = true;
-  root.appendChild(highlight);
+  document.body.appendChild(highlight);
   return highlight;
 };
 
@@ -168,11 +297,16 @@ const clearHighlightedTarget = root => {
   root.easyeduGuideCurrentTarget = null;
 };
 
+const clearHighlight = root => {
+  const highlight = createHighlight(root);
+  highlight.hidden = true;
+  clearHighlightedTarget(root);
+};
+
 const updateHighlight = (root, target) => {
   const highlight = createHighlight(root);
   if (!target) {
-    highlight.hidden = true;
-    clearHighlightedTarget(root);
+    clearHighlight(root);
     return;
   }
 
@@ -182,6 +316,10 @@ const updateHighlight = (root, target) => {
   }
   root.easyeduGuideCurrentTarget = target;
   target.classList.add(HIGHLIGHT_TARGET_CLASS);
+  highlight.classList.toggle(
+    'easyedu-guide-highlight--pulse-blue',
+    root.dataset.easyeduGuideHighlightStyle === 'pulse-blue'
+  );
   highlight.hidden = false;
   highlight.style.height = `${Math.max(rect.height, 1)}px`;
   highlight.style.left = `${rect.left}px`;
@@ -189,29 +327,38 @@ const updateHighlight = (root, target) => {
   highlight.style.width = `${Math.max(rect.width, 1)}px`;
 };
 
-const scheduleHighlightAutoHide = (root, delay = 9000) => {
+const scheduleHighlightAutoHide = (root, delay) => {
   clearHighlightAutoHideTimer(root);
   root.easyeduGuideHighlightAutoHideTimer = window.setTimeout(() => {
-    const highlight = root.querySelector(SELECTORS.highlight);
-    if (highlight) {
-      highlight.hidden = true;
-    }
-    clearHighlightedTarget(root);
+    clearHighlight(root);
   }, delay);
 };
 
 const scheduleHighlightRefresh = (root, target, shouldDock = true) => {
-  if (!target) {
-    refreshActiveHighlight(root, shouldDock);
+  root.easyeduGuideRefreshTarget = target || null;
+  root.easyeduGuideRefreshShouldDock = shouldDock;
+  if (root.easyeduGuideRefreshFrame) {
     return;
   }
 
-  [0, 160, 360, 720, 1100].forEach(delay => {
+  root.easyeduGuideRefreshFrame = window.requestAnimationFrame(() => {
+    const refreshTarget = root.easyeduGuideRefreshTarget || root.easyeduGuideCurrentTarget;
+    root.easyeduGuideRefreshFrame = null;
+    if (!refreshTarget) {
+      return;
+    }
+    if (root.easyeduGuideRefreshShouldDock) {
+      dockChecklistAwayFromTarget(root, refreshTarget);
+    }
+    updateHighlight(root, refreshTarget);
+  });
+};
+
+const scheduleHighlightRefreshBurst = (root, target, shouldDock = true) => {
+  const delays = [0, 80, 180, 320, 520, 800];
+  delays.forEach(delay => {
     window.setTimeout(() => {
-      if (shouldDock) {
-        dockChecklistAwayFromTarget(root, target);
-      }
-      updateHighlight(root, target);
+      scheduleHighlightRefresh(root, target, shouldDock);
     }, delay);
   });
 };
@@ -242,13 +389,13 @@ const showInterfaceReturn = root => {
       if (root.easyeduGuideInterfaceHighlightActive) {
         returnPanel.hidden = true;
         root.easyeduGuideInterfaceHighlightActive = false;
-        updateHighlight(root, null);
+        clearHighlight(root);
       }
     }, 12000);
   }
 };
 
-const hideInterfaceReturn = (root, clearHighlight = false) => {
+const hideInterfaceReturn = (root, shouldClearHighlight = false) => {
   const returnPanel = root.querySelector(SELECTORS.interfaceReturn);
   if (root.easyeduGuideReturnTimer) {
     window.clearTimeout(root.easyeduGuideReturnTimer);
@@ -258,9 +405,79 @@ const hideInterfaceReturn = (root, clearHighlight = false) => {
   if (returnPanel) {
     returnPanel.hidden = true;
   }
-  if (clearHighlight) {
-    updateHighlight(root, null);
+  if (shouldClearHighlight) {
+    clearHighlight(root);
   }
+};
+
+const hideChecklist = (root, config, clearProgress = false) => {
+  const checklist = root.querySelector(SELECTORS.checklist);
+  if (checklist) {
+    checklist.hidden = true;
+    checklist.classList.remove('is-complete', 'is-minimized', 'is-docked-left', 'is-docked-right', 'is-unlock-path');
+    checklist.removeAttribute('data-easyedu-guide-path');
+  }
+  hideInterfaceReturn(root, true);
+  clearHighlight(root);
+  if (clearProgress) {
+    clearChecklistProgress(config);
+  }
+};
+
+const getScrollTopOffset = () => {
+  const fixedElements = Array.from(document.querySelectorAll('.fixed-top, .sticky-top, [data-region="fixed-drawer-toggle"]'));
+  const bottom = fixedElements.reduce((value, element) => {
+    if (!isVisibleElement(element)) {
+      return value;
+    }
+    const style = window.getComputedStyle(element);
+    if (style.position !== 'fixed' && style.position !== 'sticky') {
+      return value;
+    }
+    const rect = element.getBoundingClientRect();
+    return rect.top <= 8 ? Math.max(value, rect.bottom) : value;
+  }, 0);
+
+  return Math.max(96, Math.min(bottom + 24, 180));
+};
+
+const isScrollableContainer = element => {
+  if (!element || element === document.body || element === document.documentElement) {
+    return false;
+  }
+  const style = window.getComputedStyle(element);
+  const overflowY = style.overflowY;
+  return ['auto', 'scroll', 'overlay'].includes(overflowY) &&
+    element.scrollHeight > element.clientHeight + 2;
+};
+
+const scrollScrollableAncestorsToTarget = (root, target) => {
+  let scrolled = false;
+  let parent = target.parentElement;
+
+  while (parent && parent !== document.body && parent !== document.documentElement) {
+    if (isScrollableContainer(parent)) {
+      const targetRect = target.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      const margin = Math.min(Math.max(parent.clientHeight * 0.08, 18), 42);
+      let nextTop = parent.scrollTop;
+
+      if (targetRect.top < parentRect.top + margin) {
+        nextTop += targetRect.top - parentRect.top - margin;
+      } else if (targetRect.bottom > parentRect.bottom - margin) {
+        nextTop += targetRect.bottom - parentRect.bottom + margin;
+      }
+
+      nextTop = Math.max(0, Math.min(nextTop, parent.scrollHeight - parent.clientHeight));
+      if (Math.abs(nextTop - parent.scrollTop) > 1) {
+        animateScrollTo(root, parent, nextTop, 520);
+        scrolled = true;
+      }
+    }
+    parent = parent.parentElement;
+  }
+
+  return scrolled;
 };
 
 const scrollToTarget = (root, target, options = {}) => {
@@ -268,17 +485,38 @@ const scrollToTarget = (root, target, options = {}) => {
     return;
   }
 
+  clearHighlightAutoHideTimer(root);
   dockChecklistAwayFromTarget(root, target);
 
-  target.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'nearest'
-  });
+  const topOffset = getScrollTopOffset();
+  const scrolledInnerContainer = scrollScrollableAncestorsToTarget(root, target);
 
-  scheduleHighlightRefresh(root, target);
+  const alignWindow = () => {
+    const rect = target.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const bottomOffset = Math.min(Math.max(viewportHeight * 0.18, 110), 180);
+    const usableHeight = Math.max(160, viewportHeight - topOffset - bottomOffset);
+    const needsScroll = rect.top < topOffset ||
+      rect.bottom > viewportHeight - bottomOffset ||
+      rect.height > usableHeight;
+
+    if (needsScroll) {
+      animateScrollTo(root, window, Math.max(0, window.scrollY + rect.top - topOffset), 520);
+    }
+  };
+
+  if (scrolledInnerContainer) {
+    window.setTimeout(alignWindow, getScrollBehavior(root) === 'smooth' ? 280 : 0);
+  } else {
+    alignWindow();
+  }
+
+  scheduleHighlightRefreshBurst(root, target);
   if (options.autoHideHighlight) {
-    scheduleHighlightAutoHide(root, options.autoHideDelay || 9000);
+    const delay = options.autoHideDelay || options.autoHideDelay === 0 ?
+      options.autoHideDelay :
+      DEFAULTS.highlightAutoHideDelay;
+    scheduleHighlightAutoHide(root, delay);
   }
 };
 
@@ -290,11 +528,27 @@ const resolveStepHighlightTarget = (config, step) => {
   return resolveTarget(config, step.highlightTarget || step.showTarget || step.target);
 };
 
+const highlightChecklistStep = (root, config, step, callback = () => {}) => {
+  if (!step) {
+    callback();
+    return;
+  }
+
+  runStepOpenAction(root, config, step, () => {
+    const target = resolveStepHighlightTarget(config, step);
+    scrollToTarget(root, target, {
+      autoHideHighlight: true,
+      autoHideDelay: config.highlightAutoHideDelay
+    });
+    callback();
+  });
+};
+
 const scrollActiveNavItemIntoView = root => {
   const active = root.querySelector(`${SELECTORS.navItem}.is-active`);
   if (active) {
     active.scrollIntoView({
-      behavior: 'smooth',
+      behavior: getScrollBehavior(root),
       block: 'nearest',
       inline: 'center'
     });
@@ -324,7 +578,7 @@ const getRequiredStep = (steps, requiredStepId) => steps.find((step, index) => g
 const getLockedStepRequirement = (config, steps, step) => {
   if (step.requiresStep) {
     const requiredStep = getRequiredStep(steps, step.requiresStep);
-    return (requiredStep && requiredStep.title) || step.requiresStep;
+    return formatLabel(config.labels.completeStepFirst, (requiredStep && requiredStep.title) || step.requiresStep);
   }
 
   return step.requiresLabel || '';
@@ -355,12 +609,8 @@ const syncSlideLocks = (root, config) => {
     const locked = requirement ? !isRequirementMet(config, requirement) : false;
 
     item.classList.toggle('is-locked', locked);
-    item.setAttribute('aria-disabled', locked ? 'true' : 'false');
-    if (locked) {
-      item.setAttribute('tabindex', '-1');
-    } else {
-      item.removeAttribute('tabindex');
-    }
+    item.setAttribute('aria-disabled', 'false');
+    item.removeAttribute('tabindex');
   });
 };
 
@@ -494,7 +744,7 @@ const openModal = (root, config) => {
     return;
   }
 
-  hideInterfaceReturn(root, true);
+  hideChecklist(root, config, true);
   modal.hidden = false;
   modal.classList.add('is-open');
   modal.setAttribute('aria-modal', 'true');
@@ -519,8 +769,8 @@ const closeModal = (root, preserveHighlight = false) => {
   modal.classList.remove('is-open');
   modal.hidden = true;
   if (!preserveHighlight) {
-    hideInterfaceReturn(root);
-    updateHighlight(root, null);
+    hideInterfaceReturn(root, true);
+    clearHighlight(root);
   }
 };
 
@@ -724,12 +974,28 @@ const runStepOpenAction = (root, config, step, callback) => {
     return;
   }
 
-  const openControl = resolveTarget(config, step.open);
-  if (openControl) {
-    openControl.click();
-  }
+  const actions = Array.isArray(step.open) ? step.open : [step.open];
+  const runAction = index => {
+    if (index >= actions.length) {
+      callback();
+      return;
+    }
 
-  window.setTimeout(callback, Number(step.openDelay || 450));
+    const action = actions[index];
+    const targetKey = typeof action === 'string' ? action : (action.target || action.selector || action.open);
+    const delay = Number(typeof action === 'string' ? step.openDelay : (action.delay || step.openDelay || 260));
+    const openControl = resolveTarget(config, targetKey);
+    const alreadyOpen = openControl &&
+      (openControl.getAttribute('aria-expanded') === 'true' ||
+        openControl.getAttribute('aria-pressed') === 'true');
+    if (openControl && !alreadyOpen) {
+      openControl.click();
+    }
+
+    window.setTimeout(() => runAction(index + 1), delay);
+  };
+
+  runAction(0);
 };
 
 const completeStep = (root, config, pathName, stepIdOrIndex) => {
@@ -748,7 +1014,7 @@ const completeStep = (root, config, pathName, stepIdOrIndex) => {
   const activeIndex = active ? Number(active.getAttribute('data-easyedu-guide-step-index') || 0) : 0;
   const steps = config.paths[pathName] || [];
   saveChecklistProgress(root, config, pathName, Math.min(activeIndex + 1, Math.max(steps.length - 1, 0)));
-  checklist.classList.toggle('is-complete', isChecklistComplete(checklist));
+  renderChecklist(root, config, pathName);
   updateChecklistMessage(root, config, active ? {
     feedback: active.getAttribute('data-easyedu-guide-feedback') || ''
   } : null);
@@ -792,7 +1058,7 @@ const moveNav = (root, direction) => {
 
   nav.scrollBy({
     left: direction * Math.max(nav.clientWidth * 0.75, 160),
-    behavior: 'smooth'
+    behavior: getScrollBehavior(root)
   });
 };
 
@@ -826,12 +1092,8 @@ const bindHighlightAutoRefresh = root => {
   root.dataset.easyeduGuideHighlightRefreshBound = '1';
 
   const refresh = event => {
-    if (event && event.type === 'scroll') {
-      window.requestAnimationFrame(() => refreshActiveHighlight(root));
-      return;
-    }
-
-    scheduleHighlightRefresh(root, root.easyeduGuideCurrentTarget, false);
+    const shouldDock = event && event.type !== 'scroll';
+    scheduleHighlightRefresh(root, root.easyeduGuideCurrentTarget, shouldDock);
   };
 
   window.addEventListener('scroll', refresh, true);
@@ -840,33 +1102,21 @@ const bindHighlightAutoRefresh = root => {
   document.addEventListener('animationend', refresh, true);
   document.addEventListener('shown.bs.modal', refresh, true);
   document.addEventListener('hidden.bs.modal', refresh, true);
-
-  if (window.MutationObserver) {
-    const observer = new MutationObserver(mutations => {
-      if (!root.easyeduGuideCurrentTarget) {
-        return;
-      }
-      const highlight = root.querySelector(SELECTORS.highlight);
-      if (highlight && mutations.every(mutation => mutation.target === highlight || highlight.contains(mutation.target))) {
-        return;
-      }
-      window.requestAnimationFrame(() => scheduleHighlightRefresh(root, root.easyeduGuideCurrentTarget, false));
-    });
-    observer.observe(document.body, {
-      attributes: true,
-      childList: true,
-      subtree: true
-    });
-    root.easyeduGuideHighlightObserver = observer;
-  }
 };
 
 const bindGuide = (root, config) => {
+  root.easyeduGuideConfig = config;
+  if (root.dataset.easyeduGuideBound === '1') {
+    return;
+  }
+  root.dataset.easyeduGuideBound = '1';
+
   root.addEventListener('click', event => {
+    const activeConfig = root.easyeduGuideConfig || config;
     const open = event.target.closest(SELECTORS.open);
     if (open && root.contains(open)) {
       event.preventDefault();
-      openModal(root, config);
+      openModal(root, activeConfig);
       return;
     }
 
@@ -894,22 +1144,22 @@ const bindGuide = (root, config) => {
     const next = event.target.closest(SELECTORS.next);
     if (next && root.contains(next)) {
       event.preventDefault();
-      setActiveSlide(root, Number(root.getAttribute('data-easyedu-guide-current-slide') || 0) + 1, config);
+      setActiveSlide(root, Number(root.getAttribute('data-easyedu-guide-current-slide') || 0) + 1, activeConfig);
       return;
     }
 
     const previous = event.target.closest(SELECTORS.previous);
     if (previous && root.contains(previous)) {
       event.preventDefault();
-      setActiveSlide(root, Number(root.getAttribute('data-easyedu-guide-current-slide') || 0) - 1, config);
+      setActiveSlide(root, Number(root.getAttribute('data-easyedu-guide-current-slide') || 0) - 1, activeConfig);
       return;
     }
 
     const navItem = event.target.closest(SELECTORS.navItem);
     if (navItem && root.contains(navItem)) {
       event.preventDefault();
-      syncSlideLocks(root, config);
-      setActiveSlide(root, Number(navItem.getAttribute('data-easyedu-guide-nav-item') || 0), config, {
+      syncSlideLocks(root, activeConfig);
+      setActiveSlide(root, Number(navItem.getAttribute('data-easyedu-guide-nav-item') || 0), activeConfig, {
         allowLocked: navItem.classList.contains('is-locked')
       });
       return;
@@ -918,7 +1168,7 @@ const bindGuide = (root, config) => {
     const targetButton = event.target.closest(SELECTORS.showTarget);
     if (targetButton && root.contains(targetButton)) {
       event.preventDefault();
-      const target = resolveTarget(config, targetButton.getAttribute('data-easyedu-guide-show-target'));
+      const target = resolveTarget(activeConfig, targetButton.getAttribute('data-easyedu-guide-show-target'));
       closeModal(root, true);
       scrollToTarget(root, target);
       showInterfaceReturn(root);
@@ -928,9 +1178,19 @@ const bindGuide = (root, config) => {
     const startPath = event.target.closest(SELECTORS.startPath);
     if (startPath && root.contains(startPath)) {
       event.preventDefault();
-      syncSlideLocks(root, config);
-      renderChecklist(root, config, startPath.getAttribute('data-easyedu-guide-start-path'));
+      syncSlideLocks(root, activeConfig);
+      renderChecklist(root, activeConfig, startPath.getAttribute('data-easyedu-guide-start-path'));
       closeModal(root);
+      const checklist = root.querySelector(SELECTORS.checklist);
+      const activeItem = checklist ?
+        checklist.querySelector('[data-easyedu-guide-step-index].is-active') :
+        null;
+      const pathName = checklist ? checklist.getAttribute('data-easyedu-guide-path') : '';
+      const steps = activeConfig.paths[pathName] || [];
+      const stepIndex = activeItem ?
+        Number(activeItem.getAttribute('data-easyedu-guide-step-index') || 0) :
+        0;
+      highlightChecklistStep(root, activeConfig, steps[stepIndex] || null);
       return;
     }
 
@@ -943,20 +1203,20 @@ const bindGuide = (root, config) => {
       const checklist = root.querySelector(SELECTORS.checklist);
       const pathName = checklist ? checklist.getAttribute('data-easyedu-guide-path') : '';
       const stepIndex = Number(checklistItem.getAttribute('data-easyedu-guide-step-index') || 0);
-      const step = setActiveChecklistStep(root, config, stepIndex);
-      runStepOpenAction(root, config, step, () => {
-        const target = resolveStepHighlightTarget(config, step);
-        scrollToTarget(root, target);
-        if (step && (step.completeOnClick || step.completeOn)) {
-          updateChecklistMessage(root, config, step);
+      const step = setActiveChecklistStep(root, activeConfig, stepIndex);
+      highlightChecklistStep(root, activeConfig, step, () => {
+        if (step && (step.completeOnClick || step.completeOn || step.waitForCompletion ||
+            ['action', 'event', 'reload'].includes(step.completionMode))) {
+          updateChecklistMessage(root, activeConfig, step);
           return;
         }
-        markChecklistStepComplete(root, config, step && step.id ? step.id : stepIndex, step);
+        markChecklistStepComplete(root, activeConfig, step && step.id ? step.id : stepIndex, step);
       });
     }
   });
 
   root.addEventListener('keydown', event => {
+    const activeConfig = root.easyeduGuideConfig || config;
     if (!isModalOpen(root) || isTypingTarget(event.target)) {
       return;
     }
@@ -965,25 +1225,25 @@ const bindGuide = (root, config) => {
     const slideCount = getSlideCount(root);
     if (event.key === 'ArrowRight') {
       event.preventDefault();
-      setActiveSlide(root, activeIndex + 1, config);
+      setActiveSlide(root, activeIndex + 1, activeConfig);
       return;
     }
 
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      setActiveSlide(root, activeIndex - 1, config);
+      setActiveSlide(root, activeIndex - 1, activeConfig);
       return;
     }
 
     if (event.key === 'Home') {
       event.preventDefault();
-      setActiveSlide(root, 0, config);
+      setActiveSlide(root, 0, activeConfig);
       return;
     }
 
     if (event.key === 'End') {
       event.preventDefault();
-      setActiveSlide(root, slideCount - 1, config);
+      setActiveSlide(root, slideCount - 1, activeConfig);
       return;
     }
 
@@ -996,13 +1256,15 @@ const bindGuide = (root, config) => {
   bindNavWheel(root);
 
   document.addEventListener('easyedu:guide-step-complete', event => {
+    const activeConfig = root.easyeduGuideConfig || config;
     if (!event.detail) {
       return;
     }
-    completeStep(root, config, event.detail.path, event.detail.step);
+    completeStep(root, activeConfig, event.detail.path, event.detail.step);
   });
 
   document.addEventListener('easyedu:guide-refresh-highlight', event => {
+    const activeConfig = root.easyeduGuideConfig || config;
     const detail = event.detail || {};
     if (detail.root) {
       const targetRoot = typeof detail.root === 'string' ? document.querySelector(detail.root) : detail.root;
@@ -1011,7 +1273,7 @@ const bindGuide = (root, config) => {
       }
     }
 
-    const target = detail.target ? resolveTarget(config, detail.target) : root.easyeduGuideCurrentTarget;
+    const target = detail.target ? resolveTarget(activeConfig, detail.target) : root.easyeduGuideCurrentTarget;
     scheduleHighlightRefresh(root, target, detail.dock !== false);
   });
 
@@ -1019,8 +1281,7 @@ const bindGuide = (root, config) => {
     config.paths[pathName].forEach((step, index) => {
       if (step.completeOnClick && step.target) {
         document.addEventListener('click', event => {
-          const target = resolveTarget(config, step.target);
-          if (!target || (event.target !== target && !target.contains(event.target))) {
+          if (!eventMatchesTarget(config, step.target, event)) {
             return;
           }
 
@@ -1075,11 +1336,7 @@ const bindGuide = (root, config) => {
   const closeChecklist = root.querySelector(SELECTORS.checklistClose);
   if (closeChecklist) {
     closeChecklist.addEventListener('click', () => {
-      const checklist = root.querySelector(SELECTORS.checklist);
-      if (checklist) {
-        checklist.hidden = true;
-      }
-      hideInterfaceReturn(root, true);
+      hideChecklist(root, config, true);
     });
   }
 
@@ -1103,11 +1360,7 @@ const bindGuide = (root, config) => {
   const returnToGuide = root.querySelector(SELECTORS.checklistReturn);
   if (returnToGuide) {
     returnToGuide.addEventListener('click', () => {
-      const checklist = root.querySelector(SELECTORS.checklist);
-      if (checklist) {
-        checklist.hidden = true;
-      }
-      hideInterfaceReturn(root, true);
+      hideChecklist(root, config, true);
       openModal(root, config);
     });
   }
@@ -1123,6 +1376,7 @@ export const init = (rootOrSelector, rawConfig) => {
   }
 
   const config = mergeConfig(rawConfig);
+  root.dataset.easyeduGuideHighlightStyle = config.highlightStyle || DEFAULTS.highlightStyle;
   syncSlideLocks(root, config);
   const state = loadGuideState(config);
   const restoredSlideIndex = Number(state.slideIndex);

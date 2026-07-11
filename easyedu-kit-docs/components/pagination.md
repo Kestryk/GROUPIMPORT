@@ -70,3 +70,22 @@ Recommended structure:
 If a neighbouring column has no pagination, render the same pagination bar with
 `is-placeholder`. This reserves height and keeps card rows aligned while hiding
 inactive page controls.
+
+## Runtime replacement
+
+Scrollable columns must replace pages with a fade-only motion recipe:
+
+```js
+Motion.swap(list, applyPageState, {
+    exitDuration: Motion.timing.fast,
+    enterDuration: Motion.timing.normal,
+    exitDistance: '0px',
+    distance: '0px',
+    resize: false,
+    swapOpacity: 0.55,
+});
+```
+
+Do not translate the list or interpolate its height. Either can make
+`overflow-y: auto` reserve a temporary scrollbar and shift cards horizontally.
+Sorting should use the same recipe because it replaces the same list surface.

@@ -14,6 +14,12 @@ plugin needs a consistent visual style and must avoid duplicated native browser
 .my-help-icon {
   @include easyedu.help-icon;
 }
+
+.my-custom-popover {
+  @include easyedu.popover-surface;
+}
+
+@include easyedu.positioned-popover-arrows(".my-custom-popover");
 ```
 
 ## Expected HTML
@@ -29,6 +35,10 @@ plugin needs a consistent visual style and must avoid duplicated native browser
 - Keep the help text short for controls.
 - Use long tooltip variants only for explanatory text.
 - Remove native `title` attributes when they duplicate the custom bubble.
+- Use `popover-surface` plus `positioned-popover-arrows()` when a plugin
+  creates Moodle-like hover popovers in JavaScript. This keeps custom popovers
+  visually aligned with EasyStud while preserving plugin-specific positioning
+  logic.
 
 ## Import Contract
 

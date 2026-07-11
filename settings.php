@@ -160,6 +160,19 @@ if ($hassiteconfig) {
     );
 
     $settings->add(new admin_setting_heading(
+        'local_groupimport/interfaceaccessibility',
+        get_string('interfaceaccessibility', 'local_groupimport'),
+        get_string('interfaceaccessibility_desc', 'local_groupimport')
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'local_groupimport/enableanimations',
+        get_string('enableanimations', 'local_groupimport'),
+        get_string('enableanimations_desc', 'local_groupimport'),
+        1
+    ));
+
+    $settings->add(new admin_setting_heading(
         'local_groupimport/identifieroverview',
         get_string('adminidentifierstitle', 'local_groupimport'),
         $introhtml

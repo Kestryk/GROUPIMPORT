@@ -9,6 +9,7 @@
 
   &-settings-modal__dialog {
     @include easyedu.settings-modal-dialog;
+    @include easyedu.context-modal-variant(success);
     @include easyedu.modal-file-drop-state(".is-file-drag-over", var(--local-groupimport-easystud-primary));
   }
 
@@ -25,16 +26,14 @@
   }
 
   &-settings-modal__header {
-    background:
-      radial-gradient(circle at 4.5rem 1.6rem, rgba(12, 113, 194, 0.12), transparent 8rem),
-      linear-gradient(135deg, #f8fbff 0%, #eef7f1 100%);
+    background: var(--easyedu-modal-header-success-bg);
     border-bottom-color: #d8e7f1;
     padding: 0.78rem 0.95rem;
   }
 
   &-settings-modal__dialog--grouping &-settings-modal__header {
     background:
-      radial-gradient(circle at 4.5rem 1.6rem, rgba(106, 127, 152, 0.14), transparent 8rem),
+      radial-gradient(circle at 4.5rem 1.6rem, color-mix(in srgb, var(--easyedu-grouping) 14%, transparent), transparent 8rem),
       linear-gradient(135deg, #f8fbff 0%, #f2f6f9 100%);
   }
 

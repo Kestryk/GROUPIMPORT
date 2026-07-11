@@ -2,66 +2,6 @@
 
 @include easyedu.motion-keyframes;
 
-@keyframes local-groupimport-easystud-card-open {
-  from {
-    opacity: 0.78;
-    transform: translateY(-0.18rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes local-groupimport-easystud-card-content-open {
-  from {
-    opacity: 0.38;
-    transform: translateY(-0.04rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes local-groupimport-easystud-modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(1.1rem) scale(0.965);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes local-groupimport-easystud-modal-out {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(0.45rem) scale(0.99);
-  }
-}
-
-@keyframes local-groupimport-easystud-tooltip-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.18rem) scale(0.985);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
 @keyframes local-groupimport-easystud-modal-backdrop-in {
   from {
     background: rgba(15, 23, 42, 0);
@@ -79,108 +19,6 @@
 
   to {
     background: rgba(15, 23, 42, 0);
-  }
-}
-
-@keyframes local-groupimport-easystud-participant-details-shift {
-  0% {
-    box-shadow: 0 0.2rem 0.55rem rgba(31, 42, 55, 0.04);
-    transform: translateY(0);
-  }
-
-  42% {
-    box-shadow: 0 0.6rem 1.05rem rgba(72, 115, 173, 0.14);
-    transform: translateY(-0.04rem);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes local-groupimport-easystud-create-card {
-  0% {
-    background-color: #dff5e8;
-    border-left-color: #23854e;
-    opacity: 0;
-    transform: translate3d(0, -0.7rem, 0) scale(0.975);
-  }
-
-  36% {
-    background-color: #d7f2e2;
-    border-left-color: #1f7b47;
-    opacity: 1;
-    transform: translate3d(0, 0.08rem, 0) scale(1.008);
-  }
-
-  70% {
-    background-color: #effaf4;
-    border-left-color: #47a872;
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  100% {
-    background-color: transparent;
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes local-groupimport-easystud-remove-card {
-  0% {
-    background-color: #fff7f7;
-    border-left-color: #ba3939;
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  42% {
-    background-color: #fdeaea;
-    border-left-color: #a12b2b;
-    opacity: 0.9;
-    transform: translate3d(0.18rem, 0, 0) scale(0.992);
-  }
-
-  100% {
-    background-color: #fdeaea;
-    border-left-color: #a12b2b;
-    opacity: 0;
-    transform: translate3d(0.55rem, 0, 0) scale(0.975);
-  }
-}
-
-@keyframes local-groupimport-easystud-page-change {
-  from {
-    opacity: 0.86;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes local-groupimport-easystud-page-item-change {
-  from {
-    opacity: 0.7;
-    transform: translateY(0.18rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes local-groupimport-easystud-page-item-out {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(-0.12rem);
   }
 }
 
@@ -437,6 +275,10 @@
   10%,
   82% {
     opacity: 1;
+    box-shadow:
+      0 0 0 0.42rem rgba(0, 115, 203, 0.2),
+      0 0 1.2rem rgba(0, 115, 203, 0.38),
+      0 1rem 2.4rem rgba(31, 68, 104, 0.18);
     transform: scale(1);
   }
 
@@ -584,6 +426,59 @@
     &.is-action-busy::before,
     &-guided-panel__message.is-complete {
       animation: none;
+    }
+  }
+}
+
+// The admin policy and the visitor's operating-system preference both disable
+// optional motion. Functional state changes remain immediate and visible.
+.local-groupimport-easystud.is-easyedu-motion-off,
+.local-groupimport-motion-disabled .local-groupimport-easystud,
+.local-groupimport-prefers-reduced-motion .local-groupimport-easystud,
+[data-easyedu-motion-policy="disabled"],
+.easyedu-motion-disabled [data-easyedu-motion-policy] {
+  scroll-behavior: auto !important;
+
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0s !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0s !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.local-groupimport-motion-disabled .local-groupimport-easystud-message-modal,
+.local-groupimport-prefers-reduced-motion .local-groupimport-easystud-message-modal,
+.easyedu-motion-disabled .local-groupimport-easystud-message-modal,
+.easyedu-prefers-reduced-motion .local-groupimport-easystud-message-modal {
+  .modal-dialog,
+  .modal-content,
+  &::before,
+  &::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .local-groupimport-easystud,
+  .local-groupimport-easystud-message-modal,
+  [data-easyedu-motion-policy] {
+    scroll-behavior: auto !important;
+
+    *,
+    *::before,
+    *::after {
+      animation-delay: 0s !important;
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-delay: 0s !important;
+      transition-duration: 0.001ms !important;
     }
   }
 }

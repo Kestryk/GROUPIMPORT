@@ -329,21 +329,17 @@
   border: 1px dashed var(--easyedu-card-border);
   border-radius: var(--easyedu-radius-sm);
   margin-top: 0;
-  max-height: 0;
   opacity: 0;
   overflow: hidden;
   padding: 0.65rem;
   transform: translateY(-0.06rem);
   transition:
-    max-height var(--easyedu-motion-slow) var(--easyedu-motion-ease),
-    opacity var(--easyedu-motion-normal) ease,
-    margin var(--easyedu-motion-normal) var(--easyedu-motion-ease),
-    transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
+    opacity var(--easyedu-motion-fast) ease,
+    transform var(--easyedu-motion-fast) var(--easyedu-motion-ease);
 
   &.is-open,
   &[aria-expanded="true"] {
     margin-top: 0.6rem;
-    max-height: $max-height;
     opacity: 1;
     transform: translateY(0);
   }

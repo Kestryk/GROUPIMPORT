@@ -1,11 +1,13 @@
 <div
-    class="local-groupimport-easystud local-groupimport-easystud--booting{{#compactparticipantsdefault}} local-groupimport-easystud--compact-users{{/compactparticipantsdefault}}"
+    class="local-groupimport-easystud local-groupimport-easystud--booting{{#compactparticipantsdefault}} local-groupimport-easystud--compact-users{{/compactparticipantsdefault}}{{^animationsenabled}} is-easyedu-motion-off{{/animationsenabled}}"
     id="local-groupimport-easystud"
     data-easystud-course-id="{{courseid}}"
     data-easystud-detail-labels="{{detaillabelsjson}}"
+    data-easyedu-motion-policy="{{motionpolicy}}"
 >
     <div class="local-groupimport-easystud__notifications" data-easystud-notifications="1" aria-live="polite"></div>
 
+    {{^useeasyeduguide}}
     <div class="local-groupimport-easystud-discovery" data-easystud-discovery="1" hidden>
         <div class="local-groupimport-easystud-discovery__icon">
             <span class="fa fa-compass" aria-hidden="true"></span>
@@ -29,6 +31,7 @@
             </button>
         </div>
     </div>
+    {{/useeasyeduguide}}
 
     <div class="local-groupimport-easystud__header">
         <div>
@@ -39,6 +42,12 @@
             <p class="text-muted mb-0">{{description}}</p>
         </div>
         <div class="local-groupimport-easystud__header-actions">
+            {{#useeasyeduguide}}
+                {{#easyeduguide}}
+                    {{> local_groupimport/easyedu_guide }}
+                {{/easyeduguide}}
+            {{/useeasyeduguide}}
+            {{^useeasyeduguide}}
             <button
                 type="button"
                 class="local-groupimport-easystud-tour-button"
@@ -51,6 +60,7 @@
                     <span class="fa fa-compass" aria-hidden="true"></span>
                 </span>
             </button>
+            {{/useeasyeduguide}}
             <a class="btn btn-outline-secondary" href="{{nativeparticipantsurl}}">{{nativeparticipantslabel}}</a>
             <a class="btn btn-outline-primary ms-2" href="{{csvurl}}">{{csvlabel}}</a>
             <button
@@ -1334,6 +1344,7 @@
         </div>
     </div>
 
+    {{^useeasyeduguide}}
     <div
         class="local-groupimport-easystud-modal"
         data-easystud-tutorial-modal="1"
@@ -2089,6 +2100,7 @@
             </button>
         </div>
     </div>
+    {{/useeasyeduguide}}
 
     <div
         class="local-groupimport-easystud-modal"

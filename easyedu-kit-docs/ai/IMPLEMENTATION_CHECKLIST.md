@@ -13,6 +13,8 @@ Use this checklist for every UI task in EasyEdu plugins.
 - [ ] Identify matching components/tokens/mixins.
 - [ ] Read the component's "Import Audit Checklist" when it exists.
 - [ ] Identify missing kit behaviour before touching the plugin.
+- [ ] When another plugin is the visual reference, capture computed styles and
+      perform an inverse audit before recreating its appearance.
 
 ## 2. Kit-first decision
 
@@ -31,6 +33,14 @@ Use this checklist for every UI task in EasyEdu plugins.
 - [ ] Keep shared style/interaction rules in the kit.
 - [ ] Avoid local overrides unless they are explicitly documented as plugin
       context adaptations.
+- [ ] Preserve ids, `data-*`, DOM order, draggable rows and modal interaction
+      classes while adopting visual surfaces.
+- [ ] Keep overflow and sticky offsets plugin-owned unless the component
+      contract explicitly owns them.
+- [ ] For top admin navigation, use `admin-primary-nav`; keep labels on one
+      line and do not restyle the guide launcher as a nav action.
+- [ ] For in-view status/toggle actions, use `admin-secondary-actions`, not the
+      primary navigation component.
 
 ## 4. Guide-specific checklist
 

@@ -123,7 +123,11 @@
     min-height: 2.08rem;
     padding: 0.28rem 0.62rem 0.28rem 0.48rem;
     margin-top: 1.22rem;
-    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
+    transition:
+      background var(--easyedu-motion-fast) ease,
+      border-color var(--easyedu-motion-fast) ease,
+      box-shadow var(--easyedu-motion-fast) ease,
+      color var(--easyedu-motion-fast) ease;
     width: 100%;
 
     &:hover,
@@ -157,7 +161,10 @@
       content: "";
       position: absolute;
       top: 50%;
-      transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      transition:
+        background var(--easyedu-motion-fast) ease,
+        border-color var(--easyedu-motion-fast) ease,
+        box-shadow var(--easyedu-motion-fast) ease;
     }
 
     span::before {
@@ -460,7 +467,9 @@
     position: relative;
     max-width: 100%;
     min-width: 0;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    transition:
+      border-color var(--easyedu-motion-fast) ease,
+      box-shadow var(--easyedu-motion-fast) ease;
 
     &[data-easystud-grouping-id] {
       @include easyedu.identity-rail(var(--local-groupimport-easystud-icon-grouping));
@@ -648,7 +657,6 @@
     margin-left: 0.45rem;
     margin-top: 0.7rem;
     padding: 0.2rem 0 0 0.85rem;
-    transition: max-height 0.28s ease, opacity 0.2s ease, margin 0.22s ease;
   }
 
   &-tree__children.is-tree-animating &-grouping__groups,
@@ -761,7 +769,10 @@
     min-width: 0;
     position: relative;
     padding: 0.6rem 0.7rem 0.62rem;
-    transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    transition:
+      background-color var(--easyedu-motion-fast) ease,
+      border-color var(--easyedu-motion-fast) ease,
+      box-shadow var(--easyedu-motion-fast) ease;
 
     &:hover {
       background: linear-gradient(180deg, #fbfdfc 0%, #f5faf7 100%);
@@ -815,14 +826,19 @@
 
   &-group.is-newly-created,
   &-tree__section[data-easystud-grouping-id].is-newly-created {
-    animation: local-groupimport-easystud-create-card 0.62s cubic-bezier(0.18, 0.92, 0.28, 1) both;
+    background-color: var(--easyedu-success-soft);
+    border-color: color-mix(in srgb, var(--easyedu-success) 48%, var(--easyedu-card-border) 52%);
     position: relative;
+    transition:
+      background-color var(--easyedu-motion-normal) ease,
+      border-color var(--easyedu-motion-normal) ease;
     z-index: 2;
   }
 
   &-group.is-being-removed,
   &-tree__section[data-easystud-grouping-id].is-being-removed {
-    animation: local-groupimport-easystud-remove-card 0.24s ease-in both;
+    background-color: var(--easyedu-danger-soft);
+    border-color: color-mix(in srgb, var(--easyedu-danger) 48%, var(--easyedu-card-border) 52%);
     pointer-events: none;
   }
 
@@ -863,7 +879,10 @@
   &-count-badge {
     @include easyedu.count-badge(#f6f8fa, #d5e0ea, #6d7f91);
 
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    transition:
+      background-color var(--easyedu-motion-fast) ease,
+      border-color var(--easyedu-motion-fast) ease,
+      color var(--easyedu-motion-fast) ease;
   }
 
   &-count-badge--empty {
@@ -1121,8 +1140,7 @@
     max-height: none;
     overflow: visible;
     position: relative;
-    transition: max-height 0.34s cubic-bezier(0.22, 1, 0.36, 1), margin 0.24s ease;
-    will-change: max-height;
+    transition: margin var(--easyedu-motion-fast) ease;
 
     &::after {
       background: linear-gradient(
@@ -1141,7 +1159,7 @@
       pointer-events: none;
       position: absolute;
       right: 0;
-      transition: opacity 0.2s ease;
+      transition: opacity var(--easyedu-motion-fast) ease;
       z-index: 2;
     }
   }
@@ -1235,7 +1253,7 @@
   &-member--extra {
     max-height: 2.35rem;
     overflow: hidden;
-    transition: opacity 0.16s ease;
+    transition: opacity var(--easyedu-motion-fast) ease;
   }
 
   &-member--extra.is-collapsed {
@@ -1353,7 +1371,7 @@
   &.is-dragging-groups &-tree__groupings [data-easystud-group-id]:not(.is-dragging) {
     @include easyedu.drag-disabled-zone(0.42, 0.18, 0.72, false);
 
-    transition: opacity 0.16s ease, filter 0.16s ease;
+    transition: opacity var(--easyedu-motion-fast) ease, filter var(--easyedu-motion-fast) ease;
   }
 
   &.is-dragging-participants &-group[data-easystud-user-drop],
@@ -1688,12 +1706,15 @@
     justify-content: space-between;
     min-width: 6.8rem;
     padding: 0.1rem 0.48rem 0.1rem 0.58rem;
-    transition: border-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
+    transition:
+      border-color var(--easyedu-motion-fast) ease,
+      box-shadow var(--easyedu-motion-fast) ease,
+      color var(--easyedu-motion-fast) ease;
 
     .fa {
       color: #6f8294;
       font-size: 0.62rem;
-      transition: transform 0.16s ease;
+      transition: transform var(--easyedu-motion-fast) ease;
     }
 
     &[aria-expanded="true"],
@@ -1732,7 +1753,7 @@
       font-weight: 680;
       padding: 0.42rem 0.55rem;
       text-align: left;
-      transition: background-color 0.14s ease, color 0.14s ease;
+      transition: background-color var(--easyedu-motion-fast) ease, color var(--easyedu-motion-fast) ease;
       white-space: nowrap;
 
       &:hover,

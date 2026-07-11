@@ -184,3 +184,243 @@
     bottom: 0.1rem;
   }
 }
+
+@mixin admin-primary-nav {
+  align-items: center;
+  background: color-mix(in srgb, var(--easyedu-surface) 92%, var(--easyedu-primary-soft) 8%);
+  border: 1px solid color-mix(in srgb, var(--easyedu-card-border) 86%, #fff 14%);
+  border-radius: calc(var(--easyedu-control-radius) + 0.22rem);
+  box-shadow: 0 0.16rem 0.48rem rgba(31, 68, 104, 0.045);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.28rem;
+  justify-content: flex-start;
+  margin: 0 0 1.05rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.34rem;
+  scrollbar-width: none;
+  white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin admin-primary-nav-action($variant: default) {
+  @include action-button(regular);
+
+  & {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: calc(var(--easyedu-control-radius) + 0.06rem);
+    box-shadow: none;
+    color: color-mix(in srgb, var(--easyedu-text-muted) 82%, var(--easyedu-text) 18%);
+    flex: 0 0 auto;
+    font-size: 0.84rem;
+    font-weight: 680;
+    line-height: 1.1;
+    min-height: 2.1rem;
+    min-width: 0;
+    padding: 0.32rem 0.62rem;
+    text-decoration: none;
+    transform: none;
+    white-space: nowrap;
+  }
+
+  .fa {
+    color: color-mix(in srgb, currentColor 82%, var(--easyedu-primary) 18%);
+    font-size: 0.88rem;
+    line-height: 1;
+    width: 1rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--easyedu-surface) 76%, var(--easyedu-primary-soft) 24%);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 18%, #fff 82%);
+    box-shadow: 0 0.14rem 0.34rem rgba(31, 68, 104, 0.06);
+    color: var(--easyedu-primary-strong);
+    text-decoration: none;
+  }
+
+  &.active,
+  &.is-active,
+    &[aria-current="page"],
+    &[aria-pressed="true"] {
+    background: var(--easyedu-surface);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 28%, #fff 72%);
+    box-shadow:
+      inset 0 -0.16rem 0 var(--easyedu-primary),
+      0 0.18rem 0.42rem rgba(15, 108, 191, 0.09);
+    color: var(--easyedu-primary-strong);
+
+    .fa {
+      color: var(--easyedu-primary);
+    }
+  }
+
+  @if $variant == destructive {
+    & {
+      color: var(--easyedu-danger);
+    }
+
+    .fa {
+      color: var(--easyedu-danger);
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--easyedu-danger-soft) 74%, #fff 26%);
+      border-color: color-mix(in srgb, var(--easyedu-danger) 24%, #fff 76%);
+      box-shadow: 0 0.14rem 0.34rem rgba(161, 43, 43, 0.07);
+      color: var(--easyedu-danger);
+    }
+  } @else if $variant == format {
+    & {
+      color: color-mix(in srgb, var(--easyedu-accent) 62%, var(--easyedu-text-muted) 38%);
+    }
+
+    .fa {
+      color: color-mix(in srgb, var(--easyedu-accent) 72%, var(--easyedu-text-muted) 28%);
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--easyedu-accent-soft) 76%, #fff 24%);
+      border-color: color-mix(in srgb, var(--easyedu-accent) 24%, #fff 76%);
+      color: color-mix(in srgb, var(--easyedu-accent) 72%, var(--easyedu-text) 28%);
+    }
+  }
+}
+
+@mixin guide-adjacent-action($variant: default, $size: regular) {
+  @include action-button($size);
+
+  & {
+    background: var(--easyedu-surface);
+    border: 1px solid color-mix(in srgb, var(--easyedu-card-border) 88%, #fff 12%);
+    border-radius: calc(var(--easyedu-control-radius) + 0.08rem);
+    box-shadow: 0 0.14rem 0.34rem rgba(31, 68, 104, 0.055);
+    color: color-mix(in srgb, var(--easyedu-text-muted) 78%, var(--easyedu-text) 22%);
+    flex: 0 0 auto;
+    font-size: 0.84rem;
+    font-weight: 700;
+    min-height: 2.1rem;
+    min-width: 0;
+    padding: 0.32rem 0.66rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .fa {
+    color: color-mix(in srgb, currentColor 80%, var(--easyedu-primary) 20%);
+    font-size: 0.88rem;
+    line-height: 1;
+    width: 1rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--easyedu-primary-soft);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 26%, #fff 74%);
+    box-shadow:
+      0 0.16rem 0.38rem rgba(31, 68, 104, 0.075),
+      0 0 0 0.14rem color-mix(in srgb, var(--easyedu-primary) 12%, transparent);
+    color: var(--easyedu-primary-strong);
+    outline: 0;
+    text-decoration: none;
+  }
+
+  @if $variant == warning {
+    & {
+      background: color-mix(in srgb, var(--easyedu-warning-soft) 72%, #fff 28%);
+      border-color: color-mix(in srgb, var(--easyedu-warning) 24%, #fff 76%);
+      color: color-mix(in srgb, var(--easyedu-warning) 82%, var(--easyedu-text) 18%);
+    }
+
+    .fa {
+      color: var(--easyedu-warning);
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--easyedu-warning-soft);
+      border-color: color-mix(in srgb, var(--easyedu-warning) 38%, #fff 62%);
+      box-shadow:
+        0 0.16rem 0.38rem rgba(154, 101, 15, 0.075),
+        0 0 0 0.14rem color-mix(in srgb, var(--easyedu-warning) 14%, transparent);
+      color: color-mix(in srgb, var(--easyedu-warning) 88%, var(--easyedu-text) 12%);
+    }
+  } @else if $variant == destructive {
+    & {
+      background: var(--easyedu-danger-soft);
+      border-color: color-mix(in srgb, var(--easyedu-danger) 24%, #fff 76%);
+      color: var(--easyedu-danger);
+    }
+
+    .fa {
+      color: var(--easyedu-danger);
+    }
+  }
+}
+
+@mixin admin-secondary-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.46rem;
+}
+
+@mixin admin-secondary-action($variant: default) {
+  @include action-button(small);
+
+  & {
+    background: var(--easyedu-surface);
+    border: 1px solid var(--easyedu-control-border);
+    border-radius: 999px;
+    box-shadow: 0 0.08rem 0.2rem rgba(31, 68, 104, 0.035);
+    color: var(--easyedu-text-muted);
+    font-size: 0.82rem;
+    font-weight: 680;
+    min-height: 2rem;
+    padding: 0.26rem 0.64rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .fa {
+    color: color-mix(in srgb, var(--easyedu-text-muted) 80%, var(--easyedu-primary) 20%);
+    font-size: 0.82rem;
+    width: 0.95rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--easyedu-primary-soft);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 26%, #fff 74%);
+    box-shadow: 0 0.14rem 0.32rem rgba(31, 68, 104, 0.08);
+    color: var(--easyedu-primary-strong);
+    text-decoration: none;
+  }
+
+  &.active,
+  &.is-active,
+  &[aria-pressed="true"] {
+    background: color-mix(in srgb, var(--easyedu-primary-soft) 82%, #fff 18%);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 34%, #fff 66%);
+    color: var(--easyedu-primary-strong);
+  }
+
+  @if $variant == destructive {
+    & {
+      background: var(--easyedu-danger-soft);
+      border-color: color-mix(in srgb, var(--easyedu-danger) 24%, #fff 76%);
+      color: var(--easyedu-danger);
+    }
+
+    .fa {
+      color: var(--easyedu-danger);
+    }
+  }
+}

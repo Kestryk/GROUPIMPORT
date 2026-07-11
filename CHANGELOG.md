@@ -10,6 +10,110 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-07-11
+
+- Replaced duplicated Mass Import card rails and contextual modal gradients
+  with the canonical EasyEdu semantic panel and modal contracts, preserving the
+  existing EasyStud appearance and interactions.
+- Synced EasyEdu UI kit 0.4.27 non-guide tokens and documentation for semantic
+  modals, accent panels and sticky/semantic tables.
+- Fixed the single-participant selection exception that prevented density
+  motion from starting and allowed profile content to overlap the next card.
+- Corrected EasyStud guided checklist targets so steps switch to the relevant
+  view, open the needed grouping/group panels and highlight the exact creation
+  or paste field instead of a generic list container.
+- Reduced guided-step over-scrolling by avoiding centred target scrolling for
+  large checklist targets such as drag/drop and context-menu practice cards.
+- Synced the EasyEdu guide minimized checklist state so the close action no
+  longer remains visible while the panel is collapsed.
+- Smoothed guided checklist focus transitions by delaying page alignment until
+  inner column scrolling has settled, and widened guided-path slide cards to
+  match the explanatory guide blocks.
+- Removed retained Web Animation effects so group member lists can reliably
+  complete repeated open, close and reopen cycles.
+- Retuned shared motion to 100/160/220 ms with a bounded 260 ms maximum for
+  tall disclosures, making ordinary interactions more responsive.
+- Stopped rebuilding and sorting every paginated list during selection changes
+  and batched participant tag measurements to reduce forced layouts.
+- Extended the Playwright audit with real intermediate-height and repeated
+  disclosure assertions; all normal and reduced-motion scenarios pass.
+- Made short search and paste panels distance-aware, delayed field focus until
+  opening completes and replaced two-phase view changes with one atomic entrance.
+- Changed pagination and sort replacements to fade-only swaps so scrollable
+  columns no longer gain a temporary scrollbar or shift their cards sideways.
+- Synced EasyEdu UI kit 0.4.28 (`28c578c`) with the complete motion runtime
+  package, reusable recipes, AI contracts and updated guide behaviour.
+- Added a versioned French handoff prompt covering repository state, reusable
+  contracts, measured performance, validation and forbidden regressions.
+
+### 2026-07-10
+
+- Rebuilt EasyStud motion around one cancellable AMD controller with consistent
+  120/180/240 ms timings and an administrator switch for optional animations.
+- Added complete reduced-motion handling for the simplified manager, mass group
+  import and Moodle-native message modals.
+- Reworked pagination, participant compact/detail changes, group member lists,
+  grouping disclosures, advanced filters, inline panels and layout switching to
+  avoid overlapping transitions and nested-card tremble.
+- Replaced delayed grouping resize chains and legacy creation/removal keyframes
+  with single measured transitions and stable final states.
+- Added a reusable Playwright motion audit and isolated PowerShell launcher for
+  normal, reduced-motion and interrupted-interaction coverage.
+- Corrected participant and grouping disclosure measurements and softened
+  pagination swaps so transitions remain continuous instead of jumping or
+  blinking.
+- Added a balanced easing for tall participant, group and grouping disclosures
+  so opening and closing remain perceptible across the full duration.
+- Added bounded adaptive disclosure durations up to 300 ms so large groups and
+  groupings remain visibly animated without slowing ordinary cards.
+- Removed retained Web Animation fill effects that could clamp participant and
+  member-list heights, block a second opening and accumulate rendering work.
+- Shortened ordinary motion and capped large disclosures at 300 ms, while
+  avoiding a full responsive-list recalculation after each member toggle.
+
+- Synced the shared EasyEdu guide scene styling so EasyStud keeps the
+  historical rich learning animations while using the reusable kit primitives.
+- Updated the embedded EasyEdu guide documentation for soft pedagogical
+  canvases, restored drag/drop, paste, context-menu, formula and guided-path
+  motion, and Course Banner Builder scene mapping.
+- Synced the reusable `guide-adjacent-action` button primitive from the kit so
+  guide-adjacent controls compile consistently across EasyEdu plugins.
+- Synced the hardened EasyEdu guide scene layouts so long translated slide
+  text, guided-path buttons and checklist labels wrap inside their containers,
+  with Playwright coverage confirming no slide overflow across the 20-step
+  EasyStud guide.
+- Synced the animated guide pointer refinement so context-menu learning scenes
+  keep their motion without causing horizontal overflow.
+- Synced the restored EasyEdu guide action and checklist styling so EasyStud
+  guide buttons stay blue, learning surfaces are centred, guided-path cards
+  use a stronger green surface without an extra rail, and checklist rows avoid
+  internal text overflow.
+- Fixed the guided checklist return action so it says `Return to guide`,
+  restored the solid blue `Show in the interface` action, strengthened the
+  teaching animations for context-menu and drag/drop slides, and removed the
+  remaining situational completion-message overflow.
+- Increased spacing around EasyStud guide `Show in the interface` actions and
+  enlarged the introductory flow/card learning scenes so the first slides feel
+  more balanced.
+
+### 2026-07-09
+
+- Restored the rich EasyStud learning scenes in the shared EasyEdu guide instead
+  of reducing the existing 20-slide content to generic pills.
+- Reconnected guided checklists to successful EasyStud actions and prevented
+  steps from completing when their checklist row is clicked.
+- Restored the checklist completion message and populated return-to-guide panel
+  through the canonical EasyEdu template contract.
+- Restored the EasyStud guide launcher as an icon-only control with its
+  hover-help bubble, while keeping it aligned inside the shared EasyEdu admin
+  navigation rail.
+- Synced the embedded EasyEdu admin navigation and popover primitives so
+  EasyStud remains the visual reference for Course Banner Builder.
+- Added the generic EasyEdu guide template, Moodle AMD wrapper and scoped SCSS root so EasyStud can migrate from the legacy local tutorial to the shared kit guide contract incrementally.
+- Kept the legacy EasyStud tutorial as a guarded fallback only, while rendering
+  the active 20-slide guide through the shared EasyEdu guide contract.
+- Rendered the EasyStud guide through the shared EasyEdu guide template and mapped the legacy tutorial visuals to reusable guide visual cards, steps and keyboard blocks.
+
 ### 2026-07-06
 
 - Synced the embedded EasyEdu UI kit `v0.4.26` SCSS, guide assets and documentation after the inverse EasyStud audit.
