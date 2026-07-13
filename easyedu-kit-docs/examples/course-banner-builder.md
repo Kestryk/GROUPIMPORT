@@ -29,11 +29,22 @@ while an open trigger removes its lower radii and visually joins the panel.
 Use a compact icon tile and an end chevron to communicate disclosure state.
 Preview-side accordion triggers must remain positionally stable on hover and
 active states; command-button lift and press transforms do not apply to them.
+Their collapsed height must match adjacent compact preview commands. When the
+panel opens, compensate any parent grid or flex gap between the trigger and
+panel so their shared border reads as one continuous disclosure; retain normal
+spacing only after the complete trigger/panel group.
 
 Banner format selectors use `format-choice-card`,
 `format-choice-card-hover` and `format-choice-card-selected`. These mixins style
 only the choice surface and must not alter the plugin-owned format skeleton
 dimensions used to explain the final page placement.
+
+Slideshow administration cards separate context activation from content-source
+and playback controls. Use `slideshow-activation-band`,
+`slideshow-settings-section`, `slideshow-section-title` and
+`slideshow-toggle-row`, passing the context accent through a CSS custom
+property. Field names, checkbox values and editor-launch hooks remain owned by
+the plugin.
 
 ## Sync
 
@@ -71,6 +82,7 @@ dimensions used to explain the final page placement.
 | Inline help | `hover-help-host`, `help-icon` |
 | Guide | `guide-shell`, `guide-rich-navigation`, `guide-visuals`, `guided-panel` |
 | Wide modal with preview | `modal-with-preview`, `preview-surface` |
+| Shared preview-modal spacing | `preview-modal-content-shell`, `preview-modal-inline-rhythm` |
 | Preview toolbar below a banner | `banner-preview-toolbar` |
 | Action buttons beside a preview | `banner-preview-side-actions`, `accordion-action-button` |
 | Layer/source tables | `layer-table`, `source-chain` |
@@ -112,6 +124,11 @@ these surfaces without changing plugin-owned DOM hooks:
 
 Prefer adding an adapter component in the plugin, for example
 `_easyedu-harmonisation.scss`, instead of rewriting older functional SCSS.
+
+Preview-modal chrome uses a common `1rem` inline rhythm. Keep any larger
+padding on the body end edge when it reserves the preview action rail; only the
+start edge, header and visible footer should be normalised by the kit. Title
+editors whose scroll grid owns the padding should keep the outer body unpadded.
 
 ## Guide target naming
 

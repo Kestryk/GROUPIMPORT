@@ -54,12 +54,29 @@
 }
 
 @mixin preview-modal-content-shell {
+  --easyedu-preview-modal-inline-space: 1rem;
+
   display: flex;
   flex-direction: column;
   height: 100%;
   max-height: 100%;
   overflow: hidden;
   width: 100%;
+}
+
+// Align preview-editor chrome without owning the plugin's internal grid. The
+// body start edge and visible footer share one rhythm while plugins keep any
+// larger end padding required by preview-side action rails.
+@mixin preview-modal-inline-rhythm {
+  .modal-header,
+  .modal-footer {
+    padding-inline: var(--easyedu-preview-modal-inline-space, 1rem);
+  }
+
+  .local-course-banner-builder-layer-modal-body,
+  .local-course-banner-builder-slideshow-modal-body {
+    padding-left: var(--easyedu-preview-modal-inline-space, 1rem);
+  }
 }
 
 @mixin preview-modal-body-shell {
@@ -199,9 +216,10 @@
   font-weight: 600;
   gap: 0.55rem;
   justify-content: flex-start;
-  min-height: 2.55rem;
+  // Keep disclosures aligned with the compact command buttons around them.
+  min-height: 2.15rem;
   overflow: hidden;
-  padding: 0.42rem 0.68rem;
+  padding: 0.28rem 0.68rem;
   position: relative;
   text-align: left;
   transition:
@@ -232,11 +250,11 @@
     border-radius: 0.32rem;
     color: var(--easyedu-preview-side-accent);
     display: inline-flex;
-    flex: 0 0 1.55rem;
-    height: 1.55rem;
+    flex: 0 0 1.35rem;
+    height: 1.35rem;
     justify-content: center;
     margin: 0 !important;
-    width: 1.55rem;
+    width: 1.35rem;
   }
 
   > span {

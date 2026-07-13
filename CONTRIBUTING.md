@@ -3,7 +3,7 @@
 This repository currently supports two parallel tracks:
 
 - `main`: stable production line for the existing `Group import CSV` plugin.
-- `develop/easyedu-refactor`: long-running refactor line for the future `EasyEdu` experience.
+- `develop/easyedu-refactor`: integration line for the future `EasyStud` experience.
 
 ## Branch roles
 
@@ -14,7 +14,7 @@ This repository currently supports two parallel tracks:
 
 - `develop/easyedu-refactor`
   - Main integration branch for the ongoing refactor.
-  - All EasyEdu / EasyStud feature branches should branch from this line.
+  - All EasyStud feature branches should branch from this line.
   - This branch can evolve freely until the new version is ready for stabilization.
 
 - `feature/*`
@@ -66,3 +66,40 @@ The functional / product naming can evolve later without immediately changing th
 5. Create `release/*` only when the refactor is functionally complete.
 
 6. Merge `release/*` into `main` only for the final public version.
+
+## Release validation
+
+Run the non-destructive release audit before creating a release branch or a
+Moodle plugin package:
+
+```powershell
+.\tools\release\validate-plugin.ps1
+```
+
+The audit compares the current code with the historical
+`v1.0-groupimport-csv` tag, verifies the technical component, chronological
+upgrade savepoints, XMLDB version, feature defaults, current user-tour targets
+and production-package exclusions.
+
+To also build and inspect a production ZIP in the system temporary directory:
+
+```powershell
+.\tools\release\validate-plugin.ps1 -BuildArchive
+```
+
+This validation does not modify the Moodle database. A release candidate must
+still be rehearsed on a disposable copy of an existing Moodle site before it
+is merged into `main`.
+
+On the supported local Moodle Windows stack, run the isolated legacy-upgrade
+rehearsal with:
+
+```powershell
+.\tools\release\test-legacy-upgrade.ps1
+```
+
+The script clones the local database into a uniquely named temporary database,
+recreates the `v1.0-groupimport-csv` plugin state, executes the real Moodle
+local-plugin upgrade pipeline, verifies the resulting schema and configuration,
+then removes the temporary database and dataroot. It never points the upgrade
+runner at the source database.

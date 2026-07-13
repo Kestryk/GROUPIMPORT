@@ -41,7 +41,7 @@
             </div>
             <p class="text-muted mb-0">{{description}}</p>
         </div>
-        <div class="local-groupimport-easystud__header-actions">
+        <div class="local-groupimport-easystud__header-actions easyedu-admin-primary-nav--balanced">
             {{#useeasyeduguide}}
                 {{#easyeduguide}}
                     {{> local_groupimport/easyedu_guide }}
@@ -50,7 +50,7 @@
             {{^useeasyeduguide}}
             <button
                 type="button"
-                class="local-groupimport-easystud-tour-button"
+                class="local-groupimport-easystud-tour-button easyedu-admin-primary-nav__guide"
                 data-easystud-open-tutorial="1"
                 aria-haspopup="dialog"
                 aria-label="{{tutoriallabel}}"
@@ -61,17 +61,29 @@
                 </span>
             </button>
             {{/useeasyeduguide}}
-            <a class="btn btn-outline-secondary" href="{{nativeparticipantsurl}}">{{nativeparticipantslabel}}</a>
-            <a class="btn btn-outline-primary ms-2" href="{{csvurl}}">{{csvlabel}}</a>
-            <button
-                type="button"
-                class="btn btn-outline-secondary ms-2"
-                data-easystud-open-clipboard="1"
-                aria-haspopup="dialog"
-            >
-                <span class="fa fa-clipboard-list me-2" aria-hidden="true"></span>
-                <span>{{clipboardlabel}}</span>
-            </button>
+            <div class="easyedu-admin-primary-nav__actions">
+                <span class="btn active" aria-current="page">
+                    <span class="fa fa-users me-2" aria-hidden="true"></span>
+                    <span>{{managerlabel}}</span>
+                </span>
+                <a class="btn btn-outline-secondary" href="{{nativeparticipantsurl}}">
+                    <span class="fa fa-user-graduate me-2" aria-hidden="true"></span>
+                    <span>{{nativeparticipantslabel}}</span>
+                </a>
+                <a class="btn btn-outline-primary" href="{{csvurl}}">
+                    <span class="fa fa-file-import me-2" aria-hidden="true"></span>
+                    <span>{{csvlabel}}</span>
+                </a>
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-easystud-open-clipboard="1"
+                    aria-haspopup="dialog"
+                >
+                    <span class="fa fa-clipboard-list me-2" aria-hidden="true"></span>
+                    <span>{{clipboardlabel}}</span>
+                </button>
+            </div>
         </div>
     </div>
 

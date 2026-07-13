@@ -64,6 +64,8 @@ Do not stop after matching colours or rough layout.
 - [ ] Slide body text size and line height match the kit.
 - [ ] "Show in the interface" button uses the kit action button style.
 - [ ] "Show in the interface" icon, spacing and border radius match the kit.
+- [ ] Show, start-path and footer navigation actions use the compact rounded
+      guide variables rather than inheriting square Moodle button padding.
 - [ ] Visual demo cards use the kit mini-card structure.
 - [ ] Empty space below content is intentional and not caused by broken sizing.
 

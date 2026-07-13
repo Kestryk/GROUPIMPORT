@@ -1,145 +1,94 @@
-# 📦 Local Group Import (Moodle Plugin)
+# EasyStud for Moodle
 
-## > Overview
+EasyStud is a Moodle local plugin for managing course participants, groups and
+groupings. It keeps the original Mass Import workflow compatible while adding
+an optional simplified student management interface.
 
-**Group Import** is a Moodle *local plugin* that allows teachers to **import groups and enrol students into them using a CSV file**, directly from within a course.
+The technical identity remains `local_groupimport` so sites can upgrade from
+the historical Group Import CSV plugin without moving data or changing URLs.
 
-The plugin is designed to be **safe, robust, and teacher-friendly**, ensuring that:
+## Main features
 
-- only **existing users** are processed  
-- only users **already enrolled in the course** can be added to groups  
-- the import **never stops on errors**  
-- a **detailed report** is provided after each import  
-- **guided tours (User Tours)** help teachers discover and use the tool effectively  
+### Mass Import
 
----
+- Accepts CSV, XLS and XLSX files.
+- Detects common column names and lets teachers review editable rows before import.
+- Identifies learners automatically with every field enabled by the administrator:
+  username, email, ID number or approved custom profile fields.
+- Allows different identifier types in the same file.
+- Creates missing groups and optional groupings.
+- Supports additive imports and explicit synchronisation of the groups listed in a file.
+- Records reversible operations in a course-level history.
+- Can restore an import without discarding unrelated changes made later.
+- Provides a styled Excel example with instructions and representative rows.
 
-## > Goals
+### Simplified student management
 
-- Simplify group management for teachers  
-- Prevent common CSV import errors  
-- Avoid accidental user creation or enrolment  
-- Provide clear feedback on successful and failed operations  
-- Improve adoption through contextual guided tours  
+- Manages enrolled participants, groups and groupings from one responsive view.
+- Supports search, filters, pagination, multiple selection, context menus and drag-and-drop.
+- Uses Moodle-native group APIs and does not enrol new course users.
+- Includes the EasyStud contextual guide and guided paths.
+- Can be enabled or disabled globally by an administrator.
 
----
+## Upgrade behaviour
 
-## > ✨ Key Features
+Existing installations remain in Mass Import-only mode after upgrading. An
+administrator can enable **Simplified student management** from:
 
-### CSV Group Import
+`Site administration > Plugins > Local plugins > EasyStud`
 
-- Import groups from a CSV file  
-- Enrol users into groups  
-- Optional creation of groupings  
-- Supports `;` and `,` as CSV separators  
+Fresh installations enable the complete EasyStud experience by default.
 
-### Safety & Validation
+When the simplified view is disabled:
 
-- No user creation through the file  
-- No course enrolment  
-- Each row is validated independently:
-  - user not found  
-  - user not enrolled in the course  
-  - user already in group  
-  - group already exists  
+- Moodle's native Participants link is left unchanged;
+- the EasyStud manager is not added to course navigation;
+- direct manager access returns to Mass Import with an information notice;
+- Mass Import, its history and its reports remain available.
 
-### Import Report
+## Import file format
 
-- Lists successful group enrolments  
-- Lists errors with clear explanations  
-- Import continues even if some rows fail  
+The importer requires a learner identifier and a group name. A grouping name is
+optional. Friendly header variants such as `student`, `email`, `group`,
+`groupname`, `grouping` and their French equivalents are recognised.
 
-### Guided Tours (User Tours)
+| Column | Required | Purpose |
+| --- | --- | --- |
+| Learner identifier | Yes | Any administrator-enabled unique user field |
+| Group name | Yes | Existing or new Moodle group |
+| Grouping name | No | Existing or new Moodle grouping |
 
-- Guided tour on the Group Import page  
-- Guided tour on the course home page (More menu)  
-- Automatically installed  
-- Multilingual (English / French)  
+Use **Download example** in Mass Import to obtain the formatted XLSX workbook.
 
----
+## Reimport strategies
 
-## 📍 How to Access the Tool
+- **Keep current placements** adds only missing memberships and assignments.
+- **Synchronise listed groups** makes the memberships and grouping assignments
+  of each listed group match the selected preview rows.
 
-- **Course → More → Group import**  
-- Direct URL: `/local/groupimport/index.php?id=COURSEID`
+The replacement strategy only affects groups included in the confirmed rows.
+Every addition and removal is stored in the reversible history.
 
----
+## Permissions and data
 
-## 📄 CSV File Format
+The course tools require `moodle/course:managegroups`. EasyStud never creates
+users or enrols users into a course.
 
-### Required Columns
+Import history stores the acting user, uploaded filename, summary counters and
+the reversible operation journal. The plugin implements Moodle's Privacy API
+for export and deletion of this data.
 
-| Column         | Required | Description |
-|---------------|----------|-------------|
-| useridentifier | Yes      | Username, email, idnumber, or custom profile field |
-| groupname      | Yes      | Group name |
-| groupingname   | No       | Grouping name |
+## Development
 
-### Example
+- Moodle requirement: 5.1 or later on this refactor branch.
+- SCSS entry point: `scss/easystud.scss`.
+- Compile styles with `sass scss/easystud.scss styles.css --no-source-map`.
+- Playwright documentation: `tools/playwright/README.md`.
+- Shared EasyEdu contracts: `easyedu-kit-docs/`.
 
-```text
-useridentifier;groupname;groupingname
-jdupont;Group A;Tutorial groups
-asmith;Group B;Tutorial groups
-```
-## 👩‍🏫 User Workflow
+The embedded EasyEdu kit and development documentation are excluded from
+production packages through `.gitattributes` where appropriate.
 
-1. Open the course  
-2. More → Group import  
-3. Download CSV template  
-4. Upload CSV  
-5. Select user identifier  
-6. Start import  
-7. Review report  
+## License
 
----
-
-## 🌍 Languages
-
-- English  
-- French  
-
----
-
-## 🔐 Permissions
-
-Accessible to:
-
-- Teachers  
-- Editing teachers  
-- Course managers  
-
----
-
-## 🛠 Technical Information
-
-- Plugin type: Local (`local/groupimport`)  
-- Minimum Moodle version: 4.1  
-- Compatible with Moodle 4.x up to 5.1  
-
----
-
-## 🔄 Upgrade Behaviour
-
-- Guided tours imported if missing  
-- No duplication of existing tours  
-
----
-
-## 🧪 Maturity
-
-`MATURITY_STABLE`
-
----
-
-## 📄 License
-
-GNU General Public License v3 (GPLv3)
-
----
-
-## 🗺 Roadmap & Contributions
-
-A public roadmap is available in the project wiki, outlining upcoming improvements and planned features.
-
-Suggestions for additional features, enhancements, or improvements are welcome. Feedback from teachers and/or administrators is encouraged.
+GNU General Public License v3 or later.

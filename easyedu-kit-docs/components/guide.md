@@ -1,5 +1,10 @@
 # Guide
 
+The reusable language examples under `guide/lang/` include complete Moodle
+GPL headers and use the placeholder component `local_easyedu_guide`. Consumer
+plugins should retain the header and replace the package value with their own
+component when copying strings into a runtime language file.
+
 The EasyEdu guide kit has two layers:
 
 - `guide-shell`: modal, launcher, slides, basic navigation, highlight and basic
@@ -270,6 +275,16 @@ Implementation guidance:
   turn checklist or guided-path buttons transparent in plugin contexts. Do not
   force `white-space: nowrap` in plugin overrides; long Moodle language strings
   should wrap inside the button instead of overflowing.
+- `Show in the interface`, `Start guided path` and footer Previous/Next share
+  the compact guide action contract: `--easyedu-guide-action-radius`,
+  `--easyedu-guide-action-padding` and `--easyedu-guide-action-min-height`.
+  Plugins must not replace these controls with square, generously padded Moodle
+  buttons; override the variables at the guide root only when a product needs a
+  documented density variant.
+- When the launcher is nested in an administration navigation rail, apply the
+  navigation-action mixin to direct child buttons only. A descendant `.btn`
+  selector also reaches buttons inside the guide modal and replaces their
+  rounded action contract with the square navigation-tab treatment.
 - Guided checklist panels should not create nested scrollbars for normal
   three-to-five-step paths. Keep step content concise and let the panel size
   naturally; only add plugin-local scrolling for exceptionally long custom
@@ -398,6 +413,66 @@ The highlight layer must stay below Moodle fixed navigation. Use the kit layer
 contract instead of raising plugin-local `z-index` values: highlight below
 Moodle nav, return/checklist panels above ordinary content, guide modal above
 the page while open.
+
+### Interface Return Panel Contract
+
+Use the shared template structure exactly:
+
+```html
+<aside class="easyedu-guide-interface-return" data-easyedu-guide-interface-return hidden>
+  <div class="easyedu-guide-interface-return__text">
+    <strong>{{guidereturnlabel}}</strong>
+    <span>{{guidereturndesc}}</span>
+  </div>
+  <div class="easyedu-guide-interface-return__actions">
+    <button class="btn btn-primary btn-sm easyedu-guide-interface-return__button"
+            data-easyedu-guide-interface-return-button="1">
+      <span class="fa fa-question-circle" aria-hidden="true"></span>
+      <span>{{guidereturnbutton}}</span>
+    </button>
+    <button class="btn btn-outline-secondary btn-sm easyedu-guide-interface-return__dismiss"
+            data-easyedu-guide-interface-return-dismiss="1">
+      <span class="fa fa-times" aria-hidden="true"></span>
+    </button>
+  </div>
+</aside>
+```
+
+Do not replace this with a plugin-local flex row. The desktop layout uses
+`grid-template-columns: minmax(0, 1fr) max-content` so the explanation never
+slides under the button. The mobile layout stacks the two areas. Keep
+`guidereturnlabel` for the panel title and `guidereturnbutton` for the button;
+do not reuse the branded title as the action label.
+
+### Layering Contract
+
+The guide uses these intentional layers:
+
+| Element | Layer intent |
+| --- | --- |
+| `.easyedu-guide-highlight` | Fixed highlight below Moodle fixed navigation. |
+| `.easyedu-guide-interface-return` | Sticky return panel above page content, below full guide/checklist workflows. |
+| `.easyedu-guide-modal` | Full guide modal above the page. |
+| `.easyedu-guided-panel` | Guided checklist above ordinary Moodle content and highlights. |
+
+Do not increase the highlight above Moodle navigation in a consuming plugin.
+If the highlight appears hidden by a local container, fix the target selector or
+container overflow; do not raise the highlight above the main Moodle nav.
+
+### Smooth Checklist Focus Contract
+
+Checklist focus movement is owned by the kit:
+
+- resolve the target from `target`, `highlightTarget` or `showTarget`;
+- open any configured `open` sequence;
+- scroll the nearest scrollable plugin panels with the kit animation;
+- align the page viewport only after the internal panel begins settling;
+- refresh the fixed highlight during the transition burst;
+- hide the temporary highlight after `highlightAutoHideDelay`.
+
+Consuming plugins must not add competing `scrollIntoView({block: 'center'})`
+calls around guide step clicks. If a plugin needs to move UI after Ajax,
+dispatch `easyedu:guide-refresh-highlight` after the UI has settled.
 
 ## Show In Interface Button
 

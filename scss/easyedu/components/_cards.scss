@@ -9,6 +9,8 @@
 // --easyedu-card-shadow, --easyedu-identity-border-width,
 // --easyedu-identity-size, --easyedu-identity-icon-color.
 
+@use "typography";
+
 @mixin object-card($identity-color) {
   background: var(--easyedu-surface);
   border: 1px solid var(--easyedu-card-border);
@@ -108,10 +110,8 @@
 }
 
 @mixin card-title {
-  color: var(--easyedu-text);
-  font-size: 0.98rem;
-  font-weight: 720;
-  line-height: 1.25;
+  @include typography.type-card-title;
+
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

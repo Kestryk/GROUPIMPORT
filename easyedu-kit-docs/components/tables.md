@@ -47,6 +47,7 @@ Tables are used for import previews, reports and dense administrative data.
 
 .my-source-table {
   @include easyedu.semantic-table-surface(primary);
+  @include easyedu.stable-table-header;
 }
 
 .my-sticky-table {
@@ -69,8 +70,14 @@ icons so the result does not rely on colour alone.
 
 - Apply `semantic-table-surface` directly to a real table when its existing
   columns and DOM must remain untouched.
+- Add `stable-table-header` to dense administration tables whose translated
+  headings must remain readable. It uses the compact Mass Import typography
+  and prevents labels from being split in the middle of words.
 - Apply `sticky-data-table` only inside a container that owns vertical scroll.
 - The plugin owns horizontal overflow, action-menu escape and sticky offsets.
+- A table using `stable-table-header` must provide enough intrinsic width or a
+  horizontal scroll shell. Do not reintroduce `overflow-wrap: anywhere` to make
+  a narrow fixed column appear to fit.
 - Do not change `table-layout`, draggable row hooks, ids or `data-*` attributes
   while adopting these surfaces.
 - Pair warning/error row colours with visible text or icons.

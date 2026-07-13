@@ -29,6 +29,60 @@ For guide visual parity, also use `ai/GUIDE_PARITY_CHECKLIST.md`. That checklist
 is mandatory when a guide implementation is compared with EasyStud, Course
 Banner Builder or another plugin using the same guide kit.
 
+## Administration typography
+
+Must:
+
+- inherit the active Moodle theme font through `--easyedu-font-family-ui`;
+- use the shared typography roles for page, modal, panel, section, card,
+  control, body, caption and eyebrow text;
+- use only the shared regular, medium, semibold and strong weights for reusable
+  administration chrome;
+- preserve plugin-owned wrapping, truncation and responsive layout rules.
+
+Must not:
+
+- introduce plugin-local title scales when a shared role exists;
+- use negative or decorative letter spacing;
+- apply administration roles to user-configurable banner, slideshow or authored
+  preview content.
+
+## Balanced administration navigation
+
+Must:
+
+- keep the guide wrapper as the first direct child of the navigation rail;
+- use `.easyedu-admin-primary-nav--balanced` when menu actions must be centred
+  independently of the guide;
+- wrap those actions in `.easyedu-admin-primary-nav__actions`;
+- retain a start-aligned horizontal scroller on narrow screens.
+
+Must not:
+
+- centre the guide with the menu actions;
+- add empty balancing markup or plugin-local left/right offsets;
+- allow translated action labels to wrap onto a second line.
+
+## Segmented single choice
+
+Must:
+
+- use a native `fieldset`, `legend` and radios sharing one `name`;
+- use the contained structure with an accessible `__legend`, visible internal
+  `__label` and bordered `__body`;
+- keep each radio immediately before its visual surface;
+- allow the legend and option descriptions to wrap without clipping;
+- use the regular density for explanatory strategies and `compact` only in
+  dense settings/filter surfaces;
+- preserve checked, hover, focus-visible and disabled semantics.
+
+Must not:
+
+- replace radios with non-semantic clickable cards;
+- expose the native legend visually over the component border or force
+  translated titles to one line;
+- use this component for multi-select or binary on/off controls.
+
 ## Guide: show in interface selector
 
 Canonical files:

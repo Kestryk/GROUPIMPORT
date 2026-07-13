@@ -184,6 +184,15 @@
     }
   }
 
+  #admin-featuresoverview {
+    margin-bottom: 0.85rem;
+
+    .form-description,
+    .form-setting {
+      max-width: none;
+    }
+  }
+
   #admin-participantdisplayoverview {
     margin-bottom: 0.85rem;
 
@@ -194,6 +203,8 @@
   }
 
   #admin-alloweduserfields,
+  #admin-enablesimplifiedview,
+  #admin-enableanimations,
   #admin-participantprimarybadgefield,
   #admin-participantprimarybadgebgcolor,
   #admin-participantprimarybadgetextcolor,
@@ -228,6 +239,19 @@
     }
   }
 
+  #admin-enablesimplifiedview,
+  #admin-enableanimations {
+    .form-setting > div:first-child {
+      max-width: min(100%, 22rem);
+    }
+
+    .form-check {
+      align-items: center;
+      display: flex;
+      min-height: 2.6rem;
+    }
+  }
+
   #admin-participantprimarybadgefield,
   #admin-participantprimarybadgebgcolor,
   #admin-participantprimarybadgetextcolor,
@@ -248,6 +272,12 @@
     }
   }
 
+  .local-groupimport-admin-settings--features {
+    background:
+      radial-gradient(circle at 3rem 2.2rem, color-mix(in srgb, var(--easyedu-primary) 12%, transparent), transparent 8rem),
+      linear-gradient(135deg, #fff 0%, #f5f9fd 100%);
+  }
+
   .local-groupimport-admin-settings__color-control {
     @include easyedu.color-picker-control;
   }
@@ -261,9 +291,10 @@
   }
 
   #adminsettings > .settingsform > .row:last-child {
-    justify-content: center;
     margin-left: 0;
     margin-right: 0;
+
+    @include easyedu.admin-form-actions;
 
     > [class*="offset-"] {
       flex: 0 0 auto;

@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 require_once($CFG->dirroot . '/group/lib.php'); // Fonctions groups_*.
 
 use local_groupimport\form\import_form;
@@ -301,14 +302,14 @@ function local_groupimport_build_preview_rows(array $parsed, array &$errors): ar
         'identifiant', 'identifiantutilisateur', 'utilisateur', 'mail', 'courriel',
         'studentidentifier', 'student', 'studentid', 'studentlogin', 'studentemail',
         'learneridentifier', 'learner', 'learnerid', 'apprenant', 'identifiantapprenant',
-        'etudiant', 'identifiantetudiant', 'eleve', 'identifianteleve',
+        'identifiantdelapprenant', 'etudiant', 'identifiantetudiant', 'eleve', 'identifianteleve',
     ]);
     $groupnameindex = local_groupimport_find_import_column($normalised, [
         'groupname', 'group', 'groups', 'groupid', 'groupe', 'nomdegroupe', 'nomdugroupe',
     ]);
     $groupingindex = local_groupimport_find_import_column($normalised, [
-        'groupingname', 'grouping', 'groupings', 'groupingid', 'groupement', 'nomdegroupement',
-        'nomdugroupement',
+        'groupingname', 'groupingnameoptional', 'grouping', 'groupings', 'groupingid', 'groupement',
+        'nomdegroupement', 'nomdugroupement', 'nomdugroupementfacultatif',
     ]);
 
     if ($identifierindex === false || $groupnameindex === false) {
@@ -354,18 +355,15 @@ function local_groupimport_find_import_users_by_field(string $identifier, string
     }
 
     if ($userfield === 'username') {
-        $user = $DB->get_record('user', ['username' => $identifier, 'deleted' => 0]);
-        return $user ? [$user->id => $user] : [];
+        return $DB->get_records('user', ['username' => $identifier, 'deleted' => 0], '', '*', 0, 2);
     }
 
     if ($userfield === 'email') {
-        $user = $DB->get_record('user', ['email' => $identifier, 'deleted' => 0]);
-        return $user ? [$user->id => $user] : [];
+        return $DB->get_records('user', ['email' => $identifier, 'deleted' => 0], '', '*', 0, 2);
     }
 
     if ($userfield === 'idnumber') {
-        $user = $DB->get_record('user', ['idnumber' => $identifier, 'deleted' => 0]);
-        return $user ? [$user->id => $user] : [];
+        return $DB->get_records('user', ['idnumber' => $identifier, 'deleted' => 0], '', '*', 0, 2);
     }
 
     if (strpos($userfield, 'profile_field_') === 0) {
@@ -380,7 +378,7 @@ function local_groupimport_find_import_users_by_field(string $identifier, string
         return $DB->get_records_sql($sql, [
             'shortname' => $shortname,
             'data' => $identifier,
-        ]);
+        ], 0, 2);
     }
 
     return [];
@@ -501,7 +499,8 @@ function local_groupimport_history_table_exists(): bool {
  * @param int $successcount Number of success messages.
  * @param int $errorcount Number of error messages.
  * @param string $replacepolicy Selected replacement policy.
- * @return void
+ * @param array $changes Operations, target state and report rows recorded for the import.
+ * @return int Inserted history id, or zero when history is unavailable.
  */
 function local_groupimport_record_import_history(
     int $courseid,
@@ -511,12 +510,13 @@ function local_groupimport_record_import_history(
     int $rowcount,
     int $successcount,
     int $errorcount,
-    string $replacepolicy
-): void {
+    string $replacepolicy,
+    array $changes
+): int {
     global $DB;
 
     if (!local_groupimport_history_table_exists()) {
-        return;
+        return 0;
     }
 
     $record = (object)[
@@ -528,9 +528,10 @@ function local_groupimport_record_import_history(
         'successcount' => $successcount,
         'errorcount' => $errorcount,
         'replacepolicy' => clean_param($replacepolicy, PARAM_ALPHA),
+        'changesjson' => json_encode($changes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         'timecreated' => time(),
     ];
-    $DB->insert_record('local_groupimport_history', $record);
+    return (int)$DB->insert_record('local_groupimport_history', $record);
 }
 
 /**
@@ -580,38 +581,72 @@ function local_groupimport_get_matching_import_history(int $courseid, string $fi
  * @param context_course $context Course context.
  * @param array $success Success messages.
  * @param array $errors Error messages.
- * @return void
+ * @param string $replacepolicy Import update strategy.
+ * @return array Operations, target state and report rows recorded for the import.
  */
 function local_groupimport_process_import_rows(
     array $rows,
     stdClass $course,
     context_course $context,
     array &$success,
-    array &$errors
-): void {
+    array &$errors,
+    string $replacepolicy = 'keep'
+): array {
     global $DB;
+
+    $changes = [
+        'createdgroups' => [],
+        'createdgroupings' => [],
+        'addedmembers' => [],
+        'assignedgroupings' => [],
+        'removedmembers' => [],
+        'unassignedgroupings' => [],
+        'desiredstate' => [],
+        'reportrows' => [],
+    ];
+    $targetmembers = [];
+    $targetgroupings = [];
 
     foreach ($rows as $row) {
         $identifier = local_groupimport_clean_cell((string)($row['identifier'] ?? ''));
         $groupname = local_groupimport_clean_cell((string)($row['groupname'] ?? ''));
         $groupingname = local_groupimport_clean_cell((string)($row['groupingname'] ?? ''));
+        $reportrow = [
+            'identifier' => $identifier,
+            'groupname' => $groupname,
+            'groupingname' => $groupingname,
+            'status' => 'success',
+            'messages' => [],
+        ];
 
         if ($identifier === '' && $groupname === '') {
             continue;
         }
 
         if ($identifier === '' || $groupname === '') {
-            $errors[] = get_string('csvinvalidrowmissing', 'local_groupimport');
+            $message = get_string('csvinvalidrowmissing', 'local_groupimport');
+            $errors[] = $message;
+            $reportrow['status'] = 'error';
+            $reportrow['messages'][] = $message;
+            $changes['reportrows'][] = $reportrow;
             continue;
         }
 
+        $errorcount = count($errors);
         $user = local_groupimport_find_import_user($identifier, $errors);
         if (!$user) {
+            $reportrow['status'] = 'error';
+            $reportrow['messages'] = array_slice($errors, $errorcount);
+            $changes['reportrows'][] = $reportrow;
             continue;
         }
 
         if (!is_enrolled($context, $user->id)) {
-            $errors[] = get_string('usernotenrolled', 'local_groupimport', $identifier);
+            $message = get_string('usernotenrolled', 'local_groupimport', $identifier);
+            $errors[] = $message;
+            $reportrow['status'] = 'error';
+            $reportrow['messages'][] = $message;
+            $changes['reportrows'][] = $reportrow;
             continue;
         }
 
@@ -623,14 +658,23 @@ function local_groupimport_process_import_rows(
 
             $groupid = groups_create_group($groupdata);
             if (!$groupid) {
-                $errors[] = get_string('groupcreatefailed', 'local_groupimport', (object)[
+                $message = get_string('groupcreatefailed', 'local_groupimport', (object)[
                     'groupname' => $groupname,
                     'identifier' => $identifier,
                 ]);
+                $errors[] = $message;
+                $reportrow['status'] = 'error';
+                $reportrow['messages'][] = $message;
+                $changes['reportrows'][] = $reportrow;
                 continue;
             }
+            $changes['createdgroups'][] = [
+                'id' => (int)$groupid,
+                'name' => $groupname,
+            ];
         }
 
+        $groupingid = 0;
         if ($groupingname !== '') {
             $groupingid = $DB->get_field('groupings', 'id', [
                 'courseid' => $course->id,
@@ -644,10 +688,18 @@ function local_groupimport_process_import_rows(
 
                 $groupingid = groups_create_grouping($groupingdata);
                 if (!$groupingid) {
-                    $errors[] = get_string('groupingcreatefailed', 'local_groupimport', (object)[
+                    $message = get_string('groupingcreatefailed', 'local_groupimport', (object)[
                         'groupingname' => $groupingname,
                         'groupname' => $groupname,
                     ]);
+                    $errors[] = $message;
+                    $reportrow['status'] = 'error';
+                    $reportrow['messages'][] = $message;
+                } else {
+                    $changes['createdgroupings'][] = [
+                        'id' => (int)$groupingid,
+                        'name' => $groupingname,
+                    ];
                 }
             }
 
@@ -656,11 +708,32 @@ function local_groupimport_process_import_rows(
                 'groupid' => $groupid,
             ])) {
                 groups_assign_grouping($groupingid, $groupid);
+                $changes['assignedgroupings'][] = [
+                    'groupingid' => (int)$groupingid,
+                    'groupid' => (int)$groupid,
+                ];
             }
         }
 
+        $targetmembers[$groupid][(int)$user->id] = true;
+        $targetgroupings[$groupid] = $targetgroupings[$groupid] ?? [];
+        if (!empty($groupingid)) {
+            $targetgroupings[$groupid][(int)$groupingid] = true;
+        }
+
+        $changes['desiredstate'][] = [
+            'userid' => (int)$user->id,
+            'identifier' => $identifier,
+            'groupname' => $groupname,
+            'groupingname' => $groupingname,
+        ];
+
         if (!groups_is_member($groupid, $user->id)) {
             groups_add_member($groupid, $user->id);
+            $changes['addedmembers'][] = [
+                'groupid' => (int)$groupid,
+                'userid' => (int)$user->id,
+            ];
 
             $a = (object)[
                 'identifier' => $identifier,
@@ -674,12 +747,161 @@ function local_groupimport_process_import_rows(
                 $success[] = get_string('useraddedtogroup', 'local_groupimport', $a);
             }
         } else {
-            $errors[] = get_string('useralreadyingroup', 'local_groupimport', (object)[
+            $message = get_string('useralreadyingroup', 'local_groupimport', (object)[
                 'identifier' => $identifier,
                 'groupname' => $groupname,
             ]);
+            $errors[] = $message;
+            if ($reportrow['status'] !== 'error') {
+                $reportrow['status'] = 'warning';
+            }
+            $reportrow['messages'][] = $message;
+        }
+        if (empty($reportrow['messages'])) {
+            $reportrow['messages'][] = get_string('importexportapplied', 'local_groupimport');
+        }
+        $changes['reportrows'][] = $reportrow;
+    }
+
+    if ($replacepolicy === 'replace') {
+        foreach ($targetmembers as $groupid => $expectedmembers) {
+            $currentmembers = $DB->get_records('groups_members', ['groupid' => $groupid], '', 'id,userid');
+            foreach ($currentmembers as $currentmember) {
+                if (isset($expectedmembers[(int)$currentmember->userid])) {
+                    continue;
+                }
+                groups_remove_member((int)$groupid, (int)$currentmember->userid);
+                $changes['removedmembers'][] = [
+                    'groupid' => (int)$groupid,
+                    'userid' => (int)$currentmember->userid,
+                ];
+                $success[] = get_string('importreplaceremovedmember', 'local_groupimport');
+            }
+
+            $currentassignments = $DB->get_records('groupings_groups', ['groupid' => $groupid], '',
+                'id,groupingid,groupid');
+            foreach ($currentassignments as $currentassignment) {
+                if (isset($targetgroupings[$groupid][(int)$currentassignment->groupingid])) {
+                    continue;
+                }
+                groups_unassign_grouping((int)$currentassignment->groupingid, (int)$groupid);
+                $changes['unassignedgroupings'][] = [
+                    'groupingid' => (int)$currentassignment->groupingid,
+                    'groupid' => (int)$groupid,
+                ];
+                $success[] = get_string('importreplaceunassignedgroup', 'local_groupimport');
+            }
         }
     }
+
+    return $changes;
+}
+
+/**
+ * Restore the target state recorded for one import.
+ *
+ * @param stdClass $history Import history record.
+ * @param int $userid User performing the rollback.
+ * @return stdClass Rollback counters.
+ */
+function local_groupimport_rollback_import(stdClass $history, int $userid): stdClass {
+    global $DB;
+
+    $changes = json_decode((string)($history->changesjson ?? ''), true);
+    if (!is_array($changes)) {
+        throw new moodle_exception('importrollbackunavailable', 'local_groupimport');
+    }
+
+    $desiredstate = local_groupimport_history_desired_state($changes, (int)$history->courseid);
+    if (empty($desiredstate)) {
+        throw new moodle_exception('importrollbackunavailable', 'local_groupimport');
+    }
+
+    $context = context_course::instance((int)$history->courseid);
+    $transaction = $DB->start_delegated_transaction();
+
+    $result = (object)[
+        'members' => 0,
+        'assignments' => 0,
+        'groups' => 0,
+        'groupings' => 0,
+        'removedmembers' => 0,
+        'unassigned' => 0,
+        'skipped' => 0,
+    ];
+
+    $targetmembers = [];
+    $targetgroupings = [];
+    foreach ($desiredstate as $row) {
+        $memberid = (int)($row['userid'] ?? 0);
+        $groupname = clean_param((string)($row['groupname'] ?? ''), PARAM_TEXT);
+        $groupingname = clean_param((string)($row['groupingname'] ?? ''), PARAM_TEXT);
+        if (!$memberid || $groupname === '' || !$DB->record_exists('user', ['id' => $memberid]) ||
+                !is_enrolled($context, $memberid)) {
+            $result->skipped++;
+            continue;
+        }
+
+        $groupid = groups_get_group_by_name((int)$history->courseid, $groupname);
+        if (!$groupid) {
+            $groupid = groups_create_group((object)[
+                'courseid' => (int)$history->courseid,
+                'name' => $groupname,
+            ]);
+            $result->groups++;
+        }
+        $targetmembers[$groupid][$memberid] = true;
+
+        if (!groups_is_member($groupid, $memberid)) {
+            groups_add_member($groupid, $memberid);
+            $result->members++;
+        }
+
+        if ($groupingname === '') {
+            continue;
+        }
+        $groupingid = $DB->get_field('groupings', 'id', [
+            'courseid' => (int)$history->courseid,
+            'name' => $groupingname,
+        ]);
+        if (!$groupingid) {
+            $groupingid = groups_create_grouping((object)[
+                'courseid' => (int)$history->courseid,
+                'name' => $groupingname,
+            ]);
+            $result->groupings++;
+        }
+        $targetgroupings[$groupid][$groupingid] = true;
+        if (!$DB->record_exists('groupings_groups', ['groupingid' => $groupingid, 'groupid' => $groupid])) {
+            groups_assign_grouping($groupingid, $groupid);
+            $result->assignments++;
+        }
+    }
+
+    if (($history->replacepolicy ?? 'keep') === 'replace') {
+        foreach ($targetmembers as $groupid => $expectedmembers) {
+            $members = $DB->get_records('groups_members', ['groupid' => $groupid], '', 'id,userid');
+            foreach ($members as $member) {
+                if (!isset($expectedmembers[(int)$member->userid])) {
+                    groups_remove_member((int)$groupid, (int)$member->userid);
+                    $result->removedmembers++;
+                }
+            }
+            $assignments = $DB->get_records('groupings_groups', ['groupid' => $groupid], '', 'id,groupingid');
+            foreach ($assignments as $assignment) {
+                if (!isset($targetgroupings[$groupid][(int)$assignment->groupingid])) {
+                    groups_unassign_grouping((int)$assignment->groupingid, (int)$groupid);
+                    $result->unassigned++;
+                }
+            }
+        }
+    }
+
+    $DB->set_field('local_groupimport_history', 'rollbackuserid', $userid, ['id' => $history->id]);
+    $DB->set_field('local_groupimport_history', 'timerolledback', time(), ['id' => $history->id]);
+    $transaction->allow_commit();
+
+    return $result;
 }
 
 // Try to retrieve the course id via GET or POST.
@@ -722,6 +944,25 @@ $allowedimportfields = local_groupimport_get_allowed_import_userfields();
 $success = [];
 $errors = [];
 $preview = null;
+$currenthistoryid = 0;
+
+$rollbackhistoryid = optional_param('rollbackhistoryid', 0, PARAM_INT);
+if ($rollbackhistoryid) {
+    global $USER, $DB;
+
+    require_sesskey();
+    $history = $DB->get_record('local_groupimport_history', [
+        'id' => $rollbackhistoryid,
+        'courseid' => $course->id,
+    ], '*', MUST_EXIST);
+
+    try {
+        $rollback = local_groupimport_rollback_import($history, (int)$USER->id);
+        $success[] = get_string('importrollbacksuccess', 'local_groupimport', $rollback);
+    } catch (moodle_exception $exception) {
+        $errors[] = $exception->getMessage();
+    }
+}
 
 // Template CSV download button URL.
 $templateurl = new moodle_url('/local/groupimport/template.php', ['id' => $course->id]);
@@ -740,6 +981,9 @@ if ($confirmimport) {
     $importfilename = optional_param('importfilename', '', PARAM_TEXT);
     $importhash = optional_param('importhash', '', PARAM_ALPHANUM);
     $replacepolicy = optional_param('replacepolicy', 'keep', PARAM_ALPHA);
+    if (!in_array($replacepolicy, ['keep', 'replace'], true)) {
+        $replacepolicy = 'keep';
+    }
 
     $confirmedrows = [];
     foreach ($enabledrows as $index => $enabled) {
@@ -757,8 +1001,15 @@ if ($confirmimport) {
     if (empty($confirmedrows)) {
         $errors[] = get_string('importnorowsselected', 'local_groupimport');
     } else {
-        local_groupimport_process_import_rows($confirmedrows, $course, $context, $success, $errors);
-        local_groupimport_record_import_history(
+        $changes = local_groupimport_process_import_rows(
+            $confirmedrows,
+            $course,
+            $context,
+            $success,
+            $errors,
+            $replacepolicy
+        );
+        $currenthistoryid = local_groupimport_record_import_history(
             (int)$course->id,
             (int)$USER->id,
             $importfilename !== '' ? $importfilename : get_string('unknownfile', 'local_groupimport'),
@@ -766,7 +1017,8 @@ if ($confirmimport) {
             count($confirmedrows),
             count($success),
             count($errors),
-            $replacepolicy
+            $replacepolicy,
+            $changes
         );
     }
 } else if ($mform->is_cancelled()) {
@@ -835,11 +1087,21 @@ echo html_writer::tag('div',
         ])
     ) .
     html_writer::tag('div',
-        html_writer::link(new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]),
-            get_string('easystudmanager', 'local_groupimport'), [
-                'class' => 'btn btn-primary',
-            ]) .
-        html_writer::link($templateurl, get_string('downloadtemplate', 'local_groupimport'), [
+        html_writer::tag('span',
+            html_writer::span('', 'fa fa-file-import me-2', ['aria-hidden' => 'true']) .
+                html_writer::span(get_string('groupimport', 'local_groupimport')),
+            ['class' => 'btn active', 'aria-current' => 'page']
+        ) .
+        (local_groupimport_is_simplified_view_enabled()
+            ? html_writer::link(new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]),
+                html_writer::span('', 'fa fa-users me-2', ['aria-hidden' => 'true']) .
+                    html_writer::span(get_string('easystudmanager', 'local_groupimport')), [
+                    'class' => 'btn btn-primary',
+                ])
+            : '') .
+        html_writer::link($templateurl,
+            html_writer::span('', 'fa fa-file-excel me-2', ['aria-hidden' => 'true']) .
+                html_writer::span(get_string('downloadtemplate', 'local_groupimport')), [
             'class' => 'btn btn-outline-primary local-groupimport-import__template-link',
         ]) .
         html_writer::tag('button',
@@ -851,7 +1113,9 @@ echo html_writer::tag('div',
                 'data-local-groupimport-history-open' => '1',
             ]
         ) .
-        html_writer::link(course_get_url($course), get_string('backtocourse', 'local_groupimport'), [
+        html_writer::link(course_get_url($course),
+            html_writer::span('', 'fa fa-arrow-left me-2', ['aria-hidden' => 'true']) .
+                html_writer::span(get_string('backtocourse', 'local_groupimport')), [
             'class' => 'btn btn-outline-secondary',
         ]),
         ['class' => 'local-groupimport-import__header-actions']
@@ -930,7 +1194,10 @@ echo html_writer::end_div();
 echo html_writer::end_div(); // Card.
 
 // Results card.
-echo html_writer::start_div('local-groupimport-import-card local-groupimport-import-card--results', ['id' => 'local_groupimport-results']);
+echo html_writer::start_div(
+    'local-groupimport-import-card local-groupimport-import-card--results',
+    ['id' => 'local_groupimport-results']
+);
 echo html_writer::tag('div',
     html_writer::tag('span', '', ['class' => 'fa fa-clipboard-check', 'aria-hidden' => 'true']) .
     html_writer::tag('div',
@@ -996,27 +1263,54 @@ if ($preview !== null) {
         );
     }
 
-    echo html_writer::tag('div',
-        html_writer::tag('strong', get_string('reimportstrategy', 'local_groupimport')) .
-        html_writer::tag('label',
-            html_writer::empty_tag('input', [
-                'type' => 'radio',
-                'name' => 'replacepolicy',
-                'value' => 'keep',
-                'checked' => 'checked',
-            ]) .
-            html_writer::tag('span', get_string('reimportkeep', 'local_groupimport'))
-        ) .
-        html_writer::tag('label',
-            html_writer::empty_tag('input', [
-                'type' => 'radio',
-                'name' => 'replacepolicy',
-                'value' => 'replace',
-                'disabled' => 'disabled',
-            ]) .
-            html_writer::tag('span', get_string('reimportreplaceplanned', 'local_groupimport'))
+    $strategyoptions = html_writer::tag('label',
+        html_writer::empty_tag('input', [
+            'type' => 'radio',
+            'name' => 'replacepolicy',
+            'value' => 'keep',
+            'checked' => 'checked',
+            'class' => 'easyedu-segmented-choice__input',
+        ]) .
+        html_writer::tag('span',
+            html_writer::span('', 'fa fa-plus', ['aria-hidden' => 'true']) .
+            html_writer::tag('span',
+                html_writer::tag('strong', get_string('reimportkeeptitle', 'local_groupimport')) .
+                html_writer::tag('small', get_string('reimportkeepdesc', 'local_groupimport'))
+            ),
+            ['class' => 'easyedu-segmented-choice__surface']
         ),
-        ['class' => 'local-groupimport-import-preview__strategy']
+        ['class' => 'easyedu-segmented-choice__option']
+    );
+    $strategyoptions .= html_writer::tag('label',
+        html_writer::empty_tag('input', [
+            'type' => 'radio',
+            'name' => 'replacepolicy',
+            'value' => 'replace',
+            'class' => 'easyedu-segmented-choice__input',
+        ]) .
+        html_writer::tag('span',
+            html_writer::span('', 'fa fa-sync-alt', ['aria-hidden' => 'true']) .
+            html_writer::tag('span',
+                html_writer::tag('strong', get_string('reimportreplacetitle', 'local_groupimport')) .
+                html_writer::tag('small', get_string('reimportreplacedesc', 'local_groupimport'))
+            ),
+            ['class' => 'easyedu-segmented-choice__surface']
+        ),
+        ['class' => 'easyedu-segmented-choice__option']
+    );
+    $strategylabel = get_string('reimportstrategy', 'local_groupimport');
+    $strategybody = html_writer::div(
+        html_writer::div($strategylabel, 'easyedu-segmented-choice__label', ['aria-hidden' => 'true']) .
+        html_writer::div($strategyoptions, 'easyedu-segmented-choice__options'),
+        'easyedu-segmented-choice__body'
+    );
+    echo html_writer::tag('fieldset',
+        html_writer::tag('legend', $strategylabel, [
+            'class' => 'easyedu-segmented-choice__legend',
+        ]) . $strategybody,
+        [
+            'class' => 'local-groupimport-import-preview__strategy easyedu-segmented-choice--contained',
+        ]
     );
 
     echo html_writer::tag('div',
@@ -1025,8 +1319,10 @@ if ($preview !== null) {
                 'type' => 'button',
                 'class' => 'btn btn-outline-primary btn-sm',
                 'data-local-groupimport-preview-toggle-all' => '1',
-                'data-select-label' => get_string('selectallrows', 'local_groupimport'),
-                'data-deselect-label' => get_string('deselectallrows', 'local_groupimport'),
+                'data-select-all-label' => get_string('selectallrows', 'local_groupimport'),
+                'data-deselect-all-label' => get_string('deselectallrows', 'local_groupimport'),
+                'data-select-results-label' => get_string('selectmatchingrows', 'local_groupimport'),
+                'data-deselect-results-label' => get_string('deselectmatchingrows', 'local_groupimport'),
             ]),
             ['class' => 'local-groupimport-import-preview__bulk-actions']
         ) .
@@ -1043,17 +1339,6 @@ if ($preview !== null) {
                 'class' => 'local-groupimport-import-preview__search-field',
                 'aria-label' => get_string('previewsearchlabel', 'local_groupimport'),
             ]
-        ) .
-        html_writer::tag('div',
-            html_writer::tag('button', get_string('selectmatchingrows', 'local_groupimport'), [
-                'type' => 'button',
-                'class' => 'btn btn-outline-primary btn-sm',
-                'data-local-groupimport-preview-toggle-results' => '1',
-                'data-select-label' => get_string('selectmatchingrows', 'local_groupimport'),
-                'data-deselect-label' => get_string('deselectmatchingrows', 'local_groupimport'),
-                'hidden' => 'hidden',
-            ]),
-            ['class' => 'local-groupimport-import-preview__result-actions']
         ),
         ['class' => 'local-groupimport-import-preview__toolbar']
     );
@@ -1204,6 +1489,21 @@ if ($preview !== null) {
         }
         echo html_writer::end_tag('ul');
     }
+
+    if ($currenthistoryid) {
+        echo html_writer::div(
+            html_writer::link(
+                new moodle_url('/local/groupimport/export.php', [
+                    'id' => $course->id,
+                    'historyid' => $currenthistoryid,
+                ]),
+                html_writer::span('', 'fa fa-file-excel', ['aria-hidden' => 'true']) .
+                    html_writer::span(get_string('importexportresults', 'local_groupimport')),
+                ['class' => 'btn btn-outline-primary local-groupimport-import__export-results']
+            ),
+            'local-groupimport-import-preview__result-actions'
+        );
+    }
 }
 
 echo html_writer::end_div(); // Card.
@@ -1213,6 +1513,42 @@ echo html_writer::end_div(); // Grid.
 $historyitems = '';
 if (!empty($historyrecords)) {
     foreach ($historyrecords as $record) {
+        $historyactions = '';
+        if (!empty($record->timerolledback)) {
+            $historyactions .= html_writer::tag('span',
+                html_writer::span('', 'fa fa-undo-alt', ['aria-hidden' => 'true']) .
+                    get_string('importhistoryrolledback', 'local_groupimport', userdate((int)$record->timerolledback)),
+                ['class' => 'local-groupimport-import-history__state local-groupimport-import-history__state--rolledback']
+            );
+        }
+        if (!empty($record->changesjson)) {
+            $historyactions .= html_writer::tag('button',
+                html_writer::span('', 'fa fa-undo-alt', ['aria-hidden' => 'true']) .
+                    html_writer::span(get_string(!empty($record->timerolledback)
+                        ? 'importhistoryrestoreagain' : 'importhistoryrollback', 'local_groupimport')),
+                [
+                    'type' => 'button',
+                    'class' => 'btn btn-outline-danger btn-sm local-groupimport-import-history__rollback',
+                    'data-local-groupimport-rollback-open' => (int)$record->id,
+                    'data-local-groupimport-rollback-filename' => $record->filename,
+                ]
+            );
+            $historyactions .= html_writer::link(
+                new moodle_url('/local/groupimport/export.php', [
+                    'id' => $course->id,
+                    'historyid' => (int)$record->id,
+                ]),
+                html_writer::span('', 'fa fa-file-excel', ['aria-hidden' => 'true']) .
+                    html_writer::span(get_string('importexportresults', 'local_groupimport')),
+                ['class' => 'btn btn-outline-secondary btn-sm local-groupimport-import-history__export']
+            );
+        } else {
+            $historyactions .= html_writer::tag('span', get_string('importhistorylegacy', 'local_groupimport'), [
+                'class' => 'local-groupimport-import-history__state local-groupimport-import-history__state--legacy',
+            ]);
+        }
+        $historyactions = html_writer::div($historyactions, 'local-groupimport-import-history__actions');
+
         $historyitems .= html_writer::tag('li',
             html_writer::tag('div',
                 html_writer::tag('strong', s($record->filename)) .
@@ -1224,7 +1560,7 @@ if (!empty($historyrecords)) {
                 html_writer::tag('span', get_string('importhistorysuccess', 'local_groupimport', (int)$record->successcount)) .
                 html_writer::tag('span', get_string('importhistoryerrors', 'local_groupimport', (int)$record->errorcount)),
                 ['class' => 'local-groupimport-import-history__item-meta']
-            )
+            ) . $historyactions
         );
     }
 } else {
@@ -1270,6 +1606,75 @@ echo html_writer::tag('div',
     [
         'class' => 'local-groupimport-import-modal',
         'data-local-groupimport-history-modal' => '1',
+        'hidden' => 'hidden',
+    ]
+);
+
+$rollbackform = html_writer::start_tag('form', [
+    'method' => 'post',
+    'action' => (new moodle_url('/local/groupimport/index.php', ['id' => $course->id]))->out(false),
+    'data-local-groupimport-rollback-form' => '1',
+]);
+$rollbackform .= html_writer::empty_tag('input', [
+    'type' => 'hidden',
+    'name' => 'sesskey',
+    'value' => sesskey(),
+]);
+$rollbackform .= html_writer::empty_tag('input', [
+    'type' => 'hidden',
+    'name' => 'rollbackhistoryid',
+    'value' => '',
+    'data-local-groupimport-rollback-id' => '1',
+]);
+$rollbackform .= html_writer::tag('div',
+    html_writer::tag('p', get_string('importrollbackconfirm', 'local_groupimport'), ['class' => 'mb-1']) .
+        html_writer::tag('strong', '', ['data-local-groupimport-rollback-name' => '1']),
+    ['class' => 'local-groupimport-import-rollback__message']
+);
+$rollbackform .= html_writer::tag('div',
+    html_writer::tag('button', get_string('cancel', 'local_groupimport'), [
+        'type' => 'button',
+        'class' => 'btn btn-outline-secondary',
+        'data-local-groupimport-rollback-close' => '1',
+    ]) .
+    html_writer::tag('button',
+        html_writer::span('', 'fa fa-undo-alt', ['aria-hidden' => 'true']) .
+            html_writer::span(get_string('importrollbackconfirmbutton', 'local_groupimport')),
+        ['type' => 'submit', 'class' => 'btn btn-danger']
+    ),
+    ['class' => 'local-groupimport-import-modal__footer']
+);
+$rollbackform .= html_writer::end_tag('form');
+
+echo html_writer::tag('div',
+    html_writer::tag('div',
+        html_writer::tag('div',
+            html_writer::tag('h3', get_string('importrollbacktitle', 'local_groupimport'), [
+                'id' => 'local-groupimport-import-rollback-title',
+                'class' => 'h5 mb-0',
+            ]) .
+            html_writer::tag('button',
+                html_writer::span('', 'fa fa-times', ['aria-hidden' => 'true']),
+                [
+                    'type' => 'button',
+                    'class' => 'local-groupimport-import-modal__close',
+                    'data-local-groupimport-rollback-close' => '1',
+                    'aria-label' => get_string('close', 'moodle'),
+                ]
+            ),
+            ['class' => 'local-groupimport-import-modal__header']
+        ) .
+        html_writer::tag('div', $rollbackform, ['class' => 'local-groupimport-import-modal__body']),
+        [
+            'class' => 'local-groupimport-import-modal__dialog local-groupimport-import-modal__dialog--confirm',
+            'role' => 'dialog',
+            'aria-modal' => 'true',
+            'aria-labelledby' => 'local-groupimport-import-rollback-title',
+        ]
+    ),
+    [
+        'class' => 'local-groupimport-import-modal',
+        'data-local-groupimport-rollback-modal' => '1',
         'hidden' => 'hidden',
     ]
 );

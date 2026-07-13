@@ -85,16 +85,32 @@ const appendAcceptedTypes = (formData, acceptedTypes) => {
     }
 };
 
-const uploadToMoodleFilePicker = (root, file) => {
-    const picker = findFilePicker(root);
+const waitForFilePicker = (root, timeout = 8000) => {
+    const started = performance.now();
+
+    return new Promise(resolve => {
+        const inspect = () => {
+            const picker = findFilePicker(root);
+            if (picker || performance.now() - started >= timeout) {
+                resolve(picker);
+                return;
+            }
+            window.setTimeout(inspect, 80);
+        };
+        inspect();
+    });
+};
+
+const uploadToMoodleFilePicker = async(root, file) => {
+    const picker = await waitForFilePicker(root);
     if (!picker || !window.M || !M.cfg || !M.cfg.sesskey || typeof FormData === 'undefined') {
-        return Promise.resolve(false);
+        return false;
     }
 
     const options = picker.options;
     const repositoryId = getUploadRepositoryId(options.repositories);
     if (!repositoryId || !options.itemid || typeof XMLHttpRequest === 'undefined') {
-        return Promise.resolve(false);
+        return false;
     }
 
     return new Promise(resolve => {
@@ -176,6 +192,28 @@ const assignDroppedFile = (root, file) => {
     }
 };
 
+const forwardDroppedFileToMoodle = (root, file) => {
+    const target = root.querySelector('.filepicker-filelist');
+    if (!target || !file || typeof DataTransfer === 'undefined' || typeof DragEvent === 'undefined') {
+        return false;
+    }
+
+    try {
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        ['dragenter', 'dragover', 'drop'].forEach(type => {
+            target.dispatchEvent(new DragEvent(type, {
+                bubbles: true,
+                cancelable: true,
+                dataTransfer: transfer,
+            }));
+        });
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 const setUploadCollapsed = (root, button, collapsed) => {
     root.classList.toggle('is-upload-collapsed', collapsed);
 
@@ -203,9 +241,10 @@ const setUploadCollapsed = (root, button, collapsed) => {
 
 const initUploadCollapse = root => {
     const button = root.querySelector('[data-local-groupimport-upload-toggle]');
-    if (!button) {
+    if (!button || button.dataset.localGroupimportUploadToggleBound === '1') {
         return;
     }
+    button.dataset.localGroupimportUploadToggleBound = '1';
 
     let collapsed = root.classList.contains('is-upload-collapsed');
     try {
@@ -220,16 +259,7 @@ const initUploadCollapse = root => {
     setUploadCollapsed(root, button, collapsed);
 
     button.addEventListener('click', () => {
-        const grid = root.querySelector('.local-groupimport-import__grid');
-        const update = () => setUploadCollapsed(root, button, !root.classList.contains('is-upload-collapsed'));
-        if (grid) {
-            Motion.swap(grid, update, {
-                exitDuration: Motion.timing.fast,
-                enterDuration: Motion.timing.normal,
-            });
-        } else {
-            update();
-        }
+        setUploadCollapsed(root, button, !root.classList.contains('is-upload-collapsed'));
     });
 };
 
@@ -276,7 +306,6 @@ const initPreviewTools = root => {
     }
 
     const toggleAll = root.querySelector('[data-local-groupimport-preview-toggle-all]');
-    const toggleResults = root.querySelector('[data-local-groupimport-preview-toggle-results]');
     const empty = root.querySelector('[data-local-groupimport-preview-empty]');
 
     const getVisibleRows = () => rows.filter(row => !row.hidden);
@@ -294,16 +323,21 @@ const initPreviewTools = root => {
         });
 
         const hasSearch = query !== '';
-        if (toggleResults) {
-            toggleResults.hidden = !hasSearch;
+        const controlledRows = hasSearch ? getVisibleRows() : rows;
+        if (toggleAll) {
+            toggleAll.dataset.selectLabel = hasSearch
+                ? toggleAll.dataset.selectResultsLabel
+                : toggleAll.dataset.selectAllLabel;
+            toggleAll.dataset.deselectLabel = hasSearch
+                ? toggleAll.dataset.deselectResultsLabel
+                : toggleAll.dataset.deselectAllLabel;
         }
 
         if (empty) {
             empty.hidden = visible !== 0;
         }
 
-        updateToggleButton(toggleAll, rows);
-        updateToggleButton(toggleResults, hasSearch ? getVisibleRows() : []);
+        updateToggleButton(toggleAll, controlledRows);
     };
 
     search.addEventListener('input', updateRows);
@@ -319,13 +353,8 @@ const initPreviewTools = root => {
 
     if (toggleAll) {
         toggleAll.addEventListener('click', () => {
-            setRowsChecked(rows, toggleAll.dataset.previewNextAction !== 'deselect');
-            updateRows();
-        });
-    }
-    if (toggleResults) {
-        toggleResults.addEventListener('click', () => {
-            setRowsChecked(getVisibleRows(), toggleResults.dataset.previewNextAction !== 'deselect');
+            const controlledRows = search.value.trim() === '' ? rows : getVisibleRows();
+            setRowsChecked(controlledRows, toggleAll.dataset.previewNextAction !== 'deselect');
             updateRows();
         });
     }
@@ -336,9 +365,10 @@ const initPreviewTools = root => {
 const initHistoryModal = root => {
     const modal = root.querySelector('[data-local-groupimport-history-modal]');
     const open = root.querySelector('[data-local-groupimport-history-open]');
-    if (!modal || !open) {
+    if (!modal || !open || open.dataset.localGroupimportHistoryBound === '1') {
         return;
     }
+    open.dataset.localGroupimportHistoryBound = '1';
 
     const closeButtons = Array.from(modal.querySelectorAll('[data-local-groupimport-history-close]'));
     const close = () => {
@@ -374,6 +404,66 @@ const initHistoryModal = root => {
     });
 };
 
+const initRollbackModal = root => {
+    const modal = root.querySelector('[data-local-groupimport-rollback-modal]');
+    const form = modal ? modal.querySelector('[data-local-groupimport-rollback-form]') : null;
+    const idInput = form ? form.querySelector('[data-local-groupimport-rollback-id]') : null;
+    const filename = form ? form.querySelector('[data-local-groupimport-rollback-name]') : null;
+    const openButtons = Array.from(root.querySelectorAll('[data-local-groupimport-rollback-open]'));
+    if (!modal || !form || !idInput || openButtons.length === 0 ||
+            modal.dataset.localGroupimportRollbackBound === '1') {
+        return;
+    }
+    modal.dataset.localGroupimportRollbackBound = '1';
+
+    const historyModal = root.querySelector('[data-local-groupimport-history-modal]');
+    const closeButtons = Array.from(modal.querySelectorAll('[data-local-groupimport-rollback-close]'));
+
+    const close = () => {
+        const dialog = modal.querySelector('.local-groupimport-import-modal__dialog') || modal;
+        Motion.exit(dialog, {duration: Motion.timing.fast, distance: '0.2rem'}).then(completed => {
+            if (!completed) {
+                return;
+            }
+            modal.hidden = true;
+            if (historyModal) {
+                historyModal.hidden = false;
+                const historyDialog = historyModal.querySelector('.local-groupimport-import-modal__dialog') || historyModal;
+                Motion.enter(historyDialog, {duration: Motion.timing.normal, distance: '0.3rem'});
+            }
+        });
+    };
+
+    openButtons.forEach(button => button.addEventListener('click', () => {
+        idInput.value = button.dataset.localGroupimportRollbackOpen || '';
+        if (filename) {
+            filename.textContent = button.dataset.localGroupimportRollbackFilename || '';
+        }
+        if (historyModal) {
+            historyModal.hidden = true;
+        }
+        modal.hidden = false;
+        const dialog = modal.querySelector('.local-groupimport-import-modal__dialog') || modal;
+        Motion.enter(dialog, {duration: Motion.timing.slow, distance: '0.45rem'});
+        const primaryAction = form.querySelector('button[type="submit"]');
+        if (primaryAction) {
+            primaryAction.focus();
+        }
+    }));
+
+    closeButtons.forEach(button => button.addEventListener('click', close));
+    modal.addEventListener('click', event => {
+        if (event.target === modal) {
+            close();
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !modal.hidden) {
+            close();
+        }
+    });
+};
+
 export const init = (rootId) => {
     const root = document.getElementById(rootId);
     if (!root) {
@@ -385,6 +475,7 @@ export const init = (rootId) => {
     initUploadCollapse(root);
     initPreviewTools(root);
     initHistoryModal(root);
+    initRollbackModal(root);
 
     const overlay = root.querySelector('[data-local-groupimport-drop-overlay]');
     if (!overlay) {
@@ -454,7 +545,10 @@ export const init = (rootId) => {
         uploadToMoodleFilePicker(root, file)
             .then(uploaded => {
                 if (!uploaded) {
-                    assignDroppedFile(root, file);
+                    const assigned = assignDroppedFile(root, file);
+                    if (!assigned) {
+                        forwardDroppedFileToMoodle(root, file);
+                    }
                 }
             })
             .finally(() => {

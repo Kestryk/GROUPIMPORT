@@ -26,7 +26,6 @@
  * It is distributed under the terms of the GNU General Public License.
  */
 
-
 /**
  * Upgrade hook.
  *
@@ -35,33 +34,6 @@
  */
 function xmldb_local_groupimport_upgrade(int $oldversion): bool {
     global $DB;
-
-    if ($oldversion < 2026061901) {
-        $dbman = $DB->get_manager();
-        $table = new xmldb_table('local_groupimport_history');
-
-        if (!$dbman->table_exists($table)) {
-            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
-            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-            $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL);
-            $table->add_field('filehash', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL);
-            $table->add_field('rowcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-            $table->add_field('successcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-            $table->add_field('errorcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-            $table->add_field('replacepolicy', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, 'keep');
-            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-
-            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-            $table->add_index('courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
-            $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
-            $table->add_index('filehash', XMLDB_INDEX_NOTUNIQUE, ['filehash']);
-
-            $dbman->create_table($table);
-        }
-
-        upgrade_plugin_savepoint(true, 2026061901, 'local', 'groupimport');
-    }
 
     if ($oldversion < 2026010503) {
 
@@ -96,6 +68,110 @@ function xmldb_local_groupimport_upgrade(int $oldversion): bool {
         }
 
         upgrade_plugin_savepoint(true, 2026010503, 'local', 'groupimport');
+    }
+
+    if ($oldversion < 2026061901) {
+        $dbman = $DB->get_manager();
+        $table = new xmldb_table('local_groupimport_history');
+
+        if (!$dbman->table_exists($table)) {
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL);
+            $table->add_field('filehash', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL);
+            $table->add_field('rowcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('successcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('errorcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $table->add_field('replacepolicy', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, 'keep');
+            $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+            $table->add_index('courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
+            $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+            $table->add_index('filehash', XMLDB_INDEX_NOTUNIQUE, ['filehash']);
+
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2026061901, 'local', 'groupimport');
+    }
+
+    if ($oldversion < 2026071100) {
+        // Do not replace the participant workflow on sites upgrading from the
+        // historical import-only plugin until an administrator opts in.
+        if (get_config('local_groupimport', 'enablesimplifiedview') === false) {
+            set_config('enablesimplifiedview', 0, 'local_groupimport');
+        }
+
+        upgrade_plugin_savepoint(true, 2026071100, 'local', 'groupimport');
+    }
+
+    if ($oldversion < 2026071101) {
+        $dbman = $DB->get_manager();
+        $table = new xmldb_table('local_groupimport_history');
+
+        if ($dbman->table_exists($table)) {
+            $changesjson = new xmldb_field('changesjson', XMLDB_TYPE_TEXT, null, null, null, null, null,
+                'replacepolicy');
+            if (!$dbman->field_exists($table, $changesjson)) {
+                $dbman->add_field($table, $changesjson);
+            }
+
+            $rollbackuserid = new xmldb_field('rollbackuserid', XMLDB_TYPE_INTEGER, '10', null, null, null, null,
+                'changesjson');
+            if (!$dbman->field_exists($table, $rollbackuserid)) {
+                $dbman->add_field($table, $rollbackuserid);
+            }
+
+            $timerolledback = new xmldb_field('timerolledback', XMLDB_TYPE_INTEGER, '10', null, null, null, null,
+                'rollbackuserid');
+            if (!$dbman->field_exists($table, $timerolledback)) {
+                $dbman->add_field($table, $timerolledback);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2026071101, 'local', 'groupimport');
+    }
+
+    if ($oldversion < 2026071102) {
+        // No schema change: the history JSON now carries a reusable desired
+        // state and annotated report rows for restoration and export.
+        upgrade_plugin_savepoint(true, 2026071102, 'local', 'groupimport');
+    }
+
+    if ($oldversion < 2026071300) {
+        // Replace only the unchanged legacy Mass Import tour. Administrators
+        // who customised its targets keep their local version.
+        if (class_exists('\tool_usertours\manager') && class_exists('\tool_usertours\tour')) {
+            $dbman = $DB->get_manager();
+            $tourtable = new xmldb_table('tool_usertours_tours');
+            $steptable = new xmldb_table('tool_usertours_steps');
+            if ($dbman->table_exists($tourtable) && $dbman->table_exists($steptable)) {
+                $tour = $DB->get_record('tool_usertours_tours', [
+                    'name' => 'tour_groupimport_teacher_name,local_groupimport',
+                    'pathmatch' => '/local/groupimport/index.php%',
+                ]);
+                $legacytargets = ['#local_groupimport-page', '#id_userfield', '#id_submitbutton'];
+                $steps = $tour ? $DB->get_records('tool_usertours_steps', ['tourid' => $tour->id]) : [];
+                $isstale = false;
+                foreach ($steps as $step) {
+                    if (in_array($step->targetvalue, $legacytargets, true)) {
+                        $isstale = true;
+                        break;
+                    }
+                }
+
+                $tourfile = __DIR__ . '/tours/local_groupimport_teacher_guide.json';
+                $json = file_exists($tourfile) ? file_get_contents($tourfile) : false;
+                if ($tour && $isstale && $json !== false && trim($json) !== '') {
+                    \tool_usertours\tour::instance($tour->id)->remove();
+                    \tool_usertours\manager::import_tour_from_json($json);
+                }
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2026071300, 'local', 'groupimport');
     }
 
     return true;

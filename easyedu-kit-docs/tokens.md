@@ -27,6 +27,22 @@ are the primary contract for Moodle theme overrides.
 - Radius and shadow.
 - Spacing and control sizing.
 - Motion: duration and easing.
+- Typography: one inherited UI family, a short title/body scale, four weights
+  and shared title/body line heights.
+
+## Typography tokens
+
+- `--easyedu-font-family-ui`: inherited Moodle/theme font family.
+- `--easyedu-font-size-{page-title|modal-title|panel-title|section-title}`.
+- `--easyedu-font-size-{card-title|control|body|caption|eyebrow}`.
+- `--easyedu-font-weight-{regular|medium|semibold|strong}`.
+- `--easyedu-line-height-{title|body}`.
+- `--easyedu-action-icon-gap`: stable visual separation between an action
+  icon and its translated label. Themes may tune it without editing plugin
+  selectors.
+
+Use the typography role mixins instead of consuming these tokens directly when
+a semantic role exists.
 
 ## Motion tokens
 

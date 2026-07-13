@@ -23,3 +23,23 @@ Override the course or account when needed:
 Run the same scenario after disabling **Enable interface animations** in the
 plugin administration page to validate the server policy. Browser execution is
 deliberately manual because visual audits are comparatively expensive.
+
+## Mass Import and administration audit
+
+The Mass Import audit is read-only. It checks the shared EasyEdu navigation,
+centred page containment, the left-anchored guide launcher, desktop and mobile
+containment, the history modal, the Excel example download and the legacy-safe
+feature setting:
+
+    .\tools\playwright\run-mass-import-audit.ps1
+
+Override the course URL with `-MoodleUrl` when the test course id is not `5`.
+
+The restoration audit intentionally creates and removes one prefixed group,
+grouping and history record. It verifies import, manual deletion, state restore
+and annotated XLSX export, then cleans up its data:
+
+    .\tools\playwright\run-mass-import-restore-audit.ps1
+
+The read-only audit also replaces the file in an active preview and confirms
+that mixed username and email identifiers are recognised before import.

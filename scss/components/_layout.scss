@@ -201,17 +201,18 @@
   }
 
   &__header-actions {
-    @include easyedu.admin-primary-nav;
-
     flex-wrap: nowrap;
 
-    .btn:not(.easyedu-guide__launcher) {
+    @include easyedu.admin-primary-nav;
+
+    > .btn:not(.easyedu-guide__launcher),
+    > .easyedu-admin-primary-nav__actions > .btn {
       @include easyedu.admin-primary-nav-action;
     }
 
     .easyedu-guide__launcher {
       flex: 0 0 auto;
-      margin-right: 0.15rem;
+      margin-right: 0;
     }
 
     .easyedu-guide__launcher-label {

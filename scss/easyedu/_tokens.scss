@@ -29,6 +29,25 @@
   --easyedu-surface-soft: #f7f9fc;
   --easyedu-surface-strong: #edf3f8;
 
+  // Typography. Keep the Moodle theme font as the single UI family and use a
+  // deliberately short scale across independent EasyEdu plugins.
+  --easyedu-font-family-ui: inherit;
+  --easyedu-font-size-page-title: 1.25rem;
+  --easyedu-font-size-modal-title: 1rem;
+  --easyedu-font-size-panel-title: 1.08rem;
+  --easyedu-font-size-section-title: 1rem;
+  --easyedu-font-size-card-title: 0.98rem;
+  --easyedu-font-size-control: 0.88rem;
+  --easyedu-font-size-body: 0.9rem;
+  --easyedu-font-size-caption: 0.76rem;
+  --easyedu-font-size-eyebrow: 0.68rem;
+  --easyedu-font-weight-regular: 400;
+  --easyedu-font-weight-medium: 500;
+  --easyedu-font-weight-semibold: 600;
+  --easyedu-font-weight-strong: 700;
+  --easyedu-line-height-title: 1.25;
+  --easyedu-line-height-body: 1.45;
+
   // Primary and action colours.
   --easyedu-primary: #0f6cbf;
   --easyedu-primary-soft: #eaf3fb;
@@ -56,6 +75,7 @@
   --easyedu-control-radius: 0.72rem;
   --easyedu-control-border: #c8d6e3;
   --easyedu-control-focus-border: #8abce3;
+  --easyedu-action-icon-gap: 0.65rem;
   --easyedu-dropdown-border: #cbdcea;
   --easyedu-dropdown-radius: 0.78rem;
   --easyedu-dropdown-shadow: 0 0.85rem 1.8rem rgba(31, 42, 55, 0.16);

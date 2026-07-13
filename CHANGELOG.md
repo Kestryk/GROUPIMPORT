@@ -10,8 +10,104 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-07-13
+
+- Centred the simplified-management navigation actions independently of the
+  EasyStud guide launcher and promoted the balanced rail structure to EasyEdu
+  UI kit 0.4.32.
+- Expanded Mass Import to the full available course-content width while
+  preserving centred gutters and responsive containment.
+- Hardened the accessible segmented reimport strategy against translated-title
+  clipping and documented regular and compact design-system variants.
+- Removed the duplicate preview search-selection action. The single leading
+  button now switches between all-row and filtered-result scope dynamically.
+- Moved the reimport strategy heading fully inside its choice panel while
+  retaining an accessible native legend, and synced EasyEdu UI kit 0.4.33.
+- Restored deliberate spacing around the annotated Excel export action and
+  applied the shared icon-slot/action-button contract.
+- Increased icon/label spacing through the theme-overridable
+  `--easyedu-action-icon-gap` token and synced EasyEdu UI kit 0.4.34.
+- Reordered historical upgrade savepoints, added coverage for the legacy-safe
+  feature flag and refreshed only unchanged obsolete Moodle user tours.
+- Updated the Mass Import tour for CSV/Excel preview, automatic identifier
+  detection and the current interface targets.
+- Added a non-destructive release validator that compares the current plugin
+  with the historical CSV tag, audits the complete upgrade chain and can build
+  an inspected production ZIP without modifying Moodle data.
+- Added a disposable legacy-upgrade rehearsal for the local Moodle Windows
+  stack. It clones the database, recreates the public CSV release state, runs
+  Moodle's real local-plugin upgrade pipeline and verifies schema, settings and
+  tour migration before automatically removing the test environment.
+- Updated the Mass Import browser contract for the contained segmented-choice
+  geometry and the theme-overridable action icon gap.
+- Expanded browser coverage for actual file replacement with mixed automatic
+  identifiers, non-empty annotated XLSX exports and a dedicated restoration
+  audit launcher using the packaged Moodle PHP runtime.
+- Cleared the remaining Moodle coding-style warnings in production PHP and
+  synchronised EasyEdu UI kit 0.4.35 with compliant reusable guide language
+  examples.
+- Removed the final Sass mixed-declaration deprecation from the plugin tooltip
+  integration without changing its visual result.
+
+### 2026-07-12
+
+- Restored the shared compact rounded treatment for guide navigation and
+  guided actions. The administration navigation mixin now targets direct child
+  buttons only, so it no longer makes modal actions square and oversized.
+
 ### 2026-07-11
 
+- Expanded Mass Import into a recoverable workflow: confirmed imports now store
+  their complete target state and can recreate manually deleted groups,
+  groupings, memberships and assignments. Restoring is idempotent and remains
+  available after a previous restore.
+- Added annotated Excel report exports after import and from course history.
+  The first three columns remain directly reimportable while status, details and
+  semantic row colours make errors and warnings easy to review.
+- Replaced raw reimport radios with the accessible EasyEdu segmented-choice
+  control and aligned Mass Import icons, rollback actions and modal spacing.
+- Adopted the exact Course Banner Builder primary navigation rail in the
+  simplified manager and Mass Import, including icon placement, active state
+  and a guide launcher anchored at the far left.
+- Centred the Mass Import canvas within the course content area and matched the
+  horizontal breathing room used by simplified student management.
+- Right-aligned the final administration save action following Moodle form
+  conventions and added a reusable kit spacing contract for form actions and
+  icon-plus-label buttons.
+- Finished the reimport strategy controls. Teachers can keep existing
+  placements or synchronise only the groups listed in the selected preview
+  rows; replacement removals are included in the recoverable import journal.
+- Added Moodle XMLDB installation metadata and upgraded the history table with
+  reversible operation and rollback attribution fields.
+- Replaced the CSV example with a formatted XLSX workbook containing an import
+  sheet, representative mixed identifiers and a dedicated instruction sheet.
+- Hardened automatic user matching so duplicate email, ID number or custom
+  field values are treated as ambiguous instead of selecting an arbitrary user.
+- Completed the preview replacement workflow, stabilised the sticky upload
+  panel control and fixed full-window file drops by waiting for and forwarding
+  to Moodle's native filepicker APIs.
+- Aligned the Mass Import and simplified manager navigation with the EasyEdu
+  primary navigation contract already used by Course Banner Builder.
+- Reworked plugin administration around an EasyEdu feature surface and added a
+  legacy-safe opt-in for simplified student management.
+- Renamed the visible plugin administration identity to EasyStud while retaining
+  the `local_groupimport` component and routes for upgrade compatibility.
+- Replaced the obsolete null Privacy provider with metadata, export and deletion
+  support for course import history.
+- Added a reusable read-only Playwright audit for Mass Import navigation,
+  responsive containment, history, Excel download, file preview/replacement and
+  administration settings.
+- Synced EasyEdu UI kit 0.4.31, including shared typography plus the new
+  reusable history action/state primitives, documentation, AI contracts, guide
+  reference and motion reference packages.
+- Added a legacy-safe administrator switch for the optional simplified student
+  management view. Existing installations retain the historical mass-import-only
+  workflow after upgrade, while fresh installations enable the complete EasyStud
+  experience by default.
+- Made course navigation, participant-page replacement, direct manager access
+  and Mass Import actions consistently respect the simplified-view setting.
+- Styled the new feature switch and the existing motion preference with the
+  EasyEdu administration setting surfaces.
 - Replaced duplicated Mass Import card rails and contextual modal gradients
   with the canonical EasyEdu semantic panel and modal contracts, preserving the
   existing EasyStud appearance and interactions.

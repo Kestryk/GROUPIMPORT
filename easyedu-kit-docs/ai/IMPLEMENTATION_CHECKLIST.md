@@ -39,8 +39,25 @@ Use this checklist for every UI task in EasyEdu plugins.
       contract explicitly owns them.
 - [ ] For top admin navigation, use `admin-primary-nav`; keep labels on one
       line and do not restyle the guide launcher as a nav action.
+- [ ] Keep the direct guide wrapper first in the admin navigation DOM so the
+      kit can anchor it at the far start edge with the CCB reference behaviour.
+- [ ] When top navigation actions must remain centred independently of the
+      left guide launcher, use `easyedu-admin-primary-nav--balanced` and wrap
+      actions in `easyedu-admin-primary-nav__actions`.
 - [ ] For in-view status/toggle actions, use `admin-secondary-actions`, not the
       primary navigation component.
+- [ ] Give every icon-plus-label action an explicit `gap`; never depend on icon
+      font whitespace or concatenate an icon directly with text.
+- [ ] Use `admin-form-actions` for final settings buttons, with separation from
+      the preceding setting and Moodle-style right alignment on desktop.
+- [ ] Use `segmented-choice` instead of raw radios for mutually exclusive
+      strategies that need explanatory text.
+- [ ] Keep segmented choices as a native `fieldset`/`legend` radio group and
+      use the compact variant only in genuinely dense settings or filters.
+- [ ] Map administration headings and labels to EasyEdu typography roles instead
+      of copying local font sizes or weights.
+- [ ] Keep user-configurable preview/final content outside shared administration
+      typography.
 
 ## 4. Guide-specific checklist
 

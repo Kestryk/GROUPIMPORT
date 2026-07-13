@@ -8,6 +8,8 @@
 // --easyedu-surface, --easyedu-modal-border, --easyedu-modal-radius,
 // --easyedu-modal-shadow.
 
+@use "typography";
+
 @mixin modal-surface {
   background: var(--easyedu-surface);
   border: 1px solid var(--easyedu-modal-border);
@@ -251,24 +253,18 @@
   h2,
   h3,
   h4 {
-    color: var(--easyedu-text);
-    font-size: 1rem;
-    font-weight: 760;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    @include typography.type-modal-title;
+
     margin: 0;
     overflow-wrap: anywhere;
   }
 }
 
 @mixin settings-modal-eyebrow {
-  color: var(--easyedu-text-muted);
+  @include typography.type-eyebrow;
+
   display: block;
-  font-size: 0.67rem;
-  font-weight: 760;
-  letter-spacing: 0.08em;
   margin-bottom: 0.12rem;
-  text-transform: uppercase;
 }
 
 @mixin settings-modal-field {
@@ -638,5 +634,41 @@
     border: 1px solid #dce6ef;
     border-radius: 999px;
     padding: 0.16rem 0.48rem;
+  }
+}
+
+@mixin history-action {
+  align-items: center;
+  align-self: flex-start;
+  border-radius: var(--easyedu-control-radius);
+  display: inline-flex;
+  font-size: 0.76rem;
+  gap: 0.38rem;
+  line-height: 1.25;
+  margin-top: 0.22rem;
+}
+
+@mixin history-state($variant: neutral) {
+  align-items: center;
+  align-self: flex-start;
+  background: var(--easyedu-surface-soft);
+  border: 1px solid var(--easyedu-control-border);
+  border-radius: 999px;
+  color: var(--easyedu-text-muted);
+  display: inline-flex;
+  font-size: 0.76rem;
+  gap: 0.38rem;
+  line-height: 1.25;
+  margin-top: 0.22rem;
+  padding: 0.32rem 0.58rem;
+
+  @if $variant == success {
+    background: var(--easyedu-accent-soft);
+    border-color: color-mix(in srgb, var(--easyedu-accent) 28%, #fff 72%);
+    color: color-mix(in srgb, var(--easyedu-accent) 78%, #000 22%);
+  } @else if $variant == warning {
+    background: var(--easyedu-warning-soft);
+    border-color: color-mix(in srgb, var(--easyedu-warning) 28%, #fff 72%);
+    color: color-mix(in srgb, var(--easyedu-warning) 78%, #000 22%);
   }
 }

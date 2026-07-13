@@ -35,6 +35,11 @@ EasyEdu modals use Moodle-compatible markup with a shared visual shell.
   @include easyedu.context-modal-variant(success);
 }
 
+.my-preview-modal-content {
+  @include easyedu.preview-modal-content-shell;
+  @include easyedu.preview-modal-inline-rhythm;
+}
+
 .my-danger-modal {
   @include easyedu.destructive-confirmation-modal;
 }
@@ -67,6 +72,13 @@ modal class names can be passed as the three selector arguments.
 Do not import the gradient alone. A complete import includes the shared border,
 body/footer surfaces and the semantic variant variables. Never change existing
 modal ids or `data-*` hooks to adopt this visual shell.
+
+`preview-modal-inline-rhythm` standardises the header, visible footer and body
+start edge at `1rem`. It deliberately does not change body end padding: preview
+editors may reserve a wider end rail for accordions and contextual actions.
+Likewise, editors with their own internal scroll grid can keep the modal body at
+zero padding and apply the same `1rem` token to that inner grid. Do not use this
+mixin to rewrite sticky, overflow, crop, resize or preview geometry.
 
 ## Move/Copy Modal Structure
 
@@ -155,6 +167,18 @@ Use these optional class hooks inside move/copy modals:
 .my-history-list__meta {
   @include easyedu.history-meta;
 }
+
+.my-history-list__rollback {
+  @include easyedu.history-action;
+}
+
+.my-history-list__state--legacy {
+  @include easyedu.history-state;
+}
+
+.my-history-list__state--complete {
+  @include easyedu.history-state(success);
+}
 ```
 
 Use these for group/layer/banner settings, participant/user details or any modal
@@ -167,6 +191,11 @@ updating the displayed filename.
 If the whole modal accepts image/file drops, combine `settings-modal-dialog`
 with `modal-file-drop-state` and toggle the provided state class from plugin
 JavaScript.
+
+History actions remain real buttons and keep their semantic Bootstrap variant;
+`history-action` only standardises compact geometry. Use `history-state` for
+non-interactive status pills. Available state variants are `neutral`, `success`
+and `warning`.
 
 ## Import Audit Checklist
 

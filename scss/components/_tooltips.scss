@@ -1,10 +1,10 @@
 @use "../easyedu" as easyedu;
 
 .local-groupimport-easystud-hover-popover {
-  @include easyedu.popover-surface;
-
   position: absolute;
   z-index: 1095;
+
+  @include easyedu.popover-surface;
 }
 
 @include easyedu.positioned-popover-arrows(".local-groupimport-easystud-hover-popover");

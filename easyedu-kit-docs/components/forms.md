@@ -56,6 +56,64 @@ the current selectable type is still valid.
 }
 ```
 
+## Segmented single choice
+
+Use `segmented-choice` when a user must choose exactly one strategy and each
+choice benefits from a short title and explanation. This is preferable to raw
+inline radios in import/reimport workflows.
+
+```scss
+.my-strategy {
+  @include easyedu.segmented-choice;
+}
+
+.my-strategy--compact {
+  @include easyedu.segmented-choice(compact);
+}
+```
+
+Expected accessible structure:
+
+```html
+<fieldset class="my-strategy easyedu-segmented-choice--contained">
+  <legend class="easyedu-segmented-choice__legend">Reimport strategy</legend>
+  <div class="easyedu-segmented-choice__body">
+    <div class="easyedu-segmented-choice__label" aria-hidden="true">Reimport strategy</div>
+    <div class="easyedu-segmented-choice__options">
+      <label class="easyedu-segmented-choice__option">
+        <input class="easyedu-segmented-choice__input" type="radio" name="strategy" checked>
+        <span class="easyedu-segmented-choice__surface">
+          <span class="fa fa-plus" aria-hidden="true"></span>
+          <span>
+            <strong>Add missing items</strong>
+            <small>Preserve current placements and add only missing items.</small>
+          </span>
+        </span>
+      </label>
+    </div>
+  </div>
+</fieldset>
+```
+
+The canonical contained structure requires
+`.easyedu-segmented-choice--contained`, `__legend`, `__body`, `__label`,
+`__options`, `__option`, `__input` and `__surface`. The native legend is
+visually hidden but remains the accessible name of the radio group. The visible
+label belongs inside `__body`; never place it over the fieldset border. Keep the
+radio input immediately before its surface so checked and focus-visible states
+work without JavaScript. The component collapses to one column on narrow
+screens.
+
+The former direct-legend structure remains styled for compatibility, but new
+implementations should always use the contained structure. This prevents grey
+legend patches, clipped borders and browser-dependent fieldset rendering.
+
+Use the regular size for review/import strategies and other explanatory
+choices. Use `compact` only inside dense settings/filter panels. Prefer this
+component whenever a choice is mutually exclusive and the consequences need a
+short explanation. A simple native select remains preferable for long option
+lists or choices whose options do not need descriptions.
+
 ## On/off toggles
 
 ```scss
@@ -224,6 +282,11 @@ chips, such as users by email/id or groups by name/id.
   the plugin also recreates keyboard and screen-reader behaviour.
 - Do not place long explanatory text as a field title; prefer short labels and
   EasyEdu help icons/tooltips for Moodle help text.
+- Do not replace the native radio with clickable `div` elements. The radio,
+  common `name`, fieldset and legend own keyboard and screen-reader behaviour.
+- Do not use the visible title as the native fieldset legend. Keep the native
+  legend visually hidden and put the visible title inside `__body` so
+  translated labels remain inside the segmented-choice surface.
 
 ## Import Audit Checklist
 
@@ -246,3 +309,5 @@ chips, such as users by email/id or groups by name/id.
   rows and spacing come from the kit.
 - File pickers and drag/drop overlays use the form/modal/overlay primitives
   together; do not restyle each modal independently.
+- Mutually exclusive strategies with explanatory copy use
+  `segmented-choice(regular)`; dense equivalents may use `compact`.

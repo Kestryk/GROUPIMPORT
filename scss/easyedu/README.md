@@ -27,6 +27,7 @@ scss/easyedu/
   _theme-overrides.example.scss Example Moodle theme overrides.
   components/
     _panels.scss               Main panel and filter containers.
+    _typography.scss           Shared administration text roles.
     _cards.scss                Object cards and identity rails.
     _buttons.scss              Icon and action button primitives.
     _forms.scss                Dropdown/menu surfaces.
@@ -89,6 +90,9 @@ Prefer generic `--easyedu-*` variables. Plugin-specific aliases such as
 ## Available mixins
 
 - `panel-shell`: large plugin panels.
+- `type-page-title`, `type-modal-title`, `type-panel-title`: shared heading roles.
+- `type-section-title`, `type-card-title`: compact heading roles.
+- `type-control-label`, `type-body`, `type-caption`, `type-eyebrow`: UI copy roles.
 - `filter-shell`: filter/search containers.
 - `object-card`: draggable/selectable object cards.
 - `identity-rail`: coloured left rail with a masked icon.

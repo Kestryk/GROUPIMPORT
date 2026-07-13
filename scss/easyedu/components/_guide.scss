@@ -107,6 +107,10 @@
 }
 
 @mixin guide-shell {
+  --easyedu-guide-action-radius: var(--easyedu-control-radius, 0.72rem);
+  --easyedu-guide-action-padding: 0.38rem 0.78rem;
+  --easyedu-guide-action-min-height: 2.25rem;
+
   .easyedu-guide__launcher {
     @include guide-launcher-button;
   }
@@ -512,7 +516,7 @@
     background: var(--easyedu-primary);
     background-color: var(--easyedu-primary) !important;
     border: 1px solid var(--easyedu-primary) !important;
-    border-radius: 0.85rem;
+    border-radius: var(--easyedu-guide-action-radius);
     color: #fff !important;
     display: inline-flex;
     flex-wrap: wrap;
@@ -523,9 +527,9 @@
     line-height: 1.2;
     margin: 1.25rem auto 0;
     max-width: 100%;
-    min-height: 2.65rem;
+    min-height: var(--easyedu-guide-action-min-height);
     min-width: 0;
-    padding: 0.52rem 1rem;
+    padding: var(--easyedu-guide-action-padding);
     text-align: center;
     white-space: normal;
 
@@ -556,6 +560,7 @@
     background: var(--easyedu-primary);
     background-color: var(--easyedu-primary) !important;
     border-color: var(--easyedu-primary) !important;
+    border-radius: var(--easyedu-guide-action-radius);
     color: #fff !important;
     display: inline-flex;
     flex: 0 1 auto;
@@ -568,6 +573,7 @@
     max-width: 100%;
     min-width: 0;
     overflow-wrap: anywhere;
+    padding: var(--easyedu-guide-action-padding);
     text-align: center;
     white-space: normal;
 
@@ -614,10 +620,11 @@
       justify-content: center;
       line-height: 1.18;
       max-width: 100%;
-      min-height: 2.35rem;
+      border-radius: var(--easyedu-guide-action-radius);
+      min-height: var(--easyedu-guide-action-min-height);
       min-width: 0;
       overflow-wrap: anywhere;
-      padding: 0.48rem 0.82rem;
+      padding: var(--easyedu-guide-action-padding);
       text-align: center;
       white-space: normal;
     }

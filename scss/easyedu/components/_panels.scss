@@ -8,6 +8,8 @@
 // --easyedu-surface, --easyedu-surface-soft, --easyedu-border,
 // --easyedu-radius, --easyedu-shadow, --easyedu-shadow-soft.
 
+@use "typography";
+
 @mixin panel-shell {
   background: var(--easyedu-surface);
   border: 1px solid var(--easyedu-border);
@@ -37,10 +39,8 @@
 }
 
 @mixin panel-title {
-  color: var(--easyedu-text);
-  font-size: 1.08rem;
-  font-weight: 780;
-  line-height: 1.25;
+  @include typography.type-panel-title;
+
   margin: 0;
 }
 

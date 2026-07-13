@@ -64,6 +64,10 @@ states.
 .my-admin-secondary-action {
   @include easyedu.admin-secondary-action;
 }
+
+.my-admin-form-actions {
+  @include easyedu.admin-form-actions;
+}
 ```
 
 ## Sizes
@@ -123,25 +127,60 @@ view switchers, format/settings entry points, import/export links, and one
 optional guide launcher. This is the right component for the first action row at
 the top of an admin page; do not style those controls as isolated dashed buttons.
 
-The guide launcher should sit inside the same container, before the navigation
-actions. The launcher keeps its own `guide-launcher-button` styling. Do not
-apply `admin-primary-nav-action` to `.easyedu-guide__launcher`.
+The guide wrapper should sit inside the same container, before the navigation
+actions. When the guide must remain at the far left while the menu itself is
+centred against the complete rail, add
+`.easyedu-admin-primary-nav--balanced` to the rail and wrap the menu actions in
+`.easyedu-admin-primary-nav__actions`. This is the canonical EasyStud/CCB
+layout. The mirrored grid track on the right balances the guide without empty
+HTML or plugin-local offsets.
+
+The legacy direct-child form remains supported: a direct `.easyedu-guide`
+child is anchored at the far left with `margin-right: auto`. Use it only where
+the action group does not need mathematically exact centring. A custom fallback
+guide button may use `.easyedu-admin-primary-nav__guide`.
+
+The launcher keeps its own `guide-launcher-button` styling. Do not apply
+`admin-primary-nav-action` to `.easyedu-guide__launcher` and do not add
+plugin-local margins to reposition it.
 
 The component is a compact non-wrapping navigation rail. Labels must stay on one
 line; the container scrolls horizontally when the viewport is too narrow.
 
 ```html
-<div class="my-admin-nav">
-  <button class="easyedu-guide__launcher" type="button">
+<div class="my-admin-nav easyedu-admin-primary-nav--balanced">
+  <div class="easyedu-guide">
+    <button class="easyedu-guide__launcher" type="button">
+      <span class="easyedu-guide__launcher-icon">
+        <span class="fa fa-compass" aria-hidden="true"></span>
+      </span>
+      <span class="easyedu-guide__launcher-label">Open guide</span>
+    </button>
+  </div>
+  <div class="easyedu-admin-primary-nav__actions">
+    <a class="btn btn-outline-secondary my-admin-nav__action active" aria-current="page" href="#">Banners</a>
+    <a class="btn btn-outline-secondary my-admin-nav__action" href="#">Slideshow</a>
+    <button class="btn btn-outline-secondary my-admin-nav__format" type="button">Format</button>
+    <button class="btn btn-outline-danger my-admin-nav__danger" type="button">Delete settings</button>
+  </div>
+</div>
+```
+
+The action wrapper is required for balanced centring. On narrow screens the
+rail automatically returns to a start-aligned horizontal scroller so the guide
+and every action remain reachable.
+
+Fallback guide button:
+
+```html
+<div class="my-admin-nav easyedu-admin-primary-nav--balanced">
+  <button class="easyedu-admin-primary-nav__guide" type="button">
     <span class="easyedu-guide__launcher-icon">
       <span class="fa fa-compass" aria-hidden="true"></span>
     </span>
     <span class="easyedu-guide__launcher-label">Open guide</span>
   </button>
-  <a class="btn btn-outline-secondary my-admin-nav__action active" aria-current="page" href="#">Banners</a>
-  <a class="btn btn-outline-secondary my-admin-nav__action" href="#">Slideshow</a>
-  <button class="btn btn-outline-secondary my-admin-nav__format" type="button">Format</button>
-  <button class="btn btn-outline-danger my-admin-nav__danger" type="button">Delete settings</button>
+  <div class="easyedu-admin-primary-nav__actions">...</div>
 </div>
 ```
 
@@ -153,6 +192,8 @@ Rules:
 - Use the `destructive` variant for reset/delete plugin-level actions.
 - Keep this as one responsive rail; never let nav button text wrap onto two
   lines.
+- Use the balanced modifier and action wrapper when a guide sits beside a menu
+  whose visual centre must match the page centre.
 
 ## Admin Secondary Actions
 
@@ -161,10 +202,29 @@ as enable/disable toggles, edit-title actions, or status controls. These buttons
 are deliberately rounder and calmer so users can distinguish actions from
 navigation.
 
+## Admin Form Actions And Spacing
+
+Use `admin-form-actions` on the final Moodle settings action row. It creates a
+clear separation from the final setting, provides a stable gap between actions,
+and right-aligns Save/Cancel controls on desktop. This follows Moodle's normal
+form completion flow; centre alignment is reserved for single-purpose welcome,
+empty-state or onboarding actions. On compact screens the primary action may
+use the available width.
+
+Every button containing both an icon and a label must use `inline-flex` (or the
+kit `action-button` mixin) with an explicit gap. Do not use an icon immediately
+followed by raw text and do not rely on a glyph's intrinsic whitespace. The
+`action-button` contract reserves a stable `1em` icon slot and uses
+`--easyedu-action-icon-gap` so narrow Font Awesome glyphs cannot collapse the
+visual gap before the label. Do not reduce that gap locally for file/export or
+destructive actions, whose glyphs are visually dense.
+
 ## Usage Guide
 
 - Primary validation/save: keep Moodle `btn btn-primary`, add
   `action-button(regular)`.
+- Final Moodle settings row: use `admin-form-actions`; do not attach the row to
+  the preceding setting and do not centre Save by default.
 - Secondary/cancel: keep `btn btn-outline-secondary`, add
   `action-button(regular)`.
 - Destructive action: keep `btn btn-outline-danger`, add
@@ -192,6 +252,8 @@ Before accepting a plugin-local button style, check:
   `btn-outline-*`) and adds the EasyEdu mixin as the visual layer.
 - Icon and text are vertically centred in every state and translated labels do
   not collapse the hit area.
+- Icon and text have an explicit component-owned gap; visual whitespace inside
+  an icon font is never treated as spacing.
 - `small`, `regular` and `large` variants are chosen from the kit, not by
   hard-coded local heights.
 - Focus-visible is at least as visible as hover and never clips under adjacent
@@ -200,6 +262,8 @@ Before accepting a plugin-local button style, check:
 - The guide launcher and "Show in the interface" button use the guide contract,
   not a one-off local button style.
 - The guide launcher is never restyled as a standard admin nav action.
+- The guide remains anchored at the start edge; with the balanced structure,
+  only `.easyedu-admin-primary-nav__actions` is centred.
 - Compact overflow action rows use `action-menu-trigger` and
   `action-menu-trigger-icon`.
 - Plugin-level admin navigation uses `admin-primary-nav`; do not invent local

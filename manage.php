@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 require_once($CFG->dirroot . '/group/lib.php');
 
 use local_groupimport\service\course_structure;
@@ -33,6 +34,15 @@ require_login($course);
 
 $context = context_course::instance($course->id);
 require_capability('moodle/course:managegroups', $context);
+
+if (!local_groupimport_is_simplified_view_enabled()) {
+    redirect(
+        new moodle_url('/local/groupimport/index.php', ['id' => $course->id]),
+        get_string('simplifiedviewdisabled', 'local_groupimport'),
+        null,
+        \core\output\notification::NOTIFY_INFO
+    );
+}
 
 $url = new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]);
 $PAGE->set_url($url);
@@ -365,6 +375,7 @@ function local_groupimport_build_manage_template_data(
         'navigationhtml' => $navigationhtml,
         'eyebrow' => get_string('easystudlabel', 'local_groupimport'),
         'description' => get_string('easystudmanager_desc', 'local_groupimport'),
+        'managerlabel' => get_string('easystudmanager', 'local_groupimport'),
         'compactparticipantsdefault' => $compactparticipantsdefault,
         'nativeparticipantsurl' => $nativeparticipantsurl->out(false),
         'nativeparticipantslabel' => get_string('nativeparticipants', 'local_groupimport'),
@@ -1349,15 +1360,20 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                 '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])',
                 '[data-easystud-tree]',
             ],
-            'firstGroupingToggle' => '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-collapse-toggle]',
-            'firstGroupingAddButton' => '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-toggle-grouping-groups]',
+            'firstGroupingToggle' => '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])' .
+                ' [data-easystud-collapse-toggle]',
+            'firstGroupingAddButton' => '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])' .
+                ' [data-easystud-toggle-grouping-groups]',
             'firstGroupingAddPanel' => [
-                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-grouping-groups-panel]:not([hidden])',
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])' .
+                    ' [data-easystud-grouping-groups-panel]:not([hidden])',
                 '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])',
             ],
             'firstGroupingAddBox' => [
-                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-grouping-groups-panel]:not([hidden]) textarea',
-                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden]) [data-easystud-grouping-groups-panel]:not([hidden])',
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])' .
+                    ' [data-easystud-grouping-groups-panel]:not([hidden]) textarea',
+                '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])' .
+                    ' [data-easystud-grouping-groups-panel]:not([hidden])',
                 '[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])',
             ],
             'structureGroups' => '[data-easystud-structure-groups]',

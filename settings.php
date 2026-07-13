@@ -159,6 +159,38 @@ if ($hassiteconfig) {
         ['data-local-groupimport-admin-settings' => '1']
     );
 
+    $featureshtml = html_writer::div(
+        html_writer::div(
+            html_writer::span('', 'fa fa-sliders', ['aria-hidden' => 'true']) .
+                html_writer::div(
+                    html_writer::tag('h3', get_string('adminfeaturesheroheading', 'local_groupimport')) .
+                        html_writer::tag('p', get_string('adminfeaturesherobody', 'local_groupimport')),
+                    'local-groupimport-admin-settings__hero-copy'
+                ),
+            'local-groupimport-admin-settings__hero'
+        ) .
+            html_writer::div(
+                html_writer::tag('strong', get_string('adminfeatureshowtitle', 'local_groupimport')) .
+                    html_writer::tag('span', get_string('adminfeatureshowbody', 'local_groupimport')),
+                'local-groupimport-admin-settings__hint'
+            ),
+        'local-groupimport-admin-settings local-groupimport-admin-settings--features',
+        ['data-local-groupimport-admin-features' => '1']
+    );
+
+    $settings->add(new admin_setting_heading(
+        'local_groupimport/featuresoverview',
+        get_string('adminfeaturestitle', 'local_groupimport'),
+        $featureshtml
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'local_groupimport/enablesimplifiedview',
+        get_string('enablesimplifiedview', 'local_groupimport'),
+        get_string('enablesimplifiedview_desc', 'local_groupimport'),
+        1
+    ));
+
     $settings->add(new admin_setting_heading(
         'local_groupimport/interfaceaccessibility',
         get_string('interfaceaccessibility', 'local_groupimport'),

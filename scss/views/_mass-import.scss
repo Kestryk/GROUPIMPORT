@@ -4,15 +4,17 @@
   @include easyedu.token-defaults;
   @include easyedu.groupimport-compat-tokens;
 
+  box-sizing: border-box;
   color: var(--local-groupimport-easystud-text);
-  margin: 1.5rem 0;
-  max-width: 78rem;
+  margin: 1.5rem auto;
+  max-width: 100%;
+  padding-inline: clamp(0.1rem, 0.8vw, 0.75rem);
+  width: 100%;
 
   &__header {
     align-items: flex-start;
-    display: flex;
+    display: block;
     gap: 1rem;
-    justify-content: space-between;
     margin-bottom: 1rem;
   }
 
@@ -42,18 +44,12 @@
   }
 
   &__header-actions {
-    display: flex;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    justify-content: flex-end;
+    margin-top: 0.9rem;
+
+    @include easyedu.admin-primary-nav;
 
     .btn {
-      align-items: center;
-      border-radius: 0.65rem;
-      display: inline-flex;
-      font-weight: 600;
-      min-height: 2.35rem;
+      @include easyedu.admin-primary-nav-action;
     }
   }
 
@@ -62,6 +58,12 @@
     display: grid;
     gap: 1.15rem;
     grid-template-columns: minmax(21rem, 0.88fr) minmax(25rem, 1.12fr);
+    transition: grid-template-columns var(--easyedu-motion-slow) var(--easyedu-motion-ease);
+  }
+
+  &.is-easyedu-motion-off &__grid,
+  .easyedu-motion-disabled &__grid {
+    transition: none;
   }
 
   &.has-preview &__grid {
@@ -119,9 +121,11 @@
   }
 
   &.has-preview.is-upload-collapsed &-card--upload &-card__header {
+    align-content: start;
     align-items: start;
     display: grid;
     gap: 0.72rem;
+    grid-auto-rows: max-content;
     height: 100%;
     justify-items: center;
     margin: 0;
@@ -154,7 +158,13 @@
       flex: 0 0 auto;
       height: 2.55rem;
       justify-content: center;
+      line-height: 1;
       width: 2.55rem;
+
+      &::before {
+        display: block;
+        line-height: 1;
+      }
     }
   }
 
@@ -179,6 +189,12 @@
     text-decoration: none !important;
     width: 2rem;
 
+    .fa,
+    .fa::before {
+      display: block;
+      line-height: 1;
+    }
+
     &:hover,
     &:focus {
       background: #eef6fc !important;
@@ -190,9 +206,10 @@
 
   &.has-preview.is-upload-collapsed &-card__toggle {
     align-self: start;
+    justify-self: center;
     margin-left: 0;
     position: sticky;
-    top: 1rem;
+    top: 4.25rem;
     z-index: 2;
   }
 
@@ -512,8 +529,7 @@
     @include easyedu.preview-notice(var(--local-groupimport-easystud-primary));
   }
 
-  &-preview__reimport-alert,
-  &-preview__strategy {
+  &-preview__reimport-alert {
     background: #fffaf0;
     border: 1px solid #f1d9a8;
     border-radius: 0.85rem;
@@ -533,26 +549,10 @@
   }
 
   &-preview__strategy {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    margin: 0;
+    min-width: 0;
 
-    strong {
-      color: #5d4215;
-      margin-right: 0.2rem;
-    }
-
-    label {
-      align-items: center;
-      display: inline-flex;
-      gap: 0.38rem;
-      margin: 0;
-    }
-
-    input:disabled + span {
-      color: #947b54;
-    }
+    @include easyedu.segmented-choice;
   }
 
   &-preview__table-wrap {
@@ -561,10 +561,11 @@
 
   &-preview__toolbar {
     @include easyedu.preview-toolbar;
+
+    grid-template-columns: auto minmax(16rem, 1fr);
   }
 
-  &-preview__bulk-actions,
-  &-preview__result-actions {
+  &-preview__bulk-actions {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -572,7 +573,11 @@
   }
 
   &-preview__result-actions {
-    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.8rem;
   }
 
   &-preview__search-field {
@@ -799,11 +804,74 @@
     @include easyedu.history-meta;
   }
 
+  &-history__rollback {
+    @include easyedu.history-action;
+  }
+
+  &-history__actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .btn,
+    .local-groupimport-import-history__state {
+      align-items: center;
+      display: inline-flex;
+      gap: 0.45rem;
+    }
+  }
+
+  &-history__export,
+  &__export-results,
+  &-modal__footer .btn {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.48rem;
+  }
+
+  &__export-results {
+    @include easyedu.action-button;
+
+    width: fit-content;
+  }
+
+  &-history__state--rolledback {
+    @include easyedu.history-state(success);
+  }
+
+  &-history__state--legacy {
+    @include easyedu.history-state;
+  }
+
   &-history__empty {
     align-items: center;
     color: var(--local-groupimport-easystud-text-muted);
     display: flex;
     gap: 0.5rem;
+  }
+
+  &-modal__dialog--confirm {
+    max-width: min(34rem, calc(100vw - 2rem));
+  }
+
+  &-rollback__message {
+    background: color-mix(in srgb, var(--easyedu-danger-soft) 54%, #fff 46%);
+    border: 1px solid color-mix(in srgb, var(--easyedu-danger) 22%, #fff 78%);
+    border-radius: var(--easyedu-control-radius);
+    color: var(--easyedu-text);
+    display: grid;
+    gap: 0.35rem;
+    line-height: 1.48;
+    padding: 0.85rem;
+  }
+
+  &-modal__footer {
+    align-items: center;
+    display: flex;
+    gap: 0.65rem;
+    justify-content: flex-end;
+    padding-top: 0.9rem;
   }
 
   &-drop__panel {

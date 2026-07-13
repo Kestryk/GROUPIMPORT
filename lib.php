@@ -36,25 +36,27 @@ function local_groupimport_extend_navigation_course(navigation_node $coursenode,
         return;
     }
 
-    local_groupimport_require_navigation_js((int)$course->id);
-    $participantsnode = $coursenode->get('participants', navigation_node::TYPE_CONTAINER);
-    if (!$participantsnode) {
-        $participantsnode = $coursenode->get('participants', navigation_node::TYPE_CUSTOM);
-    }
-    if ($participantsnode) {
-        local_groupimport_configure_participants_node($participantsnode, (int)$course->id);
-    }
+    if (local_groupimport_is_simplified_view_enabled()) {
+        local_groupimport_require_navigation_js((int)$course->id);
+        $participantsnode = $coursenode->get('participants', navigation_node::TYPE_CONTAINER);
+        if (!$participantsnode) {
+            $participantsnode = $coursenode->get('participants', navigation_node::TYPE_CUSTOM);
+        }
+        if ($participantsnode) {
+            local_groupimport_configure_participants_node($participantsnode, (int)$course->id);
+        }
 
-    if (!$participantsnode && !$coursenode->find('local_groupimport_easystud', navigation_node::TYPE_CUSTOM)) {
-        $easystudnode = navigation_node::create(
-            get_string('easystudmanager', 'local_groupimport'),
-            local_groupimport_get_manager_url((int)$course->id),
-            navigation_node::TYPE_CUSTOM,
-            null,
-            'local_groupimport_easystud',
-            new pix_icon('i/groups', '')
-        );
-        $coursenode->add_node($easystudnode, 'participants');
+        if (!$participantsnode && !$coursenode->find('local_groupimport_easystud', navigation_node::TYPE_CUSTOM)) {
+            $easystudnode = navigation_node::create(
+                get_string('easystudmanager', 'local_groupimport'),
+                local_groupimport_get_manager_url((int)$course->id),
+                navigation_node::TYPE_CUSTOM,
+                null,
+                'local_groupimport_easystud',
+                new pix_icon('i/groups', '')
+            );
+            $coursenode->add_node($easystudnode, 'participants');
+        }
     }
 
     if (!$coursenode->find('local_groupimport', navigation_node::TYPE_CUSTOM)) {
@@ -76,7 +78,7 @@ function local_groupimport_extend_navigation_course(navigation_node $coursenode,
  * @param context|null $context The page context.
  * @return void
  */
-function local_groupimport_extend_settings_navigation(settings_navigation $settingsnav, context $context = null): void {
+function local_groupimport_extend_settings_navigation(settings_navigation $settingsnav, ?context $context = null): void {
     global $COURSE;
 
     if (!$context || $context->contextlevel !== CONTEXT_COURSE || empty($COURSE->id) || (int)$COURSE->id === SITEID) {
@@ -84,6 +86,10 @@ function local_groupimport_extend_settings_navigation(settings_navigation $setti
     }
 
     if (!has_capability('moodle/course:managegroups', $context)) {
+        return;
+    }
+
+    if (!local_groupimport_is_simplified_view_enabled()) {
         return;
     }
 
@@ -99,6 +105,21 @@ function local_groupimport_extend_settings_navigation(settings_navigation $setti
     }
 
     local_groupimport_configure_participants_node($usersnode, $courseid);
+}
+
+/**
+ * Whether the optional simplified student management view is enabled.
+ *
+ * Existing sites are explicitly opted out during upgrade, while fresh
+ * installations opt in from the install hook. Treating a missing value as
+ * disabled prevents navigation replacement before an upgrade has completed.
+ *
+ * @return bool
+ */
+function local_groupimport_is_simplified_view_enabled(): bool {
+    $enabled = get_config('local_groupimport', 'enablesimplifiedview');
+
+    return $enabled !== false && (bool)$enabled;
 }
 
 /**
@@ -151,4 +172,88 @@ function local_groupimport_require_navigation_js(int $courseid): void {
  */
 function local_groupimport_configure_participants_node(navigation_node $participantsnode, int $courseid): void {
     $participantsnode->action = local_groupimport_get_manager_url($courseid);
+}
+
+/**
+ * Build the target rows represented by an import history operation log.
+ *
+ * Recent imports store a complete desired state. The fallback keeps histories
+ * created by the first reversible-history implementation useful when the
+ * imported containers can still be identified from their operation log.
+ *
+ * @param array $changes Decoded history operation log.
+ * @param int $courseid Course id.
+ * @return array Target import rows.
+ */
+function local_groupimport_history_desired_state(array $changes, int $courseid): array {
+    global $DB;
+
+    if (!empty($changes['desiredstate']) && is_array($changes['desiredstate'])) {
+        return array_values(array_filter($changes['desiredstate'], static function($row): bool {
+            return is_array($row) && !empty($row['userid']) && !empty($row['groupname']);
+        }));
+    }
+
+    $groupnames = [];
+    foreach ($changes['createdgroups'] ?? [] as $group) {
+        if (!empty($group['id']) && isset($group['name'])) {
+            $groupnames[(int)$group['id']] = (string)$group['name'];
+        }
+    }
+    $groupingnames = [];
+    foreach ($changes['createdgroupings'] ?? [] as $grouping) {
+        if (!empty($grouping['id']) && isset($grouping['name'])) {
+            $groupingnames[(int)$grouping['id']] = (string)$grouping['name'];
+        }
+    }
+
+    $groupids = array_unique(array_map(static function(array $membership): int {
+        return (int)($membership['groupid'] ?? 0);
+    }, $changes['addedmembers'] ?? []));
+    foreach (array_filter($groupids) as $groupid) {
+        if (!isset($groupnames[$groupid])) {
+            $name = $DB->get_field('groups', 'name', ['id' => $groupid, 'courseid' => $courseid]);
+            if ($name !== false) {
+                $groupnames[$groupid] = (string)$name;
+            }
+        }
+    }
+
+    $groupgroupings = [];
+    foreach ($changes['assignedgroupings'] ?? [] as $assignment) {
+        $groupid = (int)($assignment['groupid'] ?? 0);
+        $groupingid = (int)($assignment['groupingid'] ?? 0);
+        if (!$groupid || !$groupingid) {
+            continue;
+        }
+        if (!isset($groupingnames[$groupingid])) {
+            $name = $DB->get_field('groupings', 'name', ['id' => $groupingid, 'courseid' => $courseid]);
+            if ($name !== false) {
+                $groupingnames[$groupingid] = (string)$name;
+            }
+        }
+        if (isset($groupingnames[$groupingid])) {
+            $groupgroupings[$groupid][] = $groupingnames[$groupingid];
+        }
+    }
+
+    $rows = [];
+    foreach ($changes['addedmembers'] ?? [] as $membership) {
+        $groupid = (int)($membership['groupid'] ?? 0);
+        $userid = (int)($membership['userid'] ?? 0);
+        if (!$userid || empty($groupnames[$groupid])) {
+            continue;
+        }
+        $names = $groupgroupings[$groupid] ?? [''];
+        foreach ($names as $groupingname) {
+            $rows[] = [
+                'userid' => $userid,
+                'identifier' => '',
+                'groupname' => $groupnames[$groupid],
+                'groupingname' => $groupingname,
+            ];
+        }
+    }
+
+    return $rows;
 }

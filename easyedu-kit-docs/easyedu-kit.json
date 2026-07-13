@@ -1,6 +1,6 @@
 {
   "name": "easyedu-ui-kit",
-  "version": "0.4.28",
+  "version": "0.4.35",
   "source": "git@github.com:Kestryk/easyedu-ui-kit.git",
   "status": "stable",
   "packages": {
@@ -28,6 +28,7 @@
   },
   "componentFamilies": [
     "tokens",
+    "typography",
     "animations",
     "panels",
     "cards",
