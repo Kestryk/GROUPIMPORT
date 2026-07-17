@@ -12,6 +12,8 @@ Maintenance convention:
 
 ### 2026-07-17
 
+- Added mandatory human and AI documentation for safe single-owner,
+  commit-and-push development handoffs between workstations.
 - Updated the embedded EasyEdu contracts to UI kit `0.4.45`, including quiet
   mobile card actions, wide desktop filter disclosures and navigation rhythm.
 - Equalised paired Groups and Groupings filter surfaces with CSS grid stretch

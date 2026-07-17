@@ -85,6 +85,8 @@ for export and deletion of this data.
 - Compile styles with `sass scss/easystud.scss styles.css --no-source-map`.
 - Playwright documentation: `tools/playwright/README.md`.
 - Shared EasyEdu contracts: `easyedu-kit-docs/`.
+- Multi-machine workflow: follow the canonical
+  [EasyEdu handoff procedure](https://github.com/Kestryk/workstation-sync/blob/main/docs/PROJECT-HANDOFF.md).
 
 The embedded EasyEdu kit and development documentation are excluded from
 production packages through `.gitattributes` where appropriate.

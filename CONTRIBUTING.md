@@ -67,6 +67,14 @@ The functional / product naming can evolve later without immediately changing th
 
 6. Merge `release/*` into `main` only for the final public version.
 
+## Multi-machine development
+
+Before changing workstation, follow the canonical
+[EasyEdu project handoff procedure](https://github.com/Kestryk/workstation-sync/blob/main/docs/PROJECT-HANDOFF.md).
+Create a recovery snapshot, commit and push all source changes, then resume only
+from a clean checkout with `git pull --ff-only`. Use a pushed WIP commit for
+unfinished work; do not transfer work with stash or Syncthing worktrees.
+
 ## Release validation
 
 Run the non-destructive release audit before creating a release branch or a
