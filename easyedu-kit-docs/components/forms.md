@@ -196,6 +196,32 @@ fields. The same mixin has a compact variant for filter panels.
 | `regular` | Standard admin settings lists. |
 | `large` | Wider settings screens or review pages where scanning many options matters. |
 
+## Filter disclosure
+
+Use `filter-disclosure-trigger(wide)` when a desktop filter shell needs a calm
+**More filters** bar spanning the available column. Use
+`filter-disclosure-trigger(touch)` below the consumer's responsive breakpoint
+to restore a compact visual control while preserving its minimum touch target.
+`compact` remains available for disclosures embedded in cards. The label and
+chevron belong to one native `button`; do not place the text beside a separate
+icon-only control or reuse a card-members toggle class on this button.
+
+```html
+<button
+  type="button"
+  class="my-filter-disclosure"
+  aria-expanded="false"
+  aria-controls="my-advanced-filters"
+>
+  <span>More filters</span>
+  <span class="fa fa-chevron-down" aria-hidden="true"></span>
+</button>
+```
+
+The consumer owns `hidden`, `aria-expanded` and the expand/collapse motion.
+The kit owns normal, hover, focus-visible, open and disabled presentation. The
+touch variant has a minimum height of `44px`.
+
 Expected structure:
 
 ```html
@@ -252,6 +278,20 @@ Expected structure:
   <span class="my-colour__value">#E8F4FF</span>
 </label>
 ```
+
+For a native Moodle QuickForm group containing a text value and a colour input,
+keep Moodle's generated fieldset and apply both mixins to its `.felement`:
+
+```scss
+.my-moodle-colour-group .felement {
+  @include easyedu.color-picker-control;
+  @include easyedu.moodle-color-picker-group;
+}
+```
+
+This contract keeps the colour swatch and textual value on one line, places the
+swatch first, removes the nested QuickForm field margin and preserves the
+original input names, ids, validation feedback and submission behaviour.
 
 ## Detected token inputs
 

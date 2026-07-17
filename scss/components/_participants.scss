@@ -14,7 +14,7 @@
     display: grid;
     gap: 0.85rem;
     grid-template-columns: 6.35rem minmax(0, 1fr);
-    padding: 0.85rem 0.9rem;
+    padding: 0.45rem 0.9rem 0.85rem;
     position: relative;
     @include easyedu.density-transition;
 
@@ -72,7 +72,7 @@
     max-height: 3.3rem;
     min-height: 2.3rem;
     overflow: visible;
-    padding: 0.45rem 0.65rem 0.45rem 2.55rem;
+    padding: 0.45rem 0.9rem 0.45rem 2.55rem;
     @include easyedu.density-transition;
   }
 
@@ -84,7 +84,7 @@
     max-height: 34rem;
     min-height: 8rem;
     overflow: visible;
-    padding: 0.85rem 0.9rem;
+    padding: 0.45rem 0.9rem 0.85rem;
   }
 
   &-user::after,
@@ -221,10 +221,9 @@
   }
 
   &--compact-users &-user__main {
-    align-items: center;
-    display: flex;
-    gap: 0.45rem;
+    display: block;
     min-width: 0;
+    width: 100%;
   }
 
   &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__main {
@@ -233,16 +232,22 @@
 
   &-user__headline {
     align-items: center;
-    display: flex;
-    gap: 0.6rem;
-    justify-content: space-between;
+    display: grid;
+    gap: 0.08rem 0.6rem;
+    grid-template-areas:
+      "identity action"
+      "email action";
+    grid-template-columns: minmax(0, 1fr) auto;
     margin-bottom: 0.12rem;
+    min-height: 1.7rem;
+    width: 100%;
   }
 
   &-user__headline-main {
     align-items: center;
     display: flex;
     gap: 0.45rem;
+    grid-area: identity;
     min-width: 0;
   }
 
@@ -275,9 +280,10 @@
     color: var(--local-groupimport-easystud-primary);
     display: inline-flex;
     flex: 0 0 auto;
-    height: 1.9rem;
+    grid-area: action;
+    height: 1.7rem;
     justify-content: center;
-    width: 1.9rem;
+    width: 1.7rem;
 
     &:hover,
     &:focus {
@@ -301,6 +307,7 @@
     color: var(--local-groupimport-easystud-text-muted);
     display: block;
     font-size: 0.83rem;
+    grid-area: email;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -308,19 +315,41 @@
 
   &--compact-users &-user__headline {
     align-items: center;
-    display: contents;
+    display: grid;
+    gap: 0.45rem;
+    grid-template-areas: "identity email action";
+    grid-template-columns: auto minmax(0, 1fr) auto;
     margin-bottom: 0;
     min-width: 0;
   }
 
   &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__headline {
+    align-items: center;
+    display: grid;
+    gap: 0.08rem 0.6rem;
+    grid-template-areas:
+      "identity action"
+      "email action";
+    grid-template-columns: minmax(0, 1fr) auto;
     margin-bottom: 0.12rem;
+    width: 100%;
+  }
+
+  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__headline-main {
+    grid-area: identity;
+    min-width: 0;
+  }
+
+  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__detail-button {
+    align-self: center;
+    grid-area: action;
+    justify-self: end;
+    margin-left: 0;
   }
 
   &--compact-users &-user__headline-main {
     flex: 1 1 auto;
     min-width: 0;
-    order: 1;
   }
 
   &--compact-users &-user__primary-badge {
@@ -330,21 +359,25 @@
   }
 
   &--compact-users &-user__email {
-    display: inline;
-    flex: 1 1 auto;
+    display: block;
     font-size: 0.8rem;
-    margin-left: 0.35rem;
+    margin-left: 0;
     min-width: 0;
-    order: 2;
   }
 
   &--compact-users &-user__detail-button {
     align-self: center;
     flex: 0 0 auto;
     height: 1.7rem;
-    margin-left: auto;
-    order: 3;
+    grid-area: action;
+    justify-self: end;
+    margin-left: 0;
     width: 1.7rem;
+  }
+
+  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected &-user__detail-button,
+  &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-density-expanded &-user__detail-button {
+    align-self: start;
   }
 
   &-user__meta {

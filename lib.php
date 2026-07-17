@@ -55,7 +55,8 @@ function local_groupimport_extend_navigation_course(navigation_node $coursenode,
                 'local_groupimport_easystud',
                 new pix_icon('i/groups', '')
             );
-            $coursenode->add_node($easystudnode, 'participants');
+            $beforekey = $coursenode->get('users') ? 'users' : null;
+            $coursenode->add_node($easystudnode, $beforekey);
         }
     }
 

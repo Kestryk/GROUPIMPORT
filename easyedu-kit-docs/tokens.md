@@ -30,6 +30,11 @@ are the primary contract for Moodle theme overrides.
 - Typography: one inherited UI family, a short title/body scale, four weights
   and shared title/body line heights.
 
+`--easyedu-navigation-following-gap` controls the vertical separation between
+a primary navigation surface and the next major view selector. Its default is
+`1.5rem`; themes may tighten or loosen this rhythm without overriding plugin
+layout selectors.
+
 ## Typography tokens
 
 - `--easyedu-font-family-ui`: inherited Moodle/theme font family.
