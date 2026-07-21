@@ -667,6 +667,7 @@ const updateCatalogGroupingTags = (root, groupid) => {
         renderGroupGroupingTags(container, groupingnames);
     });
     scheduleGroupGroupingOverflow(root);
+    scheduleCompleteListAlignment(root);
 };
 
 const syncGroupGroupingOverflow = root => {
@@ -2134,6 +2135,7 @@ const bindLayoutModeToggle = root => {
         syncPagination(root);
         updateSelectionActions(root);
         scheduleResponsiveUiRefresh(root, {pagination: false});
+        scheduleCompleteListAlignment(root);
     };
 
     const applyMode = (mode, animate = true) => {
@@ -2159,6 +2161,58 @@ const bindLayoutModeToggle = root => {
 
     applyMode('both', false);
     root.easystudApplyDesktopMode = applyMode;
+};
+
+const getFirstVisibleListEntry = (list, selector) => {
+    if (!list) {
+        return null;
+    }
+    return Array.from(list.querySelectorAll(selector)).find(item => !item.hidden && item.offsetParent !== null) || null;
+};
+
+const syncCompleteListAlignment = root => {
+    const tree = root.querySelector('[data-easystud-tree]');
+    if (!tree) {
+        return;
+    }
+
+    tree.style.paddingTop = '';
+    if (
+        root.classList.contains(participantFocusClass) ||
+        root.classList.contains(structureFocusClass) ||
+        isResponsiveWorkspace()
+    ) {
+        return;
+    }
+
+    const participantList = root.querySelector('[data-easystud-participant-list]');
+    const participantEntry = getFirstVisibleListEntry(
+        participantList,
+        '[data-easystud-user], [data-easystud-empty-state]'
+    );
+    const structureEntry = getFirstVisibleListEntry(
+        tree,
+        '.local-groupimport-easystud-tree__section--ungrouped, ' +
+            '.local-groupimport-easystud-tree__section[data-easystud-grouping-id], ' +
+            '[data-easystud-empty-state]'
+    );
+    if (!participantEntry || !structureEntry) {
+        return;
+    }
+
+    const delta = participantEntry.getBoundingClientRect().top - structureEntry.getBoundingClientRect().top;
+    if (Math.abs(delta) < 1) {
+        return;
+    }
+
+    const currentPadding = parseFloat(window.getComputedStyle(tree).paddingTop) || 0;
+    tree.style.paddingTop = Math.max(0, currentPadding + delta) + 'px';
+};
+
+const scheduleCompleteListAlignment = root => {
+    window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => syncCompleteListAlignment(root));
+    });
 };
 
 // Keep compact entity navigation independent from the three desktop workspaces.
@@ -3951,7 +4005,9 @@ const getPagination = (list, inside, position) => {
         pagination.innerHTML =
             '<span class="local-groupimport-easystud-pagination__selection">' +
                 '<button type="button" class="btn btn-sm btn-outline-secondary local-groupimport-easystud-pagination__select" data-easystud-select-results="1">' +
-                    (labels.selectresults || 'Select results') +
+                    '<span data-easystud-select-results-label>' +
+                        (labels.selectresults || 'Select results') +
+                    '</span>' +
                 '</button>' +
                 '<span class="local-groupimport-easystud-pagination__count" data-easystud-list-count></span>' +
             '</span>' +
@@ -4109,17 +4165,18 @@ const updateResultSelectionControl = (root, list, config, select) => {
     const items = getSelectableResultItems(list, config);
     const filtered = hasActiveListFilters(root, list);
     const show = items.length > 0;
+    const label = select.querySelector('[data-easystud-select-results-label]') || select;
     select.hidden = !show;
     if (!show) {
         select.removeAttribute('data-easystud-deselect-results');
-        select.textContent = filtered ?
+        label.textContent = filtered ?
             (labels.selectresults || 'Select results') :
             (labels.selectall || 'Select all');
         return;
     }
     const allselected = items.every(item => item.classList.contains(selectedClass));
     select.setAttribute('data-easystud-deselect-results', allselected ? '1' : '0');
-    select.textContent = allselected ?
+    label.textContent = allselected ?
         (filtered ? (labels.deselectresults || 'Deselect results') : (labels.deselectall || 'Deselect all')) :
         (filtered ? (labels.selectresults || 'Select results') : (labels.selectall || 'Select all'));
 };
@@ -7107,13 +7164,17 @@ const bindAdvancedFilters = root => {
             panel.classList.add('is-expanded');
             Motion.expand(panel, {
                 duration: Motion.timing.slow,
-                onComplete: () => requestGuideHighlightRefresh(root),
+                onComplete: () => {
+                    scheduleCompleteListAlignment(root);
+                    requestGuideHighlightRefresh(root);
+                },
             });
         } else {
             Motion.collapse(panel, {
                 duration: Motion.timing.slow,
                 onComplete: () => {
                     panel.classList.remove('is-expanded');
+                    scheduleCompleteListAlignment(root);
                     requestGuideHighlightRefresh(root);
                 },
             });
@@ -7133,6 +7194,7 @@ const bindAdvancedFilters = root => {
             toggleAdvancedFilters(key);
             emitGuidedCompletion(root, 2);
             scheduleResponsiveUiRefresh(root);
+            scheduleCompleteListAlignment(root);
         }
     });
 
@@ -8495,7 +8557,10 @@ export const init = (rootId, courseId) => {
             () => scheduleGroupGroupingOverflow(root),
             () => scheduleParticipantTagOverflow(root),
             () => {
-                const refreshResponsiveUi = () => scheduleResponsiveUiRefresh(root);
+                const refreshResponsiveUi = () => {
+                    scheduleResponsiveUiRefresh(root);
+                    scheduleCompleteListAlignment(root);
+                };
                 window.addEventListener('resize', refreshResponsiveUi);
                 window.addEventListener('orientationchange', refreshResponsiveUi);
             },

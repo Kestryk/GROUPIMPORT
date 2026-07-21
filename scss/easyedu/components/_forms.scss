@@ -485,7 +485,11 @@
 // Visual checkbox used for multi-selection in card/list interfaces. Keep the
 // real input in the DOM for accessibility and plugin business logic; this mixin
 // only owns the compact EasyEdu square and its checked/disabled states.
-@mixin selection-checkbox($checked-color: var(--easyedu-primary), $size: regular) {
+@mixin selection-checkbox(
+  $checked-color: var(--easyedu-primary),
+  $size: regular,
+  $variant: default
+) {
   align-items: center;
   cursor: pointer;
   display: inline-flex;
@@ -493,6 +497,12 @@
   justify-content: center;
   margin: 0;
   position: relative;
+
+  @if $variant == card {
+    border-radius: 0.62rem;
+    min-height: 2rem;
+    min-width: 2rem;
+  }
 
   input {
     cursor: pointer;
@@ -529,6 +539,12 @@
       width: 1.15rem;
     }
 
+    @if $variant == card {
+      background: color-mix(in srgb, var(--easyedu-surface) 88%, var(--easyedu-surface-soft) 12%);
+      border-color: color-mix(in srgb, var(--easyedu-control-border) 88%, #fff 12%);
+      box-shadow: 0 0.12rem 0.38rem rgba(31, 42, 55, 0.08);
+    }
+
     &::after {
       border-bottom: 2px solid #fff;
       border-right: 2px solid #fff;
@@ -546,6 +562,19 @@
     }
   }
 
+  @if $variant == card {
+    &:hover .easyedu-selection-checkbox__ui,
+    &:hover > span {
+      border-color: color-mix(in srgb, #{$checked-color} 44%, var(--easyedu-control-border) 56%);
+      box-shadow: 0 0 0 0.16rem color-mix(in srgb, #{$checked-color} 10%, transparent);
+    }
+
+    &:active .easyedu-selection-checkbox__ui,
+    &:active > span {
+      transform: scale(0.94);
+    }
+  }
+
   input:checked + .easyedu-selection-checkbox__ui,
   input:checked + span {
     background: $checked-color;
@@ -558,9 +587,30 @@
     }
   }
 
+  input:indeterminate + .easyedu-selection-checkbox__ui,
+  input:indeterminate + span {
+    background: $checked-color;
+    border-color: $checked-color;
+    box-shadow: 0 0 0 0.18rem color-mix(in srgb, #{$checked-color} 14%, transparent);
+
+    &::after {
+      background: #fff;
+      border: 0;
+      border-radius: 999px;
+      height: 0.12rem;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+      width: 0.58rem;
+    }
+  }
+
   input:focus-visible + .easyedu-selection-checkbox__ui,
   input:focus-visible + span {
     box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+  }
+
+  input:disabled {
+    cursor: not-allowed;
   }
 
   input:disabled + .easyedu-selection-checkbox__ui,
@@ -571,6 +621,11 @@
     border-color: var(--easyedu-card-border);
     cursor: not-allowed;
     opacity: 0.62;
+  }
+
+  @if $variant == card and $size == large {
+    min-height: var(--easyedu-touch-target-min);
+    min-width: var(--easyedu-touch-target-min);
   }
 }
 

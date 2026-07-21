@@ -10,6 +10,58 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-07-20
+
+- Normalised custom profile field values used on participant cards so compact
+  labels show readable plain text instead of stored HTML markup.
+
+### 2026-07-19
+
+- Synced EasyEdu UI kit `0.4.48` with a reusable responsive guide-launcher
+  hiding primitive.
+- Hid the EasyStud guide launcher across the full compact workspace breakpoint
+  while preserving the desktop guide entry and updating the responsive audit.
+- Stabilised complete-view list alignment so the first participant card and the
+  first groups/groupings section start on the same baseline after filters,
+  pagination or layout changes.
+- Fixed responsive compact participant cards so the details action no longer
+  overlaps the email address; the identity, email and action slots now keep
+  explicit grid areas with safe ellipsis at mobile and tablet widths.
+
+### 2026-07-18
+
+- Added an EasyStud-specific quality protocol covering accessibility,
+  functional flows, release checks, missing fixtures and progressive Moodle
+  matrix adoption.
+- Added an opt-in Playwright/axe smoke for the simplified manager, responsive
+  workspace and Mass Import plugin regions.
+- Synced EasyEdu UI kit `0.4.47` with reusable compact, regular and container
+  card-title primitives, stable header slots and accessible title disclosures.
+- Harmonised participant, group and grouping titles with semantic EasyEdu
+  typography while preserving existing truncation, badges and card actions.
+- Adopted the EasyEdu card-selection checkbox variant with semantic entity
+  colours, larger touch targets and complete checked, indeterminate, focus and
+  disabled states.
+- Updated the embedded kit documentation, manifest and AI contracts so other
+  Moodle plugins can reuse the same title and checkbox system without local
+  visual overrides.
+- Realigned card selection targets with participant, group and grouping title
+  rows while preserving a deliberate horizontal gap and 44px touch targets.
+- Removed the implicit CSS Grid row created by overlaid participant selectors,
+  keeping checkboxes aligned in both compact and full-detail card densities.
+- Applied the grouping semantic colour to disclosure chevrons, centred list
+  selection labels and increased the navigation-to-workspace breathing room.
+- Stabilised Select/Deselect pagination labels in a dedicated centred span and
+  expanded the plugin-navigation gap to the shared 2.5rem workspace rhythm.
+- Restored semantic pagination colours, aligned Sort with selection and page
+  controls, and removed the broad descendant rule that muted their labels.
+- Realigned detailed participant selectors and detail actions with the name
+  row while keeping group and grouping headers on one stable vertical axis.
+- Matched opened grouping-card identity rails with the closed-card rail width
+  so the complete view no longer draws a doubled or inward left border.
+- Hardened the Mass Import navigation audit to target the desktop navigation
+  region explicitly when the responsive drawer exists in the DOM.
+
 ### 2026-07-17
 
 - Added mandatory human and AI documentation for safe single-owner,

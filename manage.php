@@ -1756,7 +1756,8 @@ function local_groupimport_load_custom_user_field_values(array $users, array $fi
     $values = [];
     foreach ($recordset as $record) {
         $fieldkey = 'profile_field_' . $record->shortname;
-        $values[(int)$record->userid][$fieldkey] = trim((string)$record->data);
+        $values[(int)$record->userid][$fieldkey] =
+            local_groupimport_normalise_participant_label_value($record->data);
     }
     $recordset->close();
 

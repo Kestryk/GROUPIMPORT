@@ -51,6 +51,24 @@ one column has multiple pages.
 }
 ```
 
+`pagination-select-button` owns its inline-flex alignment, line height and text
+centering. Consumers may change its height or horizontal padding without
+reintroducing local vertical-alignment rules.
+
+Render the changing Select/Deselect wording inside one direct child `<span>`.
+Update that label node rather than replacing the button contents so the
+component keeps a stable, explicitly centred flex item.
+
+Pagination actions use the semantic primary colour rather than Bootstrap's
+neutral `outline-secondary` text colour. Keep page labels, Select/Deselect
+labels and the Sort caption scoped to their pagination primitives; never apply
+a blanket colour rule to every descendant `<span>`, because that also recolours
+dropdown values and button labels.
+
+The selection control, page controls and sort control share one vertical
+centre. Consumers may reduce their individual heights, but must not offset the
+sort tools with margins or baseline alignment.
+
 Place select-all/select-results controls in the list tools area, not inside the
 pagination controls, so the page navigation remains centred.
 

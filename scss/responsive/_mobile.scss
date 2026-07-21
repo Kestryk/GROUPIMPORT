@@ -11,6 +11,16 @@
       margin-left: 0 !important;
     }
 
+    &-tour-button.easyedu-admin-primary-nav__guide {
+      display: none !important;
+    }
+
+    &-mobile-guide-slot {
+      @include easyedu.admin-primary-nav-hide-guide-launcher;
+
+      display: none !important;
+    }
+
     &__layout-toggles {
       grid-template-columns: 1fr;
       justify-items: center;
@@ -242,7 +252,7 @@
 
     &--compact-users &-user {
       min-height: 2.45rem;
-      padding-left: 2.85rem;
+      padding-left: 3.85rem;
     }
 
     &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected {
@@ -252,14 +262,17 @@
       padding: 0.72rem 0.72rem 0.72rem 0.82rem;
     }
 
-    &-user > .local-groupimport-easystud-selector,
-    &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected > .local-groupimport-easystud-selector {
-      left: 0.62rem;
-      top: 0.62rem;
-    }
+   &-user > .local-groupimport-easystud-selector,
+   &--compact-users.local-groupimport-easystud--single-participant-selected &-user.is-selected > .local-groupimport-easystud-selector {
+     left: 0.62rem;
+     top: 0.58rem;
+     transform: none;
+   }
 
     &--compact-users &-user > .local-groupimport-easystud-selector {
       left: 0.72rem;
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     &-user__rail,
@@ -294,18 +307,18 @@
       margin-top: 0.45rem;
     }
 
-    &-tree__section > .local-groupimport-easystud-selector {
-      left: 0.58rem;
-      top: 0.65rem;
-    }
+   &-tree__section > .local-groupimport-easystud-selector {
+     left: 0.58rem;
+     top: 0.56rem;
+   }
 
-    &-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-selector {
-      left: 0.68rem;
-      top: 0.74rem;
-    }
+   &-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-selector {
+     left: 0.68rem;
+     top: 0.56rem;
+   }
 
     &-grouping__header {
-      padding-left: 2.35rem;
+      padding-left: 3.35rem;
     }
 
     &-user__meta {
@@ -338,15 +351,15 @@
       width: 100%;
     }
 
-    &-group > .local-groupimport-easystud-selector {
-      left: 0.55rem;
-      top: 0.98rem;
-    }
+   &-group > .local-groupimport-easystud-selector {
+     left: 0.55rem;
+     top: 0.56rem;
+   }
 
     &-group__header {
       align-items: center;
       gap: 0.35rem;
-      padding-left: 1.35rem;
+      padding-left: 3.25rem;
     }
 
     &-modal__footer {
@@ -402,6 +415,12 @@
     &-user__name,
     &-user__email {
       overflow-wrap: anywhere;
+    }
+
+    &--responsive-workspace.local-groupimport-easystud--compact-users &-user__name,
+    &--responsive-workspace.local-groupimport-easystud--compact-users &-user__email {
+      overflow-wrap: normal;
+      white-space: nowrap;
     }
 
     &-tree__section {
@@ -637,7 +656,7 @@
     }
 
     &--compact-users &-user {
-      padding-left: 2.85rem;
+      padding-left: 3.85rem;
     }
 
     &-mobile-actions {

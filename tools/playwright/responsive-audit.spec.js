@@ -82,7 +82,7 @@ for (const viewport of [
         await expect(page.locator('[data-easystud-mobile-nav-panel]')).not.toHaveClass(/is-open/);
         await assertMobileView(page, 'participants');
         await expect(page.locator('.local-groupimport-easystud__layout-mode-group')).toBeHidden();
-        await expect(page.locator('[data-easystud-mobile-guide-slot] [data-easyedu-guide-open]')).toBeVisible();
+        await expect(page.locator('[data-easystud-mobile-guide-slot] [data-easyedu-guide-open]')).toBeHidden();
 
         await page.locator('[data-easystud-mobile-view="groups"]').click();
         await assertMobileView(page, 'groups');
@@ -232,7 +232,7 @@ test('mobile navigation, group tools and grouping cards remain contained', async
     await expect(nav.locator('.easyedu-admin-primary-nav__actions ' +
         '.local-groupimport-easystud-mobile-nav-section__link')).toHaveCount(4);
     await page.locator('[data-easystud-mobile-nav-close]').click();
-    await expect(page.locator('[data-easystud-mobile-guide-slot] [data-easyedu-guide-open]')).toBeVisible();
+    await expect(page.locator('[data-easystud-mobile-guide-slot] [data-easyedu-guide-open]')).toBeHidden();
 
     await page.locator('[data-easystud-mobile-view="groups"]').click();
     const topPagination = page.locator('[data-easystud-mobile-entity-region="groups"] ' +

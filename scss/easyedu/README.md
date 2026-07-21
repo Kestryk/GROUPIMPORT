@@ -96,6 +96,14 @@ Prefer generic `--easyedu-*` variables. Plugin-specific aliases such as
 - `filter-shell`: filter/search containers.
 - `object-card`: draggable/selectable object cards.
 - `identity-rail`: coloured left rail with a masked icon.
+- `card-title-row`, `card-title-main`, `card-title-actions`: stable object-card
+  heading slots.
+- `card-title`: compact, regular and container title densities.
+- `card-disclosure-title`, `card-disclosure-icon`: accessible expandable
+  container headings.
+- `card-selection-slot`: flow or overlay alignment for card selectors.
+- `selection-checkbox`: semantic list/card checkbox with size and state
+  variants.
 - `icon-button`: compact square icon buttons.
 - `action-button`: toolbar/action buttons.
 - `dropdown-menu`: custom dropdown or overflow menus.

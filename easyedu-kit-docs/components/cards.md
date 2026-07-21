@@ -17,6 +17,42 @@ layers, images, sources or any plugin-specific item.
   @include easyedu.card-reveal-toggle;
 }
 
+.my-card__header {
+  @include easyedu.card-title-row;
+}
+
+.my-card__identity {
+  @include easyedu.card-title-main;
+}
+
+.my-card__title {
+  @include easyedu.card-title(regular, var(--easyedu-group));
+}
+
+.my-card__context {
+  @include easyedu.card-title-context;
+}
+
+.my-card__actions {
+  @include easyedu.card-title-actions;
+}
+
+.my-card__selector {
+  @include easyedu.card-selection-slot(overlay);
+}
+
+.my-container-card__disclosure {
+  @include easyedu.card-disclosure-title;
+}
+
+.my-container-card__disclosure .fa {
+  @include easyedu.card-disclosure-icon(var(--easyedu-grouping));
+}
+
+.my-container-card__disclosure[aria-expanded="true"] .fa {
+  @include easyedu.card-disclosure-expanded-icon;
+}
+
 .my-card__preview-list {
   @include easyedu.preview-fade-list(
     4.2rem,
@@ -68,6 +104,8 @@ layers, images, sources or any plugin-specific item.
 - `disabled-card`: compatible visual disabled state for non-target columns.
 - `open-identity-rail-base` / `open-identity-rail-state`: turns the filled
   identity rail into a light outlined rail for opened container cards.
+  The opened rail must replace the filled rail at the same width; do not offset
+  it inward or draw an extra nested rail.
 - `card-reveal-toggle`: quiet full-width chevron for revealing hidden card
   content such as members, related groups or advanced metadata.
 - `preview-fade-list`: collapsed preview list with a smoke/fade ending and a
@@ -81,19 +119,36 @@ layers, images, sources or any plugin-specific item.
   complete related-object list.
 - `density-transition`: shared transition timing for cards that switch between
   compact and detailed density.
+- `card-title-row`: stable two-column title line with a flexible identity slot
+  and a terminal count/action slot.
+- `card-title-main`: aligns the title and optional title-line context while
+  preserving truncation.
+- `card-title(compact|regular|container)`: semantic title densities for compact
+  people/list cards, regular object cards and expandable container cards.
+- `card-title-context`: optional secondary metadata that yields before the
+  title or terminal actions are displaced.
+- `card-title-actions`: non-wrapping terminal action group.
+- `card-selection-slot(flow|overlay)`: aligns a selection control in the card
+  layout without defining its checkbox appearance.
+- `card-disclosure-title`, `card-disclosure-icon($color)` and
+  `card-disclosure-expanded-icon`: accessible title button and explicit
+  expanded-state rotation for expandable container cards. Pass the semantic
+  entity colour when the default muted text colour does not identify the
+  container clearly enough.
 
 ## Expected structure
 
 ```html
 <article class="my-card" aria-selected="false">
   <header class="my-card__header">
-    <span class="my-card__title">Object name</span>
-    <span class="my-card__related-tags">
-      <button class="my-card__related-tags-summary" type="button">
-        <span>2 groupings</span>
-        <span class="fa fa-chevron-down" aria-hidden="true"></span>
-      </button>
-    </span>
+    <div class="my-card__identity">
+      <span class="my-card__title">Object name</span>
+      <span class="my-card__context">Optional context</span>
+    </div>
+    <div class="my-card__actions">
+      <span class="my-count">3 items</span>
+      <button type="button" aria-label="Open actions">...</button>
+    </div>
   </header>
   <ul class="my-card__preview-list has-extra-items" aria-expanded="false">
     <li>Visible child item</li>
@@ -112,6 +167,36 @@ layers, images, sources or any plugin-specific item.
   </div>
 </article>
 ```
+
+Expandable container cards use a real disclosure button:
+
+```html
+<button
+  class="my-container-card__disclosure"
+  type="button"
+  aria-expanded="false"
+  aria-controls="my-container-card-content"
+>
+  <span class="fa fa-chevron-right" aria-hidden="true"></span>
+  <span class="my-container-card__title">Container name</span>
+</button>
+```
+
+Do not add a decorative chevron outside the button. The button owns keyboard
+activation, focus, `aria-expanded` and the complete title interaction.
+Apply `card-disclosure-expanded-icon` from the button's explicit
+`[aria-expanded="true"]` selector; do not rely on an inferred ancestor state.
+
+## Title density
+
+- `compact`: repeated participant/person cards and very dense object lists.
+- `regular`: groups, sources, layers and standard manipulable objects.
+- `container`: expandable parent objects such as groupings or folders.
+
+Density describes information hierarchy, not decoration. Do not select a
+density only to make one card look different from its neighbours. Consumer
+plugins may pass a semantic colour token to `card-title`, but should not
+redefine font size, weight or truncation locally.
 
 ## Accessibility
 
@@ -144,6 +229,19 @@ preview list itself.
   on themed cards.
 - Dense/compact-to-full card transitions use `density-transition`; plugins own
   which data becomes visible in each density.
+- Card titles use the shared density matching their role. Plugins do not create
+  local font scales or weights for participant, object and container titles.
+- Count badges and actions stay in `card-title-actions`; optional context yields
+  before it can push those controls onto another line.
+- Expandable title lines use one native button with `aria-expanded` and
+  `aria-controls`; the chevron is not a separate action.
+- Selection controls use `card-selection-slot` together with the form
+  `selection-checkbox(..., card)` variant.
+- Overlay selectors reserve the complete checkbox hit target plus a visible
+  title gap. Align the visual square with the title line, not with the total
+  height of an expanded card.
+- Overlay selectors explicitly use `grid-area: auto`; they must never create an
+  implicit `selection` row at the bottom of a CSS Grid card.
 - Drag/drop disabled states use `disabled-card` or overlay primitives; do not
   make selectable checkboxes look disabled when the current selection type is
   still allowed.

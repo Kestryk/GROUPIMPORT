@@ -31,7 +31,7 @@
   }
 
   &__navigation {
-    margin: 0.3rem 0 0.7rem;
+    margin: 0.3rem 0 1.05rem;
 
     .tertiary-navigation {
       padding: 0;
@@ -300,6 +300,9 @@
   &__panel-actions-more {
     @include easyedu.action-menu-trigger;
 
+    align-items: center;
+    justify-content: center;
+
     span {
       margin: 0 !important;
     }
@@ -370,7 +373,7 @@
     gap: 0.65rem;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     justify-items: center;
-    margin: var(--easyedu-navigation-following-gap) 0 1.6rem;
+    margin: calc(var(--easyedu-navigation-following-gap) + 0.35rem) 0 1.75rem;
   }
 
   &__clear-selection-frame {

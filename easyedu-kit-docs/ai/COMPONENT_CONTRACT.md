@@ -351,6 +351,28 @@ Must:
 
 - use `object-card`, `identity-rail` and `selectable-card` for manipulable
   objects;
+- use `card-title-row`, `card-title-main` and `card-title-actions` for card
+  headers that combine identity, metadata, counters and persistent actions;
+- use `card-title(compact)` for dense participant/person cards,
+  `card-title(regular)` for standard object cards and `card-title(container)`
+  for expandable parent cards;
+- use `card-disclosure-title`, `card-disclosure-icon` and
+  `card-disclosure-expanded-icon` when a container title opens or closes its
+  contents; pass the entity semantic colour to `card-disclosure-icon($color)`
+  and apply rotation from the button's explicit `aria-expanded` state;
+- use `card-selection-slot` with `selection-checkbox(..., card)` for selectable
+  cards;
+- reserve the complete overlay checkbox hit target plus a visible title gap,
+  and align its visual square with the card title line;
+- keep overlay selectors out of named grid areas so they cannot create an
+  implicit row below a card title;
+- let `pagination-select-button` own flex and text alignment even when a plugin
+  applies a compact height;
+- keep changing Select/Deselect wording in a stable direct child label `<span>`
+  instead of replacing the pagination button structure;
+- keep selection, page controls and sort tools on the same vertical centre;
+- scope pagination label colours to their component instead of styling every
+  descendant `<span>`;
 - use `open-identity-rail-base` / `open-identity-rail-state` for opened
   container cards;
 - use `preview-fade-list` with `card-reveal-toggle` for collapsed child lists
@@ -363,6 +385,10 @@ Must:
 Must not:
 
 - create a second left rail to fake an opened container state;
+- create plugin-local card title font sizes, weights or disclosure chevrons
+  when the shared title primitives cover the structure;
+- allow title context, count badges or actions to compete for the same flexible
+  width;
 - show drag handles on objects that are not draggable in the current view;
 - let related tags push badges or action buttons onto a new line.
 - implement one-off gradients for collapsed child previews.
@@ -379,6 +405,8 @@ Must:
 - use compact form sizes in dense runtime filters and regular/large sizes in
   admin settings;
 - use `selection-checkbox` for selectable cards, nested items and list rows;
+- use the `card` checkbox variant for object cards and its `large` size on
+  touch layouts; keep the real checkbox input and native indeterminate state;
 - use `inline-reveal-panel` for card-contained search, paste, add-by-text or
   similar controls that expand inside a card;
 - use `toggle-check` for binary filters inside EasyEdu filter boxes;
@@ -391,6 +419,8 @@ Must not:
 - use admin-sized multiselects inside card/list filter panels;
 - make allowed checkboxes look disabled because another nested card type owns
   the parent container;
+- restyle checked card selectors by entity type outside the semantic
+  `$checked-color` argument;
 - replace native selects with custom lists unless keyboard and screen-reader
   behaviour is rebuilt deliberately;
 - put long help text in labels when a help icon/tooltip is more appropriate.
@@ -454,7 +484,8 @@ Must not:
   room around cards instead of shrinking the rail or clipping its icon.
 - A mobile navigation panel must expose both plugin tools and the complete
   native Moodle destination set. Keep the guide launcher adjacent to, but
-  outside, the panel trigger.
+  outside, the panel trigger unless the product deliberately hides guide access
+  in compact navigation with `admin-primary-nav-hide-guide-launcher`.
 - Never defeat `[hidden]` with unconditional `display: block !important`.
 - Reuse and normalise an existing card menu trigger; never render two triggers.
 - Keep trigger normalisation idempotent and preserve an established semantic

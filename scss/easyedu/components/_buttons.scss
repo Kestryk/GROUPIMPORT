@@ -292,6 +292,18 @@
   }
 }
 
+@mixin admin-primary-nav-hide-guide-launcher {
+  // Use inside a responsive breakpoint when the product keeps the full guide
+  // available on desktop but removes the launcher from compact navigation.
+  > .easyedu-guide,
+  > .easyedu-admin-primary-nav__guide,
+  > [class*="easyedu-guide"],
+  [data-easyedu-guide-launcher],
+  [data-easyedu-guide-open] {
+    display: none !important;
+  }
+}
+
 @mixin admin-primary-nav-action($variant: default) {
   @include action-button(regular);
 

@@ -45,6 +45,10 @@ states.
   @include easyedu.admin-primary-nav;
 }
 
+.my-admin-nav--hide-guide {
+  @include easyedu.admin-primary-nav-hide-guide-launcher;
+}
+
 .my-admin-nav__action {
   @include easyedu.admin-primary-nav-action;
 }
@@ -169,6 +173,22 @@ line; the container scrolls horizontally when the viewport is too narrow.
 The action wrapper is required for balanced centring. On narrow screens the
 rail automatically returns to a start-aligned horizontal scroller so the guide
 and every action remain reachable.
+
+If a product deliberately removes guide access from compact navigation, keep
+that as an explicit responsive contract instead of relying on display
+side-effects. Apply `admin-primary-nav-hide-guide-launcher` to the plugin-owned
+navigation slot inside the target breakpoint. The mixin hides common direct and
+nested EasyEdu guide launcher forms, including `[data-easyedu-guide-open]`.
+
+```scss
+@media (max-width: 64rem) {
+  .my-mobile-guide-slot {
+    @include easyedu.admin-primary-nav-hide-guide-launcher;
+
+    display: none !important;
+  }
+}
+```
 
 Fallback guide button:
 

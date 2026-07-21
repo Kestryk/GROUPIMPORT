@@ -487,14 +487,14 @@
     }
 
     &[data-easystud-grouping-id].is-expanded {
-      @include easyedu.open-identity-rail-state(#f7fafc, #a9bac7, #a3b3c0);
+      @include easyedu.open-identity-rail-state(#f7fafc, #b7c5d1, #8ca0b1);
 
       background: linear-gradient(180deg, #fff 0%, #f7fafc 100%);
       box-shadow: 0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18);
     }
 
     &[data-easystud-grouping-id].is-expanded:focus-within {
-      @include easyedu.open-identity-rail-state(#f7fafc, #a9bac7, #a3b3c0);
+      @include easyedu.open-identity-rail-state(#f7fafc, #b7c5d1, #8ca0b1);
 
       background: linear-gradient(180deg, #fff 0%, #f7fafc 100%);
       border-color: #d7e0e8;
@@ -519,7 +519,7 @@
     }
 
     &[data-easystud-grouping-id].is-expanded.is-selected {
-      @include easyedu.open-identity-rail-state(#edf2f7, #9aacbb, #9aacbb);
+      @include easyedu.open-identity-rail-state(#edf2f7, #9eb0c2, #8a9dad);
 
       background: #edf2f7;
       border-color: #9eb0c2;
@@ -527,7 +527,7 @@
     }
 
     &[data-easystud-grouping-id].is-expanded.is-selected:focus-within {
-      @include easyedu.open-identity-rail-state(#edf2f7, #9aacbb, #9aacbb);
+      @include easyedu.open-identity-rail-state(#edf2f7, #9eb0c2, #8a9dad);
 
       background: #edf2f7;
       border-color: #9eb0c2;
@@ -535,19 +535,20 @@
     }
 
     &[data-easystud-grouping-id].is-expanded:not(:focus-within)::before {
-      background-color: #a3b3c0;
+      background-color: #8ca0b1;
     }
   }
 
   &-tree__section > .local-groupimport-easystud-selector {
+    @include easyedu.card-selection-slot(overlay);
+
     left: 0.78rem;
-    position: absolute;
-    top: 0.76rem;
+    top: 0.58rem;
     z-index: 2;
   }
 
   &-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-selector {
-    top: 0.86rem;
+    top: 0.58rem;
   }
 
   &-tree__section--ungrouped {
@@ -576,14 +577,15 @@
   }
 
   &-grouping__header {
+    @include easyedu.card-header-row;
+
     align-items: center;
-    display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.5rem;
     margin-bottom: 0.22rem;
     min-height: 1.75rem;
     min-width: 0;
-    padding-left: 2.15rem;
+    padding-left: 2.55rem;
   }
 
   &-grouping__header.is-rename-editing {
@@ -606,17 +608,15 @@
   }
 
   &-tree__toggle {
-    align-items: center;
-    background: transparent;
-    border: 0;
-    color: var(--local-groupimport-easystud-text);
-    display: flex;
-    font-weight: 700;
-    gap: 0.5rem;
-    min-width: 0;
-    padding: 0.05rem 0;
-    text-align: left;
+    @include easyedu.card-disclosure-title;
+
     width: 100%;
+
+    > .fa {
+      @include easyedu.card-disclosure-icon(var(--local-groupimport-easystud-grouping));
+
+      color: var(--local-groupimport-easystud-grouping);
+    }
 
     .badge {
       background: #dbe7f1 !important;
@@ -625,28 +625,22 @@
     }
   }
 
+  &-tree__toggle[aria-expanded="true"] > .fa {
+    @include easyedu.card-disclosure-expanded-icon;
+  }
+
   &-grouping__name,
   &-group__name {
     display: inline-block;
-    letter-spacing: -0.005em;
-    line-height: 1.25;
-    min-width: 0;
-    overflow: hidden;
     padding-bottom: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   &-group__name {
-    color: #254334;
-    font-size: 0.96rem;
-    font-weight: 640;
+    @include easyedu.card-title(regular, var(--local-groupimport-easystud-group));
   }
 
   &-grouping__name {
-    color: #2d4356;
-    font-size: 1rem;
-    font-weight: 660;
+    @include easyedu.card-title(container, var(--local-groupimport-easystud-grouping));
   }
 
   &-tree__children {
@@ -843,21 +837,23 @@
   }
 
   &-group > .local-groupimport-easystud-selector {
+    @include easyedu.card-selection-slot(overlay);
+
     left: 0.72rem;
-    position: absolute;
-    top: 1rem;
+    top: 0.58rem;
     z-index: 2;
   }
 
   &-group__header {
+    @include easyedu.card-header-row;
+
     align-items: center;
-    display: flex;
     flex-wrap: nowrap;
-    gap: 0.5rem;
+    gap: 0.58rem;
     margin-bottom: 0.32rem;
     min-height: 1.95rem;
     min-width: 0;
-    padding-left: 1.85rem;
+    padding-left: 2.55rem;
     position: relative;
 
     > .local-groupimport-easystud-group__name {
@@ -1284,7 +1280,8 @@
   }
 
   &-member > .local-groupimport-easystud-selector {
-    display: inline-flex;
+    @include easyedu.card-selection-slot;
+
     margin-right: 0.1rem;
   }
 
@@ -1524,19 +1521,9 @@
     }
   }
 
-  [data-selectable-type="participant"].is-selected > &-selector &-selector__ui {
-    background: var(--local-groupimport-easystud-participant);
-    border-color: var(--local-groupimport-easystud-participant);
-  }
-
-  [data-selectable-type="group"].is-selected > &-selector &-selector__ui {
-    background: var(--local-groupimport-easystud-group);
-    border-color: var(--local-groupimport-easystud-group);
-  }
-
-  [data-selectable-type="grouping"].is-selected > &-selector &-selector__ui {
-    background: var(--local-groupimport-easystud-grouping);
-    border-color: var(--local-groupimport-easystud-grouping);
+  [data-selectable-type].is-selected > &-selector &-selector__ui {
+    background: var(--local-groupimport-easystud-selector-color);
+    border-color: var(--local-groupimport-easystud-selector-color);
   }
 
   [data-selectable-type].is-selected > &-selector {
@@ -1589,6 +1576,7 @@
     .local-groupimport-easystud-pagination__select {
       @include easyedu.pagination-select-button;
 
+      color: var(--easyedu-primary-strong);
       height: 1.62rem;
     }
 
@@ -1607,8 +1595,9 @@
     .local-groupimport-easystud-pagination__tools {
       @include easyedu.pagination-tools;
 
-      margin: -0.16rem -0.18rem;
-      padding: 0.16rem 0.18rem;
+      align-self: center;
+      margin: 0;
+      padding: 0.08rem;
     }
 
     .local-groupimport-easystud-pagination__count {
@@ -1636,10 +1625,21 @@
       opacity: 1;
     }
 
-    span {
-      color: #617487;
+    [data-easystud-page-label] {
+      color: var(--easyedu-text);
       font-size: 0.72rem;
       font-weight: 650;
+      line-height: 1;
+    }
+
+    [data-easystud-select-results-label],
+    [data-easystud-list-sort-label] {
+      color: var(--easyedu-primary-strong);
+      font: inherit;
+    }
+
+    [data-easystud-list-sort-label] {
+      color: var(--easyedu-text);
     }
   }
 

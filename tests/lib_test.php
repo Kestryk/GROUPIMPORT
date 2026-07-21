@@ -57,4 +57,58 @@ final class lib_test extends \advanced_testcase {
         set_config('enablesimplifiedview', 0, 'local_groupimport');
         $this->assertFalse(local_groupimport_is_simplified_view_enabled());
     }
+
+    /**
+     * Participant-card custom field values are reduced to compact plain text.
+     *
+     * @param string|null $value Stored custom profile field value.
+     * @param string $expected Expected participant label.
+     * @return void
+     * @dataProvider participant_label_value_provider
+     */
+    public function test_normalise_participant_label_value(?string $value, string $expected): void {
+        $this->assertSame($expected, local_groupimport_normalise_participant_label_value($value));
+    }
+
+    /**
+     * Values for participant label normalisation.
+     *
+     * @return array[]
+     */
+    public static function participant_label_value_provider(): array {
+        return [
+            'paragraph' => [
+                '<p>Marketing</p>',
+                'Marketing',
+            ],
+            'multiple blocks and line breaks' => [
+                '<p>Marketing</p><div>International<br>Sales</div>',
+                'Marketing International Sales',
+            ],
+            'plain text and unicode whitespace' => [
+                "  Équipe\u{00A0}Marketing \n Europe  ",
+                'Équipe Marketing Europe',
+            ],
+            'inline formatting' => [
+                '<strong>Dévelop</strong><em>pement</em> &amp; stratégie',
+                'Développement & stratégie',
+            ],
+            'malicious html' => [
+                '</body></div><img src=x onerror="alert(1)"><script>alert(1)</script><p>Safe &amp; sound</p>',
+                'Safe & sound',
+            ],
+            'single entity decoding' => [
+                'R&amp;amp;D',
+                'R&amp;D',
+            ],
+            'empty string' => [
+                '   ',
+                '',
+            ],
+            'null' => [
+                null,
+                '',
+            ],
+        ];
+    }
 }

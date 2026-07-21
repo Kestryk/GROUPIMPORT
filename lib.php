@@ -176,6 +176,91 @@ function local_groupimport_configure_participants_node(navigation_node $particip
 }
 
 /**
+ * Convert a custom profile field value into a compact participant-card label.
+ *
+ * The participant label is plain text even when a profile field stores editor
+ * HTML. Block-level elements are separated before extracting their text so
+ * adjacent paragraphs do not run together. Inline elements keep their text
+ * without adding presentation markers.
+ *
+ * @param string|null $value Stored custom profile field value.
+ * @return string Normalised plain-text label.
+ */
+function local_groupimport_normalise_participant_label_value(?string $value): string {
+    $value = trim(fix_utf8((string)$value));
+    if ($value === '') {
+        return '';
+    }
+
+    $previouserrors = libxml_use_internal_errors(true);
+    $document = new DOMDocument('1.0', 'UTF-8');
+    $value = preg_replace('/<\/?(?:body|html)\b[^>]*>/iu', ' ', $value) ?? $value;
+    $html = '<?xml encoding="UTF-8"><html><body>' . $value . '</body></html>';
+    $loaded = $document->loadHTML(
+        $html,
+        LIBXML_HTML_NODEFDTD | LIBXML_NONET
+    );
+
+    $plaintext = '';
+    if ($loaded) {
+        $xpath = new DOMXPath($document);
+        $root = $document->getElementsByTagName('body')->item(0);
+
+        if ($root !== null) {
+            $excludednodes = $xpath->query('.//head | .//noscript | .//script | .//style | .//template', $root);
+            if ($excludednodes !== false) {
+                $nodestoremove = iterator_to_array($excludednodes);
+                foreach ($nodestoremove as $node) {
+                    $node->parentNode?->removeChild($node);
+                }
+            }
+
+            $blocktags = [
+                'address', 'article', 'aside', 'blockquote', 'br', 'caption', 'dd', 'details',
+                'div', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
+                'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hr', 'li', 'main', 'nav',
+                'ol', 'p', 'pre', 'section', 'summary', 'table', 'tbody', 'td', 'tfoot',
+                'th', 'thead', 'tr', 'ul',
+            ];
+            $separatorquery = implode(' | ', array_map(static function(string $tag): string {
+                return './/' . $tag;
+            }, $blocktags));
+            $separatornodes = $xpath->query($separatorquery, $root);
+            if ($separatornodes !== false) {
+                $nodestoseparate = iterator_to_array($separatornodes);
+                foreach ($nodestoseparate as $node) {
+                    $parent = $node->parentNode;
+                    if ($parent === null) {
+                        continue;
+                    }
+
+                    $parent->insertBefore($document->createTextNode(' '), $node);
+                    if (core_text::strtolower($node->nodeName) === 'br') {
+                        $parent->replaceChild($document->createTextNode(' '), $node);
+                    } else if ($node->nextSibling !== null) {
+                        $parent->insertBefore($document->createTextNode(' '), $node->nextSibling);
+                    } else {
+                        $parent->appendChild($document->createTextNode(' '));
+                    }
+                }
+            }
+
+            $plaintext = (string)$root->textContent;
+        }
+    }
+
+    libxml_clear_errors();
+    libxml_use_internal_errors($previouserrors);
+
+    if ($plaintext === '') {
+        return '';
+    }
+
+    $normalised = preg_replace('/[\p{Z}\s]+/u', ' ', $plaintext);
+    return trim($normalised ?? '');
+}
+
+/**
  * Build the target rows represented by an import history operation log.
  *
  * Recent imports store a complete desired state. The fallback keeps histories

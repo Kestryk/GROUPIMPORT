@@ -21,13 +21,30 @@
   button,
   a {
     align-items: center;
+    border-color: color-mix(in srgb, var(--easyedu-primary) 32%, var(--easyedu-card-border) 68%);
     border-radius: 0.58rem;
+    color: var(--easyedu-primary-strong);
     display: inline-flex;
     font-size: 0.78rem;
     justify-content: center;
     min-height: 1.85rem;
     min-width: 1.85rem;
     padding: 0.2rem 0.45rem;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--easyedu-primary-soft);
+      border-color: color-mix(in srgb, var(--easyedu-primary) 58%, var(--easyedu-card-border) 42%);
+      color: var(--easyedu-primary-strong);
+    }
+  }
+
+  > [data-easyedu-page-label],
+  > [data-easystud-page-label] {
+    color: var(--easyedu-text);
+    font-size: 0.72rem;
+    font-weight: var(--easyedu-font-weight-semibold);
+    line-height: 1;
   }
 }
 
@@ -49,13 +66,40 @@
 }
 
 @mixin pagination-select-button {
+  align-items: center;
   align-self: center;
   border-radius: 0.65rem;
+  display: inline-flex;
   font-size: 0.68rem;
   font-weight: 600;
+  justify-content: center;
+  line-height: 1;
   min-height: 1.62rem;
   padding: 0 0.7rem;
+  text-align: center;
   width: auto;
+
+  &:not(:disabled) {
+    background: var(--easyedu-surface);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 36%, var(--easyedu-card-border) 64%);
+    color: var(--easyedu-primary-strong);
+  }
+
+  &:not(:disabled):hover,
+  &:not(:disabled):focus-visible {
+    background: var(--easyedu-primary-soft);
+    border-color: color-mix(in srgb, var(--easyedu-primary) 58%, var(--easyedu-card-border) 42%);
+    color: var(--easyedu-primary-strong);
+  }
+
+  > span {
+    align-items: center;
+    color: inherit;
+    display: inline-flex;
+    font: inherit;
+    justify-content: center;
+    line-height: 1;
+  }
 
   &[data-easyedu-deselect-results="1"],
   &[data-easystud-deselect-results="1"] {
@@ -100,15 +144,18 @@
 
 @mixin pagination-sort {
   align-items: center;
+  align-self: center;
   display: inline-flex;
   gap: 0.28rem;
   margin: 0;
+  min-height: 1.85rem;
   min-width: 0;
 
   > span {
-    color: var(--easyedu-text-muted);
+    color: var(--easyedu-text);
     font-size: 0.66rem;
     font-weight: 720;
+    line-height: 1;
   }
 }
 

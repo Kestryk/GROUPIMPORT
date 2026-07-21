@@ -91,11 +91,11 @@
     box-sizing: border-box;
     content: "";
     display: none;
-    left: calc((var(--easyedu-identity-border-width) * -1) + 1px);
+    left: calc(var(--easyedu-identity-border-width) * -1);
     pointer-events: none;
     position: absolute;
     top: -1px;
-    width: calc(var(--easyedu-identity-border-width) - 1px);
+    width: var(--easyedu-identity-border-width);
     z-index: 2;
   }
 }
@@ -130,13 +130,131 @@
   }
 }
 
-@mixin card-title {
+// Stable title line for object cards. The main slot owns truncation while the
+// terminal slot keeps count badges and actions aligned as details expand.
+@mixin card-title-row($gap: 0.55rem) {
+  align-items: center;
+  display: grid;
+  gap: $gap;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  min-width: 0;
+  width: 100%;
+}
+
+@mixin card-title-main($gap: 0.45rem) {
+  align-items: center;
+  display: flex;
+  gap: $gap;
+  min-width: 0;
+}
+
+@mixin card-title($density: regular, $color: var(--easyedu-text)) {
   @include typography.type-card-title;
 
+  color: $color;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @if $density == compact {
+    font-size: calc(var(--easyedu-font-size-card-title) * 0.92);
+    font-weight: var(--easyedu-font-weight-semibold);
+  } @else if $density == container {
+    font-size: calc(var(--easyedu-font-size-card-title) * 1.02);
+    font-weight: var(--easyedu-font-weight-strong);
+  } @else {
+    font-size: var(--easyedu-font-size-card-title);
+    font-weight: var(--easyedu-font-weight-semibold);
+  }
+}
+
+// Optional metadata placed beside a title. It must yield before the title or
+// terminal actions are pushed out of the card header.
+@mixin card-title-context {
+  color: var(--easyedu-text-muted);
+  flex: 0 1 auto;
+  font-size: var(--easyedu-font-size-caption);
+  font-weight: var(--easyedu-font-weight-medium);
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin card-title-actions($gap: 0.35rem) {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: $gap;
+  justify-self: end;
+  min-width: max-content;
+}
+
+// Selection controls may stay in the normal card grid or overlay the leading
+// corner. The visual checkbox remains compact while its label owns the hit area.
+@mixin card-selection-slot($mode: flow) {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  margin: 0;
+  z-index: 4;
+
+  @if $mode == overlay {
+    grid-area: auto;
+    left: 0.55rem;
+    position: absolute;
+    top: 0.55rem;
+  } @else {
+    grid-area: selection;
+  }
+}
+
+// Accessible disclosure used when the title itself controls an expandable
+// container card. Keep aria-expanded on the button and pair the icon with
+// card-disclosure-icon.
+@mixin card-disclosure-title {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  gap: 0.48rem;
+  min-height: 2rem;
+  min-width: 0;
+  padding: 0.16rem 0.18rem;
+  text-align: left;
+  text-decoration: none;
+
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    border-radius: var(--easyedu-control-radius);
+    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+    outline: 0;
+  }
+}
+
+@mixin card-disclosure-icon($color: var(--easyedu-text-muted)) {
+  align-items: center;
+  color: $color;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  height: 1.25rem;
+  justify-content: center;
+  transition: transform var(--easyedu-motion-fast) var(--easyedu-motion-ease);
+  width: 1.25rem;
+}
+
+@mixin card-disclosure-expanded-icon {
+  transform: rotate(90deg);
 }
 
 // Use when a card needs to show related objects as pills on the title line

@@ -33,6 +33,24 @@ checkbox input and render the visual square as the sibling UI element.
 .my-selector--large {
   @include easyedu.selection-checkbox(var(--easyedu-participant), large);
 }
+
+.my-card-selector {
+  @include easyedu.selection-checkbox(
+    var(--easyedu-participant),
+    regular,
+    card
+  );
+}
+
+@media (max-width: 64rem) {
+  .my-card-selector {
+    @include easyedu.selection-checkbox(
+      var(--easyedu-participant),
+      large,
+      card
+    );
+  }
+}
 ```
 
 Expected structure:
@@ -47,6 +65,17 @@ Expected structure:
 Use `large` on touch/mobile contexts, `regular` for desktop cards and `small`
 only in very dense table/list rows. Do not make the checkbox look disabled when
 the current selectable type is still valid.
+
+Use the `card` variant for selectable object cards. It keeps the visible square
+quiet and compact while the label provides a larger hit area. The variant
+includes hover, active, focus-visible, checked, indeterminate and disabled
+states. Use the semantic object colour for `$checked-color`; do not add
+participant/group/grouping checked-state overrides in the consumer plugin.
+
+For an indeterminate checkbox, set the native DOM property
+`input.indeterminate = true`. Do not emulate the state with a class or replace
+the native input. The `large, card` combination provides the minimum EasyEdu
+touch target without enlarging the visual square beyond the card hierarchy.
 
 ## Segmented toggles
 

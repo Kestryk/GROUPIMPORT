@@ -1,4 +1,11 @@
-+# Multi-machine development contract
+# EasyEdu agent contract
+
+For cross-repository EasyEdu context, start with
+`D:\dev\easyedu-platform\AI\README.md` when it is available locally. Then read
+`AI\easystud\context.md` in the platform repository before editing this plugin.
+This Moodle component remains `local_groupimport`.
+
+## Multi-machine development contract
 
 Every AI agent working in this repository must follow the canonical EasyEdu
 handoff procedure:

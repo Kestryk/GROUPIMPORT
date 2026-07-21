@@ -94,7 +94,9 @@ test('anchors the EasyStud guide at the start of the primary navigation', async(
         expect(rail.pseudoContent).toBe('none');
     });
 
-    const navigation = page.locator('.local-groupimport-easystud__header-actions');
+    const navigation = page.locator(
+        '.local-groupimport-easystud__header-actions--desktop'
+    );
     const guide = navigation.locator(':scope > .easyedu-guide, :scope > [class*="easyedu-guide"]').first();
     const actions = navigation.locator(':scope > .easyedu-admin-primary-nav__actions');
     await expect(navigation).toBeVisible({timeout: 30000});

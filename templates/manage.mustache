@@ -1006,6 +1006,7 @@
                             class="local-groupimport-easystud-tree__toggle"
                             data-easystud-collapse-toggle="1"
                             aria-expanded="false"
+                            aria-controls="easystud-group-list-ungrouped"
                         >
                             <span class="fa fa-chevron-right" aria-hidden="true"></span>
                             <span>{{groupswithoutgrouping}}</span>
@@ -1024,7 +1025,12 @@
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-container-search-cancel="ungrouped">{{cancellabel}}</button>
                             </div>
                         </div>
-                        <div class="local-groupimport-easystud-tree__children" data-easystud-container-group-list="ungrouped" hidden>
+                        <div
+                            id="easystud-group-list-ungrouped"
+                            class="local-groupimport-easystud-tree__children"
+                            data-easystud-container-group-list="ungrouped"
+                            hidden
+                        >
                             {{#ungroupedgroups}}
                                 <div
                                     class="local-groupimport-easystud-group"
@@ -1200,6 +1206,7 @@
                                     class="local-groupimport-easystud-tree__toggle"
                                     data-easystud-collapse-toggle="1"
                                     aria-expanded="false"
+                                    aria-controls="easystud-group-list-{{id}}"
                                 >
                                     <span class="fa fa-chevron-right" aria-hidden="true"></span>
                                     <span class="local-groupimport-easystud-grouping__name">{{name}}</span>
@@ -1287,7 +1294,12 @@
                                 ></div>
                             </div>
 
-                            <div class="local-groupimport-easystud-tree__children local-groupimport-easystud-grouping__groups" data-easystud-container-group-list="{{id}}" hidden>
+                            <div
+                                id="easystud-group-list-{{id}}"
+                                class="local-groupimport-easystud-tree__children local-groupimport-easystud-grouping__groups"
+                                data-easystud-container-group-list="{{id}}"
+                                hidden
+                            >
                                 {{#groups}}
                                     <div
                                         class="local-groupimport-easystud-group"
