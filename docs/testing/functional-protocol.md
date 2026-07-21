@@ -195,4 +195,3 @@ Promote in this order:
 9. Responsive long-press/action-tray scenario once timing is stable on Linux.
 10. Guide highlight/checklist lifecycle scenario after browser parity is
     confirmed on both matrix targets.
-

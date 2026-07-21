@@ -77,4 +77,3 @@ Feature: Open and navigate the EasyStud management workspace
     And the "[data-easystud-clear-all-selection]" "css_element" should be visible
     When I click on "[data-easystud-clear-all-selection]" "css_element"
     Then the "[data-easystud-user].is-selected" "css_element" should not exist
-

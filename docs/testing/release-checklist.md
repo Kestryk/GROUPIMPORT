@@ -96,4 +96,3 @@ missing fixture, an upstream Moodle issue or a confirmed plugin failure.
 - [ ] Known failures have an owner, severity, workaround and target release.
 - [ ] Changelog describes the user-visible and testing changes.
 - [ ] Release decision and evidence location are recorded.
-

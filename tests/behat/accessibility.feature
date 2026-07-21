@@ -34,4 +34,3 @@ Feature: EasyStud management accessibility
     When I navigate to "Participants" in current page administration
     Then the "#local-groupimport-easystud" "css_element" should be visible
     And the "#local-groupimport-easystud" "css_element" should meet accessibility standards with "best-practice" extra tests
-

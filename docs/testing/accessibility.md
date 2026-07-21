@@ -129,4 +129,3 @@ For a release candidate, retain:
 - viewport and theme used;
 - manual keyboard checklist result;
 - any exclusion with owner and expiry condition.
-
