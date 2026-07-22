@@ -59,6 +59,7 @@ if (!$animationsenabled) {
     $PAGE->add_body_class('local-groupimport-motion-disabled');
     $PAGE->add_body_class('easyedu-motion-disabled');
 }
+$PAGE->requires->js('/local/groupimport/js/loading_state_bootstrap.js', true);
 $PAGE->requires->js_call_amd('local_groupimport/course_manager', 'init', [
     'local-groupimport-easystud',
     $course->id,
@@ -67,7 +68,6 @@ $PAGE->requires->js_call_amd('local_groupimport/easyedu_guide', 'init', [
     '[data-easyedu-guide-root]',
     local_groupimport_build_easyedu_guide_js_config($course->id),
 ]);
-
 $action = optional_param('action', '', PARAM_ALPHA);
 if ($action && confirm_sesskey()) {
     if ($action === 'creategroup') {
@@ -375,6 +375,8 @@ function local_groupimport_build_manage_template_data(
         'navigationhtml' => $navigationhtml,
         'eyebrow' => get_string('easystudlabel', 'local_groupimport'),
         'description' => get_string('easystudmanager_desc', 'local_groupimport'),
+        'loadingmanager' => get_string('loadingmanager', 'local_groupimport'),
+        'managerready' => get_string('managerready', 'local_groupimport'),
         'managerlabel' => get_string('easystudmanager', 'local_groupimport'),
         'compactparticipantsdefault' => $compactparticipantsdefault,
         'nativeparticipantsurl' => $nativeparticipantsurl->out(false),

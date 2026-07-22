@@ -62,10 +62,69 @@ const onReady = callback => {
     callback();
 };
 
-const runSafely = callback => {
+const getLoadingController = root => root ? root.easystudLoadingController || null : null;
+
+const getLoadingDiagnostics = root => {
+    const controller = getLoadingController(root);
+    if (controller && typeof controller.getDiagnostics === 'function') {
+        return controller.getDiagnostics();
+    }
+    return root ? root.easystudLoadingDiagnostics || null : null;
+};
+
+const captureLoadingVisibility = root => {
+    const isVisible = node => {
+        if (!node || typeof window.getComputedStyle !== 'function') {
+            return false;
+        }
+        const style = window.getComputedStyle(node);
+        const box = node.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0;
+    };
+    const realContent = root.querySelector('[data-easystud-participant-content], [data-easystud-structure-panel]');
+    const loadingSurface = root.querySelector('[data-easystud-loading-skeleton], [data-easystud-loading-status]');
+
+    const interactionTargets = [
+        root.querySelector('.local-groupimport-easystud__layout'),
+        root.querySelector('.local-groupimport-easystud__layout-toggles'),
+        root.querySelector('[data-easystud-mobile-view-switcher]'),
+        root.querySelector('[data-easystud-real-content]'),
+    ].filter(Boolean);
+
+    return {
+        rootVisible: isVisible(root),
+        realContentVisible: isVisible(realContent),
+        loadingSurfaceVisible: isVisible(loadingSurface),
+        booting: root.classList.contains('local-groupimport-easystud--booting'),
+        loadingState: root.getAttribute('data-easystud-loading-state') ||
+            (root.classList.contains('local-groupimport-easystud--booting') ? 'loading' : 'ready'),
+        ariaBusy: root.getAttribute('aria-busy') === 'true',
+        interactionRegionsInert: interactionTargets.length > 0 && interactionTargets.every(target => target.inert === true),
+    };
+};
+
+const completeLoadingState = (root, state, reason) => {
+    const controller = getLoadingController(root);
+    if (!controller || typeof controller.complete !== 'function') {
+        return false;
+    }
+    return controller.complete(state, reason);
+};
+
+const recordLoadingDiagnostic = (root, name, details = {}, regionId = null) => {
+    const diagnostics = getLoadingDiagnostics(root);
+    if (diagnostics) {
+        diagnostics.record(name, details, regionId || root.id || 'local-groupimport-easystud');
+    }
+};
+
+const runSafely = (callback, root = null, stepIndex = null) => {
+    recordLoadingDiagnostic(root, 'initialisation-step-started', {stepIndex});
     try {
         callback();
+        recordLoadingDiagnostic(root, 'initialisation-step-completed', {stepIndex});
     } catch (error) {
+        recordLoadingDiagnostic(root, 'initialisation-step-failed', {stepIndex});
         if (window.console && window.console.error) {
             window.console.error('EasyStud initialisation step failed.', error);
         }
@@ -2475,12 +2534,12 @@ let pendingActionCount = 0;
 
 const setActionBusyState = busy => {
     document.querySelectorAll('.local-groupimport-easystud').forEach(container => {
+        const wasBusy = container.classList.contains('is-action-busy');
         const labels = JSON.parse(container.getAttribute('data-easystud-detail-labels') || '{}');
         const label = labels.actioninprogress || 'Working...';
         const status = container.querySelector('[data-easystud-action-busy-status]');
         container.setAttribute('data-easystud-action-busy-label', label);
         container.classList.toggle('is-action-busy', busy);
-        container.setAttribute('aria-busy', busy ? 'true' : 'false');
         if (status) {
             const text = status.querySelector('[data-easystud-action-busy-text]');
             if (text) {
@@ -2488,13 +2547,29 @@ const setActionBusyState = busy => {
             }
             status.hidden = !busy;
         }
+        if (wasBusy !== busy) {
+            recordLoadingDiagnostic(container, 'action-busy-changed', {
+                busy,
+                pendingActionCount,
+            });
+        }
     });
 };
 
-const trackActionRequest = promise => {
+const trackActionRequest = (promise, operation = 'ajax-action') => {
+    const root = document.getElementById('local-groupimport-easystud');
+    const diagnostics = getLoadingDiagnostics(root);
+    const generation = diagnostics ? diagnostics.nextRequestGeneration() : 0;
     pendingActionCount += 1;
     setActionBusyState(true);
-    return promise.finally(() => {
+    recordLoadingDiagnostic(root, 'ajax-request-started', {generation, operation});
+    return promise.then(result => {
+        recordLoadingDiagnostic(root, 'ajax-request-completed', {generation, operation, outcome: 'success'});
+        return result;
+    }, error => {
+        recordLoadingDiagnostic(root, 'ajax-request-completed', {generation, operation, outcome: 'error'});
+        throw error;
+    }).finally(() => {
         pendingActionCount = Math.max(0, pendingActionCount - 1);
         setActionBusyState(pendingActionCount > 0);
     });
@@ -2527,7 +2602,7 @@ const postAction = data => {
             throw new Error(result.error || labels.ajaxerror || '');
         }
         return result;
-    }));
+    }), 'ajax-action');
 };
 
 // Move an existing group element into a grouping section.
@@ -2642,7 +2717,7 @@ const postFormAction = formData => {
             throw new Error(result.error || labels.ajaxerror || '');
         }
         return result;
-    }));
+    }), 'ajax-form');
 };
 
 const ensureGroupUnlinkButton = (root, group, groupingid) => {
@@ -4434,6 +4509,9 @@ const bindPagination = root => {
             return;
         }
         closeSortDropdowns();
+        recordLoadingDiagnostic(root, 'local-sort-requested', {
+            sort: option.getAttribute('data-easystud-list-sort-option') || 'alpha',
+        });
         Motion.swap(list, () => {
             list.setAttribute('data-easystud-sort', option.getAttribute('data-easystud-list-sort-option') || 'alpha');
             list.setAttribute('data-easystud-page', '0');
@@ -4445,7 +4523,14 @@ const bindPagination = root => {
             distance: '0px',
             resize: false,
             swapOpacity: 0.55,
-        }).then(() => requestGuideHighlightRefresh(root));
+        }).then(completed => {
+            if (completed) {
+                recordLoadingDiagnostic(root, 'local-sort-completed', {
+                    sort: list.getAttribute('data-easystud-sort') || 'alpha',
+                });
+            }
+            requestGuideHighlightRefresh(root);
+        });
     });
 
     root.addEventListener('click', event => {
@@ -4507,6 +4592,11 @@ const bindPagination = root => {
         const maxpage = Math.max(Math.ceil(total / config.limit) - 1, 0);
         nextpage = Math.max(0, Math.min(nextpage, maxpage));
         const fromBottom = pagination.getAttribute('data-easystud-pagination') === 'bottom';
+        recordLoadingDiagnostic(root, 'local-pagination-requested', {
+            fromPage: current,
+            toPage: nextpage,
+            position: fromBottom ? 'bottom' : 'top',
+        });
         Motion.swap(list, () => {
             list.setAttribute('data-easystud-page', nextpage);
             syncPagination(root);
@@ -4522,6 +4612,10 @@ const bindPagination = root => {
             if (!completed) {
                 return;
             }
+            recordLoadingDiagnostic(root, 'local-pagination-completed', {
+                page: nextpage,
+                position: fromBottom ? 'bottom' : 'top',
+            });
             requestGuideHighlightRefresh(root);
             if (!fromBottom) {
                 return;
@@ -4581,6 +4675,14 @@ const applyFilters = (root, options = {}) => {
     if (options.responsive !== false) {
         scheduleResponsiveUiRefresh(root);
     }
+    recordLoadingDiagnostic(root, 'local-filter-completed', {
+        source: options.diagnosticSource || 'unspecified',
+        queryLength: query.length,
+        roleCount: selectedroles.length,
+        groupCount: selectedgroups.length,
+        groupingCount: selectedgroupings.length,
+        visibleParticipants: root.querySelectorAll('[data-easystud-user]:not([hidden])').length,
+    });
 };
 
 const bindFilters = root => {
@@ -4593,7 +4695,7 @@ const bindFilters = root => {
 
     if (searchControl) {
         searchControl.addEventListener('input', () => {
-            applyFilters(root);
+            applyFilters(root, {diagnosticSource: 'search'});
             emitGuidedCompletion(root, 2);
         });
     }
@@ -4601,21 +4703,21 @@ const bindFilters = root => {
     if (roleSelect) {
         roleSelect.addEventListener('change', () => {
             syncRoleFilterState(root);
-            applyFilters(root);
+            applyFilters(root, {diagnosticSource: 'role-select'});
             emitGuidedCompletion(root, 2);
         });
     }
 
     if (groupSelect) {
         groupSelect.addEventListener('change', () => {
-            applyFilters(root);
+            applyFilters(root, {diagnosticSource: 'group-select'});
             emitGuidedCompletion(root, 2);
         });
     }
 
     if (groupingSelect) {
         groupingSelect.addEventListener('change', () => {
-            applyFilters(root);
+            applyFilters(root, {diagnosticSource: 'grouping-select'});
             emitGuidedCompletion(root, 2);
         });
     }
@@ -4632,7 +4734,7 @@ const bindFilters = root => {
                 }
             });
             syncRoleFilterState(root);
-            applyFilters(root);
+            applyFilters(root, {diagnosticSource: 'role-choice'});
             updateRoleFilterMode(root);
             emitGuidedCompletion(root, 2);
         });
@@ -4644,7 +4746,7 @@ const bindFilters = root => {
             if (roleSelect) {
                 syncRoleFilterState(root);
             }
-            applyFilters(root);
+            applyFilters(root, {diagnosticSource: 'reset'});
             updateRoleFilterMode(root);
             requestGuideHighlightRefresh(root);
             closeResponsiveAdvancedFilters(root, 'participants');
@@ -8503,7 +8605,11 @@ export const init = (rootId, courseId) => {
         if (!root) {
             return;
         }
-        if (root.getAttribute('data-easystud-manager-initialised') === '1') {
+        const alreadyInitialised = root.getAttribute('data-easystud-manager-initialised') === '1';
+        recordLoadingDiagnostic(root, 'manager-init-started');
+        recordLoadingDiagnostic(root, 'boot-visibility-observed', captureLoadingVisibility(root));
+        if (alreadyInitialised) {
+            recordLoadingDiagnostic(root, 'manager-init-skipped', {reason: 'already-initialised'});
             return;
         }
         root.setAttribute('data-easystud-manager-initialised', '1');
@@ -8570,12 +8676,12 @@ export const init = (rootId, courseId) => {
             }),
             () => syncAllCountBadges(root),
             () => updateParticipantEmptyState(root),
-        ].forEach(runSafely);
+        ].forEach((callback, stepIndex) => runSafely(callback, root, stepIndex));
 
         scheduleResponsiveUiRefresh(root, {guide: false});
         window.requestAnimationFrame(() => {
             window.requestAnimationFrame(() => {
-                root.classList.remove('local-groupimport-easystud--booting');
+                completeLoadingState(root, 'ready', 'amd-ready');
             });
         });
     });

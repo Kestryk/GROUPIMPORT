@@ -1,17 +1,136 @@
 <div
     class="local-groupimport-easystud local-groupimport-easystud--booting{{#compactparticipantsdefault}} local-groupimport-easystud--compact-users{{/compactparticipantsdefault}}{{^animationsenabled}} is-easyedu-motion-off{{/animationsenabled}}"
     id="local-groupimport-easystud"
+    data-easystud-loading-state="loading"
     data-easystud-course-id="{{courseid}}"
     data-easystud-detail-labels="{{detaillabelsjson}}"
     data-easystud-mobile-card-actions="{{mobilecardactions}}"
     data-easyedu-motion-policy="{{motionpolicy}}"
 >
+    <div class="local-groupimport-easystud__loading-skeleton" data-easystud-loading-skeleton="1" aria-hidden="true">
+        <div class="local-groupimport-easystud__loading-header">
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-title-line local-groupimport-easystud__loading-skeleton-line"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-subtitle-line"></span>
+        </div>
+
+        <div class="local-groupimport-easystud__loading-mobile-switcher">
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-switch-item"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-switch-item"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-switch-item"></span>
+        </div>
+
+        <div class="local-groupimport-easystud__loading-desktop-toggles">
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-toggle-item"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-toggle-item"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-toggle-item"></span>
+        </div>
+
+        <div class="local-groupimport-easystud__loading-layout">
+            <div class="local-groupimport-easystud__loading-panel local-groupimport-easystud__loading-panel--participants">
+                <div class="local-groupimport-easystud__loading-panel-header">
+                    <div class="local-groupimport-easystud__loading-panel-heading">
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-title"></span>
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-badge"></span>
+                    </div>
+                    <div class="local-groupimport-easystud__loading-panel-actions">
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-action"></span>
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-action"></span>
+                    </div>
+                </div>
+
+                <div class="local-groupimport-easystud__loading-search-filter-region">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-search"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-filter"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-filter"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-reset-action"></span>
+                </div>
+
+                <div class="local-groupimport-easystud__loading-pagination">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-pagination-summary"></span>
+                    <div class="local-groupimport-easystud__loading-pagination-controls">
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-pagination-item"></span>
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-pagination-item"></span>
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-pagination-item"></span>
+                    </div>
+                </div>
+
+                <div class="local-groupimport-easystud__loading-participant-list">
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-avatar-rail"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-content"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-badge"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-action"></span></div>
+                </div>
+            </div>
+
+            <div class="local-groupimport-easystud__loading-panel local-groupimport-easystud__loading-panel--structure">
+                <div class="local-groupimport-easystud__loading-panel-header">
+                    <div class="local-groupimport-easystud__loading-panel-heading">
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-title"></span>
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-badge"></span>
+                    </div>
+                    <div class="local-groupimport-easystud__loading-panel-actions">
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-action"></span>
+                        <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-action"></span>
+                    </div>
+                </div>
+                <div class="local-groupimport-easystud__loading-structure-tools">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-search"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-filter"></span>
+                </div>
+                <div class="local-groupimport-easystud__loading-structure-list">
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-icon"></span><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-structure-content"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <noscript>
+        <style>
+            #local-groupimport-easystud [data-easystud-loading-skeleton] { display: none !important; }
+            #local-groupimport-easystud [data-easystud-real-content] { display: block !important; }
+        </style>
+    </noscript>
+    <div
+        class="local-groupimport-easystud__loading-status"
+        data-easystud-loading-status="1"
+        data-easystud-loading-label="{{loadingmanager}}"
+        data-easystud-ready-label="{{managerready}}"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    >
+        <span data-easystud-loading-text>{{loadingmanager}}</span>
+    </div>
+    <div class="local-groupimport-easystud__content" data-easystud-real-content="1">
     <div class="local-groupimport-easystud__notifications" data-easystud-notifications="1" aria-live="polite"></div>
     <div class="local-groupimport-easystud-action-status" data-easystud-action-busy-status="1" role="status" aria-live="polite" hidden>
         <span class="local-groupimport-easystud-action-status__spinner" aria-hidden="true"></span>
         <span data-easystud-action-busy-text>{{actioninprogress}}</span>
     </div>
-
     {{^useeasyeduguide}}
     <div class="local-groupimport-easystud-discovery" data-easystud-discovery="1" hidden>
         <div class="local-groupimport-easystud-discovery__icon">
@@ -2420,4 +2539,5 @@
     >
         <span class="fa fa-arrow-up" aria-hidden="true"></span>
     </button>
+    </div>
 </div>
