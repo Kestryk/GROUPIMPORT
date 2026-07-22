@@ -46,11 +46,10 @@ retains its Moodle `define(...)` wrapper. The exact Rollup/Terser fallback
 command has not yet been made durable, so it must not be guessed during a new
 machine reconstruction.
 
-The private remote currently does not publish the historical
-`v1.0-groupimport-csv` tag used by `tools/release/validate-plugin.ps1`. A clean
-remote clone can validate the committed source, CSS and Playwright discovery,
-but that release script cannot complete until the tag is made available through
-an explicitly approved repository-maintenance action.
+The approved private remote publishes the historical lightweight
+`v1.0-groupimport-csv` baseline used by `tools/release/validate-plugin.ps1`.
+In a fresh professional-machine clone, run `git fetch --tags origin` before the
+release validation. Do not recreate, move or replace this historical tag.
 
 From `tools/playwright`, use Node 20 and an explicit one worker. Authenticated
 variables must be injected only into the test process. Batch 2 and V2 geometry
