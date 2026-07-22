@@ -46,6 +46,12 @@ retains its Moodle `define(...)` wrapper. The exact Rollup/Terser fallback
 command has not yet been made durable, so it must not be guessed during a new
 machine reconstruction.
 
+The private remote currently does not publish the historical
+`v1.0-groupimport-csv` tag used by `tools/release/validate-plugin.ps1`. A clean
+remote clone can validate the committed source, CSS and Playwright discovery,
+but that release script cannot complete until the tag is made available through
+an explicitly approved repository-maintenance action.
+
 From `tools/playwright`, use Node 20 and an explicit one worker. Authenticated
 variables must be injected only into the test process. Batch 2 and V2 geometry
 are non-mutating. Write new privacy-safe evidence outside the repository and
@@ -66,8 +72,9 @@ Recovery manifests and redacted V2/Batch 2 evidence are retained externally.
 
 Five `ccb-*.spec.js` files currently present under this plugin's Playwright
 directory are Course Banner Builder source, not EasyStud source. They are
-excluded from this branch and must be secured on a separate CCB branch before
-any later cleanup removes their originals.
+excluded from this branch and are separately preserved on
+`handoff/ccb-playwright-v2-2026-07`. Their EasyStud originals remain in place
+until a later cleanup has explicit deletion approval.
 
 The next product task, only after a clean-clone recovery and professional
 bootstrap decision, is Lot V3: coordinated loading shimmer/highlight motion
