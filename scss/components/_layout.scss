@@ -19,6 +19,19 @@
     display: none;
   }
 
+  &__loading-status {
+    border: 0;
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    max-width: 1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
   [data-easystud-advanced-filters="structure-groupings"],
   &-advanced-filters__control--groupings-mobile {
     display: none !important;
@@ -136,6 +149,322 @@
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
+  }
+
+  &[data-easystud-loading-state="loading"] {
+    .local-groupimport-easystud__content {
+      display: none;
+    }
+
+    .local-groupimport-easystud__loading-skeleton {
+      display: grid;
+    }
+  }
+
+  &__loading-skeleton {
+    --local-groupimport-easystud-loading-surface: #dce7f0;
+    --local-groupimport-easystud-loading-surface-soft: #edf3f7;
+    --local-groupimport-easystud-loading-surface-strong: #cbdbe7;
+    --local-groupimport-easystud-loading-border: #cfdee9;
+    --local-groupimport-easystud-loading-radius: 0.72rem;
+    --local-groupimport-easystud-loading-gap: 0.7rem;
+    --local-groupimport-easystud-loading-header-min-height: 11.35rem;
+    --local-groupimport-easystud-loading-switch-height: 3.5rem;
+
+    background: transparent;
+    border: 0;
+    box-sizing: border-box;
+    box-shadow: none;
+    display: none;
+    gap: 1.1rem;
+    min-width: 0;
+    padding: 0.9rem 0 0;
+  }
+
+  &__loading-surface {
+    background: var(--local-groupimport-easystud-loading-surface);
+    border: 1px solid var(--local-groupimport-easystud-loading-border);
+    border-radius: var(--local-groupimport-easystud-loading-radius);
+    display: block;
+  }
+
+  &__loading-header {
+    display: grid;
+    gap: var(--local-groupimport-easystud-loading-gap);
+    max-width: none;
+    min-height: var(--local-groupimport-easystud-loading-header-min-height);
+    width: 100%;
+  }
+
+  &__loading-title-line {
+    height: 1.42rem;
+    width: min(100%, 19rem);
+  }
+
+  &__loading-subtitle-line {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    height: 0.82rem;
+    width: min(100%, 29rem);
+  }
+
+  &__loading-mobile-switcher,
+  &__loading-desktop-toggles {
+    gap: 0.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-inline: auto;
+    max-width: 42rem;
+    width: 100%;
+  }
+
+  &__loading-mobile-switcher {
+    display: grid;
+  }
+
+  &__loading-desktop-toggles {
+    display: none;
+  }
+
+  &__loading-switch-item,
+  &__loading-toggle-item {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    height: var(--local-groupimport-easystud-loading-switch-height);
+  }
+
+  &__loading-layout {
+    align-items: stretch;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  &__loading-panel {
+    background: #f9fbfd;
+    border: 1px solid var(--local-groupimport-easystud-loading-border);
+    border-radius: 1rem;
+    display: grid;
+    gap: 0.9rem;
+    min-width: 0;
+    padding: 0.95rem;
+  }
+
+  &__loading-panel--participants {
+    border-top: 0.32rem solid #6c9fc9;
+  }
+
+  &__loading-panel--structure {
+    border-top: 0.32rem solid #78a78d;
+    display: none;
+  }
+
+  &__loading-panel-header,
+  &__loading-panel-heading,
+  &__loading-panel-actions,
+  &__loading-pagination,
+  &__loading-pagination-controls,
+  &__loading-structure-tools,
+  &__loading-structure-card {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  &__loading-panel-header,
+  &__loading-pagination {
+    justify-content: space-between;
+  }
+
+  &__loading-panel-heading {
+    flex: 1 1 auto;
+  }
+
+  &__loading-panel-title {
+    height: 1rem;
+    width: min(58%, 12rem);
+  }
+
+  &__loading-panel-badge {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    border-radius: 999px;
+    height: 1.25rem;
+    width: 3.25rem;
+  }
+
+  &__loading-panel-actions {
+    flex: 0 0 auto;
+  }
+
+  &__loading-action,
+  &__loading-card-action,
+  &__loading-pagination-item {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    border-radius: 0.55rem;
+    height: 2rem;
+    width: 2rem;
+  }
+
+  &__loading-search-filter-region {
+    background: #f3f7fa;
+    border: 1px solid #dbe6ee;
+    border-radius: var(--local-groupimport-easystud-loading-radius);
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    padding: 0.7rem;
+  }
+
+  &__loading-search {
+    background: #f7fafc;
+    grid-column: 1 / -1;
+    height: 2.55rem;
+  }
+
+  &__loading-filter,
+  &__loading-reset-action {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    height: 2.25rem;
+  }
+
+  &__loading-reset-action {
+    min-width: 4.75rem;
+  }
+
+  &__loading-pagination-summary {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    height: 1.6rem;
+    width: 6rem;
+  }
+
+  &__loading-participant-list,
+  &__loading-structure-list {
+    display: grid;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  &__loading-participant-card {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #dbe5ed;
+    border-radius: 0.68rem;
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: 2rem minmax(0, 1fr) auto auto;
+    min-height: 2.72rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  &__loading-avatar-rail {
+    background: var(--local-groupimport-easystud-loading-surface-strong);
+    border-radius: 50%;
+    height: 1.72rem;
+    width: 1.72rem;
+  }
+
+  &__loading-card-content {
+    background:
+      linear-gradient(var(--local-groupimport-easystud-loading-surface-strong), var(--local-groupimport-easystud-loading-surface-strong)) left top / min(68%, 9rem) 0.56rem no-repeat,
+      linear-gradient(var(--local-groupimport-easystud-loading-surface), var(--local-groupimport-easystud-loading-surface)) left bottom / min(88%, 13rem) 0.42rem no-repeat;
+    border: 0;
+    border-radius: 0;
+    height: 1.5rem;
+    min-width: 0;
+  }
+
+  &__loading-card-badge {
+    background: var(--local-groupimport-easystud-loading-surface-soft);
+    border-radius: 999px;
+    height: 1rem;
+    width: 2.5rem;
+  }
+
+  &__loading-structure-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7rem;
+  }
+
+  &__loading-structure-list {
+    gap: 0.65rem;
+  }
+
+  &__loading-structure-card {
+    background: #fff;
+    border: 1px solid #d9e4dc;
+    border-radius: 0.68rem;
+    min-height: 3.6rem;
+    padding: 0.58rem 0.65rem;
+  }
+
+  &__loading-structure-icon {
+    background: #cfe0d5;
+    border-radius: 0.48rem;
+    height: 1.9rem;
+    width: 1.9rem;
+  }
+
+  &__loading-structure-content {
+    background:
+      linear-gradient(var(--local-groupimport-easystud-loading-surface-strong), var(--local-groupimport-easystud-loading-surface-strong)) left top / min(48%, 10rem) 0.58rem no-repeat,
+      linear-gradient(var(--local-groupimport-easystud-loading-surface), var(--local-groupimport-easystud-loading-surface)) left bottom / min(78%, 16rem) 0.42rem no-repeat;
+    border: 0;
+    border-radius: 0;
+    flex: 1 1 auto;
+    height: 1.55rem;
+  }
+
+  @media (min-width: 769px) and (max-width: 1200px) {
+    &__loading-participant-card:nth-child(n + 11) {
+      display: none;
+    }
+
+    &__loading-participant-list {
+      gap: 0.47rem;
+      max-height: 30.2rem;
+      overflow: hidden;
+    }
+
+    &__loading-participant-card {
+      min-height: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1201px) {
+    &__loading-skeleton {
+      --local-groupimport-easystud-loading-header-min-height: 10.47rem;
+    }
+
+    &__loading-header {
+      margin-bottom: 1.75rem;
+    }
+
+    &__loading-mobile-switcher {
+      display: none;
+    }
+
+    &__loading-desktop-toggles {
+      display: grid;
+      margin-bottom: 0.65rem;
+      max-width: none;
+    }
+
+    &__loading-layout {
+      gap: 1.35rem;
+      grid-template-columns: minmax(23rem, 0.92fr) minmax(29rem, 1.38fr);
+    }
+
+    &__loading-panel--structure {
+      display: grid;
+    }
+
+    &__loading-panel {
+      padding-bottom: 1.45rem;
+    }
+
+    &__loading-panel-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
   }
 
   &-discovery {
@@ -263,7 +592,8 @@
 
   &__panel-actions {
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     max-width: 100%;
     min-width: 0;
     overflow: visible;
@@ -276,6 +606,8 @@
     flex: 0 0 auto;
     justify-content: center;
     line-height: 1.2;
+    max-width: 100%;
+    min-width: 0;
 
     .fa {
       align-items: center;
