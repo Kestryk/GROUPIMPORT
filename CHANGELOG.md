@@ -10,6 +10,17 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-07-22
+
+- Added an accessible EasyStud boot status with localized loading and ready
+  announcements, scoped `aria-busy`, and inert workspace controls until the
+  manager is ready. Local filter and pagination remain immediate DOM updates;
+  existing AJAX busy-state behaviour is unchanged.
+- Reconciled the boot lifecycle through a small RequireJS-independent controller:
+  no-JavaScript pages reveal server-rendered content, terminal `ready` and
+  `degraded` states cannot be resurrected, and AJAX busy feedback no longer
+  overwrites the boot state.
+
 ### 2026-07-20
 
 - Normalised custom profile field values used on participant cards so compact
