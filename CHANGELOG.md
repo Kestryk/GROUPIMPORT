@@ -10,6 +10,28 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-07-31
+
+#### Fixed
+
+- Preserved equal collapsed filter-shell heights while making one-sided
+  disclosures independent: opening Participants, Groups or Structure filters
+  no longer stretches the opposite filter card, and the paired card lists
+  still begin on one shared baseline.
+- Reused the hidden desktop Groupings disclosure row as a non-interactive
+  layout placeholder, so the column without desktop filters keeps the same
+  collapsed rhythm without a hard-coded height.
+- Restored the existing Motion-driven opening and closing transition for
+  advanced filters without reintroducing the old `hidden` layout regression.
+
+#### Validation
+
+- The focused filter-panel scenario passed the six Moodle 5.1 viewports with
+  geometry, transition, focus, axe and asserted runtime-error checks in
+  external run `easystud-authenticated-20260731T073950091Z-13916`.
+- Human visual review accepted the aligned filter composition and restored
+  Motion-driven disclosure transition on 2026-07-31.
+
 ### 2026-07-20
 
 - Normalised custom profile field values used on participant cards so compact

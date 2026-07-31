@@ -146,7 +146,7 @@ export const collapse = (element, options = {}) => {
         duration: getDisclosureDuration(startHeight, 0, options.duration || durations.slow),
         easing: options.easing || disclosureEasing,
     }, completed => {
-        if (completed) {
+        if (completed && options.hideOnComplete !== false) {
             element.hidden = true;
         }
         clearDisclosureStyles(element);

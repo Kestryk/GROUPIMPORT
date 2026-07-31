@@ -1750,6 +1750,57 @@
 
 }
 
+@media (min-width: 1025px) {
+  .local-groupimport-easystud {
+    // Keep paired desktop shells equal when their disclosures share a state.
+    // When only one side opens, both shells retain their natural height while
+    // the shared Grid row keeps the lists below them on one baseline.
+    &--participant-focus &__participant-content {
+      align-items: stretch;
+    }
+
+    &--participant-focus &-participant-groups__create,
+    &--participant-focus &__filters {
+      align-self: stretch;
+    }
+
+    &--participant-focus &-participant-groups__create {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &--participant-focus &__filters > &-advanced-filters__control,
+    &--participant-focus &-participant-groups__create > &-advanced-filters__control {
+      margin-block-start: auto;
+    }
+
+    &--structure-focus &-create-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    // Groupings has no desktop disclosure, but its existing compact control
+    // reserves the same action row so the no-filter card keeps the collapsed
+    // height of its filtered neighbour without a hard-coded block size.
+    &--structure-focus &-advanced-filters__control--groupings-mobile {
+      display: flex !important;
+      margin-block-start: auto;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    &--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) &__filters,
+    &--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) &-participant-groups__create,
+    &--participant-focus:not(.local-groupimport-easystud--participants-filters-expanded).local-groupimport-easystud--participant-groups-filters-expanded &__filters,
+    &--participant-focus:not(.local-groupimport-easystud--participants-filters-expanded).local-groupimport-easystud--participant-groups-filters-expanded &-participant-groups__create,
+    &--structure-focus.local-groupimport-easystud--structure-groups-filters-expanded:not(.local-groupimport-easystud--structure-groupings-filters-expanded) &-create-card,
+    &--structure-focus:not(.local-groupimport-easystud--structure-groups-filters-expanded).local-groupimport-easystud--structure-groupings-filters-expanded &-create-card {
+      align-self: start;
+    }
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .local-groupimport-easystud-tree__section[data-easystud-grouping-id] {
     @include easyedu.non-draggable-card-hover(

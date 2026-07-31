@@ -25,3 +25,12 @@ Preserve and compare it first. Report repository, branch, HEAD, upstream,
 clean/dirty state and ahead/behind counts before claiming readiness. Managed
 workstations receive no remote service, elevated configuration or policy bypass
 without explicit organisational approval.
+
+## Disclosure motion safeguard
+
+For existing EasyStud disclosures, preserve the normal-motion open/close
+transition as well as the final geometry and ARIA state. Do not replace Motion
+with an instantaneous class or `hidden` change merely to repair layout. A
+focused regression scenario must assert the transitional
+`is-easyedu-disclosing` state in normal-motion mode; reduced-motion remains a
+separate supported path.

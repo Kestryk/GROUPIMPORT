@@ -7145,6 +7145,14 @@ const closeResponsiveAdvancedFilters = (root, key) => {
 };
 
 const bindAdvancedFilters = root => {
+    const getAdvancedFilterStateClass = key =>
+        'local-groupimport-easystud--' + key + '-filters-expanded';
+
+    const setAdvancedFilterAccessibility = (panel, expanded) => {
+        panel.inert = !expanded;
+        panel.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+    };
+
     const toggleAdvancedFilters = key => {
         const panel = root.querySelector('[data-easystud-advanced-filters="' + key + '"]');
         const toggle = root.querySelector('[data-easystud-advanced-filters-toggle="' + key + '"]');
@@ -7161,24 +7169,36 @@ const bindAdvancedFilters = root => {
             more.classList.toggle('is-expanded', nextexpanded);
         }
         if (nextexpanded) {
-            panel.classList.add('is-expanded');
+            setAdvancedFilterAccessibility(panel, true);
+            panel.hidden = false;
+            root.classList.add(getAdvancedFilterStateClass(key));
             Motion.expand(panel, {
-                duration: Motion.timing.slow,
+                prepare: () => {
+                    panel.classList.remove('is-collapsed');
+                    panel.classList.add('is-expanded');
+                },
                 onComplete: () => {
                     scheduleCompleteListAlignment(root);
                     requestGuideHighlightRefresh(root);
                 },
             });
         } else {
+            setAdvancedFilterAccessibility(panel, false);
             Motion.collapse(panel, {
-                duration: Motion.timing.slow,
+                hideOnComplete: false,
                 onComplete: () => {
+                    root.classList.remove(getAdvancedFilterStateClass(key));
                     panel.classList.remove('is-expanded');
+                    panel.classList.add('is-collapsed');
                     scheduleCompleteListAlignment(root);
                     requestGuideHighlightRefresh(root);
                 },
             });
         }
+        window.requestAnimationFrame(() => {
+            scheduleCompleteListAlignment(root);
+            requestGuideHighlightRefresh(root);
+        });
     };
 
     root.addEventListener('click', event => {
@@ -7202,8 +7222,11 @@ const bindAdvancedFilters = root => {
         const key = panel.getAttribute('data-easystud-advanced-filters');
         const toggle = root.querySelector('[data-easystud-advanced-filters-toggle="' + key + '"]');
         const expanded = !!(toggle && toggle.getAttribute('aria-expanded') === 'true');
-        panel.hidden = !expanded;
+        panel.hidden = false;
         panel.classList.toggle('is-expanded', expanded);
+        panel.classList.toggle('is-collapsed', !expanded);
+        root.classList.toggle(getAdvancedFilterStateClass(key), expanded);
+        setAdvancedFilterAccessibility(panel, expanded);
     });
 };
 
