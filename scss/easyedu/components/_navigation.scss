@@ -264,13 +264,13 @@
 
   @if $phone-trigger-clearance {
     // Phone layouts place the participant selector across the visual centre.
-    // Preserve a small, stable clearance beneath it without tying the handle
+    // Preserve a small, stable clearance above it without tying the handle
     // to scroll position or to another control's changing geometry.
     @media (max-width: 40rem) {
       .easyedu-navigation__trigger {
         inset-block-start: clamp(
           var(--easyedu-navigation-trigger-safe-edge),
-          calc(50dvh + var(--easyedu-touch-target-min) - var(--easyedu-navigation-trigger-safe-edge)),
+          calc(50dvh - var(--easyedu-touch-target-min) + var(--easyedu-navigation-trigger-safe-edge)),
           calc(100dvh - var(--easyedu-navigation-trigger-safe-edge))
         );
       }

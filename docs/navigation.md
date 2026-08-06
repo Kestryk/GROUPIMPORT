@@ -10,8 +10,9 @@ the page scrolls, which previously made the handle jump between positions.
 The steady placement is the visual viewport centre, with safe top and bottom
 bounds. On phone layouts up to `40rem`, Moodle places the participant selector
 across that centre; the trigger therefore uses the token-sized offset just
-below it. This is the nearest stable non-overlapping position, not a
-scroll-dependent calculation. The trigger keeps its vertical translation under
+above it. This keeps the trigger clear of the expanded Grouping identity rail
+without a scroll-dependent calculation or any Grouping-card geometry change.
+The trigger keeps its vertical translation under
 `prefers-reduced-motion`; only the horizontal hover movement is suppressed.
 
 The dedicated `responsive navigation trigger remains left-centred at …`

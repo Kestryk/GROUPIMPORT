@@ -10,6 +10,15 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-06
+
+#### Fixed
+
+- Move the phone Navigation trigger's existing token-sized clearance above the
+  viewport centre so it remains reachable without covering an expanded
+  Grouping identity rail; card geometry, motion and Navigation behavior are
+  unchanged.
+
 ### 2026-08-05
 
 #### Fixed

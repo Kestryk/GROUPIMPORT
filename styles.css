@@ -1081,7 +1081,7 @@
 }
 @media (max-width: 40rem) {
   .local-groupimport-easystud__navigation .easyedu-navigation__trigger {
-    inset-block-start: clamp(var(--easyedu-navigation-trigger-safe-edge), 50dvh + var(--easyedu-touch-target-min) - var(--easyedu-navigation-trigger-safe-edge), 100dvh - var(--easyedu-navigation-trigger-safe-edge));
+    inset-block-start: clamp(var(--easyedu-navigation-trigger-safe-edge), 50dvh - var(--easyedu-touch-target-min) + var(--easyedu-navigation-trigger-safe-edge), 100dvh - var(--easyedu-navigation-trigger-safe-edge));
   }
 }
 .local-groupimport-easystud__navigation .easyedu-navigation__trigger-label {
