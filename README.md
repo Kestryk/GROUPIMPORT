@@ -21,6 +21,9 @@ the historical Group Import CSV plugin without moving data or changing URLs.
 - Records reversible operations in a course-level history.
 - Can restore an import without discarding unrelated changes made later.
 - Provides a styled Excel example with instructions and representative rows.
+- Keeps the Mass Import view behind a server-rendered loading skeleton until
+  its AMD controls are ready, using the shared bottom-end `Loading in progress`
+  indicator during bootstrap and real actions.
 
 ### Simplified student management
 
@@ -29,6 +32,13 @@ the historical Group Import CSV plugin without moving data or changing URLs.
 - Uses Moodle-native group APIs and does not enrol new course users.
 - Includes the EasyStud contextual guide and guided paths.
 - Can be enabled or disabled globally by an administrator.
+
+### Administration settings
+
+- Keeps Moodle's native settings APIs and controls while showing a structural
+  EasyStud skeleton until dependency/show-hide controls settle.
+- Reuses the shared bottom-end `Loading in progress` indicator during the
+  settings bootstrap.
 
 ## Upgrade behaviour
 
@@ -84,6 +94,11 @@ for export and deletion of this data.
 - SCSS entry point: `scss/easystud.scss`.
 - Compile styles with `sass scss/easystud.scss styles.css --no-source-map`.
 - Playwright documentation: `tools/playwright/README.md`.
+- Mass Import loading contract: `docs/testing/mass-import-loading-state.md`.
+- Administration settings loading contract: `docs/testing/admin-settings-loading-state.md`.
+- Authenticated Playwright checks use the DPAPI-backed
+  `tools/playwright/Invoke-EasyStudPlaywrightWithSavedCredentials.ps1` runner
+  with configurable local loader and orchestration paths.
 - Shared EasyEdu contracts: `easyedu-kit-docs/`.
 - Multi-machine workflow: follow the canonical
   [EasyEdu handoff procedure](https://github.com/Kestryk/workstation-sync/blob/main/docs/PROJECT-HANDOFF.md).

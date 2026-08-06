@@ -5,9 +5,186 @@
 // language around them so settings remain accessible and theme-overridable.
 @use "../easyedu" as easyedu;
 
+body.local-groupimport-admin-settings-page--loading [data-easystud-loading-skeleton] {
+  // Moodle's generated settings CSS uses an ID-qualified `display: none` for
+  // this same node. The loading marker is the deliberate exception.
+  display: grid !important;
+  @include easyedu.loading-opacity-transition(180ms);
+}
+
+body.local-groupimport-admin-settings-page--loading
+  #page-admin-setting-local_groupimport.is-easystud-loading-skeleton-exiting
+  [data-easystud-loading-skeleton] {
+  @include easyedu.loading-opacity-hidden;
+}
+
+body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport {
+  #adminsettings > .settingsform > * {
+    display: none;
+  }
+
+  #adminsettings > .settingsform > .formsettingheading:first-of-type {
+    display: block;
+    margin: 0;
+  }
+
+  #adminsettings > .settingsform > fieldset:first-of-type {
+    display: block;
+    margin: 0;
+
+    > * {
+      display: none !important;
+    }
+
+    > .formsettingheading:first-of-type {
+      display: block !important;
+      margin: 0;
+    }
+  }
+
+  [data-easystud-loading-skeleton] {
+    display: grid;
+  }
+
+  // Moodle's broad settingsform child reset has two IDs and wins over the
+  // generic loading selector above. Match the skeleton explicitly so the
+  // structural placeholder remains visible during the loading state.
+  #adminsettings .settingsform
+    .local-groupimport-admin-settings__loading-skeleton[data-easystud-loading-skeleton] {
+    display: grid;
+  }
+}
+
 #page-admin-setting-local_groupimport {
   @include easyedu.token-defaults;
   @include easyedu.groupimport-compat-tokens;
+  @include easyedu.action-busy-indicator-bottom-end("data-easyedu-action-busy-label");
+
+  &.is-easystud-loading-content-entering #adminsettings .settingsform {
+    opacity: 0;
+    pointer-events: none;
+    @include easyedu.loading-opacity-transition(180ms);
+  }
+
+  &.is-easystud-loading-content-entered #adminsettings .settingsform {
+    opacity: 1;
+  }
+
+  .local-groupimport-admin-settings__loading-skeleton {
+    display: none;
+    gap: 1rem;
+    padding: 0.5rem 0.25rem 1rem;
+  }
+
+  .local-groupimport-admin-settings__loading-header {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .local-groupimport-admin-settings__loading-grid {
+    align-items: stretch;
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .local-groupimport-admin-settings__loading-sections {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .local-groupimport-admin-settings__loading-section {
+    background: linear-gradient(135deg, #fff 0%, var(--easyedu-surface-soft) 100%);
+    border: 1px solid #cfdee9;
+    border-radius: 0.85rem;
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.9rem;
+  }
+
+  .local-groupimport-admin-settings__loading-section-title {
+    height: 0.9rem;
+    width: min(15rem, 42%);
+  }
+
+  .local-groupimport-admin-settings__loading-form-rows {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .local-groupimport-admin-settings__loading-form-row {
+    align-items: center;
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: minmax(8rem, 0.36fr) minmax(0, 1fr);
+  }
+
+  .local-groupimport-admin-settings__loading-form-label {
+    height: 0.75rem;
+    width: min(12rem, 82%);
+  }
+
+  .local-groupimport-admin-settings__loading-form-control {
+    height: 2.7rem;
+    width: min(100%, 34rem);
+  }
+
+  .local-groupimport-admin-settings__loading-form-control--tall {
+    height: 6.2rem;
+  }
+
+  .local-groupimport-admin-settings__loading-card {
+    background: linear-gradient(135deg, #fff 0%, var(--easyedu-surface-soft) 100%);
+    border: 1px solid #cfdee9;
+    border-radius: 0.85rem;
+    display: grid;
+    gap: 0.65rem;
+    min-height: 11rem;
+    padding: 0.85rem;
+  }
+
+  .local-groupimport-admin-settings__loading-surface {
+    @include easyedu.skeleton-surface($radius: 0.68rem);
+    @include easyedu.skeleton-shimmer-direct(
+      $animation-name: local-groupimport-easystud-loading-shimmer-v4,
+      $duration: 2s
+    );
+  }
+
+  .local-groupimport-admin-settings__loading-eyebrow {
+    height: 0.7rem;
+    width: min(9rem, 32%);
+  }
+
+  .local-groupimport-admin-settings__loading-title {
+    height: 1.55rem;
+    width: min(22rem, 72%);
+  }
+
+  .local-groupimport-admin-settings__loading-intro {
+    height: 0.9rem;
+    width: min(38rem, 94%);
+  }
+
+  .local-groupimport-admin-settings__loading-card-title {
+    height: 1.15rem;
+    width: 62%;
+  }
+
+  .local-groupimport-admin-settings__loading-field {
+    height: 2.6rem;
+    width: 100%;
+  }
+
+  .local-groupimport-admin-settings__loading-field--short {
+    height: 2.6rem;
+    width: 72%;
+  }
+
+  .local-groupimport-admin-settings__loading-row {
+    height: 0.85rem;
+    width: 84%;
+  }
 
   .settingsform {
     margin-left: auto;
@@ -304,6 +481,32 @@
       padding-right: 0;
       width: auto;
     }
+
+    button,
+    input[type="submit"] {
+      &:focus-visible {
+        @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+        border-color: var(--easyedu-control-focus-border) !important;
+        box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
+      }
+
+      &:focus:not(:focus-visible) {
+        outline: 0;
+      }
+    }
+  }
+
+  #id_s_local_groupimport_enablesimplifiedview,
+  #id_s_local_groupimport_enableanimations {
+    &:focus-visible {
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: 0;
+    }
   }
 
   select[name="s_local_groupimport_alloweduserfields[]"],
@@ -324,9 +527,12 @@
       box-shadow var(--easyedu-motion-fast) ease;
     width: min(100%, 34rem) !important;
 
-    &:focus {
-      border-color: var(--easyedu-control-focus-border);
-      box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+    &:focus,
+    &:focus-visible {
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+    }
+
+    &:focus:not(:focus-visible) {
       outline: 0;
     }
 
@@ -346,6 +552,10 @@
   }
 
   @media (max-width: 48rem) {
+    .local-groupimport-admin-settings__loading-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .local-groupimport-admin-settings {
       padding: 0.85rem;
     }
@@ -353,6 +563,21 @@
     .local-groupimport-admin-settings__hero,
     .local-groupimport-admin-settings__field-grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .local-groupimport-admin-settings__loading-form-row {
+      align-items: stretch;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .local-groupimport-admin-settings__loading-form-control {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce), (forced-colors: active) {
+    .local-groupimport-admin-settings__loading-surface {
+      animation: none;
     }
   }
 }

@@ -19,6 +19,7 @@ not need to install a shared dependency.
 easyedu-ui-kit/
   scss/easyedu/  Public SCSS tokens and mixins.
   guide/         Generic guide AMD/template/language foundation.
+  navigation/    Normalized navigation context, templates and controller.
   docs/          Component API and integration notes.
   examples/      Optional plugin-specific examples.
 ```
@@ -72,6 +73,16 @@ When extracting from EasyStud/groupimport:
 4. Keep plugin-specific selectors out of the kit.
 5. Document expected HTML, tokens and variants.
 6. Add a compile check before tagging.
+
+Navigation extraction additionally requires one permission-resolved server
+model for both desktop and responsive wrappers. The compact controller may own
+panel state and focus, but it must not reconstruct items from desktop HTML.
+
+Guide synchronization additionally treats the controller, template and guide
+SCSS as one reviewed source set. Consumers preserve their Moodle AMD namespace
+and product adapter configuration while exposing both shared lifecycle methods,
+`init()` and `destroy()`. See
+`docs/components/guide-adapter-integration.md`.
 
 ## Versioning
 

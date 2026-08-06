@@ -162,8 +162,7 @@
       min-height: 2rem;
 
       &:focus {
-        border-color: #86b7e0;
-        box-shadow: 0 0 0 0.18rem rgba(15, 108, 191, 0.14);
+        @include easyedu.ring($border-color: #86b7e0);
       }
     }
   }
@@ -263,6 +262,9 @@
 
   &-settings-modal__list-section {
     @include easyedu.metadata-section;
+    // Keep the shared summary ring outside the complete disclosure target;
+    // the nested scroll region owns content clipping instead.
+    overflow: visible;
 
     summary {
       @include easyedu.metadata-section-summary;
@@ -554,7 +556,7 @@
     background: #fbfdff;
     border: 1px solid #d9e7f1;
     border-radius: 0.9rem;
-    overflow: hidden;
+    overflow: visible;
 
     summary {
       align-items: center;
@@ -564,6 +566,14 @@
       grid-template-columns: minmax(0, 1fr) auto;
       list-style: none;
       padding: 0.52rem 0.62rem;
+
+      &:focus-visible {
+        @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      }
+
+      &:focus:not(:focus-visible) {
+        outline: 0;
+      }
 
       &::-webkit-details-marker {
         display: none;
@@ -660,7 +670,7 @@
     background: #fbfdff;
     border: 1px solid #d9e7f1;
     border-radius: 0.9rem;
-    overflow: hidden;
+    overflow: visible;
 
     summary {
       color: #40566c;
@@ -669,6 +679,14 @@
       font-weight: 720;
       list-style: none;
       padding: 0.52rem 0.62rem;
+
+      &:focus-visible {
+        @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      }
+
+      &:focus:not(:focus-visible) {
+        outline: 0;
+      }
 
       &::-webkit-details-marker {
         display: none;

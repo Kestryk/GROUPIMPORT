@@ -214,8 +214,7 @@
     width: 100%;
 
     &:focus {
-      border-color: #8abce3;
-      box-shadow: 0 0 0 0.18rem rgba(15, 108, 191, 0.16);
+      @include easyedu.ring($border-color: #8abce3);
     }
   }
 }

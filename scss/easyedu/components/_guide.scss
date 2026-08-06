@@ -4,8 +4,10 @@
 // reusable visual structure for the tutorial launcher, modal, slides,
 // interface highlight and guided checklist without forcing global selectors.
 
+@use "focus";
+
 @mixin guide-launcher-button {
-  align-items: center;
+  align-items: start;
   background: transparent;
   border: 0;
   border-radius: 0.9rem;
@@ -102,7 +104,7 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--easyedu-accent) 22%, transparent);
+    @include focus.ring($color: var(--easyedu-focus-ring-accent));
   }
 }
 
@@ -121,9 +123,16 @@
     display: flex;
     inset: 0;
     justify-content: center;
-    padding: 1rem;
+    padding:
+      max(1rem, env(safe-area-inset-top))
+      max(1rem, env(safe-area-inset-right))
+      max(1rem, env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-left));
     position: fixed;
-    z-index: 1060;
+    // Consumers may portal the dialog outside a transformed compact drawer.
+    // Keep the global overlay above that drawer without coupling it to a
+    // product-specific stacking number.
+    z-index: calc(var(--easyedu-navigation-layer-panel, 1066) + 1);
 
     &[hidden] {
       display: none;
@@ -224,7 +233,7 @@
     align-items: center;
     display: flex;
     flex: 0 1 auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.32rem;
     justify-content: flex-end;
     margin-left: auto;
@@ -541,6 +550,10 @@
       color: #fff !important;
     }
 
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary-strong));
+    }
+
     .fa {
       align-items: center;
       display: inline-flex;
@@ -585,6 +598,10 @@
       color: #fff !important;
     }
 
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary-strong));
+    }
+
     .fa {
       color: currentColor;
       flex: 0 0 auto;
@@ -627,6 +644,10 @@
       padding: var(--easyedu-guide-action-padding);
       text-align: center;
       white-space: normal;
+
+      &:focus-visible {
+        @include focus.ring;
+      }
     }
 
     [data-easyedu-guide-previous] {
@@ -669,6 +690,10 @@
       border-color: var(--easyedu-primary-strong) !important;
       color: #fff !important;
     }
+
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary-strong));
+    }
   }
 
   [data-easyedu-guide-previous].btn {
@@ -682,6 +707,10 @@
       border-color: var(--easyedu-primary);
       color: var(--easyedu-primary-strong);
     }
+
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary));
+    }
   }
 
   .is-easyedu-guide-highlight-target {
@@ -693,7 +722,7 @@
     background: #fff;
     border: 1px solid #cfe1ef;
     border-radius: 1rem;
-    bottom: 1.45rem;
+    bottom: calc(1.45rem + var(--easyedu-guide-bottom-obstruction, 0px));
     box-shadow: 0 0.85rem 1.8rem rgba(31, 42, 55, 0.16);
     display: grid;
     gap: 0.85rem;
@@ -703,9 +732,18 @@
     position: fixed;
     right: 1.35rem;
     z-index: 1048;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 180ms ease, transform 180ms ease;
 
     &[hidden] {
       display: none;
+    }
+
+    &.is-closing {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(0.45rem);
     }
   }
 
@@ -749,6 +787,11 @@
     line-height: 1.18;
     max-width: none;
     min-width: max-content;
+    min-height: 2.5rem;
+    border-radius: 0.72rem;
+    font-size: 0.74rem;
+    font-weight: 740;
+    padding: 0.34rem 0.72rem;
     overflow-wrap: anywhere;
     text-align: center;
     white-space: nowrap;
@@ -760,16 +803,41 @@
       border-color: var(--easyedu-primary-strong) !important;
       color: #fff !important;
     }
+
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary-strong));
+    }
   }
 
   .easyedu-guide-interface-return__dismiss {
     align-items: center;
-    border-radius: 0.6rem;
-    display: inline-flex;
-    height: 2rem;
+    background: #fff;
+    border: 1px solid #d5e2ed;
+    border-radius: 0.65rem;
+    color: #63788d;
+    display: grid;
+    height: 2.5rem;
     justify-content: center;
+    line-height: 1;
     padding: 0;
-    width: 2rem;
+    place-items: center;
+    width: 2.5rem;
+
+    .fa {
+      line-height: 1;
+      margin: 0;
+    }
+
+    &:hover,
+    &:focus {
+      background: #f7fbff;
+      border-color: #bdd4e7;
+      color: #203244;
+    }
+
+    &:focus-visible {
+      @include focus.ring($border-color: #bdd4e7);
+    }
   }
 
   @media (max-width: 40rem) {
@@ -914,6 +982,166 @@
     font-weight: 700;
     padding: 0.62rem 0.7rem;
   }
+
+  @media (max-width: 48rem), (max-height: 36rem) {
+    .easyedu-guide-modal {
+      align-items: flex-end;
+      padding:
+        max(0.5rem, env(safe-area-inset-top))
+        max(0.5rem, env(safe-area-inset-right))
+        max(0.5rem, env(safe-area-inset-bottom))
+        max(0.5rem, env(safe-area-inset-left));
+    }
+
+    .easyedu-guide-modal__dialog {
+      border-radius: 1rem 1rem 0 0;
+      height: auto;
+      max-height: calc(100vh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      max-width: none;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .easyedu-guide-modal__header,
+    .easyedu-guide-modal__footer {
+      padding: 0.78rem 0.85rem;
+    }
+
+    .easyedu-guide-modal__header {
+      // Balance the close target with an equal leading slot so the guide title
+      // remains centred in the sheet rather than centred only in the free gap.
+      align-items: center;
+      display: grid;
+      grid-template-columns: 2.35rem minmax(0, 1fr) 2.35rem;
+      justify-content: initial;
+      min-height: 6.25rem;
+    }
+
+    .easyedu-guide-modal__title-wrap {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      grid-column: 2;
+      justify-content: center;
+      min-width: 0;
+      text-align: center;
+
+      > div {
+        display: grid;
+        gap: 0.2rem;
+      }
+
+      h2,
+      p {
+        text-align: center;
+      }
+    }
+
+    .easyedu-guide-modal__hero-icon {
+      font-size: 1rem;
+      height: 2.5rem;
+      width: 2.5rem;
+    }
+
+    .easyedu-guide-modal__close {
+      grid-column: 3;
+      grid-row: 1;
+      flex: 0 0 auto;
+      justify-self: end;
+      margin-inline-start: auto;
+    }
+
+    .easyedu-guide-modal__footer {
+      align-items: center;
+      flex-direction: column;
+      gap: 0.65rem;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .easyedu-guide-modal__footer-actions {
+      flex: 0 0 auto;
+      order: 1;
+      width: 100%;
+    }
+
+    .easyedu-guide-modal__step-count {
+      order: 2;
+      text-align: center;
+      width: 100%;
+    }
+
+    .easyedu-guide-modal__footer-actions,
+    .easyedu-guide-modal__footer-actions .btn {
+      flex: 1 1 0;
+    }
+
+    .easyedu-guide-modal__footer-actions .btn {
+      min-height: 2.5rem;
+    }
+
+    .easyedu-guide-slide {
+      align-items: center;
+      border-left: 0;
+      border-top: 0.45rem solid var(--easyedu-primary);
+      gap: 0.78rem;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      min-height: 0;
+      padding: 1rem;
+      text-align: center;
+
+      > div {
+        display: grid;
+        justify-items: center;
+        min-width: 0;
+        width: 100%;
+      }
+    }
+
+    .easyedu-guide-slide__header {
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.68rem;
+      justify-content: center;
+      margin-bottom: 0.78rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .easyedu-guide-slide__icon {
+      font-size: 1rem;
+      height: 2.35rem;
+      justify-self: center;
+      width: 2.35rem;
+    }
+
+    .easyedu-guide-slide__content,
+    .easyedu-guide-slide__content p,
+    .easyedu-guide-slide__content li,
+    .easyedu-guide-slide__content span,
+    .easyedu-guide-slide__content strong {
+      text-align: center;
+    }
+
+    .easyedu-guide-slide__show {
+      flex: 1 1 100%;
+      margin-inline-start: 0;
+      width: 100%;
+    }
+
+    .easyedu-guide-slide__locked {
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .easyedu-guide-modal__map-flow {
+      display: none;
+    }
+  }
 }
 
 @mixin guide-rich-navigation {
@@ -991,8 +1219,7 @@
 
     &:focus-visible {
       background: #fff;
-      border-color: #aac9df;
-      outline: 0;
+      @include focus.ring($border-color: #aac9df);
     }
 
     &:disabled {
@@ -1057,6 +1284,10 @@
       border-color: #bfd3e4;
       color: var(--easyedu-primary-strong);
       outline: 0;
+    }
+
+    &:focus-visible {
+      @include focus.ring($border-color: #bfd3e4);
     }
 
     &.is-active {
@@ -1155,6 +1386,10 @@
         border-color: #d7e0e9;
         color: #697c90;
       }
+
+      &:focus-visible {
+        @include focus.ring($border-color: #d7e0e9);
+      }
     }
   }
 
@@ -1194,7 +1429,7 @@
     0 0.4rem 1rem rgba(41, 114, 77, 0.1);
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: auto minmax(0, 1fr) minmax(8rem, auto);
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 10.5rem);
   margin: 1.12rem auto 0;
   max-width: min(100%, 48rem);
   min-width: 0;
@@ -1988,6 +2223,8 @@
   }
 
   @media (max-width: 48rem) {
+    .easyedu-guide-visual--flow,
+    .easyedu-guide-visual--cards,
     .easyedu-guide-visual--card-detail,
     .easyedu-guide-visual--assignment,
     .easyedu-guide-visual--paste,
@@ -1995,23 +2232,104 @@
     .easyedu-guide-visual--action-flow,
     .easyedu-guide-visual--drag-drop,
     .easyedu-guide-visual--formula {
+      align-items: center;
       display: flex;
       flex-direction: column;
+      text-align: center;
     }
 
     .easyedu-guide-assignment-row,
     .easyedu-guide-drag-lane {
       display: flex;
+      flex-direction: column;
       flex-wrap: wrap;
       justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .easyedu-guide-flow-arrow {
+      align-items: center;
+      display: inline-flex;
+      height: 1.5rem;
+      justify-content: center;
+      transform: rotate(90deg);
+      width: 1.5rem;
+    }
+
+    .easyedu-guide-mini-card,
+    .easyedu-guide-visual-card,
+    .easyedu-guide-step-pill {
+      border-left: 0;
+      border-top: 0.34rem solid var(--easyedu-primary);
+      justify-items: center;
+      text-align: center;
+    }
+
+    .easyedu-guide-mini-card--participant,
+    .easyedu-guide-visual-card--participant,
+    .easyedu-guide-step-pill--participant {
+      border-top-color: var(--easyedu-participant);
+    }
+
+    .easyedu-guide-mini-card--group,
+    .easyedu-guide-visual-card--group,
+    .easyedu-guide-step-pill--group {
+      border-top-color: var(--easyedu-group);
+    }
+
+    .easyedu-guide-mini-card--grouping,
+    .easyedu-guide-visual-card--grouping,
+    .easyedu-guide-step-pill--grouping {
+      border-top-color: var(--easyedu-grouping);
+    }
+
+    .easyedu-guide-mini-card--source,
+    .easyedu-guide-visual-card--source,
+    .easyedu-guide-step-pill--source {
+      border-top-color: #4873ad;
+    }
+
+    .easyedu-guide-mini-card--layer,
+    .easyedu-guide-visual-card--layer,
+    .easyedu-guide-step-pill--layer {
+      border-top-color: #29724d;
+    }
+
+    .easyedu-guide-mini-card--banner,
+    .easyedu-guide-visual-card--banner,
+    .easyedu-guide-step-pill--banner {
+      border-top-color: #6a7f98;
     }
 
     .easyedu-guide-guided-card {
-      grid-template-columns: auto minmax(0, 1fr);
+      // Keep the compact path as one full-width vertical flow. Do not restore
+      // grid areas here: they make the icon/content/action read as split cells.
+      align-items: stretch;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+
+      .easyedu-guide-guided-card__icon {
+        align-self: center;
+      }
+
+      .easyedu-guide-guided-card__body {
+        align-self: stretch;
+        justify-items: center;
+        text-align: center;
+        width: 100%;
+      }
+
+      .easyedu-guide-guided-card__steps {
+        justify-content: center;
+      }
 
       .easyedu-guide-slide__start {
-        grid-column: 1 / -1;
-        justify-self: stretch;
+        border-color: var(--easyedu-primary-strong) !important;
+        border-width: 0.125rem !important;
+        align-self: stretch;
+        width: 100%;
       }
     }
   }
@@ -2044,6 +2362,7 @@
   .easyedu-guide-guided-card__body {
     display: grid;
     gap: 0.16rem;
+    min-width: 0;
 
     strong {
       color: #203348;
@@ -2079,7 +2398,11 @@
       font-size: 0.68rem;
       font-weight: 720;
       line-height: 1.2;
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
       padding: 0.18rem 0.44rem;
+      white-space: normal;
     }
   }
 
@@ -2089,6 +2412,8 @@
     border-color: var(--easyedu-primary) !important;
     color: #fff !important;
     margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
     width: 100%;
     white-space: normal;
 
@@ -2099,6 +2424,28 @@
       border-color: var(--easyedu-primary-strong) !important;
       color: #fff !important;
     }
+
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary-strong));
+    }
+  }
+
+  // This must follow the card-surface mixin above. The surface establishes the
+  // desktop three-column grid; this explicit flex stack prevents any compact
+  // viewport from inheriting that two-/three-column visual separation.
+  @media (max-width: 48rem), (max-height: 36rem) {
+    .easyedu-guide-guided-card {
+      align-items: stretch;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+
+      .easyedu-guide-guided-card__body,
+      .easyedu-guide-slide__start {
+        align-self: stretch;
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -2108,17 +2455,20 @@
     border: 1px solid #cfe1ef;
     border-left: 0.35rem solid #29724d;
     border-radius: 1rem;
-    bottom: 1.45rem;
+    bottom: calc(1.45rem + var(--easyedu-guide-bottom-obstruction, 0px));
     box-shadow: 0 0.75rem 1.8rem rgba(31, 42, 55, 0.14);
     box-sizing: border-box;
     display: grid;
     gap: 0.65rem;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
     left: 1.25rem;
-    max-height: none;
+    max-height: calc(100vh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    inline-size: min(26rem, calc(100vw - 2.5rem));
+    max-inline-size: calc(100vw - 2.5rem);
     max-width: min(92vw, 28rem);
-    min-width: min(92vw, 24rem);
-    overflow-x: hidden;
-    overflow-y: visible;
+    min-width: 0;
+    overflow: hidden;
     padding: 0.78rem;
     position: fixed;
     right: auto;
@@ -2129,7 +2479,7 @@
       right 0.24s ease,
       transform 0.24s ease,
       box-shadow 0.24s ease;
-    width: 26rem;
+    width: min(26rem, calc(100vw - 2.5rem));
     z-index: 1070;
 
     &[hidden] {
@@ -2147,54 +2497,172 @@
     }
 
     &.is-minimized {
-      gap: 0;
-      max-width: min(92vw, 18rem);
+      // A reduced checklist is one real checklist row, not a second panel.
+      // Its natural height must follow that row on both wide and compact
+      // viewports; only the available inline size varies by viewport.
+      gap: 0.35rem;
+      grid-template-rows: auto;
+      max-width: min(26rem, calc(100vw - 2.5rem));
       min-width: 0;
-      padding: 0.58rem 0.66rem;
-      width: auto;
-
-      .easyedu-guided-panel__steps,
-      .easyedu-guided-panel__message,
-      .easyedu-guided-panel__footer {
-        margin-top: 0;
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        pointer-events: none;
-      }
+      padding: 0.45rem;
+      width: min(26rem, calc(100vw - 2.5rem));
 
       .easyedu-guided-panel__header {
-        align-items: center;
+        align-items: start;
+        inset: 0.42rem 0.42rem auto auto;
+        pointer-events: none;
+        position: absolute;
+        z-index: 3;
       }
 
       .easyedu-guided-panel__header > div:first-child {
-        max-width: 12.6rem;
+        display: none;
+      }
+
+      .easyedu-guided-panel__header-actions,
+      .easyedu-guided-panel__minimize {
+        display: flex;
+        pointer-events: auto;
       }
 
       .easyedu-guided-panel__close {
         display: none;
       }
 
-      .easyedu-guided-panel__header strong {
-        color: #203348;
-        font-size: 0.88rem;
-        line-height: 1.14;
+      .easyedu-guided-panel__steps {
+        display: block;
+        margin: 0;
+        max-height: none;
+        opacity: 1;
+        overflow: hidden;
+        padding: 0 2.95rem 0 0;
+        pointer-events: auto;
       }
 
-      .easyedu-guided-panel__header span {
-        color: #526a82;
-        font-size: 0.68rem;
-        font-weight: 820;
-        letter-spacing: 0.055em;
-        line-height: 1.2;
-        text-transform: uppercase;
+      .easyedu-guided-panel__step {
+        display: none;
+        min-height: 2.6rem;
       }
-    }
 
-    &.is-minimized .easyedu-guided-panel__message {
-      border-width: 0;
-      padding-bottom: 0;
-      padding-top: 0;
+      .easyedu-guided-panel__step.is-active {
+        display: grid;
+      }
+
+      .easyedu-guided-panel__message {
+        display: none;
+        margin: 0;
+        max-height: none;
+        min-height: 2.6rem;
+        opacity: 1;
+        padding: 0.5rem 0.6rem;
+        pointer-events: auto;
+      }
+
+      .easyedu-guided-panel__footer {
+        display: none;
+        margin: 0;
+        max-height: none;
+        opacity: 1;
+        overflow: visible;
+        pointer-events: auto;
+      }
+
+      &.is-complete {
+        grid-template-columns: minmax(0, 1fr) auto;
+
+        .easyedu-guided-panel__steps {
+          display: none;
+        }
+
+        .easyedu-guided-panel__message {
+          display: grid;
+          grid-column: 1;
+          grid-row: 1;
+        }
+
+        .easyedu-guided-panel__footer {
+          align-self: stretch;
+          display: flex;
+          grid-column: 2;
+          grid-row: 1;
+        }
+
+        .easyedu-guided-panel__return {
+          min-height: 2.6rem;
+        }
+
+        .easyedu-guided-panel__message-compact {
+          display: none !important;
+        }
+
+        &.is-minimized {
+          align-items: center;
+          column-gap: 0.42rem;
+          grid-template-columns: minmax(0, 1fr) auto auto;
+          grid-template-rows: auto;
+          min-height: 0;
+          padding: 0.38rem;
+
+          .easyedu-guided-panel__header {
+            display: contents;
+            inset: auto;
+            position: static;
+          }
+
+          .easyedu-guided-panel__header-actions {
+            grid-column: 3;
+            grid-row: 1;
+            margin-left: 0;
+            max-width: none;
+          }
+
+          .easyedu-guided-panel__minimize {
+            display: none;
+          }
+
+          .easyedu-guided-panel__close {
+            display: grid;
+            place-items: center;
+          }
+
+          .easyedu-guided-panel__message {
+            align-items: center;
+            box-sizing: border-box;
+            box-shadow: none;
+            grid-column: 1;
+            grid-row: 1;
+            height: 2.5rem;
+            min-height: 2.5rem;
+            overflow: hidden;
+            padding: 0.32rem 0.55rem;
+
+            .fa {
+              margin-top: 0;
+            }
+          }
+
+          .easyedu-guided-panel__message [data-easyedu-guide-checklist-message-text] {
+            display: none !important;
+          }
+
+          .easyedu-guided-panel__message-compact {
+            display: block !important;
+            font-weight: 760;
+          }
+
+          .easyedu-guided-panel__footer {
+            align-items: center;
+            grid-column: 2;
+            grid-row: 1;
+          }
+
+          .easyedu-guided-panel__return {
+            min-height: 2.5rem;
+            padding-inline: 0.72rem;
+            width: auto;
+          }
+        }
+      }
     }
 
     &.is-complete .easyedu-guided-panel__message {
@@ -2222,6 +2690,14 @@
           border-color: #ecd49b;
           box-shadow: 0 0.3rem 0.7rem rgba(122, 90, 18, 0.1);
         }
+
+        &:focus-visible {
+          @include focus.ring(
+            $color: var(--easyedu-focus-ring-warning),
+            $border-color: #ecd49b,
+            $base-shadow: 0 0.3rem 0.7rem rgba(122, 90, 18, 0.1)
+          );
+        }
       }
     }
   }
@@ -2231,6 +2707,8 @@
     display: flex;
     gap: 0.75rem;
     justify-content: space-between;
+    min-width: 0;
+    width: 100%;
 
     > div:first-child {
       display: grid;
@@ -2266,6 +2744,8 @@
     flex-direction: row;
     gap: 0.35rem;
     margin-left: auto;
+    max-width: 40%;
+    min-width: 0;
   }
 
   .easyedu-guided-panel__close,
@@ -2277,11 +2757,11 @@
     color: #63788d;
     display: inline-flex;
     flex: 0 0 auto;
-    height: 2rem;
+    height: 2.5rem;
     justify-content: center;
     padding: 0;
     position: relative;
-    width: 2rem;
+    width: 2.5rem;
 
     .fa {
       left: 50%;
@@ -2297,18 +2777,26 @@
       border-color: #bdd4e7;
       color: #203244;
     }
+
+    &:focus-visible {
+      @include focus.ring($border-color: #bdd4e7);
+    }
   }
 
   .easyedu-guided-panel__steps {
+    align-content: start;
     box-sizing: border-box;
     contain: inline-size;
     display: grid;
     gap: 0.42rem;
     max-width: 100%;
-    max-height: none;
+    max-height: 100%;
+    min-height: 0;
     min-width: 0;
     opacity: 1;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: var(--easyedu-focus-ring-width);
     transition: max-height 0.34s var(--easyedu-motion-ease), opacity 0.18s ease, margin 0.22s ease;
     width: 100%;
   }
@@ -2347,6 +2835,14 @@
       border-color: #c3dfcd;
       box-shadow: 0 0.3rem 0.7rem rgba(41, 114, 77, 0.1);
       outline: 0;
+    }
+
+    &:focus-visible {
+      @include focus.ring(
+        $color: var(--easyedu-focus-ring-accent),
+        $border-color: #c3dfcd,
+        $base-shadow: 0 0.3rem 0.7rem rgba(41, 114, 77, 0.1)
+      );
     }
 
     &.is-complete {
@@ -2397,6 +2893,10 @@
           #f8fafc;
         border-color: #d7e0e9;
         box-shadow: none;
+      }
+
+      &:focus-visible {
+        @include focus.ring($border-color: #d7e0e9);
       }
 
       &[data-easyedu-guide-lock-message]::before {
@@ -2499,6 +2999,10 @@
     width: 1.65rem;
   }
 
+  .easyedu-guided-panel__message-compact {
+    display: none !important;
+  }
+
   .easyedu-guided-panel__message {
     align-items: start;
     background: #f4fbf7;
@@ -2516,7 +3020,8 @@
     max-height: 6rem;
     min-width: 0;
     opacity: 1;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     overflow-wrap: anywhere;
     padding: 0.55rem 0.62rem;
     transition: max-height 0.3s var(--easyedu-motion-ease), opacity 0.18s ease, margin 0.22s ease,
@@ -2579,12 +3084,13 @@
     gap: 0.35rem;
     justify-content: center;
     line-height: 1.18;
-    max-width: 100%;
-    min-width: 0;
+    max-width: none;
+    min-height: 2.5rem;
+    min-width: max-content;
     overflow-wrap: anywhere;
-    padding: 0.34rem 0.58rem;
+    padding: 0.34rem 0.72rem;
     text-align: center;
-    white-space: normal;
+    white-space: nowrap;
 
     .fa {
       color: currentColor;
@@ -2600,7 +3106,53 @@
       color: #fff !important;
       outline: 0;
     }
+
+    &:focus-visible {
+      @include focus.ring($border-color: var(--easyedu-primary-strong));
+    }
   }
+
+  @media (max-width: 40rem), (max-height: 32rem) {
+    .easyedu-guided-panel,
+    .easyedu-guided-panel.is-docked-left,
+    .easyedu-guided-panel.is-docked-right {
+      bottom: calc(max(0.5rem, env(safe-area-inset-bottom)) + var(--easyedu-guide-bottom-obstruction, 0px));
+      left: max(0.5rem, env(safe-area-inset-left));
+      max-height: calc(100vh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      max-width: none;
+      min-width: 0;
+      right: max(0.5rem, env(safe-area-inset-right));
+      width: auto;
+    }
+
+    .easyedu-guided-panel {
+      border: 0;
+      border-top: 0.35rem solid #29724d;
+      text-align: center;
+    }
+
+    .easyedu-guided-panel__footer {
+      justify-content: center;
+    }
+
+    .easyedu-guided-panel__return {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .easyedu-guided-panel.is-minimized {
+      // Mobile uses the complete available width, but retains the natural
+      // single-row height defined above.
+      max-width: none;
+      width: auto;
+    }
+  }
+}
+
+.easyedu-guide-dialog-open {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .easyedu-guide-highlight {
@@ -2625,6 +3177,42 @@
     0 0 0 0.28rem rgba(11, 117, 209, 0.2),
     0 0 0 0.65rem rgba(11, 117, 209, 0.08),
     0 0.85rem 2rem rgba(15, 33, 50, 0.16);
+}
+
+[dir="rtl"] {
+  .easyedu-guide-nav-arrow .fa,
+  .easyedu-guide-modal__map-arrow,
+  .easyedu-guide-flow-arrow {
+    transform: scaleX(-1);
+  }
+}
+
+@media (forced-colors: active) {
+  .easyedu-guide-modal__dialog,
+  .easyedu-guide-interface-return,
+  .easyedu-guided-panel,
+  .easyedu-guide-highlight {
+    border: 2px solid CanvasText;
+    box-shadow: none;
+    forced-color-adjust: auto;
+  }
+
+  .easyedu-guide-highlight {
+    outline: 3px solid Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .easyedu-guide-modal__dialog,
+  .easyedu-guide-slide,
+  .easyedu-guide-checklist__complete,
+  .easyedu-guided-panel,
+  .easyedu-guided-panel *,
+  .easyedu-guide-highlight {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
 }
 
 @keyframes easyedu-guide-demo-drag {

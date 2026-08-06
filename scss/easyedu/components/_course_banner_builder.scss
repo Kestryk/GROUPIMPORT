@@ -6,6 +6,7 @@
 // linked range/number controls.
 
 @use "buttons";
+@use "focus";
 @use "forms";
 @use "tables";
 @use "tooltips";
@@ -275,6 +276,13 @@
     transform: none !important;
   }
 
+  &:focus-visible {
+    @include focus.ring(
+      $color: color-mix(in srgb, var(--easyedu-preview-side-accent) 22%, transparent),
+      $border-color: color-mix(in srgb, var(--easyedu-preview-side-accent) 42%, var(--easyedu-control-border) 58%)
+    );
+  }
+
   &:active {
     transform: none !important;
   }
@@ -441,9 +449,15 @@
     cursor: pointer;
   }
 
-  &:hover,
-  &:focus-within {
+  &:hover {
     border-color: color-mix(in srgb, #{$accent} 34%, var(--easyedu-control-border) 66%);
+  }
+
+  &:focus-within {
+    @include focus.ring(
+      $color: color-mix(in srgb, #{$accent} 22%, transparent),
+      $border-color: color-mix(in srgb, #{$accent} 34%, var(--easyedu-control-border) 66%)
+    );
   }
 
   &:has(input:checked) {

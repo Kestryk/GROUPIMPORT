@@ -11,6 +11,148 @@
   padding-inline: clamp(0.1rem, 0.8vw, 0.75rem);
   width: 100%;
 
+  @include easyedu.action-busy-indicator-bottom-end("data-easyedu-action-busy-label");
+
+  &[data-easystud-loading-state="loading"] {
+    overflow: hidden;
+
+    > [data-easystud-real-content] {
+      display: none;
+    }
+
+    > [data-easystud-loading-skeleton] {
+      display: grid;
+    }
+  }
+
+  > [data-easystud-loading-skeleton][hidden] {
+    display: none !important;
+  }
+
+  &.is-easystud-loading-skeleton-exiting > [data-easystud-loading-skeleton] {
+    @include easyedu.loading-opacity-hidden;
+  }
+
+  &.is-easystud-loading-content-entering > [data-easystud-real-content] {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    @include easyedu.loading-opacity-transition(180ms);
+  }
+
+  &.is-easystud-loading-content-entered > [data-easystud-real-content] {
+    opacity: 1;
+  }
+
+  &__loading-skeleton {
+    display: none;
+    gap: 1.1rem;
+    min-width: 0;
+    padding-block: 0.45rem 0.9rem;
+    @include easyedu.loading-opacity-transition(180ms);
+  }
+
+  &__loading-header {
+    display: grid;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  &__loading-grid {
+    align-items: stretch;
+    display: grid;
+    gap: 1.15rem;
+    grid-template-columns: minmax(21rem, 0.88fr) minmax(25rem, 1.12fr);
+    min-width: 0;
+  }
+
+  &__loading-surface {
+    @include easyedu.skeleton-surface($radius: 0.72rem);
+    @include easyedu.skeleton-shimmer-direct(
+      $animation-name: local-groupimport-easystud-loading-shimmer-v4,
+      $duration: 2s
+    );
+  }
+
+  &__loading-eyebrow {
+    height: 0.72rem;
+    width: min(9rem, 32%);
+  }
+
+  &__loading-title {
+    height: 1.55rem;
+    width: min(21rem, 58%);
+  }
+
+  &__loading-intro {
+    height: 0.82rem;
+    width: min(42rem, 82%);
+  }
+
+  &__loading-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.25rem;
+  }
+
+  &__loading-action {
+    height: 2.25rem;
+    width: 8.8rem;
+  }
+
+  &__loading-card {
+    background: #f7fbff;
+    border: 1px solid #cfdee9;
+    border-radius: 1rem;
+    display: grid;
+    gap: 0.75rem;
+    min-height: 23rem;
+    min-width: 0;
+    padding: 1rem;
+  }
+
+  &__loading-card-header {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__loading-icon {
+    border-radius: 0.75rem;
+    flex: 0 0 2.55rem;
+    height: 2.55rem;
+    width: 2.55rem;
+  }
+
+  &__loading-card-title {
+    height: 1rem;
+    width: min(13rem, 64%);
+  }
+
+  &__loading-field {
+    height: 6.2rem;
+    margin-top: 0.2rem;
+    width: 100%;
+  }
+
+  &__loading-field--short {
+    height: 2.7rem;
+    width: 72%;
+  }
+
+  &__loading-row {
+    height: 2.65rem;
+    width: 100%;
+  }
+
+  &__loading-button {
+    height: 2.45rem;
+    margin-top: auto;
+    width: 10.5rem;
+  }
+
   &__header {
     align-items: flex-start;
     display: block;
@@ -200,7 +342,16 @@
       background: #eef6fc !important;
       border-color: #bcd5eb !important;
       box-shadow: 0 0.24rem 0.65rem rgba(15, 108, 191, 0.14);
-      outline: 0;
+    }
+
+    &:focus-visible {
+      @include easyedu.ring(
+        $border-color: var(--easyedu-control-focus-border),
+        $base-shadow: 0 0.24rem 0.65rem rgba(15, 108, 191, 0.14)
+      );
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring),
+        0 0.24rem 0.65rem rgba(15, 108, 191, 0.14) !important;
     }
   }
 
@@ -389,8 +540,7 @@
       min-height: 2.35rem;
 
       &:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
       }
     }
 
@@ -609,8 +759,7 @@
     }
 
     &:focus-within {
-      border-color: #86b7fe;
-      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
     }
   }
 
@@ -776,8 +925,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.18rem rgba(15, 108, 191, 0.16);
-      outline: 0;
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
     }
   }
 
@@ -917,5 +1067,21 @@
       color: var(--local-groupimport-easystud-text-muted);
       line-height: 1.42;
     }
+  }
+}
+
+@media (max-width: 1024px) {
+  .local-groupimport-import__loading-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .local-groupimport-import__loading-card {
+    min-height: 18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .local-groupimport-import__loading-surface {
+    animation: none;
   }
 }

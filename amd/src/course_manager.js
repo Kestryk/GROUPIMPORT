@@ -1815,175 +1815,152 @@ const getFixedHeaderOffset = () => {
     }, 0);
 };
 
-const bindHeaderNavigation = root => {
-    const navigation = root.querySelector('.local-groupimport-easystud__navigation .select-menu');
-    if (!navigation) {
+// Keep the shared guide launcher consumer-owned while the navigation component
+// owns only destinations and its compact panel.
+const bindResponsiveGuideLauncher = root => {
+    const guideSlot = root.querySelector('[data-easyedu-navigation-guide-slot]');
+    const guideSource = root.querySelector('[data-easyedu-navigation-guide-source]');
+    const guideNode = guideSource ?
+        guideSource.querySelector('[data-easyedu-guide-root], [data-easystud-open-tutorial]') : null;
+    const guideLauncher = guideNode ? guideNode.querySelector('[data-easyedu-guide-open]') : null;
+    if (!guideNode || !guideSource || !guideSlot || !guideLauncher) {
         return;
     }
+    const guideAnchor = document.createComment('easyedu-guide-responsive-anchor');
+    guideSource.insertBefore(guideAnchor, guideNode);
 
-    const toggle = navigation.querySelector('.dropdown-toggle');
-    const items = Array.from(navigation.querySelectorAll('.dropdown-menu .dropdown-item[data-value]'));
-    if (!toggle || !items.length) {
-        return;
-    }
-
-    const currentitem = items.find(item => item.getAttribute('aria-selected') === 'true') || items.find(item => {
-        const value = (item.getAttribute('data-value') || '').toLowerCase();
-        return value.indexOf('/local/groupimport/manage.php') !== -1;
-    });
-
-    if (!currentitem) {
-        return;
-    }
-
-    const label = currentitem.textContent.trim();
-    const applyLabel = () => {
-        let labelnode = toggle.querySelector('[data-easystud-nav-label]');
-        if (!labelnode) {
-            toggle.innerHTML = '';
-            labelnode = document.createElement('span');
-            labelnode.setAttribute('data-easystud-nav-label', '1');
-            toggle.appendChild(labelnode);
-        }
-        labelnode.textContent = label;
+    const preserveGuidePortalTheme = () => {
+        // The guide is visually scoped below the EasyStud workspace. Portalling
+        // it to body must retain the resolved product tokens, otherwise CSS
+        // declarations using those variables become invalid (not transparent).
+        const styles = window.getComputedStyle(guideNode);
+        Array.from(styles).forEach(name => {
+            if (!name.startsWith('--easyedu-') && !name.startsWith('--local-groupimport-easystud-')) {
+                return;
+            }
+            const value = styles.getPropertyValue(name).trim();
+            if (value !== '') {
+                guideNode.style.setProperty(name, value);
+            }
+        });
+        guideNode.setAttribute('data-easyedu-guide-portal-theme', '1');
     };
 
-    currentitem.hidden = true;
-    currentitem.setAttribute('aria-hidden', 'true');
-    applyLabel();
-    window.requestAnimationFrame(applyLabel);
-    window.setTimeout(applyLabel, 0);
-    toggle.addEventListener('click', applyLabel);
+    const syncGuideLauncher = matches => {
+        if (matches) {
+            // The overlay surfaces must never live inside the compact drawer:
+            // closing that drawer makes its descendants inert and invisible.
+            if (guideNode.parentElement !== document.body) {
+                preserveGuidePortalTheme();
+                document.body.appendChild(guideNode);
+            }
+            guideLauncher.hidden = true;
+            if (!guideSlot.querySelector('[data-easyedu-responsive-guide-launcher]')) {
+                const compactLauncher = guideLauncher.cloneNode(true);
+                compactLauncher.hidden = false;
+                compactLauncher.removeAttribute('id');
+                compactLauncher.setAttribute('data-easyedu-responsive-guide-launcher', '1');
+                compactLauncher.addEventListener('click', event => {
+                    event.preventDefault();
+                    guideLauncher.click();
+                });
+                guideSlot.replaceChildren(compactLauncher);
+            }
+        } else {
+            guideSlot.replaceChildren();
+            if (guideAnchor.parentNode && guideNode.parentElement !== guideSource) {
+                guideAnchor.parentNode.insertBefore(guideNode, guideAnchor.nextSibling);
+            }
+            guideLauncher.hidden = false;
+        }
+    };
+
+    const responsiveMedia = window.matchMedia(responsiveWorkspaceQuery);
+    responsiveMedia.addEventListener('change', event => {
+        syncGuideLauncher(event.matches);
+    });
+    syncGuideLauncher(responsiveMedia.matches);
 };
 
-// Present the plugin destinations as an accessible off-canvas panel on compact screens.
-const bindMobilePrimaryNavigation = root => {
-    const openButton = root.querySelector('[data-easystud-mobile-nav-open]');
-    const panel = root.querySelector('[data-easystud-mobile-nav-panel]');
-    const backdrop = root.querySelector('[data-easystud-mobile-nav-backdrop]');
-    const closeButton = root.querySelector('[data-easystud-mobile-nav-close]');
-    if (!openButton || !panel || !backdrop || !closeButton) {
+const bindCanonicalNavigation = root => {
+    const navigationRoot = root.querySelector('[data-easyedu-navigation]');
+    if (!navigationRoot || typeof require !== 'function') {
         return;
     }
+    require(['local_groupimport/easyedu_navigation'], navigation => {
+        if (navigation && typeof navigation.init === 'function') {
+            navigation.init(navigationRoot);
+        }
+    });
+};
 
-    const mobileLinks = panel.querySelector('[data-easystud-mobile-moodle-nav]');
-    const nativeMenu = root.querySelector('.local-groupimport-easystud__navigation .dropdown-menu');
-    if (mobileLinks && nativeMenu && !mobileLinks.children.length) {
-        nativeMenu.querySelectorAll('.dropdown-header, .dropdown-item[data-value]').forEach(item => {
+// Restore Moodle's participant destinations in their own compact-only
+// category. The native select remains server-owned in the header; this is a
+// presentation copy of its capability-filtered links, matching the former
+// EasyStud responsive navigation contract without changing desktop markup.
+const bindResponsiveParticipantNavigation = root => {
+    const navigationRoot = root.querySelector('[data-easyedu-navigation]');
+    const panel = navigationRoot ? navigationRoot.querySelector('[data-easyedu-navigation-panel]') : null;
+    const mobileLinks = panel ? panel.querySelector('[data-easyedu-navigation-participant-links]') : null;
+    const participantNavigation = root.querySelector('[data-easystud-participant-navigation]');
+    if (!panel || !mobileLinks || !participantNavigation || mobileLinks.dataset.easyeduParticipantBound === '1') {
+        return;
+    }
+    mobileLinks.dataset.easyeduParticipantBound = '1';
+
+    const syncParticipantLinks = () => {
+        // Moodle's select-menu may replace its dropdown node while its AMD
+        // controller finishes populating the capability-filtered options.
+        // Always resolve the current node instead of retaining a stale menu.
+        const nativeMenu = participantNavigation.querySelector('.dropdown-menu');
+        if (!nativeMenu) {
+            return;
+        }
+        const entries = nativeMenu.querySelectorAll('.dropdown-header, .dropdown-item[data-value]');
+        if (!entries.length) {
+            return;
+        }
+        mobileLinks.replaceChildren();
+        entries.forEach(item => {
             if (item.classList.contains('dropdown-header')) {
                 const group = document.createElement('p');
-                group.className = 'local-groupimport-easystud-mobile-nav-section__group';
+                group.className = 'easyedu-navigation__participant-group';
                 group.textContent = item.textContent.trim();
                 mobileLinks.appendChild(group);
                 return;
             }
+
             const url = item.getAttribute('data-value');
             if (!url) {
                 return;
             }
             const link = document.createElement('a');
-            link.className = 'local-groupimport-easystud-mobile-nav-section__link';
+            link.className = 'easyedu-navigation__item easyedu-navigation__participant-link';
+            link.setAttribute('data-easyedu-navigation-participant-item', '1');
             link.href = url;
             link.textContent = item.textContent.trim();
-            // The current EasyStud destination is already identified in the tools
-            // section; avoid exposing a second current page from Moodle's source menu.
+            // The current EasyStud destination is already exposed by the tools
+            // category; avoid exposing a second current-page marker here.
             if (!panel.querySelector('[aria-current="page"]') &&
                     (item.getAttribute('aria-selected') === 'true' || item.classList.contains('active'))) {
                 link.setAttribute('aria-current', 'page');
             }
             mobileLinks.appendChild(link);
         });
-    }
-
-    const guideSlot = root.querySelector('[data-easystud-mobile-guide-slot]');
-    const desktopNavigation = root.querySelector('[data-easystud-desktop-primary-nav]');
-    const guideNode = desktopNavigation ?
-        desktopNavigation.querySelector('[data-easyedu-guide-root], [data-easystud-open-tutorial]') : null;
-    const guideAnchor = guideNode ? document.createComment('easyedu-guide-launcher') : null;
-    if (guideNode && guideAnchor) {
-        guideNode.parentNode.insertBefore(guideAnchor, guideNode);
-    }
-    const syncGuideLauncher = matches => {
-        if (matches) {
-            panel.setAttribute('role', 'dialog');
-            panel.setAttribute('aria-modal', 'true');
-            panel.setAttribute('aria-label', openButton.textContent.trim());
-        } else {
-            panel.removeAttribute('role');
-            panel.removeAttribute('aria-modal');
-            panel.removeAttribute('aria-label');
-        }
-        if (!guideNode || !guideSlot || !guideAnchor) {
-            return;
-        }
-        if (matches) {
-            guideSlot.appendChild(guideNode);
-        } else if (guideAnchor.parentNode) {
-            guideAnchor.parentNode.insertBefore(guideNode, guideAnchor.nextSibling);
-        }
     };
 
-    const getFocusable = () => Array.from(panel.querySelectorAll(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    )).filter(element => !element.hidden && element.getClientRects().length);
-
-    const close = (restoreFocus = true) => {
-        panel.classList.remove('is-open');
-        backdrop.hidden = true;
-        openButton.setAttribute('aria-expanded', 'false');
-        document.documentElement.classList.remove('easyedu-mobile-nav-open');
-        if (restoreFocus) {
-            openButton.focus({preventScroll: true});
-        }
-    };
-    const open = () => {
-        panel.classList.add('is-open');
-        backdrop.hidden = false;
-        openButton.setAttribute('aria-expanded', 'true');
-        document.documentElement.classList.add('easyedu-mobile-nav-open');
-        const current = panel.querySelector('[aria-current="page"], .active, a, button');
-        if (current) {
-            current.focus({preventScroll: true});
-        }
-    };
-
-    openButton.addEventListener('click', open);
-    closeButton.addEventListener('click', () => close());
-    backdrop.addEventListener('click', () => close());
-    panel.addEventListener('click', event => {
-        if (event.target.closest('a')) {
-            close(false);
-        }
+    syncParticipantLinks();
+    const participantNavigationObserver = new MutationObserver(syncParticipantLinks);
+    participantNavigationObserver.observe(participantNavigation, {
+        attributes: true,
+        attributeFilter: ['aria-selected', 'class', 'data-value'],
+        childList: true,
+        subtree: true,
     });
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && panel.classList.contains('is-open')) {
-            close();
-            return;
-        }
-        if (event.key === 'Tab' && panel.classList.contains('is-open')) {
-            const focusable = getFocusable();
-            if (!focusable.length) {
-                return;
-            }
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first.focus();
-            }
-        }
-    });
-    const responsiveMedia = window.matchMedia(responsiveWorkspaceQuery);
-    syncGuideLauncher(responsiveMedia.matches);
-    responsiveMedia.addEventListener('change', event => {
-        syncGuideLauncher(event.matches);
-        if (!event.matches) {
-            close(false);
-        }
-    });
+    // Cover a replacement that occurs in the same task as the initial
+    // controller binding, before the observer can observe the new node.
+    window.setTimeout(syncParticipantLinks, 0);
+    window.setTimeout(syncParticipantLinks, 100);
 };
 
 const bindBackToTop = root => {
@@ -1993,7 +1970,7 @@ const bindBackToTop = root => {
     }
     const media = window.matchMedia(responsiveWorkspaceQuery);
     const contextMenu = root.querySelector('[data-easystud-context-menu]');
-    const modalSelector = '[role="dialog"]:not([hidden]):not([data-easystud-mobile-nav-panel]), .modal.show';
+    const modalSelector = '[role="dialog"]:not([hidden]):not([data-easyedu-navigation-panel]), .modal.show';
     const floatingSelector = '[data-easystud-mobile-actions]:not([hidden]), ' +
         '[data-easystud-action-busy-status]:not([hidden]), ' +
         '[data-easyedu-guided-panel]:not([hidden]), [data-easystud-guided-panel]:not([hidden])';
@@ -2006,7 +1983,7 @@ const bindBackToTop = root => {
         const obscured = !!(
             (contextMenu && !contextMenu.hidden) ||
             hasVisibleModal ||
-            root.querySelector('[data-easystud-mobile-nav-panel].is-open')
+            root.querySelector('[data-easyedu-navigation-panel].is-open')
         );
         let offset = 14;
         root.querySelectorAll(floatingSelector).forEach(surface => {
@@ -2180,7 +2157,8 @@ const syncCompleteListAlignment = root => {
     if (
         root.classList.contains(participantFocusClass) ||
         root.classList.contains(structureFocusClass) ||
-        isResponsiveWorkspace()
+        isResponsiveWorkspace() ||
+        root.querySelector('.local-groupimport-easystud-advanced-filters.is-expanded')
     ) {
         return;
     }
@@ -4920,6 +4898,44 @@ const ensureMobileActionBar = root => {
     return bar;
 };
 
+const guideBottomObstructionProperty = '--easyedu-guide-bottom-obstruction';
+
+const syncGuideBottomObstruction = root => {
+    const documentRoot = document.documentElement;
+    const bar = root.querySelector('[data-easystud-mobile-actions]');
+    if (!isResponsiveWorkspace() || !bar || bar.hidden || !bar.getClientRects().length) {
+        documentRoot.style.removeProperty(guideBottomObstructionProperty);
+        return;
+    }
+
+    const rect = bar.getBoundingClientRect();
+    const clearance = Math.max(0, Math.ceil(window.innerHeight - rect.top + 8));
+    documentRoot.style.setProperty(guideBottomObstructionProperty, clearance + 'px');
+};
+
+const scheduleGuideBottomObstruction = root => {
+    if (root.easystudGuideBottomObstructionFrame) {
+        window.cancelAnimationFrame(root.easystudGuideBottomObstructionFrame);
+    }
+    root.easystudGuideBottomObstructionFrame = window.requestAnimationFrame(() => {
+        root.easystudGuideBottomObstructionFrame = null;
+        syncGuideBottomObstruction(root);
+    });
+};
+
+const bindGuideBottomObstruction = root => {
+    const bar = ensureMobileActionBar(root);
+    const refresh = () => scheduleGuideBottomObstruction(root);
+    window.addEventListener('resize', refresh);
+    window.addEventListener('orientationchange', refresh);
+    if (window.ResizeObserver) {
+        const observer = new window.ResizeObserver(refresh);
+        observer.observe(bar);
+        root.easystudGuideBottomObstructionObserver = observer;
+    }
+    refresh();
+};
+
 const renderMobileActionBar = (root, counts, activetype) => {
     const bar = ensureMobileActionBar(root);
     const summary = bar.querySelector('[data-easystud-mobile-actions-summary]');
@@ -5096,6 +5112,7 @@ const updateSelectionActions = root => {
         group: selectedGroups.length,
         grouping: selectedGroupings.length,
     }, activetype);
+    scheduleGuideBottomObstruction(root);
 
     updateSelectionAvailability(root);
     syncSelectedGroupingExpansion(root);
@@ -7537,6 +7554,146 @@ const bindParticipantModal = root => {
     });
 };
 
+// The shared Guide owns its modal and checklist UI. EasyStud still owns the
+// product-specific controls that a slide can reveal (for example an inline
+// email field or a grouping's add-groups field). Keep that adapter active
+// even when the legacy tutorial modal is not rendered.
+const bindSharedGuideTargets = root => {
+    const guideRoot = root.querySelector('[data-easyedu-guide-root]');
+    if (!guideRoot || root.dataset.easystudGuideTargetsBound === '1') {
+        return;
+    }
+    root.dataset.easystudGuideTargetsBound = '1';
+
+    const ensureWorkspace = workspace => {
+        if (isResponsiveWorkspace()) {
+            const mobileView = root.querySelector('[data-easystud-mobile-view="' + workspace + '"]');
+            if (mobileView && mobileView.getAttribute('aria-pressed') !== 'true') {
+                mobileView.click();
+            }
+            return mobileView || null;
+        }
+        if (typeof root.easystudApplyDesktopMode === 'function') {
+            root.easystudApplyDesktopMode('structure', false);
+            return root;
+        }
+        const structureView = root.querySelector('[data-easystud-layout-mode="structure"]');
+        if (structureView && structureView.getAttribute('aria-pressed') !== 'true') {
+            structureView.click();
+        }
+        return structureView || null;
+    };
+
+    const openTarget = selector => {
+        if (!selector) {
+            return null;
+        }
+        if (selector === 'tutorial:participant-details') {
+            const participant = root.querySelector('[data-easystud-participant-list] [data-easystud-user]:not([hidden])');
+            if (participant) {
+                participant.focus({preventScroll: true});
+            }
+            scheduleParticipantTagOverflow(root);
+            return participant;
+        }
+        if (selector === 'tutorial:participant-card-actions') {
+            const participant = root.querySelector('[data-easystud-participant-list] [data-easystud-user]:not([hidden])');
+            if (!participant) {
+                return null;
+            }
+            if (!isResponsiveWorkspace()) {
+                participant.focus({preventScroll: true});
+                return participant;
+            }
+            let menu = participant.querySelector(':scope > [data-easystud-card-menu]') ||
+                participant.querySelector('[data-easystud-card-menu]');
+            if (!menu) {
+                menu = document.createElement('button');
+                menu.type = 'button';
+                normaliseCardMenuButton(menu, root);
+                participant.appendChild(menu);
+            }
+            menu.focus({preventScroll: true});
+            return menu;
+        }
+        if (selector === 'tutorial:first-group') {
+            const group = root.querySelector('[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden])') ||
+                root.querySelector('[data-easystud-group-id]:not([hidden])');
+            if (group) {
+                group.focus({preventScroll: true});
+            }
+            return group;
+        }
+        if (selector === 'tutorial:first-grouping') {
+            const grouping = root.querySelector('[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])') ||
+                root.querySelector('[data-easystud-grouping-id]:not([hidden])');
+            if (grouping) {
+                expandGroupingSection(grouping);
+                grouping.focus({preventScroll: true});
+            }
+            return grouping;
+        }
+        if (selector === 'tutorial:create-group' || selector === 'tutorial:create-grouping') {
+            const workspace = ensureWorkspace(selector === 'tutorial:create-group' ? 'groups' : 'groupings');
+            const fieldName = selector === 'tutorial:create-group' ? 'groupname' : 'groupingname';
+            const input = root.querySelector('.local-groupimport-easystud-create-row input[name="' + fieldName + '"]');
+            if (input) {
+                input.focus({preventScroll: true});
+                input.select();
+            }
+            return input || workspace;
+        }
+        if (selector === 'tutorial:first-grouping-add-groups') {
+            const grouping = root.querySelector('[data-easystud-tree] [data-easystud-grouping-id]:not([hidden])') ||
+                root.querySelector('[data-easystud-grouping-id]:not([hidden])');
+            if (!grouping) {
+                return null;
+            }
+            expandGroupingSection(grouping);
+            const toggle = grouping.querySelector('[data-easystud-toggle-grouping-groups]');
+            let panel = grouping.querySelector('[data-easystud-grouping-groups-panel]');
+            if (toggle && (!panel || panel.hidden || !panel.classList.contains('is-open'))) {
+                toggle.click();
+            }
+            panel = grouping.querySelector('[data-easystud-grouping-groups-panel]');
+            const box = grouping.querySelector('[data-easystud-grouping-groups-box]');
+            if (box) {
+                box.focus({preventScroll: true});
+            }
+            return box || panel || grouping;
+        }
+        if (selector === 'tutorial:add-users-text') {
+            const group = root.querySelector('[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden])') ||
+                root.querySelector('[data-easystud-group-id]:not([hidden])');
+            if (!group) {
+                return null;
+            }
+            const groupid = group.getAttribute('data-easystud-group-id');
+            const panel = ensureGroupEmailPanel(group, groupid, getLabels(root));
+            if (panel && (panel.hidden || !panel.classList.contains('is-open'))) {
+                setInlinePanelOpen(panel, true);
+            }
+            const textarea = group.querySelector('[data-easystud-group-email-box]');
+            if (textarea) {
+                textarea.focus({preventScroll: true});
+            }
+            return textarea || panel || group;
+        }
+        return null;
+    };
+
+    document.addEventListener('easyedu:guide-open-target', event => {
+        const request = event.detail;
+        if (!request || request.root !== guideRoot || typeof request.target !== 'string' ||
+                !request.target.startsWith('tutorial:')) {
+            return;
+        }
+        if (openTarget(request.target)) {
+            request.handled = true;
+        }
+    });
+};
+
 const bindTutorialModal = root => {
     if (root.querySelector('[data-easyedu-guide-root]')) {
         return;
@@ -8086,6 +8243,31 @@ const bindTutorialModal = root => {
         return true;
     };
 
+    // A Guide request can arrive while the desktop layout is still settling
+    // after its normal view control was clicked. Resolve creation fields only
+    // after their real responsive workspace is active; focusing a hidden input
+    // would make the Guide return panel appear without a usable highlight.
+    const ensureTutorialCreationWorkspace = workspace => {
+        if (isResponsiveWorkspace()) {
+            const mobileView = root.querySelector('[data-easystud-mobile-view="' + workspace + '"]');
+            if (mobileView && mobileView.getAttribute('aria-pressed') !== 'true') {
+                mobileView.click();
+            }
+            return mobileView || null;
+        }
+
+        if (typeof root.easystudApplyDesktopMode === 'function') {
+            root.easystudApplyDesktopMode('structure', false);
+            return root;
+        }
+
+        const structureView = root.querySelector('[data-easystud-layout-mode="structure"]');
+        if (structureView && structureView.getAttribute('aria-pressed') !== 'true') {
+            structureView.click();
+        }
+        return structureView || null;
+    };
+
     const openTutorialTarget = selector => {
         if (!selector) {
             return false;
@@ -8141,20 +8323,22 @@ const bindTutorialModal = root => {
             return grouping;
         }
         if (selector === 'tutorial:create-group') {
+            const workspace = ensureTutorialCreationWorkspace('groups');
             const input = root.querySelector('.local-groupimport-easystud-create-row input[name="groupname"]') ||
                 root.querySelector('.local-groupimport-easystud-create-row input[name="groupingname"]');
             if (!input) {
-                return false;
+                return workspace;
             }
             input.focus({preventScroll: true});
             input.select();
             return input;
         }
         if (selector === 'tutorial:create-grouping') {
+            const workspace = ensureTutorialCreationWorkspace('groupings');
             const input = root.querySelector('.local-groupimport-easystud-create-row input[name="groupingname"]') ||
                 root.querySelector('.local-groupimport-easystud-create-row input[name="groupname"]');
             if (!input) {
-                return false;
+                return workspace;
             }
             input.focus({preventScroll: true});
             input.select();
@@ -8188,16 +8372,16 @@ const bindTutorialModal = root => {
             if (grouping) {
                 expandGroupingSection(grouping);
             }
-            const button = group.querySelector('[data-easystud-toggle-group-email]');
-            const panel = group.querySelector('[data-easystud-group-email-panel]');
-            if (button && panel && panel.hidden) {
-                button.click();
+            const groupid = group.getAttribute('data-easystud-group-id');
+            const panel = ensureGroupEmailPanel(group, groupid, getLabels(root));
+            if (panel && (panel.hidden || !panel.classList.contains('is-open'))) {
+                setInlinePanelOpen(panel, true);
             }
             const textarea = group.querySelector('[data-easystud-group-email-box]');
             if (textarea) {
                 textarea.focus({preventScroll: true});
             }
-            return panel || group;
+            return textarea || panel || group;
         }
         const target = root.querySelector(selector);
         if (!target) {
@@ -8215,6 +8399,22 @@ const bindTutorialModal = root => {
         target.click();
         return target;
     };
+
+    // The shared Guide owns modal, transition and highlight timing. EasyStud
+    // owns product-specific detail controls such as a participant card's
+    // expanded content or a grouping's add-groups panel. This narrow event
+    // lets a Guide slide request that real control after its workspace opens.
+    const guideOpenTargetHandler = event => {
+        const request = event.detail;
+        if (!request || typeof request.target !== 'string' || !request.target.startsWith('tutorial:')) {
+            return;
+        }
+        const opened = openTutorialTarget(request.target);
+        if (opened) {
+            request.handled = true;
+        }
+    };
+    document.addEventListener('easyedu:guide-open-target', guideOpenTargetHandler);
 
     const highlightInView = (selector, mode, openSelector, options = {}) => {
         if (!selector) {
@@ -8441,7 +8641,9 @@ const bindTutorialModal = root => {
 const bindOptionalTools = root => {
     const densityToggle = root.querySelector('[data-easystud-density-toggle]');
     const modal = root.querySelector('[data-easystud-clipboard-modal]');
-    const openClipboard = root.querySelector('[data-easystud-open-clipboard]');
+    const openClipboardButtons = Array.from(root.querySelectorAll(
+        '[data-easystud-open-clipboard], [data-easyedu-navigation-action="open-clipboard"]'
+    ));
     const closeClipboard = root.querySelector('[data-easystud-close-clipboard]');
 
     if (densityToggle) {
@@ -8485,20 +8687,27 @@ const bindOptionalTools = root => {
         updateDensityToggle();
     }
 
-    if (modal && openClipboard && closeClipboard) {
-        openClipboard.addEventListener('click', () => {
+    if (modal && openClipboardButtons.length && closeClipboard) {
+        let lastClipboardOpener = openClipboardButtons[0];
+        const restoreClipboardFocus = () => {
+            const panel = lastClipboardOpener.closest('[data-easyedu-navigation-panel]');
+            const trigger = panel && root.querySelector('[data-easyedu-navigation-open]');
+            (trigger || lastClipboardOpener).focus();
+        };
+        openClipboardButtons.forEach(button => button.addEventListener('click', () => {
+            lastClipboardOpener = button;
             showEasyStudModal(modal);
             const textarea = modal.querySelector('[data-easystud-paste-box]');
             if (textarea) {
                 textarea.focus();
             }
-        });
+        }));
         closeClipboard.addEventListener('click', () => {
-            hideEasyStudModal(modal, () => openClipboard.focus());
+            hideEasyStudModal(modal, restoreClipboardFocus);
         });
         modal.addEventListener('click', event => {
             if (event.target === modal) {
-                hideEasyStudModal(modal, () => openClipboard.focus());
+                hideEasyStudModal(modal, restoreClipboardFocus);
             }
         });
     }
@@ -8526,16 +8735,23 @@ export const init = (rootId, courseId) => {
         if (!root) {
             return;
         }
-        if (root.getAttribute('data-easystud-manager-initialised') === '1') {
+        if (root.getAttribute('data-easystud-manager-initialised') === '1' ||
+                root.getAttribute('data-easystud-manager-initialising') === '1') {
             return;
         }
-        root.setAttribute('data-easystud-manager-initialised', '1');
+        root.setAttribute('data-easystud-manager-initialising', '1');
+
+        // The parallel loading bootstrap owns the inert gate. Keep it in place
+        // until bindings and two paint frames have completed, so no unfinished
+        // visual DOM is exposed between the skeleton and the manager.
+        const loadingController = root.easystudLoadingController;
 
         Motion.init(root);
 
         [
             () => bindFilters(root),
             () => bindSelection(root),
+            () => bindGuideBottomObstruction(root),
             () => bindPanelActionOverflow(root),
             () => bindTree(root),
             () => bindGroupDragDrop(root, courseId),
@@ -8563,12 +8779,14 @@ export const init = (rootId, courseId) => {
             () => bindTagToggles(root),
             () => bindPagination(root),
             () => bindParticipantModal(root),
+            () => bindSharedGuideTargets(root),
             () => bindTutorialModal(root),
             () => bindOptionalTools(root),
             () => bindPastePreview(root),
             () => bindHoverPopovers(root),
-            () => bindHeaderNavigation(root),
-            () => bindMobilePrimaryNavigation(root),
+             () => bindCanonicalNavigation(root),
+             () => bindResponsiveParticipantNavigation(root),
+             () => bindResponsiveGuideLauncher(root),
             () => bindBackToTop(root),
             () => bindLayoutModeToggle(root),
             () => bindMobileEntityViews(root),
@@ -8598,7 +8816,11 @@ export const init = (rootId, courseId) => {
         scheduleResponsiveUiRefresh(root, {guide: false});
         window.requestAnimationFrame(() => {
             window.requestAnimationFrame(() => {
-                root.classList.remove('local-groupimport-easystud--booting');
+                root.removeAttribute('data-easystud-manager-initialising');
+                root.setAttribute('data-easystud-manager-initialised', '1');
+                if (!loadingController || typeof loadingController.complete !== 'function') {
+                    root.classList.remove('local-groupimport-easystud--booting');
+                }
             });
         });
     });

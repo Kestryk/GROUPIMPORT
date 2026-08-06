@@ -30,6 +30,11 @@ Reusable motion helpers:
   @include easyedu.action-busy-indicator("data-my-plugin-busy-label");
 }
 
+// Persistent workspace actions keep the established bottom-end feedback.
+.my-workspace-root {
+  @include easyedu.action-busy-indicator-bottom-end("data-my-plugin-busy-label");
+}
+
 .my-card {
   @include easyedu.transition-standard(background, border-color, box-shadow);
 }
@@ -96,6 +101,14 @@ a second CSS animation.
 - Keep `will-change` temporary. The controller adds and removes it for each run.
 - Busy feedback must remain understandable as static text and an ARIA status
   when rotation is disabled.
+- The bottom-end busy spinner must keep only `easyedu-busy-spin` on its `::after`
+  pseudo-element. Do not combine `easyedu-busy-pop` or another transform
+  animation on that element, because competing transforms can make rotation
+  appear frozen; keep the label pulse on `::before`.
+- A loading skeleton must keep a measured, regular vertical rhythm. Its panel
+  children require an explicit `gap`, `align-content: start` and
+  `grid-auto-rows: max-content`; browser checks must reject both touching rows
+  and oversized gaps before the pattern is reused on another view.
 
 ## Timing contract
 
@@ -222,3 +235,7 @@ Rules for new guide motion:
 - Do not stack several transform animations on the same element unless the
   result is explicitly tested.
 - Include a useful static state for reduced-motion users.
+- Keep highlight realignment in one bounded requestAnimationFrame refresh
+  cycle; do not layer competing timeout bursts over scroll animation.
+- Reduced motion applies to the complete guide shell, slide, checklist and
+  highlight lifecycle, not only the decorative learning scene.

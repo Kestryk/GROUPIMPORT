@@ -134,6 +134,109 @@ function local_groupimport_get_manager_url(int $courseid): moodle_url {
 }
 
 /**
+ * Build the shared-navigation context for the Mass Import workspace.
+ *
+ * The participant selector and Guide remain Simplified Student Management
+ * controls. Mass Import contributes only the product destinations while its
+ * workflow actions remain in the existing page header action rail.
+ *
+ * @param stdClass $course Course record.
+ * @return array
+ */
+function local_groupimport_build_mass_import_navigation_context(stdClass $course): array {
+    $items = [];
+
+    if (local_groupimport_is_simplified_view_enabled()) {
+        $items[] = [
+            'id' => 'easystud-manager',
+            'kind' => 'destination',
+            'label' => get_string('easystudmanager', 'local_groupimport'),
+            'accessiblelabel' => get_string('easystudmanager', 'local_groupimport'),
+            'url' => local_groupimport_get_manager_url((int)$course->id)->out(false),
+            'icon' => 'fa fa-users',
+            'islink' => true,
+            'isbutton' => false,
+            'isdisclosure' => false,
+            'current' => false,
+            'disabled' => false,
+            'destructive' => false,
+            'badge' => '',
+            'haschildren' => false,
+        ];
+    }
+
+    $items[] = [
+            'id' => 'easystud-import',
+            'kind' => 'destination',
+            'label' => get_string('csvimportlink', 'local_groupimport'),
+            'accessiblelabel' => get_string('csvimportlink', 'local_groupimport'),
+            'url' => (new moodle_url('/local/groupimport/index.php', ['id' => $course->id]))->out(false),
+            'icon' => 'fa fa-file-import',
+            'islink' => true,
+            'isbutton' => false,
+            'isdisclosure' => false,
+            'current' => true,
+            'disabled' => false,
+            'destructive' => false,
+            'badge' => '',
+            'haschildren' => false,
+    ];
+
+    $items[] = [
+        'id' => 'mass-import-download-template',
+        'kind' => 'utility',
+        'label' => get_string('downloadtemplate', 'local_groupimport'),
+        'accessiblelabel' => get_string('downloadtemplate', 'local_groupimport'),
+        'url' => (new moodle_url('/local/groupimport/template.php', ['id' => $course->id]))->out(false),
+        'icon' => 'fa fa-file-excel',
+        'islink' => true,
+        'isbutton' => false,
+        'isdisclosure' => false,
+        'current' => false,
+        'disabled' => false,
+        'destructive' => false,
+        'badge' => '',
+        'haschildren' => false,
+    ];
+
+    $items[] = [
+        'id' => 'mass-import-history',
+        'kind' => 'utility',
+        'label' => get_string('importhistory', 'local_groupimport'),
+        'accessiblelabel' => get_string('importhistory', 'local_groupimport'),
+        'action' => 'mass-import-history',
+        'icon' => 'fa fa-history',
+        'islink' => false,
+        'isbutton' => true,
+        'isdisclosure' => false,
+        'current' => false,
+        'disabled' => false,
+        'destructive' => false,
+        'badge' => '',
+        'haschildren' => false,
+    ];
+
+    return [
+        'rootid' => 'local-groupimport-import-navigation',
+        'panelid' => 'local-groupimport-import-navigation-panel',
+        'anchorselector' => '',
+        'navigationlabel' => get_string('mobilenavigation', 'local_groupimport'),
+        'triggerlabel' => get_string('mobilemenu', 'local_groupimport'),
+        'closelabel' => get_string('mobilenavigationclose', 'local_groupimport'),
+        'triggericon' => 'fa fa-bars',
+        'closeicon' => 'fa fa-times',
+        'emptylabel' => get_string('navigationempty', 'local_groupimport'),
+        'hasitems' => true,
+        'hasparticipantdropdown' => false,
+        'sections' => [[
+            'id' => 'easystud-tools',
+            'label' => get_string('easystudlabel', 'local_groupimport'),
+            'items' => $items,
+        ]],
+    ];
+}
+
+/**
  * Returns the native participants URL for a course.
  *
  * @param int $courseid The course id.

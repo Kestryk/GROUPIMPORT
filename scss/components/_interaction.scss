@@ -16,7 +16,10 @@
       &:focus {
         background: var(--local-groupimport-easystud-surface-soft);
         color: var(--local-groupimport-easystud-primary);
-        outline: 0;
+      }
+
+      &:focus-visible {
+        @include easyedu.ring;
       }
     }
   }

@@ -1,5 +1,7 @@
 // Responsive helpers for EasyEdu plugin views.
 
+@use "focus";
+
 @mixin responsive-stack($breakpoint: 52rem) {
   @media (max-width: $breakpoint) {
     display: grid;
@@ -167,7 +169,7 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+    @include focus.ring($border-color: var(--easyedu-control-focus-border));
   }
 
   &[aria-pressed="true"],
@@ -232,7 +234,9 @@
   z-index: $z-index;
 
   &.is-open {
-    transform: translateX(0);
+    // `none` preserves the open position without making this panel the
+    // containing block for viewport-fixed consumer overlays.
+    transform: none;
   }
 }
 
@@ -260,8 +264,7 @@
   padding: 0.55rem 0.78rem;
 
   &:focus-visible {
-    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
-    outline: 0;
+    @include focus.ring;
   }
 }
 
@@ -341,9 +344,7 @@
 
   &:focus-visible {
     background: transparent;
-    border-color: var(--easyedu-control-focus-border);
-    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
-    outline: 0;
+    @include focus.ring($border-color: var(--easyedu-control-focus-border));
 
     > :first-child {
       background: color-mix(in srgb, var(--easyedu-primary-soft) 72%, transparent);
@@ -399,7 +400,7 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+    @include focus.ring;
   }
 }
 
@@ -550,7 +551,7 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
+    @include focus.ring($border-color: var(--easyedu-control-focus-border));
   }
 }
 
@@ -575,7 +576,6 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 0.2rem var(--easyedu-focus-ring), var(--easyedu-shadow-soft);
-    outline: 0;
+    @include focus.ring($base-shadow: var(--easyedu-shadow-soft));
   }
 }

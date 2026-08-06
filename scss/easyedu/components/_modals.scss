@@ -8,6 +8,7 @@
 // --easyedu-surface, --easyedu-modal-border, --easyedu-modal-radius,
 // --easyedu-modal-shadow.
 
+@use "focus";
 @use "typography";
 
 @mixin modal-surface {
@@ -478,8 +479,9 @@
   }
 
   &:focus-within {
-    border-color: color-mix(in srgb, var(--easyedu-primary) 44%, #fff 56%);
-    box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--easyedu-primary) 14%, transparent);
+    @include focus.ring(
+      $border-color: color-mix(in srgb, var(--easyedu-primary) 44%, #fff 56%)
+    );
   }
 
   input[type="file"] {
@@ -526,6 +528,14 @@
   grid-template-columns: minmax(0, 1fr) auto auto;
   list-style: none;
   padding: 0.52rem 0.62rem;
+
+  &:focus-visible {
+    @include focus.ring($border-color: var(--easyedu-control-focus-border));
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: 0;
+  }
 
   &::-webkit-details-marker {
     display: none;

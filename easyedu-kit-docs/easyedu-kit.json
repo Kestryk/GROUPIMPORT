@@ -14,12 +14,19 @@
     },
     "guide": {
       "path": "guide",
-      "description": "Reusable EasyEdu guide/tutorial foundation."
+      "description": "Reusable EasyEdu guide/tutorial foundation.",
+      "documentation": "docs/components/guide.md",
+      "adapterDocumentation": "docs/components/guide-adapter-integration.md"
     },
     "motion": {
       "path": "motion",
       "description": "Cancellable AMD motion controller with reduced-motion and server-policy support.",
       "documentation": "motion/README.md"
+    },
+    "navigation": {
+      "path": "navigation",
+      "description": "Normalized desktop and compact navigation context, templates and controller.",
+      "documentation": "components/navigation.md"
     },
     "docs": {
       "path": "docs",
@@ -42,6 +49,7 @@
     "empty-states",
     "drag-drop",
     "guide",
+    "navigation",
     "responsive",
     "orchestration"
   ],
@@ -54,6 +62,10 @@
     "moodleRulesAudit": {
       "script": "scripts/audit-moodle-rules.ps1",
       "exampleCommand": "powershell -ExecutionPolicy Bypass -File ./scripts/audit-moodle-rules.ps1 -PluginRoot C:/path/to/moodle/local/plugin"
+    },
+    "guideValidation": {
+      "script": "scripts/test-guide-contract.ps1",
+      "command": "powershell -ExecutionPolicy Bypass -File ./scripts/test-guide-contract.ps1"
     },
     "sync": {
       "script": "sync-easyedu-kit.ps1",

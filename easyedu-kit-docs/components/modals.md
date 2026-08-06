@@ -181,6 +181,12 @@ Use these optional class hooks inside move/copy modals:
 }
 ```
 
+`metadata-section-summary` includes the shared `focus.ring(...)` treatment for
+keyboard focus. Keep the summary as the complete interactive target; do not
+move the ring onto a nested label, count badge or action icon. Consumer-owned
+detail summaries with a different grid may reuse the same focus mixin directly
+while retaining their own layout and disclosure motion.
+
 Use these for group/layer/banner settings, participant/user details or any modal
 that combines identity, editable fields, image preview and related item lists.
 

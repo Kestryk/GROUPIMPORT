@@ -1,17 +1,108 @@
 <div
     class="local-groupimport-easystud local-groupimport-easystud--booting{{#compactparticipantsdefault}} local-groupimport-easystud--compact-users{{/compactparticipantsdefault}}{{^animationsenabled}} is-easyedu-motion-off{{/animationsenabled}}"
     id="local-groupimport-easystud"
+    data-easystud-loading-state="loading"
     data-easystud-course-id="{{courseid}}"
+    data-easystud-action-busy-label="{{actioninprogress}}"
     data-easystud-detail-labels="{{detaillabelsjson}}"
     data-easystud-mobile-card-actions="{{mobilecardactions}}"
     data-easyedu-motion-policy="{{motionpolicy}}"
+    data-easystud-loading-reveal-duration="320"
 >
+    <div class="local-groupimport-easystud__loading-skeleton" data-easystud-loading-skeleton="1" aria-hidden="true">
+        <div class="local-groupimport-easystud__loading-header">
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-header-eyebrow"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-header-title"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-header-intro"></span>
+            <div class="local-groupimport-easystud__loading-header-actions">
+                <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-header-action"></span>
+                <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-header-action"></span>
+            </div>
+        </div>
+
+        <div class="local-groupimport-easystud__loading-view-toggle">
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-view-toggle-item"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-view-toggle-item"></span>
+            <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-view-toggle-item"></span>
+        </div>
+
+        <div class="local-groupimport-easystud__loading-layout">
+            <div class="local-groupimport-easystud__loading-panel local-groupimport-easystud__loading-panel--participants">
+                <div class="local-groupimport-easystud__loading-panel-header">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-title"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-secondary"></span>
+                </div>
+
+                <div class="local-groupimport-easystud__loading-search-filter-region">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-search"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-filter-cluster"></span>
+                </div>
+
+                <div class="local-groupimport-easystud__loading-pagination">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-pagination-summary"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-pagination-rail"></span>
+                </div>
+
+                <div class="local-groupimport-easystud__loading-participant-list">
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-participant-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                </div>
+            </div>
+
+            <div class="local-groupimport-easystud__loading-panel local-groupimport-easystud__loading-panel--structure">
+                <div class="local-groupimport-easystud__loading-panel-header">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-title"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-panel-secondary"></span>
+                </div>
+                <div class="local-groupimport-easystud__loading-structure-tools">
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-search"></span>
+                    <span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-filter-cluster"></span>
+                </div>
+                <div class="local-groupimport-easystud__loading-structure-list">
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                    <div class="local-groupimport-easystud__loading-structure-card"><span class="local-groupimport-easystud__loading-surface local-groupimport-easystud__loading-card-copy"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <noscript>
+        <style>
+            #local-groupimport-easystud [data-easystud-loading-skeleton] { display: none !important; }
+            #local-groupimport-easystud [data-easystud-real-content] { display: block !important; }
+        </style>
+    </noscript>
+    <div class="local-groupimport-easystud__content" data-easystud-real-content="1">
     <div class="local-groupimport-easystud__notifications" data-easystud-notifications="1" aria-live="polite"></div>
     <div class="local-groupimport-easystud-action-status" data-easystud-action-busy-status="1" role="status" aria-live="polite" hidden>
         <span class="local-groupimport-easystud-action-status__spinner" aria-hidden="true"></span>
         <span data-easystud-action-busy-text>{{actioninprogress}}</span>
     </div>
-
     {{^useeasyeduguide}}
     <div class="local-groupimport-easystud-discovery" data-easystud-discovery="1" hidden>
         <div class="local-groupimport-easystud-discovery__icon">
@@ -41,113 +132,24 @@
     <div class="local-groupimport-easystud__header">
         <div>
             <span class="local-groupimport-easystud__eyebrow">{{eyebrow}}</span>
+            {{#navigation}}
+                {{#hasparticipantdropdown}}
+                    <div
+                        class="local-groupimport-easystud__participant-navigation"
+                        data-easystud-participant-navigation="1"
+                    >
+                        {{#participantdropdown}}
+                            {{> core/select_menu}}
+                        {{/participantdropdown}}
+                    </div>
+                {{/hasparticipantdropdown}}
+            {{/navigation}}
             <div class="local-groupimport-easystud__navigation">
-                {{{navigationhtml}}}
+                {{#navigation}}
+                    {{> local_groupimport/easyedu_navigation}}
+                {{/navigation}}
             </div>
             <p class="text-muted mb-0">{{description}}</p>
-        </div>
-        <div
-            class="local-groupimport-easystud__header-actions local-groupimport-easystud__header-actions--desktop easyedu-admin-primary-nav--balanced"
-            data-easystud-desktop-primary-nav="1"
-        >
-            {{#useeasyeduguide}}
-                {{#easyeduguide}}
-                    {{> local_groupimport/easyedu_guide }}
-                {{/easyeduguide}}
-            {{/useeasyeduguide}}
-            {{^useeasyeduguide}}
-            <button
-                type="button"
-                class="local-groupimport-easystud-tour-button easyedu-admin-primary-nav__guide"
-                data-easystud-open-tutorial="1"
-                aria-haspopup="dialog"
-                aria-label="{{tutoriallabel}}"
-                data-easystud-hover-help="{{tutoriallabel}}"
-            >
-                <span class="local-groupimport-easystud-discovery__icon local-groupimport-easystud-tour-button__icon" aria-hidden="true">
-                    <span class="fa fa-compass" aria-hidden="true"></span>
-                </span>
-            </button>
-            {{/useeasyeduguide}}
-            <div class="easyedu-admin-primary-nav__actions">
-                <span class="btn active" aria-current="page">
-                    <span class="fa fa-users me-2" aria-hidden="true"></span>
-                    <span>{{managerlabel}}</span>
-                </span>
-                <a class="btn btn-outline-secondary" href="{{nativeparticipantsurl}}">
-                    <span class="fa fa-user-graduate me-2" aria-hidden="true"></span>
-                    <span>{{nativeparticipantslabel}}</span>
-                </a>
-                <a class="btn btn-outline-primary" href="{{csvurl}}">
-                    <span class="fa fa-file-import me-2" aria-hidden="true"></span>
-                    <span>{{csvlabel}}</span>
-                </a>
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-easystud-open-clipboard="1"
-                    aria-haspopup="dialog"
-                >
-                    <span class="fa fa-clipboard-list me-2" aria-hidden="true"></span>
-                    <span>{{clipboardlabel}}</span>
-                </button>
-            </div>
-        </div>
-        <div class="local-groupimport-easystud-mobile-header-controls">
-            <button
-                type="button"
-                class="local-groupimport-easystud-mobile-nav-trigger"
-                data-easystud-mobile-nav-open="1"
-                aria-controls="local-groupimport-easystud-mobile-navigation"
-                aria-expanded="false"
-            >
-                <span class="fa fa-bars" aria-hidden="true"></span>
-                <span>{{mobilenavigationlabel}}</span>
-            </button>
-            <div class="local-groupimport-easystud-mobile-guide-slot" data-easystud-mobile-guide-slot="1"></div>
-        </div>
-        <div class="local-groupimport-easystud-mobile-nav-backdrop" data-easystud-mobile-nav-backdrop="1" hidden></div>
-        <div
-            id="local-groupimport-easystud-mobile-navigation"
-            class="local-groupimport-easystud__header-actions easyedu-admin-primary-nav--balanced"
-            data-easystud-mobile-nav-panel="1"
-        >
-            <div class="local-groupimport-easystud-mobile-nav-header">
-                <strong>{{mobilenavigationlabel}}</strong>
-                <button type="button" data-easystud-mobile-nav-close="1" aria-label="{{mobilenavigationcloselabel}}">
-                    <span class="fa fa-times" aria-hidden="true"></span>
-                </button>
-            </div>
-            <nav class="local-groupimport-easystud-mobile-nav-section" aria-label="{{mobilenavigationtoolslabel}}">
-                <h3 class="local-groupimport-easystud-mobile-nav-section__title">{{mobilenavigationtoolslabel}}</h3>
-                <div class="easyedu-admin-primary-nav__actions local-groupimport-easystud-mobile-nav-section__links">
-                <span class="local-groupimport-easystud-mobile-nav-section__link active" aria-current="page">
-                    <span class="fa fa-users me-2" aria-hidden="true"></span>
-                    <span>{{managerlabel}}</span>
-                </span>
-                <a class="local-groupimport-easystud-mobile-nav-section__link" href="{{nativeparticipantsurl}}">
-                    <span class="fa fa-user-graduate me-2" aria-hidden="true"></span>
-                    <span>{{nativeparticipantslabel}}</span>
-                </a>
-                <a class="local-groupimport-easystud-mobile-nav-section__link" href="{{csvurl}}">
-                    <span class="fa fa-file-import me-2" aria-hidden="true"></span>
-                    <span>{{csvlabel}}</span>
-                </a>
-                <button
-                    type="button"
-                    class="local-groupimport-easystud-mobile-nav-section__link"
-                    data-easystud-open-clipboard="1"
-                    aria-haspopup="dialog"
-                >
-                    <span class="fa fa-clipboard-list me-2" aria-hidden="true"></span>
-                    <span>{{clipboardlabel}}</span>
-                </button>
-                </div>
-            </nav>
-            <nav class="local-groupimport-easystud-mobile-nav-section" aria-label="{{mobilenavigationmoodlelabel}}">
-                <h3 class="local-groupimport-easystud-mobile-nav-section__title">{{mobilenavigationmoodlelabel}}</h3>
-                <div class="local-groupimport-easystud-mobile-nav-section__links" data-easystud-mobile-moodle-nav="1"></div>
-            </nav>
         </div>
     </div>
 
@@ -2420,4 +2422,5 @@
     >
         <span class="fa fa-arrow-up" aria-hidden="true"></span>
     </button>
+    </div>
 </div>

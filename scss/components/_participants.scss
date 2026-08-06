@@ -27,9 +27,9 @@
     }
 
     &:focus-within {
-      border-color: #8aa6c9;
       border-left-color: var(--local-groupimport-easystud-participant);
-      box-shadow: 0 0.45rem 0.95rem rgba(72, 115, 173, 0.14);
+      @include easyedu.card-focus-context(0 0.45rem 0.95rem rgba(72, 115, 173, 0.14));
+      border-color: var(--easyedu-control-focus-border) !important;
     }
 
     &.is-selected {
@@ -295,21 +295,20 @@
     justify-content: center;
     width: 1.7rem;
 
-    &:hover,
-    &:focus {
+    &:hover {
       background: #fff;
       border-color: #bdd0e5;
       color: var(--local-groupimport-easystud-primary-strong);
       text-decoration: none;
     }
 
+    &:focus,
     &:focus-visible {
-      box-shadow: 0 0 0 0.16rem rgba(12, 113, 194, 0.16);
-      outline: 0;
-    }
-
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
+      background: #fff;
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      color: var(--local-groupimport-easystud-primary-strong);
+      text-decoration: none;
     }
   }
 

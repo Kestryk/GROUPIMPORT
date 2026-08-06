@@ -67,6 +67,7 @@ create their own scenario data and must not share state with another scenario.
 | Mass import preview and reports | PHPUnit/service tests plus Playwright | Partial |
 | Identifier auto-detection | PHPUnit data provider | Missing deterministic fixture files |
 | Import history rollback | PHPUnit/service tests plus opt-in Playwright | Partial destructive audit |
+| Mass Import shared navigation | Focused authenticated Playwright | Passed technical check; human visual review pending |
 | Guide slides and Show in interface | Playwright | Existing partial audit |
 | Guided paths/checklist/return panel | Playwright | Existing partial audit |
 | Mobile action tray and stacked columns | Playwright | Existing responsive audit |
@@ -106,6 +107,19 @@ Each scenario creates unique group and grouping names. Confirm:
 - success toasts report affected and already-existing item counts.
 
 ### Mass import
+
+For the shared navigation consumer, run only
+`mass-import-navigation-audit.spec.js` through the supervised saved-credential
+wrapper after one-test discovery and GroupImport runtime-lease acquisition. It
+is read-only: it must prove that the shared rail replaces the legacy header
+action row, preserves Simplified student management, current Mass group import,
+Download example and Import history, and omits Back to course. At 390 px it
+must prove compact open/close, history modal open/close, focus return to the
+visible handle, no participant or Guide clone in this consumer, no horizontal
+overflow and no console/page errors. While the panel is open, the EasyStud
+trigger itself must be hidden so it cannot overlap Moodle's native drawer
+control. Register its screenshots outside Git with the runner manifest. Human
+visual review still decides the desktop page-header action relationship.
 
 Cover CSV and XLSX independently. Preview must not mutate course data. Validate:
 

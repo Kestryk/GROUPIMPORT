@@ -59,15 +59,15 @@ if (!$animationsenabled) {
     $PAGE->add_body_class('local-groupimport-motion-disabled');
     $PAGE->add_body_class('easyedu-motion-disabled');
 }
-$PAGE->requires->js_call_amd('local_groupimport/course_manager', 'init', [
-    'local-groupimport-easystud',
-    $course->id,
-]);
+$PAGE->requires->js('/local/groupimport/js/loading_state_bootstrap.js', true);
 $PAGE->requires->js_call_amd('local_groupimport/easyedu_guide', 'init', [
     '[data-easyedu-guide-root]',
     local_groupimport_build_easyedu_guide_js_config($course->id),
 ]);
-
+$PAGE->requires->js_call_amd('local_groupimport/course_manager', 'init', [
+    'local-groupimport-easystud',
+    $course->id,
+]);
 $action = optional_param('action', '', PARAM_ALPHA);
 if ($action && confirm_sesskey()) {
     if ($action === 'creategroup') {
@@ -143,11 +143,12 @@ $users = $state['users'];
 $groups = $state['groups'];
 $groupings = $state['groupings'];
 
-$csvurl = new moodle_url('/local/groupimport/index.php', ['id' => $course->id]);
-$nativeparticipantsurl = new moodle_url('/user/index.php', [
-    'id' => $course->id,
-    'local_groupimport_native' => 1,
-]);
+// Build Moodle's settings navigation after the page header has initialised it.
+// The participants action bar reads that server-side tree for its capability
+// filtered select menu.
+echo $OUTPUT->header();
+
+$navigationdata = local_groupimport_build_navigation_context($course, $PAGE, $OUTPUT);
 
 $templatedata = local_groupimport_build_manage_template_data(
     $course,
@@ -155,14 +156,16 @@ $templatedata = local_groupimport_build_manage_template_data(
     $groups,
     $groupings,
     $state['ungroupedgroupids'],
-    $csvurl,
-    $nativeparticipantsurl,
-    $OUTPUT->render_participants_tertiary_nav($course)
+    $navigationdata
 );
 $templatedata['animationsenabled'] = $animationsenabled;
 $templatedata['motionpolicy'] = $animationsenabled ? 'enabled' : 'disabled';
+$templatedata['navigation']['hasguide'] = true;
+$templatedata['navigation']['guidehtml'] = $OUTPUT->render_from_template(
+    'local_groupimport/easyedu_guide',
+    $templatedata['easyeduguide']
+);
 
-echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('local_groupimport/manage', $templatedata);
 
 echo $OUTPUT->footer();
@@ -224,9 +227,7 @@ function local_groupimport_grouping_filter_options(array $groupings): array {
  * @param array $groups Group records.
  * @param array $groupings Grouping records.
  * @param array $ungroupedgroupids Group ids without grouping.
- * @param moodle_url $csvurl CSV URL.
- * @param moodle_url $nativeparticipantsurl Native participants URL.
- * @param string $navigationhtml Rendered tertiary navigation.
+ * @param array $navigationdata Normalized navigation context.
  * @return array
  */
 function local_groupimport_build_manage_template_data(
@@ -235,9 +236,7 @@ function local_groupimport_build_manage_template_data(
     array $groups,
     array $groupings,
     array $ungroupedgroupids,
-    moodle_url $csvurl,
-    moodle_url $nativeparticipantsurl,
-    string $navigationhtml
+    array $navigationdata
 ): array {
     global $CFG;
 
@@ -250,11 +249,6 @@ function local_groupimport_build_manage_template_data(
     $context = context_course::instance($course->id);
     $canmessageparticipants = !empty($CFG->messaging) &&
         has_all_capabilities(['moodle/site:sendmessage', 'moodle/course:bulkmessaging'], $context);
-    $navigationhtml = local_groupimport_prepare_navigation_html(
-        $navigationhtml,
-        get_string('easystudmanager', 'local_groupimport')
-    );
-
     $detaillabels = [
         'ajaxerror' => get_string('ajaxactionfailed', 'local_groupimport'),
         'actioninprogress' => get_string('actioninprogress', 'local_groupimport'),
@@ -372,15 +366,12 @@ function local_groupimport_build_manage_template_data(
     $templatedata = [
         'courseid' => $course->id,
         'detaillabelsjson' => json_encode($detaillabels),
-        'navigationhtml' => $navigationhtml,
+        'navigation' => $navigationdata,
         'eyebrow' => get_string('easystudlabel', 'local_groupimport'),
         'description' => get_string('easystudmanager_desc', 'local_groupimport'),
-        'managerlabel' => get_string('easystudmanager', 'local_groupimport'),
+        'loadingmanager' => get_string('loadingmanager', 'local_groupimport'),
+        'managerready' => get_string('managerready', 'local_groupimport'),
         'compactparticipantsdefault' => $compactparticipantsdefault,
-        'nativeparticipantsurl' => $nativeparticipantsurl->out(false),
-        'nativeparticipantslabel' => get_string('nativeparticipants', 'local_groupimport'),
-        'csvurl' => $csvurl->out(false),
-        'csvlabel' => get_string('csvimportlink', 'local_groupimport'),
         'clipboardlabel' => get_string('clipboardtools', 'local_groupimport'),
         'tutoriallabel' => get_string('tutoriallabel', 'local_groupimport'),
         'tutorialtitle' => get_string('tutorialtitle', 'local_groupimport'),
@@ -522,8 +513,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialconceptstitle', 'local_groupimport'),
                 'content' => get_string('tutorialconceptscontent', 'local_groupimport'),
                 'visualconcepts' => true,
-                'highlightselector' => '[data-easystud-tree]',
+                'highlighttarget' => 'firstGrouping',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groupings',
             ],
             [
                 'icon' => 'fa-route',
@@ -531,8 +523,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialfirststructuretitle', 'local_groupimport'),
                 'content' => get_string('tutorialfirststructurecontent', 'local_groupimport'),
                 'visualfirststructure' => true,
-                'highlightselector' => '.local-groupimport-easystud-create-row',
+                'highlighttarget' => 'groupCreateInput',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groups',
                 'highlightopen' => 'tutorial:create-group',
             ],
             [
@@ -548,9 +541,12 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialfilterstitle', 'local_groupimport'),
                 'content' => get_string('tutorialfilterscontent', 'local_groupimport'),
                 'visualfilters' => true,
-                'highlightselector' => '[data-easystud-filters]',
+                'highlighttarget' => 'advancedParticipantFilters',
                 'highlightmode' => 'participants',
+                'highlightview' => 'participants',
                 'highlightopen' => '[data-easystud-advanced-filters-toggle="participants"]',
+                'showopendelay' => 800,
+                'showafteropendelay' => 600,
             ],
             [
                 'icon' => 'fa-id-badge',
@@ -558,8 +554,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialparticipantcardtitle', 'local_groupimport'),
                 'content' => get_string('tutorialparticipantcardcontent', 'local_groupimport'),
                 'visualparticipantcard' => true,
-                'highlightselector' => '[data-easystud-participant-list]',
+                'highlighttarget' => 'participantFirstCard',
                 'highlightmode' => 'participants',
+                'highlightview' => 'participants',
                 'highlightopen' => 'tutorial:participant-details',
             ],
             [
@@ -568,8 +565,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialgroupcardtitle', 'local_groupimport'),
                 'content' => get_string('tutorialgroupcardcontent', 'local_groupimport'),
                 'visualgroupcard' => true,
-                'highlightselector' => '[data-easystud-structure-groups]',
+                'highlighttarget' => 'firstGroup',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groups',
                 'highlightopen' => 'tutorial:first-group',
             ],
             [
@@ -578,8 +576,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialgroupingcardtitle', 'local_groupimport'),
                 'content' => get_string('tutorialgroupingcardcontent', 'local_groupimport'),
                 'visualgroupingcard' => true,
-                'highlightselector' => '[data-easystud-tree]',
+                'highlighttarget' => 'firstGrouping',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groupings',
                 'highlightopen' => 'tutorial:first-grouping',
             ],
             [
@@ -588,8 +587,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialassignmentpracticetitle', 'local_groupimport'),
                 'content' => get_string('tutorialassignmentpracticecontent', 'local_groupimport'),
                 'visualassignment' => true,
-                'highlightselector' => '[data-easystud-tree]',
+                'highlighttarget' => 'firstGrouping',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groupings',
                 'highlightopen' => 'tutorial:first-grouping',
             ],
             [
@@ -598,8 +598,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialemptycoursetitle', 'local_groupimport'),
                 'content' => get_string('tutorialemptycoursecontent', 'local_groupimport'),
                 'visualemptycourse' => true,
-                'highlightselector' => '.local-groupimport-easystud-create-row',
+                'highlighttarget' => 'groupingCreateInput',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groupings',
                 'highlightopen' => 'tutorial:create-grouping',
             ],
             [
@@ -608,9 +609,15 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialtextaddtitle', 'local_groupimport'),
                 'content' => get_string('tutorialtextaddcontent', 'local_groupimport'),
                 'visualtextadd' => true,
-                'highlightselector' => '[data-easystud-structure-groups]',
+                'highlighttarget' => 'firstGroupEmailBox',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groups',
                 'highlightopen' => 'tutorial:add-users-text',
+                // The inline paste field opens with the product's slow
+                // expand transition. Resolve the concrete textarea only
+                // after that transition has made it available, rather than
+                // falling back to the enclosing group card.
+                'showopendelay' => 800,
             ],
             [
                 'icon' => 'fa-mouse-pointer',
@@ -618,8 +625,12 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialcontextmenutitle', 'local_groupimport'),
                 'content' => get_string('tutorialcontextmenucontent', 'local_groupimport'),
                 'visualcontextmenu' => true,
-                'highlightselector' => '[data-easystud-participant-list]',
+                'highlighttarget' => 'participantCardActions',
+                'highlighttargetcompact' => 'participantCardActions',
+                'highlighttargetdesktop' => 'participantFirstCard',
                 'highlightmode' => 'participants',
+                'highlightview' => 'participants',
+                'highlightopen' => 'tutorial:participant-card-actions',
             ],
             [
                 'icon' => 'fa-list-check',
@@ -627,8 +638,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialselectionmodaltitle', 'local_groupimport'),
                 'content' => get_string('tutorialselectionmodalcontent', 'local_groupimport'),
                 'visualactionmodal' => true,
-                'highlightselector' => '.local-groupimport-easystud__panel-actions',
+                'highlighttarget' => 'participantSelectionInput',
                 'highlightmode' => 'both',
+                'highlightview' => 'participants',
             ],
             [
                 'icon' => 'fa-arrows-alt',
@@ -636,8 +648,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialactionstitle', 'local_groupimport'),
                 'content' => get_string('tutorialactionscontent', 'local_groupimport'),
                 'visualactions' => true,
-                'highlightselector' => '.local-groupimport-easystud__panel-actions',
+                'highlighttarget' => 'participantSelectionInput',
                 'highlightmode' => 'both',
+                'highlightview' => 'participants',
             ],
             [
                 'icon' => 'fa-keyboard',
@@ -645,8 +658,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialkeyboardtitle', 'local_groupimport'),
                 'content' => get_string('tutorialkeyboardcontent', 'local_groupimport'),
                 'visualkeyboard' => true,
-                'highlightselector' => '[data-easystud-participant-list]',
+                'highlighttarget' => 'participantFirstCard',
                 'highlightmode' => 'participants',
+                'highlightview' => 'participants',
             ],
             [
                 'icon' => 'fa-compass',
@@ -668,8 +682,9 @@ function local_groupimport_build_manage_template_data(
                 'title' => get_string('tutorialcreationtitle', 'local_groupimport'),
                 'content' => get_string('tutorialcreationcontent', 'local_groupimport'),
                 'visualcreation' => true,
-                'highlightselector' => '.local-groupimport-easystud-create-row',
+                'highlighttarget' => 'groupCreateInput',
                 'highlightmode' => 'structure',
+                'highlightview' => 'groups',
                 'highlightopen' => 'tutorial:create-group',
             ],
             [
@@ -780,10 +795,6 @@ function local_groupimport_build_manage_template_data(
         'groupscolumnlabel' => get_string('groupscolumnlabel', 'local_groupimport'),
         'groupingscolumnlabel' => get_string('groupingscolumnlabel', 'local_groupimport'),
         'groupingoccupancylabel' => get_string('groupingoccupancy', 'local_groupimport'),
-        'mobilenavigationlabel' => get_string('mobilenavigation', 'local_groupimport'),
-        'mobilenavigationcloselabel' => get_string('mobilenavigationclose', 'local_groupimport'),
-        'mobilenavigationtoolslabel' => get_string('mobilenavigationtools', 'local_groupimport'),
-        'mobilenavigationmoodlelabel' => get_string('mobilenavigationmoodle', 'local_groupimport'),
         'backtotoplabel' => get_string('backtotop', 'local_groupimport'),
         'filteralllabel' => get_string('filterall', 'local_groupimport'),
         'filterwithgroupslabel' => get_string('filterwithgroups', 'local_groupimport'),
@@ -998,9 +1009,30 @@ function local_groupimport_build_easyedu_guide_template_data(array $templatedata
             'content' => html_writer::tag('p', s($step['content'])),
         ];
 
-        if (!empty($step['highlightselector'])) {
+        if (!empty($step['highlighttarget']) || !empty($step['highlightselector'])) {
             $slide['target'] = 'slide-' . $index;
-            $slide['targetselector'] = $step['highlightselector'];
+            $slide['targetselector'] = $step['highlighttarget'] ?? $step['highlightselector'];
+            if (!empty($step['highlighttargetcompact'])) {
+                $slide['targetselectorcompact'] = $step['highlighttargetcompact'];
+            }
+            if (!empty($step['highlighttargetdesktop'])) {
+                $slide['targetselectordesktop'] = $step['highlighttargetdesktop'];
+            }
+            $viewopener = [
+                'groups' => 'viewGroups',
+                'groupings' => 'viewGroupings',
+                'participants' => 'viewParticipants',
+                'both' => 'viewParticipants',
+            ];
+            $view = $step['highlightview'] ?? $step['highlightmode'] ?? '';
+            if ($view !== '' && isset($viewopener[$view])) {
+                $slide['showopen'] = $viewopener[$view];
+                $slide['showopendelay'] = (int) ($step['showopendelay'] ?? 360);
+            }
+            if (!empty($step['highlightopen'])) {
+                $slide['showafteropen'] = $step['highlightopen'];
+                $slide['showafteropendelay'] = (int) ($step['showafteropendelay'] ?? 360);
+            }
         }
 
         if (!empty($step['visualconcepts'])) {
@@ -1314,6 +1346,7 @@ function local_groupimport_build_easyedu_guide_template_data(array $templatedata
     return [
         'rootclass' => 'local-groupimport-easystud-easyedu-guide',
         'guideopenlabel' => $templatedata['tutoriallabel'],
+        'guidehoverlabel' => get_string('tutorialhoverlabel', 'local_groupimport'),
         'guidecloselabel' => get_string('closebuttontitle', 'core'),
         'guidetitle' => $templatedata['tutorialtitle'],
         'guidesubtitle' => $templatedata['tutorialintro'],
@@ -1361,15 +1394,60 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
             'groupCreateInput' => '.local-groupimport-easystud-create-row input[name="groupname"]',
             'groupingCreateInput' => '.local-groupimport-easystud-create-row input[name="groupingname"]',
             'filters' => '[data-easystud-filters]',
-            'layoutBoth' => '[data-easystud-layout-mode="both"]',
-            'layoutParticipants' => '[data-easystud-layout-mode="participants"]',
-            'layoutStructure' => '[data-easystud-layout-mode="structure"]',
+            'advancedParticipantFilters' => '[data-easystud-advanced-filters="participants"]',
+            'layoutBoth' => [
+                '[data-easystud-mobile-view="participants"]',
+                '[data-easystud-layout-mode="both"]',
+            ],
+            'layoutParticipants' => [
+                '[data-easystud-mobile-view="participants"]',
+                '[data-easystud-layout-mode="participants"]',
+            ],
+            'layoutStructure' => [
+                '[data-easystud-mobile-view="groupings"]',
+                '[data-easystud-layout-mode="structure"]',
+            ],
+            // Each Guide destination names the real compact workspace first,
+            // then retains the corresponding desktop layout as a fallback.
+            'viewParticipants' => [
+                '[data-easystud-mobile-view="participants"]',
+                '[data-easystud-layout-mode="participants"]',
+            ],
+            'viewGroups' => [
+                '[data-easystud-mobile-view="groups"]',
+                '[data-easystud-layout-mode="structure"]',
+            ],
+            'viewGroupings' => [
+                '[data-easystud-mobile-view="groupings"]',
+                '[data-easystud-layout-mode="structure"]',
+            ],
             'panelActions' => '.local-groupimport-easystud__panel-actions',
             'participantFirstCard' => [
                 '[data-easystud-participant-list] [data-selectable-type="participant"]:not([hidden])',
                 '[data-easystud-participant-list]',
             ],
             'participantList' => '[data-easystud-participant-list]',
+            'participantSelectionInput' => [
+                '[data-easystud-participant-list] [data-easystud-user]:not([hidden]) > ' .
+                    '.local-groupimport-easystud-selector:not([hidden])',
+                '[data-easystud-participant-list] .local-groupimport-easystud-selector:not([hidden])',
+            ],
+            'participantCardActions' => [
+                '[data-easystud-participant-list] [data-easystud-user]:not([hidden]) > ' .
+                    '[data-easystud-card-menu]',
+                '[data-easystud-participant-list] [data-easystud-card-menu]',
+            ],
+            'participantMoveAction' => '[data-easystud-move-selected-participants]',
+            'firstGroup' => [
+                '[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden])',
+                '[data-easystud-group-id]:not([hidden])',
+            ],
+            'firstGroupEmailBox' => [
+                '[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden]) ' .
+                    '[data-easystud-group-email-box]:not([hidden])',
+                '[data-easystud-group-id]:not([hidden]) [data-easystud-group-email-box]:not([hidden])',
+                '[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden])',
+            ],
             'participantGroupCard' => [
                 '[data-easystud-participant-groups-panel] [data-easystud-group-id]:not([hidden])',
                 '[data-easystud-structure-groups] [data-easystud-group-id]:not([hidden])',
@@ -1411,7 +1489,7 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'description' => get_string('tutorialguidedpaneldescstructure', 'local_groupimport'),
                     'target' => 'createRow',
                     'highlightTarget' => 'groupCreateInput',
-                    'open' => 'layoutStructure',
+                    'open' => 'viewGroups',
                     'feedback' => get_string('tutorialguidedpanelfeedbackstructure', 'local_groupimport'),
                     'completionMode' => 'event',
                 ],
@@ -1419,8 +1497,10 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'id' => 'add-participants',
                     'title' => get_string('tutorialvisualguidedtwo', 'local_groupimport'),
                     'description' => get_string('tutorialguidedpaneldescparticipants', 'local_groupimport'),
-                    'target' => 'participantGroupCard',
-                    'open' => 'layoutParticipants',
+                    'target' => 'participantCardActions',
+                    'highlightTargetCompact' => 'participantCardActions',
+                    'highlightTargetDesktop' => 'participantMoveAction',
+                    'open' => 'viewParticipants',
                     'openDelay' => 360,
                     'feedback' => get_string('tutorialguidedpanelfeedbackparticipants', 'local_groupimport'),
                     'completionMode' => 'event',
@@ -1429,9 +1509,9 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'id' => 'check-filters',
                     'title' => get_string('tutorialvisualguidedthree', 'local_groupimport'),
                     'description' => get_string('tutorialguidedpaneldescfilters', 'local_groupimport'),
-                    'target' => 'filters',
+                    'target' => 'advancedParticipantFilters',
                     'open' => [
-                        ['target' => 'layoutParticipants', 'delay' => 320],
+                        ['target' => 'viewParticipants', 'delay' => 320],
                         ['target' => '[data-easystud-advanced-filters-toggle="participants"]', 'delay' => 220],
                     ],
                     'feedback' => get_string('tutorialguidedpanelfeedbackfilters', 'local_groupimport'),
@@ -1445,7 +1525,7 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'description' => get_string('tutorialguidedgroupingdesccreate', 'local_groupimport'),
                     'target' => 'createRow',
                     'highlightTarget' => 'groupingCreateInput',
-                    'open' => 'layoutStructure',
+                    'open' => 'viewGroupings',
                     'feedback' => get_string('tutorialguidedfeedbackgroupingcreate', 'local_groupimport'),
                     'completionMode' => 'event',
                 ],
@@ -1456,9 +1536,8 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'target' => 'firstGroupingAddPanel',
                     'highlightTarget' => 'firstGroupingAddBox',
                     'open' => [
-                        ['target' => 'layoutStructure', 'delay' => 320],
-                        ['target' => 'firstGroupingToggle', 'delay' => 360],
-                        ['target' => 'firstGroupingAddButton', 'delay' => 360],
+                        ['target' => 'viewGroupings', 'delay' => 800],
+                        ['target' => 'tutorial:first-grouping-add-groups', 'delay' => 600],
                     ],
                     'feedback' => get_string('tutorialguidedfeedbackgroupingadd', 'local_groupimport'),
                     'completionMode' => 'event',
@@ -1469,7 +1548,7 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'description' => get_string('tutorialguidedgroupingdescverify', 'local_groupimport'),
                     'target' => 'firstGrouping',
                     'open' => [
-                        ['target' => 'layoutStructure', 'delay' => 320],
+                        ['target' => 'viewGroupings', 'delay' => 320],
                         ['target' => 'firstGroupingToggle', 'delay' => 360],
                     ],
                     'feedback' => get_string('tutorialguidedfeedbackgroupingverify', 'local_groupimport'),
@@ -1482,7 +1561,7 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'title' => get_string('tutorialguidedtrydrag', 'local_groupimport'),
                     'description' => get_string('tutorialguidedactionsdescdrag', 'local_groupimport'),
                     'target' => 'participantFirstCard',
-                    'open' => 'layoutBoth',
+                    'open' => 'viewParticipants',
                     'openDelay' => 320,
                     'feedback' => get_string('tutorialguidedfeedbackactionsdrag', 'local_groupimport'),
                     'completionMode' => 'event',
@@ -1491,8 +1570,8 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'id' => 'try-selection',
                     'title' => get_string('tutorialguidedtryselection', 'local_groupimport'),
                     'description' => get_string('tutorialguidedactionsdescselection', 'local_groupimport'),
-                    'target' => 'panelActions',
-                    'open' => 'layoutBoth',
+                    'target' => 'participantSelectionInput',
+                    'open' => 'viewParticipants',
                     'openDelay' => 320,
                     'feedback' => get_string('tutorialguidedfeedbackactionsselection', 'local_groupimport'),
                     'completionMode' => 'event',
@@ -1501,8 +1580,10 @@ function local_groupimport_build_easyedu_guide_js_config(int $courseid): array {
                     'id' => 'try-context',
                     'title' => get_string('tutorialguidedtrycontext', 'local_groupimport'),
                     'description' => get_string('tutorialguidedactionsdesccontext', 'local_groupimport'),
-                    'target' => 'participantFirstCard',
-                    'open' => 'layoutBoth',
+                    'target' => 'participantCardActions',
+                    'highlightTargetCompact' => 'participantCardActions',
+                    'highlightTargetDesktop' => 'participantFirstCard',
+                    'open' => 'viewParticipants',
                     'openDelay' => 320,
                     'feedback' => get_string('tutorialguidedfeedbackactionscontext', 'local_groupimport'),
                     'completionMode' => 'event',
@@ -1557,61 +1638,136 @@ function local_groupimport_build_group_catalog_template_data(int $courseid, arra
 }
 
 /**
- * Prepare the tertiary navigation HTML for the embedded EasyStud header.
+ * Convert a translated navigation label or URL into a stable item key.
  *
- * @param string $navigationhtml Raw rendered navigation HTML.
- * @param string $currentlabel Current page label.
+ * @param string $value Source value.
+ * @param string $prefix Key prefix.
  * @return string
  */
-function local_groupimport_prepare_navigation_html(string $navigationhtml, string $currentlabel): string {
-    if (trim($navigationhtml) === '') {
-        return $navigationhtml;
+function local_groupimport_navigation_key(string $value, string $prefix): string {
+    $value = core_text::strtolower(trim($value));
+    $value = preg_replace('/[^a-z0-9]+/', '-', $value) ?? '';
+    $value = trim($value, '-');
+    return $prefix . '-' . ($value !== '' ? $value : 'item');
+}
+
+/**
+ * Build one destination item for the shared navigation contract.
+ *
+ * @param string $id Stable item id.
+ * @param string $label Translated item label.
+ * @param string $url Destination URL.
+ * @param bool $current Whether this is the current destination.
+ * @param string $icon Optional Font Awesome icon class.
+ * @return array
+ */
+function local_groupimport_navigation_destination(
+    string $id,
+    string $label,
+    string $url,
+    bool $current = false,
+    string $icon = ''
+): array {
+    return [
+        'id' => $id,
+        'kind' => 'destination',
+        'label' => $label,
+        'accessiblelabel' => $label,
+        'url' => $url,
+        'icon' => $icon,
+        'islink' => true,
+        'isbutton' => false,
+        'isdisclosure' => false,
+        'current' => $current,
+        'disabled' => false,
+        'destructive' => false,
+        'badge' => '',
+        'haschildren' => false,
+    ];
+}
+
+/**
+ * Build the normalized EasyStud navigation from Moodle's server-side export.
+ *
+ * Moodle's participants action bar owns permission resolution and third-party
+ * node visibility. EasyStud only maps that export into the shared UI Kit
+ * context; it does not parse rendered HTML or rebuild a second menu in JS.
+ *
+ * @param stdClass $course Course record.
+ * @param moodle_page $page Current Moodle page.
+ * @param renderer_base $output Current renderer.
+ * @return array
+ */
+function local_groupimport_build_navigation_context(
+    stdClass $course,
+    moodle_page $page,
+    renderer_base $output
+): array {
+    $actionbar = new \core\output\participants_action_bar($course, $page, null);
+    $exported = $actionbar->export_for_template($output);
+    $native = $exported['navigation'] ?? null;
+    if ($native instanceof \stdClass) {
+        // Keep Moodle's native options and accessible label. The EasyStud
+        // route is the current destination, so present it as the menu title.
+        $native->inlinelabel = false;
+        $native->selectedoption = get_string('easystudmanager', 'local_groupimport');
     }
+    $sections = [];
 
-    $previous = libxml_use_internal_errors(true);
-    $document = new DOMDocument();
-    $loaded = $document->loadHTML(
-        '<?xml encoding="utf-8" ?><div id="local-groupimport-nav-root">' . $navigationhtml . '</div>',
-        LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-    );
+    $productitems = [
+        local_groupimport_navigation_destination(
+            'easystud-manager',
+            get_string('easystudmanager', 'local_groupimport'),
+            (new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]))->out(false),
+            true,
+            'fa fa-users'
+        ),
+        local_groupimport_navigation_destination(
+            'easystud-import',
+            get_string('csvimportlink', 'local_groupimport'),
+            (new moodle_url('/local/groupimport/index.php', ['id' => $course->id]))->out(false),
+            false,
+            'fa fa-file-import'
+        ),
+        [
+            'id' => 'easystud-clipboard',
+            'kind' => 'utility',
+            'label' => get_string('clipboardtools', 'local_groupimport'),
+            'accessiblelabel' => get_string('clipboardtools', 'local_groupimport'),
+            'action' => 'open-clipboard',
+            'icon' => 'fa fa-clipboard-list',
+            'islink' => false,
+            'isbutton' => true,
+            'isdisclosure' => false,
+            'current' => false,
+            'disabled' => false,
+            'destructive' => false,
+            'badge' => '',
+            'haschildren' => false,
+        ],
+    ];
+    $sections[] = [
+        'id' => 'easystud-tools',
+        'label' => get_string('easystudlabel', 'local_groupimport'),
+        'items' => $productitems,
+    ];
 
-    if (!$loaded) {
-        libxml_clear_errors();
-        libxml_use_internal_errors($previous);
-        return $navigationhtml;
-    }
-
-    $xpath = new DOMXPath($document);
-    $root = $document->getElementById('local-groupimport-nav-root');
-    $toggle = $xpath->query(
-        "//*[contains(concat(' ', normalize-space(@class), ' '), ' select-menu ')]" .
-        "//*[contains(concat(' ', normalize-space(@class), ' '), ' dropdown-toggle ')]"
-    )->item(0);
-
-    if ($toggle instanceof DOMElement && trim($toggle->textContent) === '') {
-        $toggle->appendChild($document->createTextNode($currentlabel));
-    }
-
-    $selecteditems = $xpath->query(
-        "//*[contains(concat(' ', normalize-space(@class), ' '), ' dropdown-item ')][@aria-selected='true']"
-    );
-    foreach ($selecteditems as $selecteditem) {
-        if ($selecteditem instanceof DOMElement && trim($selecteditem->textContent) === $currentlabel) {
-            $selecteditem->parentNode?->removeChild($selecteditem);
-        }
-    }
-
-    $html = '';
-    if ($root instanceof DOMElement) {
-        foreach ($root->childNodes as $child) {
-            $html .= $document->saveHTML($child);
-        }
-    }
-
-    libxml_clear_errors();
-    libxml_use_internal_errors($previous);
-
-    return $html !== '' ? $html : $navigationhtml;
+    return [
+        'rootid' => 'local-groupimport-easystud-navigation',
+        'panelid' => 'local-groupimport-easystud-navigation-panel',
+        'anchorselector' => '[data-region="drawer-toggle"]',
+        'navigationlabel' => get_string('participantsnavigation', 'course'),
+        'triggerlabel' => get_string('mobilemenu', 'local_groupimport'),
+        'closelabel' => get_string('mobilenavigationclose', 'local_groupimport'),
+        'triggericon' => 'fa fa-bars',
+        'closeicon' => 'fa fa-times',
+        'emptylabel' => get_string('navigationempty', 'local_groupimport'),
+        'hasitems' => !empty($sections),
+        'hasparticipantdropdown' => $native && !empty($native->options),
+        'participantnavigationlabel' => get_string('mobilenavigationmoodle', 'local_groupimport'),
+        'participantdropdown' => $native,
+        'sections' => $sections,
+    ];
 }
 
 /**

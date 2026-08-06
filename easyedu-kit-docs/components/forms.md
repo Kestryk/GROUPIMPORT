@@ -249,7 +249,9 @@ icon-only control or reuse a card-members toggle class on this button.
 
 The consumer owns `hidden`, `aria-expanded` and the expand/collapse motion.
 The kit owns normal, hover, focus-visible, open and disabled presentation. The
-touch variant has a minimum height of `44px`.
+touch variant has a minimum height of `44px`. The focus-visible state uses the
+public `--easyedu-control-focus-border` and `--easyedu-focus-ring` tokens; a
+consumer must not replace them with private or undefined focus variables.
 
 Expected structure:
 

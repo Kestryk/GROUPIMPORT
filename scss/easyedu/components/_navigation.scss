@@ -1,0 +1,638 @@
+@use "buttons";
+@use "responsive";
+
+// Canonical navigation composition for EasyEdu plugin surfaces.
+//
+// Consumers render desktop and compact wrappers from one prepared context.
+// Existing button/responsive mixins remain the visual authorities so adopting
+// this component does not fork the established EasyStud/CCB contracts.
+@mixin navigation-component($compact-breakpoint: 64rem, $phone-trigger-clearance: false) {
+  position: relative;
+
+  [data-easyedu-navigation-desktop] {
+    position: relative;
+    @include buttons.admin-primary-nav;
+  }
+
+  [data-easyedu-navigation-desktop] > .easyedu-navigation__sections {
+    align-items: stretch;
+    display: flex;
+    flex: 1 1 100%;
+    justify-content: center;
+    min-width: 0;
+    width: 100%;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source,
+  [data-easyedu-navigation-desktop] .easyedu-navigation__participant-source {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__participant-source {
+    .select-menu {
+      align-items: stretch;
+      display: inline-flex;
+    }
+
+    .select-menu > .dropdown-toggle {
+      align-items: center;
+      display: inline-flex;
+      @include buttons.admin-primary-nav-action;
+    }
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source {
+    // Keep this wrapper free of transforms. The guide modal lives inside the
+    // wrapper and is viewport-fixed; a transformed ancestor would make it
+    // relative to this small rail slot and collapse the modal into a strip.
+    inset-block-start: calc(50% - 1.275rem);
+    inset-inline-start: 0.42rem;
+    margin: 0;
+    overflow: visible;
+    position: absolute;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-guide__launcher {
+    gap: 0;
+  }
+
+  // The launcher label is a visual capsule, not a navigation item. Keep it
+  // out of flow so revealing it cannot move the centered destination buttons.
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source .easyedu-guide__launcher .easyedu-guide__launcher-label {
+    align-items: center;
+    background: var(--local-groupimport-easystud-guide-launcher-gradient);
+    border: 1px solid var(--local-groupimport-easystud-guide-launcher-border);
+    border-radius: var(--local-groupimport-easystud-guide-launcher-radius);
+    box-shadow: var(--local-groupimport-easystud-guide-launcher-shadow);
+    clip: auto;
+    color: var(--easyedu-identity-icon-color);
+    display: inline-flex;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    height: auto;
+    inset-block-start: 50%;
+    inset-inline-start: calc(100% + 0.65rem);
+    line-height: 1.2;
+    margin: 0;
+    max-inline-size: min(12rem, 24vw);
+    opacity: 0;
+    overflow: visible;
+    padding: 0.42rem 0.7rem;
+    pointer-events: none;
+    position: absolute;
+    transform: translate(-0.5rem, -50%);
+    transition: opacity 180ms var(--easyedu-motion-ease), transform 200ms var(--easyedu-motion-ease), visibility 0s linear 200ms;
+    visibility: hidden;
+    white-space: nowrap;
+    width: max-content;
+    z-index: var(--easyedu-navigation-layer-trigger);
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-label-revealed .easyedu-guide__launcher .easyedu-guide__launcher-label,
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source .easyedu-guide__launcher:hover .easyedu-guide__launcher-label,
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source .easyedu-guide__launcher:focus-visible .easyedu-guide__launcher-label {
+    opacity: 1;
+    transform: translate(0, -50%);
+    transition-delay: 0s;
+    visibility: visible;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher .easyedu-guide__launcher-label {
+    inset-block-end: calc(100% + 0.55rem);
+    inset-block-start: auto;
+    inset-inline-start: 0;
+    transform: translateY(0.5rem);
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top.is-label-revealed .easyedu-guide__launcher .easyedu-guide__launcher-label,
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher:hover .easyedu-guide__launcher-label,
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher:focus-visible .easyedu-guide__launcher-label {
+    transform: translateY(0);
+  }
+
+  // Opening the guide takes the launcher out of the active hover context. Hide
+  // the out-of-flow capsule immediately so it cannot paint over the modal.
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-suppressed .easyedu-guide__launcher .easyedu-guide__launcher-label {
+    display: none;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top-end .easyedu-guide__launcher .easyedu-guide__launcher-label {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+  }
+
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source .easyedu-guide__launcher .easyedu-guide__launcher-label {
+    transform: translate(0.5rem, -50%);
+  }
+
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-label-revealed .easyedu-guide__launcher .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source .easyedu-guide__launcher:hover .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source .easyedu-guide__launcher:focus-visible .easyedu-guide__launcher-label {
+    transform: translate(0, -50%);
+  }
+
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top.is-label-revealed .easyedu-guide__launcher .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher:hover .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher:focus-visible .easyedu-guide__launcher-label {
+    transform: translateY(0.5rem);
+  }
+
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top.is-label-revealed .easyedu-guide__launcher .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher:hover .easyedu-guide__launcher-label,
+  [dir="rtl"] [data-easyedu-navigation-desktop] .easyedu-navigation__guide-source.is-guide-label-top .easyedu-guide__launcher:focus-visible .easyedu-guide__launcher-label {
+    transform: translateY(0);
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__section {
+    align-items: stretch;
+    display: flex;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__items {
+    align-items: stretch;
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__section-title {
+    // Keep section ownership in the accessibility tree without changing the
+    // established compact desktop rail.
+    border: 0;
+    clip-path: inset(50%);
+    height: 0.0625rem;
+    margin: -0.0625rem;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 0.0625rem;
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__item {
+    @include buttons.admin-primary-nav-action;
+
+    // Match the established EasyStud admin rail: a plain Font Awesome glyph
+    // in a fixed slot, followed by the label. The explicit slot keeps narrow
+    // glyphs visually centred instead of letting their font metrics drift.
+    & {
+      gap: 0.5rem;
+    }
+
+    > .easyedu-navigation__item-icon {
+      align-items: center;
+      display: inline-flex;
+      flex: 0 0 1rem;
+      height: 1rem;
+      justify-content: center;
+      line-height: 1;
+      min-inline-size: 1rem;
+      width: 1rem;
+    }
+  }
+
+  [data-easyedu-navigation-desktop] .easyedu-navigation__item--destructive {
+    @include buttons.admin-primary-nav-action(destructive);
+  }
+
+  // Rest at the centre of the viewport's left edge. The native Moodle drawer
+  // control remains in its own top-edge region; ordinary page controls must
+  // never determine this handle's resting place.
+  .easyedu-navigation__trigger-row {
+    block-size: 0;
+    margin: 0;
+  }
+
+  .easyedu-navigation__trigger {
+    @include buttons.icon-button(regular);
+
+    background: color-mix(in srgb, var(--easyedu-card-border) 28%, var(--easyedu-surface) 72%);
+    border: 1px solid var(--easyedu-card-border);
+    border-radius: 0 999px 999px 0;
+    box-shadow: 0 0.125rem 0.25rem rgba(35, 53, 72, 0.16);
+    color: var(--easyedu-primary-strong);
+    display: inline-flex;
+    gap: 0;
+    inline-size: var(--easyedu-touch-target-min);
+    inset-block-start: clamp(
+      var(--easyedu-navigation-trigger-safe-edge),
+      50dvh,
+      calc(100dvh - var(--easyedu-navigation-trigger-safe-edge))
+    );
+
+    inset-inline-start: 0;
+    min-height: var(--easyedu-touch-target-min);
+    min-width: var(--easyedu-touch-target-min);
+    overflow: hidden;
+    padding-inline: 0.44rem 0.7rem;
+    position: fixed;
+    // Centre the rendered control, rather than assuming its visual block size.
+    // The inherited Moodle button sizing can add block padding around the
+    // touch-target minimum.
+    transform: translateY(-50%);
+    transform-origin: left center;
+    transition:
+      background-color var(--easyedu-motion-fast) var(--easyedu-motion-ease),
+      border-color var(--easyedu-motion-fast) var(--easyedu-motion-ease),
+      box-shadow var(--easyedu-motion-fast) var(--easyedu-motion-ease),
+      gap var(--easyedu-motion-fast) var(--easyedu-motion-ease),
+      inline-size var(--easyedu-motion-fast) var(--easyedu-motion-ease),
+      transform var(--easyedu-motion-fast) var(--easyedu-motion-ease);
+    white-space: nowrap;
+    z-index: var(--easyedu-navigation-layer-trigger);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--easyedu-surface-strong);
+      border-color: var(--easyedu-primary);
+      box-shadow: 0 0.3rem 0.7rem rgba(35, 53, 72, 0.22);
+      color: var(--easyedu-primary-strong);
+      gap: 0.42rem;
+      inline-size: min(12rem, calc(100vw - var(--easyedu-navigation-trigger-safe-edge)));
+      transform: translate(0.14rem, -50%);
+    }
+
+    &[aria-expanded="true"] {
+      pointer-events: none;
+      visibility: hidden;
+    }
+  }
+
+  @if $phone-trigger-clearance {
+    // Phone layouts place the participant selector across the visual centre.
+    // Preserve a small, stable clearance beneath it without tying the handle
+    // to scroll position or to another control's changing geometry.
+    @media (max-width: 40rem) {
+      .easyedu-navigation__trigger {
+        inset-block-start: clamp(
+          var(--easyedu-navigation-trigger-safe-edge),
+          calc(50dvh + var(--easyedu-touch-target-min) - var(--easyedu-navigation-trigger-safe-edge)),
+          calc(100dvh - var(--easyedu-navigation-trigger-safe-edge))
+        );
+      }
+    }
+  }
+
+  .easyedu-navigation__trigger-label {
+    font-size: var(--easyedu-font-size-body);
+    font-weight: var(--easyedu-font-weight-strong);
+    max-inline-size: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      max-inline-size var(--easyedu-motion-fast) var(--easyedu-motion-ease),
+      opacity var(--easyedu-motion-fast) var(--easyedu-motion-ease);
+  }
+
+  .easyedu-navigation__trigger:hover .easyedu-navigation__trigger-label,
+  .easyedu-navigation__trigger:focus-visible .easyedu-navigation__trigger-label {
+    max-inline-size: 10rem;
+    opacity: 1;
+  }
+
+  .easyedu-navigation__backdrop {
+    @include responsive.mobile-primary-nav-backdrop(var(--easyedu-navigation-layer-backdrop));
+  }
+
+  .easyedu-navigation__panel {
+    @include responsive.mobile-primary-nav-panel(var(--easyedu-navigation-layer-panel));
+
+    border: 0;
+    border-inline-end: 0.0625rem solid var(--easyedu-card-border);
+    max-width: var(--easyedu-navigation-panel-max-width);
+    width: var(--easyedu-navigation-panel-width);
+
+    &[aria-hidden="true"] {
+      visibility: hidden;
+    }
+
+    &[aria-hidden="false"] {
+      visibility: visible;
+    }
+  }
+
+  .easyedu-navigation__guide-slot,
+  .easyedu-navigation__participant-slot { margin: 0.8rem 0 0; }
+
+  .easyedu-navigation__guide-slot:empty,
+  .easyedu-navigation__participant-slot:empty { display: none; }
+
+  // The shared guide remains consumer-owned. In the compact panel it becomes
+  // one full-width navigation button: the softened launcher gradient belongs
+  // to the button, not to a second icon or label capsule.
+  .easyedu-navigation__panel .easyedu-navigation__guide-slot .easyedu-guide__launcher {
+    @include responsive.mobile-navigation-guide-row;
+
+    // The compact launcher is intentionally outside the portalled Guide root,
+    // so retain the established gradient token on the button itself.
+    --local-groupimport-easystud-guide-launcher-gradient:
+      linear-gradient(135deg, var(--easyedu-primary) 0%, var(--easyedu-accent) 100%);
+    background-color: transparent;
+    background-image:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.28) 100%),
+      var(--local-groupimport-easystud-guide-launcher-gradient);
+    background-position: 0 0, 0 50%;
+    background-size: 100% 100%, 190% 190%;
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: var(--easyedu-control-radius);
+    box-shadow: 0 0.24rem 0.62rem rgba(31, 68, 104, 0.14);
+    color: var(--easyedu-identity-icon-color);
+    justify-content: flex-start;
+    min-height: var(--easyedu-touch-target-min);
+    padding: 0.48rem 0.62rem;
+    transition:
+      background-position var(--easyedu-motion-fast, 160ms) ease,
+      border-color var(--easyedu-motion-fast, 160ms) ease,
+      box-shadow var(--easyedu-motion-fast, 160ms) ease,
+      color var(--easyedu-motion-fast, 160ms) ease;
+    width: 100%;
+
+    &:hover,
+    &:focus-visible {
+      background-image:
+        linear-gradient(var(--easyedu-surface), var(--easyedu-surface)),
+        var(--local-groupimport-easystud-guide-launcher-gradient);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      background-position: 0 0, 100% 50%;
+      border-color: transparent;
+      box-shadow: 0 0.32rem 0.76rem rgba(11, 79, 138, 0.2);
+      color: transparent;
+    }
+  }
+
+  .easyedu-navigation__panel .easyedu-navigation__guide-slot .easyedu-guide__launcher {
+    .easyedu-guide__launcher-icon,
+    > .fa {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      color: currentColor;
+      display: inline-grid;
+      place-items: center;
+    }
+  }
+
+  .easyedu-navigation__panel .easyedu-navigation__guide-slot .easyedu-guide__launcher-icon {
+    flex: 0 0 2.15rem;
+    font-size: 1.18rem;
+    height: 2.15rem;
+    min-width: 2.15rem;
+    width: 2.15rem;
+  }
+
+  .easyedu-navigation__panel .easyedu-navigation__guide-slot .easyedu-guide__launcher .easyedu-guide__launcher-label {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    clip: auto;
+    color: currentColor;
+    display: inline-flex !important;
+    flex: 1 1 auto;
+    font-size: 1rem;
+    font-weight: 700;
+    height: auto;
+    line-height: 1.25;
+    margin: 0;
+    max-inline-size: none;
+    min-inline-size: 0;
+    overflow: visible;
+    padding-block: 0.12rem;
+    padding-inline: 0;
+    position: static;
+    white-space: nowrap;
+    width: auto;
+  }
+
+  .easyedu-navigation__panel .easyedu-navigation__guide-slot .easyedu-guide__launcher:hover,
+  .easyedu-navigation__panel .easyedu-navigation__guide-slot .easyedu-guide__launcher:focus-visible {
+    .easyedu-guide__launcher-icon,
+    > .fa,
+    .easyedu-guide__launcher-label {
+      background-image: var(--local-groupimport-easystud-guide-launcher-gradient);
+      background-clip: text;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .easyedu-navigation__panel-header {
+    align-items: center;
+    background: var(--easyedu-surface);
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.75rem;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .easyedu-navigation__panel-title {
+    color: var(--easyedu-text);
+    font-size: var(--easyedu-font-size-section-title);
+    font-weight: var(--easyedu-font-weight-strong);
+    margin: 0;
+  }
+
+  .easyedu-navigation__close {
+    @include buttons.close-button;
+  }
+
+  .easyedu-navigation__sections {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .easyedu-navigation__section {
+    @include responsive.mobile-navigation-section;
+
+    &:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+
+  .easyedu-navigation__section-title {
+    color: var(--easyedu-text-muted);
+    font-size: var(--easyedu-font-size-eyebrow);
+    font-weight: var(--easyedu-font-weight-strong);
+    letter-spacing: 0.045em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .easyedu-navigation__items {
+    display: grid;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .easyedu-navigation__participant-links {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .easyedu-navigation__participant-group {
+    color: var(--easyedu-text-muted);
+    font-size: var(--easyedu-font-size-eyebrow);
+    font-weight: var(--easyedu-font-weight-strong);
+    letter-spacing: 0.045em;
+    margin: 0.45rem 0 0.1rem;
+    text-transform: uppercase;
+  }
+
+  .easyedu-navigation__participant-group:first-child {
+    margin-top: 0;
+  }
+
+  .easyedu-navigation__items .easyedu-navigation__items {
+    border-inline-start: 0.0625rem solid var(--easyedu-card-border);
+    margin-block-start: 0.25rem;
+    margin-inline-start: var(--easyedu-navigation-item-indent);
+    padding-inline-start: var(--easyedu-navigation-item-indent);
+  }
+
+  .easyedu-navigation__panel .easyedu-navigation__item {
+    @include responsive.mobile-navigation-link;
+
+    &[aria-disabled="true"],
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+  }
+
+  .easyedu-navigation__item-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .easyedu-navigation__badge {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+  }
+
+  .easyedu-navigation__disclosure-icon {
+    margin-inline-start: auto;
+    transition: transform var(--easyedu-motion-fast) var(--easyedu-motion-ease);
+  }
+
+  [aria-expanded="true"] > .easyedu-navigation__disclosure-icon {
+    transform: rotate(180deg);
+  }
+
+  .easyedu-navigation__empty {
+    color: var(--easyedu-text-muted);
+    margin: 0;
+    padding: 0.75rem;
+  }
+
+  @media (min-width: calc(#{$compact-breakpoint} + 0.001rem)) {
+    [data-easyedu-navigation-desktop] {
+      overflow: visible;
+    }
+
+    .easyedu-navigation__trigger-row,
+    .easyedu-navigation__backdrop,
+    .easyedu-navigation__panel {
+      display: none !important;
+    }
+
+    .easyedu-navigation__guide-slot,
+    .easyedu-navigation__participant-slot { display: none !important; }
+  }
+
+  @media (max-width: $compact-breakpoint), (pointer: coarse) {
+    .easyedu-guide__launcher-label { display: none; }
+
+    .easyedu-navigation__guide-slot .easyedu-guide__launcher-label {
+      display: inline-flex !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .easyedu-guide__launcher-label {
+      transition-duration: 0.01ms;
+      transition-delay: 0s;
+    }
+  }
+
+  @media (max-width: $compact-breakpoint) {
+    [data-easyedu-navigation-desktop] {
+      display: none !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .easyedu-navigation__panel,
+    .easyedu-navigation__item,
+    .easyedu-navigation__disclosure-icon {
+      scroll-behavior: auto;
+      transition-duration: 0.01ms !important;
+    }
+
+    .easyedu-navigation__trigger {
+      transform: translateY(-50%);
+
+      &:hover,
+      &:focus-visible {
+        transform: translateY(-50%);
+      }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .easyedu-navigation__trigger,
+    .easyedu-navigation__panel,
+    .easyedu-navigation__item {
+      border: 0.0625rem solid CanvasText;
+      forced-color-adjust: auto;
+    }
+
+    .easyedu-navigation__item[aria-current="page"] {
+      outline: 0.125rem solid Highlight;
+      outline-offset: -0.125rem;
+    }
+  }
+
+  [dir="rtl"] & .easyedu-navigation__panel,
+  &[dir="rtl"] .easyedu-navigation__panel {
+    inset: 0 0 0 auto;
+    border-inline-end: 0.0625rem solid var(--easyedu-card-border);
+    transform: translateX(105%);
+
+    &.is-open {
+      transform: none;
+    }
+  }
+
+  [dir="rtl"] & .easyedu-navigation__trigger,
+  &[dir="rtl"] .easyedu-navigation__trigger {
+    border-radius: 999px 0 0 999px;
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    padding-inline: 0.7rem 0.44rem;
+  }
+
+  [dir="rtl"] & .easyedu-navigation__item:hover,
+  &[dir="rtl"] .easyedu-navigation__item:hover {
+    transform: translateX(-0.08rem);
+  }
+}
+
+@mixin navigation-document-open-state {
+  overflow: hidden;
+  overscroll-behavior: none;
+}

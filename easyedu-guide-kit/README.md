@@ -18,6 +18,12 @@ Each plugin keeps its own content, selectors and language strings. This keeps
 plugins independent while making the interaction model consistent across the
 EasyEdu suite.
 
+Before synchronizing a consumer, follow the canonical
+[adapter integration contract](../docs/components/guide-adapter-integration.md)
+and its [configuration examples](../docs/examples/guide-adapter-config.md).
+They define atomic source copying, the direct AMD wrapper conversion and the
+required responsive/accessibility evidence.
+
 ## Suggested plugin structure
 
 Copy this folder into a plugin as `easyedu-guide-kit/`, then adapt or move the
@@ -43,7 +49,7 @@ Source: git@github.com:Kestryk/easyedu-ui-kit.git
 The generic module expects a root element and a configuration object:
 
 ```js
-import {init} from './easyedu_guide';
+import {destroy, init} from './easyedu_guide';
 
 init(document.querySelector('[data-easyedu-guide-root]'), {
   storageKey: 'coursebannerbuilder.guide.seen',
@@ -64,7 +70,16 @@ init(document.querySelector('[data-easyedu-guide-root]'), {
     ]
   }
 });
+
+// Before replacing or removing the root:
+destroy(document.querySelector('[data-easyedu-guide-root]'));
 ```
+
+The modal traps focus, locks page scrolling and restores the launcher on normal
+close. `Show in the interface` closes without restoring the launcher, focuses
+the visible target and leaves a temporary return panel. `destroy()` removes
+tracked listeners and observers, cancels highlight refresh work and releases
+the scroll lock without deleting saved guide progress.
 
 ## Target convention
 
@@ -82,6 +97,10 @@ targets: {
   createLayer: '[data-easyedu-guide-target="create-layer"]'
 }
 ```
+
+Only visible, connected targets are eligible. Hidden or detached matches are
+ignored, and an active highlight is cleared if its target leaves the rendered
+interface.
 
 ## Completion event convention
 

@@ -2,6 +2,7 @@
 // Keep this file as orchestration only: reusable visual language lives in partials.
 @use "abstracts/tokens";
 @use "components/layout";
+@use "components/mass-import-navigation";
 @use "components/participants";
 @use "components/forms";
 @use "components/structure";

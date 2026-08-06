@@ -9,6 +9,7 @@
 // --easyedu-card-shadow, --easyedu-identity-border-width,
 // --easyedu-identity-size, --easyedu-identity-icon-color.
 
+@use "focus";
 @use "typography";
 
 @mixin object-card($identity-color) {
@@ -236,8 +237,7 @@
 
   &:focus-visible {
     border-radius: var(--easyedu-control-radius);
-    box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
-    outline: 0;
+    @include focus.ring;
   }
 }
 
@@ -311,13 +311,21 @@
     box-shadow var(--easyedu-motion-fast) ease,
     color var(--easyedu-motion-fast) ease;
 
-  &:hover,
-  &:focus-visible {
+  &:hover {
     background: color-mix(in srgb, #{$bg} 72%, #fff 28%);
     border-color: color-mix(in srgb, #{$border} 78%, #000 22%);
-    box-shadow: 0 0 0 0.16rem color-mix(in srgb, #{$text} 14%, transparent);
     color: color-mix(in srgb, #{$text} 86%, #000 14%);
-    outline: 0;
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    @include focus.ring(
+      $color: color-mix(in srgb, #{$text} 22%, transparent),
+      $border-color: color-mix(in srgb, #{$border} 78%, #000 22%)
+    );
+
+    background: color-mix(in srgb, #{$bg} 72%, #fff 28%);
+    color: color-mix(in srgb, #{$text} 86%, #000 14%);
     text-decoration: none;
   }
 }
@@ -367,6 +375,23 @@
     border-color var(--easyedu-motion-fast) ease,
     box-shadow var(--easyedu-motion-normal) ease,
     transform var(--easyedu-motion-normal) ease;
+}
+
+// Use only on a card's `:focus-within` state when a child control keeps the
+// actual keyboard focus. The child retains `focus.ring`; this contextual state
+// stays inside the card boundary and therefore cannot bleed into its identity
+// rail or a neighbouring list gutter.
+@mixin card-focus-context(
+  $base-shadow: null,
+  $preserve-identity-rail: false,
+  $identity-rail-color: null
+) {
+  @include focus.contained-context-ring(
+    $border-color: var(--easyedu-control-focus-border),
+    $base-shadow: $base-shadow,
+    $preserve-identity-rail: $preserve-identity-rail,
+    $identity-rail-color: $identity-rail-color
+  );
 }
 
 @mixin selectable-card($identity-color) {
@@ -520,6 +545,10 @@
     background-size: min(34rem, 96%) 1px, min(34rem, 96%) 1px;
     color: $text-color;
     outline: 0;
+  }
+
+  &:focus-visible {
+    @include focus.ring;
   }
 
   &:focus:not(:focus-visible) {

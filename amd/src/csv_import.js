@@ -364,11 +364,29 @@ const initPreviewTools = root => {
 
 const initHistoryModal = root => {
     const modal = root.querySelector('[data-local-groupimport-history-modal]');
-    const open = root.querySelector('[data-local-groupimport-history-open]');
-    if (!modal || !open || open.dataset.localGroupimportHistoryBound === '1') {
+    const openButtons = Array.from(root.querySelectorAll(
+        '[data-local-groupimport-history-open], [data-easyedu-navigation-action="mass-import-history"]'
+    ));
+    if (!modal || openButtons.length === 0 || modal.dataset.localGroupimportHistoryBound === '1') {
         return;
     }
-    open.dataset.localGroupimportHistoryBound = '1';
+    modal.dataset.localGroupimportHistoryBound = '1';
+
+    let opener = null;
+
+    const restoreFocus = () => {
+        const compactPanel = opener && opener.closest('[data-easyedu-navigation-panel]');
+        const compactPanelClosed = compactPanel && compactPanel.getAttribute('aria-hidden') === 'true';
+        if (opener && !compactPanelClosed && opener.getClientRects().length > 0) {
+            opener.focus();
+            return;
+        }
+
+        const navigationTrigger = root.querySelector('[data-easyedu-navigation-open]');
+        if (navigationTrigger) {
+            navigationTrigger.focus();
+        }
+    };
 
     const closeButtons = Array.from(modal.querySelectorAll('[data-local-groupimport-history-close]'));
     const close = () => {
@@ -376,19 +394,23 @@ const initHistoryModal = root => {
         Motion.exit(dialog, {duration: Motion.timing.fast, distance: '0.2rem'}).then(completed => {
             if (completed) {
                 modal.hidden = true;
-                open.focus();
+                restoreFocus();
             }
         });
     };
 
-    open.addEventListener('click', () => {
-        modal.hidden = false;
-        const dialog = modal.querySelector('.local-groupimport-import-modal__dialog') || modal;
-        Motion.enter(dialog, {duration: Motion.timing.slow, distance: '0.45rem'});
-        const closeButton = modal.querySelector('[data-local-groupimport-history-close]');
-        if (closeButton) {
-            closeButton.focus();
-        }
+    openButtons.forEach(button => {
+        button.dataset.localGroupimportHistoryBound = '1';
+        button.addEventListener('click', () => {
+            opener = button;
+            modal.hidden = false;
+            const dialog = modal.querySelector('.local-groupimport-import-modal__dialog') || modal;
+            Motion.enter(dialog, {duration: Motion.timing.slow, distance: '0.45rem'});
+            const closeButton = modal.querySelector('[data-local-groupimport-history-close]');
+            if (closeButton) {
+                closeButton.focus();
+            }
+        });
     });
 
     closeButtons.forEach(button => button.addEventListener('click', close));
@@ -476,6 +498,9 @@ export const init = (rootId) => {
     initPreviewTools(root);
     initHistoryModal(root);
     initRollbackModal(root);
+
+    const loadingReadyAttribute = root.dataset.easyeduLoadingReadyAttribute || 'data-easyedu-loading-ready';
+    root.setAttribute(loadingReadyAttribute, '1');
 
     const overlay = root.querySelector('[data-local-groupimport-drop-overlay]');
     if (!overlay) {

@@ -81,7 +81,10 @@ if (!class_exists('local_groupimport_admin_setting_configcolor')) {
 }
 
 if ($hassiteconfig) {
-    global $ADMIN, $DB;
+    global $ADMIN, $DB, $PAGE;
+
+    $PAGE->add_body_class('local-groupimport-admin-settings-page--loading');
+    $PAGE->requires->js('/local/groupimport/js/admin_settings_loading.js', true);
 
     $settings = new admin_settingpage(
         'local_groupimport',
@@ -177,6 +180,81 @@ if ($hassiteconfig) {
         'local-groupimport-admin-settings local-groupimport-admin-settings--features',
         ['data-local-groupimport-admin-features' => '1']
     );
+
+    $adminloadingskeletoncards = [];
+    for ($skeletoncard = 0; $skeletoncard < 3; $skeletoncard++) {
+        $adminloadingskeletoncards[] = html_writer::div(
+            html_writer::tag('span', '', [
+                'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-card-title',
+            ]) .
+                html_writer::tag('span', '', [
+                    'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-field',
+                ]) .
+                html_writer::tag('span', '', [
+                    'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-field local-groupimport-admin-settings__loading-field--short',
+                ]) .
+                html_writer::tag('span', '', [
+                    'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-row',
+                ]),
+            'local-groupimport-admin-settings__loading-card'
+        );
+    }
+
+    $adminloadingskeletonsections = [];
+    foreach ([3, 2, 5] as $sectionindex => $sectionrows) {
+        $rows = [];
+        for ($skeletonrow = 0; $skeletonrow < $sectionrows; $skeletonrow++) {
+            $controlclass = 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-form-control';
+            if ($sectionindex === 1 && $skeletonrow === 0) {
+                $controlclass .= ' local-groupimport-admin-settings__loading-form-control--tall';
+            }
+
+            $rows[] = html_writer::div(
+                html_writer::tag('span', '', [
+                    'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-form-label',
+                ]) .
+                    html_writer::tag('span', '', ['class' => $controlclass]),
+                'local-groupimport-admin-settings__loading-form-row'
+            );
+        }
+
+        $adminloadingskeletonsections[] = html_writer::div(
+            html_writer::tag('span', '', [
+                'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-section-title',
+            ]) .
+                html_writer::div(implode('', $rows), 'local-groupimport-admin-settings__loading-form-rows'),
+            'local-groupimport-admin-settings__loading-section'
+        );
+    }
+
+    $adminloadingskeletonhtml = html_writer::div(
+        html_writer::div(
+            html_writer::tag('span', '', [
+                'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-eyebrow',
+            ]) .
+                html_writer::tag('span', '', [
+                    'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-title',
+                ]) .
+                html_writer::tag('span', '', [
+                    'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-intro',
+                ]),
+            'local-groupimport-admin-settings__loading-header'
+        ) .
+        html_writer::div(implode('', $adminloadingskeletoncards), 'local-groupimport-admin-settings__loading-grid') .
+            html_writer::div(implode('', $adminloadingskeletonsections), 'local-groupimport-admin-settings__loading-sections'),
+        'local-groupimport-admin-settings__loading-skeleton',
+        [
+            'data-easystud-loading-skeleton' => '1',
+            'data-easyedu-action-busy-label' => get_string('actioninprogress', 'local_groupimport'),
+            'aria-hidden' => 'true',
+        ]
+    );
+
+    $settings->add(new admin_setting_heading(
+        'local_groupimport/loadingoverview',
+        '',
+        $adminloadingskeletonhtml
+    ));
 
     $settings->add(new admin_setting_heading(
         'local_groupimport/featuresoverview',

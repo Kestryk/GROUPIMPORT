@@ -67,6 +67,63 @@ Must not:
 - add empty balancing markup or plugin-local left/right offsets;
 - allow translated action labels to wrap onto a second line.
 
+## Shared desktop and responsive navigation
+
+Canonical files:
+
+- `scss/easyedu/components/_navigation.scss`;
+- `navigation/`;
+- `docs/components/navigation.md`.
+
+Must:
+
+- prepare one ordered, permission-resolved `sections/items` context in PHP;
+- render desktop and compact wrappers through the same item partial;
+- keep stable item IDs, URLs, labels, icons, hierarchy and current state;
+- synchronize `aria-expanded`, `aria-hidden`, `hidden`, `inert` and focus;
+- keep the compact trigger fixed at the logical inline edge and near the visual
+  viewport centre; do not re-position it from scroll-sensitive Moodle or
+  participant geometry. A documented phone breakpoint may use the smallest
+  stable offset required to clear a centred native control;
+- use logical properties, RTL behavior, reduced motion and forced colors;
+- keep releases, deployments and human visual approval separate from code
+  completion.
+
+Must not:
+
+- parse or clone desktop navigation HTML into the compact panel;
+- maintain independent desktop and responsive destination arrays;
+- move product-specific guide launchers or business actions in the generic
+  controller;
+- mark the provisional component mandatory before consumer comparison and
+  human approval.
+
+## Shared keyboard focus
+
+Canonical files:
+
+- `scss/easyedu/components/_focus.scss`;
+- `scss/easyedu/_tokens.scss`;
+- `docs/components/focus.md`.
+
+Must:
+
+- use `focus.ring(...)` for shared keyboard-focus paint;
+- keep the public `0.18rem` geometry consistent across component families;
+- retain the component radius and paint around the complete interactive target;
+- use semantic colour variants without changing thickness;
+- pass elevation or active shadows through `$base-shadow` so the focus ring
+  remains outermost;
+- reserve the ring width inside containers that clip or scroll;
+- retain the transparent outline used by forced-colors mode.
+
+Must not:
+
+- define component-local focus widths;
+- use hover-only shadows as the only focus indicator;
+- clip a focusable child against an `overflow: hidden` edge;
+- remove the outline and ring together.
+
 ## Segmented single choice
 
 Must:
@@ -156,6 +213,75 @@ one requestAnimationFrame refresh loop. It must not use competing hard timers,
 persistent suppressed states, or an unbounded document-wide MutationObserver.
 Use the shared `highlightStyle` option for visual variants such as
 `pulse-blue`; never fork the lifecycle code just to change the look.
+
+## Guide: responsive shell, focus and teardown
+
+Must:
+
+- keep ancestors of the fixed guide modal free of `transform`, `filter`,
+  `perspective`, `contain: paint` or equivalent containing-block rules;
+- keep launcher wrappers from creating a stacking context above Moodle-native
+  dropdowns;
+- trap focus inside the open dialog and restore the opener on normal close;
+- lock page scrolling while any guide modal is open;
+- focus a visible interface target when `Show in the interface` is used;
+- reverse horizontal keyboard and rail movement in RTL;
+- use safe-area insets and a bounded `vh`/`dvh` bottom-sheet layout on narrow
+  or short viewports;
+- keep guided-panel header and actions reachable while only the step region
+  owns constrained-height scrolling;
+- ignore hidden or detached targets and clear an active highlight when its
+  target leaves the interface;
+- observe only the active target's local subtree;
+- expose and call `destroy()` before a guide root is replaced or removed;
+- remove tracked listeners, observers, frames, timers, owned highlights and
+  page-scroll locks during teardown;
+- retain understandable boundaries in forced-colours mode and immediate state
+  changes under reduced motion.
+
+Must not:
+
+- centre or animate a launcher by transforming a root that also contains the
+  fixed modal;
+- leave focus inside hidden dialog content or restore it when the workflow
+  deliberately focuses an interface target;
+- use fixed reusable title IDs that collide when multiple guide roots render;
+- allow the whole guided panel or page to become a second scroll owner;
+- keep geometry for a hidden, zero-sized or detached target;
+- observe the complete document subtree for one active highlight;
+- erase persisted visitor progress during lifecycle teardown.
+
+## Guide: consumer adapter and packaging
+
+Canonical handoff:
+
+- `docs/components/guide-adapter-integration.md`;
+- `docs/examples/guide-adapter-config.md`.
+
+Must:
+
+- synchronize the controller, Mustache and guide SCSS as one reviewed source
+  set;
+- compare canonical, embedded and runtime copies before writing;
+- preserve product-owned selectors, routes, content, localization, permissions
+  and completion predicates;
+- preserve the consumer's approved Moodle AMD build model and module namespace;
+- expose both `init` and `destroy` from direct AMD wrappers;
+- remove both named `export` keywords and `export default init` when converting
+  the canonical ES module into an existing direct `define()` wrapper;
+- rebuild generated AMD and CSS artifacts with the consumer toolchain;
+- record the canonical source state, exact runtime version and deferred
+  compatibility coverage.
+
+Must not:
+
+- synchronize only JavaScript, template or SCSS when their contracts changed
+  together;
+- hand-edit minified AMD or compiled CSS;
+- copy EasyStud configuration into CCB or CCB configuration into EasyStud;
+- treat visual slide locking as Moodle permission enforcement;
+- call `init` on replaced markup without destroying the old guide root;
+- claim consumer or cross-version parity from static build success.
 
 ## Guide: action target versus visual target
 
@@ -253,6 +379,9 @@ Must:
 - cancel completed Web Animation fill effects after cleanup;
 - batch DOM reads before writes and recalculate pagination only once per action;
 - test repeated open/close/open cycles and widths during pagination.
+- keep the bottom-end busy spinner's `::after` on the single
+  `easyedu-busy-spin` transform animation; put label pulsing on `::before` so
+  competing transforms cannot freeze the visible rotation.
 
 Must not:
 
@@ -412,7 +541,9 @@ Must:
 - use `toggle-check` for binary filters inside EasyEdu filter boxes;
 - use `multi-select-list(small)` for runtime filters and
   `multi-select-list(regular|large)` for settings/admin screens;
-- keep focus rings on the full control wrapper.
+- keep focus rings on the full control wrapper;
+- render `filter-disclosure-trigger` focus with the defined
+  `--easyedu-control-focus-border` and `--easyedu-focus-ring` tokens.
 
 Must not:
 
@@ -425,6 +556,7 @@ Must not:
   behaviour is rebuilt deliberately;
 - put long help text in labels when a help icon/tooltip is more appropriate.
 - reuse a card reveal chevron as the trigger for a responsive filter panel.
+- reference private or undefined focus variables from a reusable form mixin.
 - replace an established desktop filter-disclosure wrapper globally when only
   its compact presentation needs to change; preserve the markup and scope the
   alternate styling to the responsive breakpoint.

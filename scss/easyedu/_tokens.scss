@@ -12,6 +12,16 @@
   // Layout rhythm.
   --easyedu-gap: 1rem;
   --easyedu-navigation-following-gap: 2.5rem;
+  --easyedu-navigation-panel-width: 88vw;
+  --easyedu-navigation-panel-max-width: 22rem;
+  --easyedu-navigation-item-indent: 0.8rem;
+  --easyedu-navigation-trigger-inline-start: 0.75rem;
+  --easyedu-navigation-trigger-gap: 0.5rem;
+  --easyedu-navigation-trigger-fallback-top: 0.75rem;
+  --easyedu-navigation-trigger-safe-edge: 0.75rem;
+  --easyedu-navigation-layer-trigger: 1064;
+  --easyedu-navigation-layer-backdrop: 1065;
+  --easyedu-navigation-layer-panel: 1066;
   --easyedu-radius: 0.75rem;
   --easyedu-radius-sm: 0.5rem;
   --easyedu-radius-lg: 1rem;
@@ -21,6 +31,11 @@
   --easyedu-border-strong: #b9c6d4;
   --easyedu-focus-ring: rgba(15, 108, 191, 0.22);
   --easyedu-focus-ring-accent: rgba(27, 127, 90, 0.22);
+  --easyedu-focus-ring-danger: rgba(161, 43, 43, 0.22);
+  --easyedu-focus-ring-warning: rgba(154, 101, 15, 0.22);
+  --easyedu-focus-ring-width: 0.18rem;
+  --easyedu-focus-outline-width: 0.125rem;
+  --easyedu-focus-outline-offset: 0.125rem;
   --easyedu-shadow: 0 0.45rem 1.25rem rgba(31, 42, 55, 0.08);
   --easyedu-shadow-soft: 0 0.25rem 0.8rem rgba(31, 42, 55, 0.05);
   --easyedu-shadow-strong: 0 0.9rem 2.2rem rgba(31, 42, 55, 0.16);
@@ -84,6 +99,15 @@
   --easyedu-empty-bg-start: #fbfdff;
   --easyedu-empty-bg-end: #f6f9fc;
   --easyedu-empty-border: #cdddea;
+  --easyedu-loading-surface: #dce7f0;
+  --easyedu-loading-highlight: #edf3f7;
+  --easyedu-loading-border: #cfdee9;
+  --easyedu-loading-shimmer-soft: rgba(255, 255, 255, 0.16);
+  --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
+  --easyedu-loading-radius: 0.72rem;
+  --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-shimmer-duration: 2s;
+  --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;

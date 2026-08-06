@@ -681,14 +681,23 @@
       color: #246746;
     }
 
-    &:hover,
-    &:focus-visible {
+    &:hover {
       background: #f5fbf7;
       border-color: #bddfcb;
       border-left-color: #246746;
       box-shadow: 0 0.45rem 0.9rem rgba(41, 114, 77, 0.12);
-      outline: 0;
       transform: translateY(-0.04rem);
+    }
+
+    &:focus-visible {
+      background: #f5fbf7;
+      border-left-color: #246746;
+      transform: translateY(-0.04rem);
+      @include easyedu.ring(
+        $color: var(--easyedu-focus-ring-accent),
+        $border-color: #bddfcb,
+        $base-shadow: 0 0.45rem 0.9rem rgba(41, 114, 77, 0.12)
+      );
     }
   }
 
@@ -1724,12 +1733,19 @@
       transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 
       &:hover,
-      &:focus-visible,
       &.is-active {
         background: #f4fbf7;
         border-color: #c3dfcd;
         box-shadow: 0 0.3rem 0.7rem rgba(41, 114, 77, 0.1);
-        outline: 0;
+      }
+
+      &:focus-visible {
+        background: #f4fbf7;
+        @include easyedu.ring(
+          $color: var(--easyedu-focus-ring-accent),
+          $border-color: #c3dfcd,
+          $base-shadow: 0 0.3rem 0.7rem rgba(41, 114, 77, 0.1)
+        );
       }
 
       &.is-complete .local-groupimport-easystud-guided-panel__index {
@@ -1953,8 +1969,7 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.18rem rgba(15, 108, 191, 0.16);
-      outline: 0;
+      @include easyedu.ring($border-color: #bfd0e2);
     }
   }
 }

@@ -86,126 +86,8 @@
       display: none !important;
     }
 
-    &-mobile-nav-trigger {
-      align-items: center;
-      align-self: flex-start;
-      background: var(--easyedu-surface);
-      border: 1px solid var(--easyedu-card-border);
-      border-radius: var(--easyedu-control-radius);
-      color: var(--easyedu-primary-strong);
-      display: inline-flex;
-      font-weight: 650;
-      gap: 0.55rem;
-      min-height: var(--easyedu-touch-target-min);
-      padding: 0.55rem 0.78rem;
-    }
-
-    &-mobile-nav-trigger:focus-visible {
-      box-shadow: 0 0 0 0.18rem var(--easyedu-focus-ring);
-      outline: 0;
-    }
-
-    &-mobile-nav-backdrop {
-      background: rgba(25, 39, 54, 0.38);
-      display: block;
-      inset: 0;
-      position: fixed;
-      z-index: 1065;
-    }
-
-    &-mobile-nav-backdrop[hidden] {
-      display: none;
-    }
-
     &__header-actions--desktop {
       display: none !important;
-    }
-
-    &__header-actions[data-easystud-mobile-nav-panel] {
-      background: var(--easyedu-surface);
-      border-right: 1px solid var(--easyedu-card-border);
-      box-shadow: 0.8rem 0 2rem rgba(31, 42, 55, 0.16);
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      inset: 0 auto 0 0;
-      margin: 0;
-      max-width: min(22rem, calc(100vw - 3rem));
-      overflow-y: auto;
-      padding: calc(0.8rem + env(safe-area-inset-top)) 0.8rem calc(0.8rem + env(safe-area-inset-bottom));
-      position: fixed;
-      transform: translateX(-105%);
-      transition: transform var(--easyedu-motion-normal) ease;
-      width: 88vw;
-      z-index: 1066;
-    }
-
-    &__header-actions[data-easystud-mobile-nav-panel].is-open {
-      transform: translateX(0);
-    }
-
-    &-mobile-nav-header {
-      align-items: center;
-      background: var(--easyedu-surface);
-      display: flex;
-      justify-content: space-between;
-      min-height: var(--easyedu-touch-target-min);
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
-    &-mobile-nav-header button {
-      align-items: center;
-      background: var(--easyedu-surface-soft);
-      border: 1px solid var(--easyedu-card-border);
-      border-radius: var(--easyedu-control-radius);
-      display: inline-flex;
-      height: var(--easyedu-touch-target-min);
-      justify-content: center;
-      padding: 0;
-      width: var(--easyedu-touch-target-min);
-    }
-
-    &__header-actions[data-easystud-mobile-nav-panel] .easyedu-admin-primary-nav__actions {
-      display: grid;
-      gap: 0.4rem;
-    }
-
-    &-mobile-nav-section {
-      border-top: 1px solid var(--easyedu-card-border);
-      display: grid;
-      gap: 0.4rem;
-      padding-top: 0.75rem;
-    }
-
-    &-mobile-nav-section__title,
-    &-mobile-nav-section__group {
-      color: var(--easyedu-text-muted);
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.045em;
-      margin: 0;
-      text-transform: uppercase;
-    }
-
-    &-mobile-nav-section__links {
-      display: grid;
-      gap: 0.25rem;
-    }
-
-    &-mobile-nav-section__group {
-      margin: 0.45rem 0 0.1rem;
-    }
-
-    &-mobile-nav-section__link {
-      @include easyedu.mobile-navigation-link;
-    }
-
-    &__header-actions[data-easystud-mobile-nav-panel] .btn {
-      justify-content: flex-start;
-      min-height: var(--easyedu-touch-target-min);
-      width: 100%;
     }
 
     &__layout-toggles,
@@ -280,8 +162,31 @@
       display: inline-flex;
       position: absolute;
       right: 0.45rem;
+      // Direct participant/grouping triggers share the card's positioning
+      // context; the compact top inset keeps their touch-target centre aligned
+      // with the first content row.
       top: 0.1rem;
       z-index: 4;
+    }
+
+    // The participant headline content sits slightly above the direct-card
+    // positioning origin. Keep the touch target unchanged and compensate only
+    // its visual centre line.
+    &--responsive-workspace &-user > &-card-menu {
+      top: -0.08rem;
+    }
+
+    // Most group menus are injected as direct card children. Align them with
+    // the group title/count control line without altering the card box.
+    &--responsive-workspace &-group > &-card-menu {
+      top: 0.28rem;
+    }
+
+    // Group actions live in a positioned header rather than directly on the
+    // card in some rendered variants. Match the same optical compensation.
+    &--responsive-workspace &-group__header > &-card-menu {
+      top: calc(50% + 0.18rem);
+      transform: translateY(-50%);
     }
 
     &-card-menu__icon.fa {
@@ -485,7 +390,17 @@
       display: none !important;
     }
 
-    &[data-easystud-mobile-view-active="groups"] &-create-card--group &-advanced-filters,
+    // The base desktop mode hides the Groups disclosure outside Structure
+    // focus. In the responsive Groups workspace, keep the collapsed panel out
+    // of layout but restore it as soon as the existing transition opens it.
+    &[data-easystud-mobile-view-active="groups"] &-create-card--group &-advanced-filters.is-expanded {
+      display: block;
+    }
+
+    &[data-easystud-mobile-view-active="groups"] &-create-card--group &-advanced-filters.is-collapsed {
+      display: none;
+    }
+
     &[data-easystud-mobile-view-active="groups"] &-create-card--group &-advanced-filters__more,
     &[data-easystud-mobile-view-active="groups"] &-create-card--group &-advanced-filters__toggle {
       display: revert;
@@ -500,6 +415,24 @@
 
       left: auto;
       transform: none;
+    }
+
+    // The expanded Grouping rail is an absolutely positioned open-state frame.
+    // Its desktop offset deliberately lives outside the card, but the
+    // responsive workspace clips horizontal overflow. Keep the same rail
+    // width inside the existing card box so nested cards cannot cover it.
+    &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded {
+      &::after {
+        left: 0;
+      }
+
+      &::before {
+        // The base icon is centred on an outward rail. Move it by the canonical
+        // half-rail width when the frame becomes internal, including focus
+        // states whose more specific colour rules retain the original left
+        // offset.
+        transform: translate(calc(var(--easyedu-identity-border-width) / 2), -50%);
+      }
     }
 
     &__participant-list,
@@ -542,6 +475,37 @@
       box-sizing: border-box;
       max-width: none;
       width: 100%;
+    }
+
+    // A grid-owned rhythm prevents the first member row from inheriting a
+    // different offset from following rows when the disclosure opens.
+    &--responsive-workspace &-group__members {
+      display: grid;
+      gap: 0.3rem;
+      list-style: none;
+    }
+
+    &--responsive-workspace &-group__members > &-member {
+      // Revealed members already use a 2.35rem cap. Give the initial preview
+      // rows the same block size so opening the list keeps one visual rhythm.
+      block-size: 2.35rem;
+      margin-block: 0;
+      min-block-size: 2.35rem;
+      width: 100%;
+    }
+
+    // Grouping membership is useful desktop context but consumes the card's
+    // action/count row on a small Groups workspace.
+    &--responsive-workspace &-group__groupings--inline,
+    &--responsive-workspace &-group__groupings-details {
+      display: none !important;
+    }
+
+    // The settings action is the existing group-information modal route. It
+    // is moved into the responsive overflow menu and must not inherit the
+    // general hidden action rule above.
+    &--responsive-workspace &-group__actions-menu &-group__settings-button {
+      display: inline-flex !important;
     }
 
     &-grouping-mobile-filters {
@@ -591,11 +555,14 @@
     }
 
     &-action-status__spinner {
-      border: 0.16rem solid color-mix(in srgb, var(--easyedu-primary) 22%, transparent 78%);
+      // Mirror the desktop action-busy indicator instead of introducing a
+      // responsive-only primary-blue spinner.
+      border: 0.22rem solid #dbeaf5;
       border-radius: 50%;
-      border-top-color: var(--easyedu-primary);
-      height: 1rem;
-      width: 1rem;
+      border-right-color: #29724d;
+      border-top-color: #0c71c2;
+      height: 2.15rem;
+      width: 2.15rem;
       animation: local-groupimport-easystud-action-busy 0.8s linear infinite;
     }
 
@@ -628,11 +595,6 @@
 
     &-context-menu:not([hidden]) ~ &-back-to-top,
     &-back-to-top.is-obscured {
-      display: none;
-    }
-
-    &.is-action-busy::before,
-    &.is-action-busy::after {
       display: none;
     }
 
@@ -715,6 +677,22 @@
     &-structure-groups__list,
     &-tree__groupings {
       max-height: min(44rem, 68vh);
+    }
+  }
+}
+
+// The four selected-group actions can exactly fit beside their summary in a
+// clean fixture at 769-800 px, but user font metrics or zoom leave no safe
+// gap. Reuse the established phone stack before that collision can put an
+// action beneath the selected-count summary.
+@media (max-width: 800px) {
+  .local-groupimport-easystud {
+    &--has-selection {
+      padding-bottom: 8.4rem;
+    }
+
+    &-mobile-actions {
+      @include easyedu.mobile-action-tray-stacked;
     }
   }
 }

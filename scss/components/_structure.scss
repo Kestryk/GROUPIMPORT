@@ -130,11 +130,15 @@
       color var(--easyedu-motion-fast) ease;
     width: 100%;
 
-    &:hover,
-    &:focus-within {
+    &:hover {
       background: #ffffff;
       border-color: #b8c8d8;
       box-shadow: 0 0 0 0.12rem rgba(15, 108, 191, 0.08);
+    }
+
+    &:focus-within {
+      background: #ffffff;
+      @include easyedu.ring($border-color: #b8c8d8);
     }
 
     input {
@@ -196,9 +200,6 @@
       transform: translate(0.8rem, -50%);
     }
 
-    input:focus-visible + span::before {
-      box-shadow: 0 0 0 0.16rem rgba(41, 114, 77, 0.18);
-    }
   }
 
   &-group-catalog-filters--structure {
@@ -248,7 +249,6 @@
     background: var(--local-groupimport-easystud-surface-soft);
     border: 1px solid #e3ece5;
     border-radius: var(--local-groupimport-easystud-radius);
-    min-height: 8.35rem;
     padding: 0.8rem;
   }
 
@@ -480,10 +480,9 @@
       border-left-color: var(--local-groupimport-easystud-grouping-rail);
     }
 
-    &[data-easystud-grouping-id]:focus-within {
-      border-color: #9eb0c2;
-      border-left-color: var(--local-groupimport-easystud-grouping);
-      box-shadow: 0 0.5rem 1rem rgba(106, 127, 152, 0.15);
+    &[data-easystud-grouping-id]:focus-within:not(:has(> .local-groupimport-easystud-tree__children .local-groupimport-easystud-group:focus-within)) {
+      border-left-color: var(--local-groupimport-easystud-grouping-rail);
+      @include easyedu.card-focus-context(0 0.5rem 1rem rgba(106, 127, 152, 0.15));
     }
 
     &[data-easystud-grouping-id].is-expanded {
@@ -493,12 +492,11 @@
       box-shadow: 0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18);
     }
 
-    &[data-easystud-grouping-id].is-expanded:focus-within {
+    &[data-easystud-grouping-id].is-expanded:focus-within:not(:has(> .local-groupimport-easystud-tree__children .local-groupimport-easystud-group:focus-within)) {
       @include easyedu.open-identity-rail-state(#f7fafc, #b7c5d1, #8ca0b1);
 
       background: linear-gradient(180deg, #fff 0%, #f7fafc 100%);
-      border-color: #d7e0e8;
-      box-shadow: 0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18);
+      @include easyedu.card-focus-context(0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18));
     }
 
     &.is-drop-target,
@@ -526,15 +524,15 @@
       box-shadow: 0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22);
     }
 
-    &[data-easystud-grouping-id].is-expanded.is-selected:focus-within {
+    &[data-easystud-grouping-id].is-expanded.is-selected:focus-within:not(:has(> .local-groupimport-easystud-tree__children .local-groupimport-easystud-group:focus-within)) {
       @include easyedu.open-identity-rail-state(#edf2f7, #9eb0c2, #8a9dad);
 
       background: #edf2f7;
-      border-color: #9eb0c2;
-      box-shadow: 0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22);
+      @include easyedu.card-focus-context(0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22));
     }
 
-    &[data-easystud-grouping-id].is-expanded:not(:focus-within)::before {
+    &[data-easystud-grouping-id].is-expanded:not(:focus-within)::before,
+    &[data-easystud-grouping-id].is-expanded:has(> .local-groupimport-easystud-tree__children .local-groupimport-easystud-group:focus-within)::before {
       background-color: #8ca0b1;
     }
   }
@@ -777,9 +775,12 @@
     }
 
     &:focus-within {
-      border-color: #82ae97;
-      border-left-color: var(--local-groupimport-easystud-group);
-      box-shadow: 0 0.45rem 0.95rem rgba(41, 114, 77, 0.15);
+      border-left-color: var(--local-groupimport-easystud-group-rail);
+      @include easyedu.card-focus-context(
+        0 0.45rem 0.95rem rgba(41, 114, 77, 0.15),
+        $preserve-identity-rail: true,
+        $identity-rail-color: var(--local-groupimport-easystud-group-rail)
+      );
     }
 
     &.is-dragging {
@@ -802,6 +803,13 @@
       overflow: visible;
       z-index: 35;
     }
+  }
+
+  // An expanded member list may extend beside the Groupings column in Complete
+  // View. Lift only that card's paint stack so the identity rail remains
+  // visible above neighbouring overflow without changing its box geometry.
+  &-group:has(> &-group__members.is-expanded) {
+    z-index: 12;
   }
 
   &-group[data-easystud-user-drop].is-drop-target {
@@ -935,8 +943,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.16rem rgba(47, 143, 98, 0.16);
-      outline: 0;
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
     }
 
     &:focus:not(:focus-visible) {
@@ -956,7 +965,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.16rem rgba(12, 113, 194, 0.16);
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
     }
   }
 
@@ -972,7 +983,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.16rem rgba(12, 113, 194, 0.16);
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
     }
 
     &.is-active {
@@ -994,7 +1007,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.16rem rgba(102, 120, 139, 0.16);
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
     }
   }
 
@@ -1019,8 +1034,9 @@
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.16rem rgba(119, 87, 52, 0.14);
-      outline: 0;
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
     }
 
     &:focus:not(:focus-visible) {
@@ -1041,14 +1057,18 @@
     line-height: 1;
     width: 1.85rem;
 
-    &:hover,
-    &:focus-visible {
+    &:hover {
       background: #f8fafc;
       border-color: #bdc9d5;
-      box-shadow: 0 0 0 0.16rem rgba(102, 120, 139, 0.14);
       color: #40566c;
-      outline: 0;
       text-decoration: none;
+    }
+
+    &:focus-visible {
+      background: #f8fafc;
+      color: #40566c;
+      text-decoration: none;
+      @include easyedu.ring($border-color: #bdc9d5);
     }
 
     &:focus:not(:focus-visible) {
@@ -1095,13 +1115,17 @@
         justify-content: center;
       }
 
-      &:hover,
-      &:focus-visible {
+      &:hover {
         background: #f3f8fc;
         border-color: #d3e2ee;
         box-shadow: none;
         color: var(--local-groupimport-easystud-primary-strong);
-        outline: 0;
+      }
+
+      &:focus-visible {
+        background: #f3f8fc;
+        color: var(--local-groupimport-easystud-primary-strong);
+        @include easyedu.ring($border-color: #d3e2ee);
       }
     }
 
@@ -1177,7 +1201,7 @@
     );
   }
 
-  &-tree__section[data-easystud-grouping-id].is-expanded:focus-within &-grouping__groups::after {
+  &-tree__section[data-easystud-grouping-id].is-expanded:focus-within:not(:has(> .local-groupimport-easystud-tree__children .local-groupimport-easystud-group:focus-within)) &-grouping__groups::after {
     background: linear-gradient(
       180deg,
       rgba(238, 243, 247, 0) 0%,
@@ -1329,6 +1353,12 @@
       color: #294b68;
       text-decoration: none !important;
     }
+
+    &:focus-visible {
+      @include easyedu.ring($border-color: var(--easyedu-control-focus-border));
+      border-color: var(--easyedu-control-focus-border) !important;
+      box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
+    }
   }
 
   &-group-email {
@@ -1441,7 +1471,7 @@
   &-tags-toggle {
     align-items: center;
     border-radius: 999px !important;
-    box-shadow: none !important;
+    box-shadow: none;
     font-family: inherit !important;
     font-size: 0.72rem !important;
     font-weight: 600 !important;
@@ -1494,16 +1524,20 @@
 
     &:hover,
     &:focus {
-      box-shadow: none !important;
+      box-shadow: none;
       outline: 0;
       text-decoration: none;
+    }
+
+    &:focus-visible {
+      @include easyedu.ring;
     }
   }
 
   &-tags-toggle:not(.local-groupimport-easystud-token) {
     border: 0 !important;
     border-radius: 999px;
-    box-shadow: none !important;
+    box-shadow: none;
     color: var(--local-groupimport-easystud-primary);
     font-size: 0.5rem;
     font-weight: 700;
@@ -1514,10 +1548,14 @@
     &:hover,
     &:focus {
       background: transparent;
-      box-shadow: none !important;
+      box-shadow: none;
       color: var(--local-groupimport-easystud-primary-strong);
       outline: 0;
       text-decoration: none;
+    }
+
+    &:focus-visible {
+      @include easyedu.ring;
     }
   }
 
@@ -1700,12 +1738,18 @@
     }
 
     &[aria-expanded="true"],
-    &:hover,
-    &:focus-visible {
+    &:hover {
       border-color: #86b7e0;
       box-shadow: inset 0 0 0 0.12rem rgba(12, 113, 194, 0.18);
       color: #203244;
-      outline: 0;
+    }
+
+    &:focus-visible {
+      color: #203244;
+      @include easyedu.ring(
+        $border-color: #86b7e0,
+        $base-shadow: inset 0 0 0 0.12rem rgba(12, 113, 194, 0.18)
+      );
     }
 
     &[aria-expanded="true"] .fa {
@@ -1739,11 +1783,15 @@
       white-space: nowrap;
 
       &:hover,
-      &:focus-visible,
       &.is-active {
         background: #eef6fc;
         color: #075da8;
-        outline: 0;
+      }
+
+      &:focus-visible {
+        background: #eef6fc;
+        color: #075da8;
+        @include easyedu.ring;
       }
     }
   }
@@ -1780,6 +1828,10 @@
       min-height: 0;
     }
 
+    &--structure-focus &-create-card--group > &-advanced-filters__control {
+      margin-block-start: auto;
+    }
+
     // Groupings has no desktop disclosure, but its existing compact control
     // reserves the same action row so the no-filter card keeps the collapsed
     // height of its filtered neighbour without a hard-coded block size.
@@ -1799,6 +1851,11 @@
       align-self: start;
     }
   }
+}
+
+// Keep the responsive column headings readable against the soft filter surface.
+.local-groupimport-easystud-column-heading__title {
+  color: #607182;
 }
 
 @media (hover: hover) and (pointer: fine) {

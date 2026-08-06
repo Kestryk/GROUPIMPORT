@@ -1,5 +1,7 @@
 // EasyEdu pagination and list tools.
 
+@use "focus";
+
 @mixin pagination-bar {
   align-items: center;
   display: grid;
@@ -36,6 +38,12 @@
       background: var(--easyedu-primary-soft);
       border-color: color-mix(in srgb, var(--easyedu-primary) 58%, var(--easyedu-card-border) 42%);
       color: var(--easyedu-primary-strong);
+    }
+
+    &:focus-visible {
+      @include focus.ring(
+        $border-color: color-mix(in srgb, var(--easyedu-primary) 58%, var(--easyedu-card-border) 42%)
+      );
     }
   }
 
@@ -90,6 +98,12 @@
     background: var(--easyedu-primary-soft);
     border-color: color-mix(in srgb, var(--easyedu-primary) 58%, var(--easyedu-card-border) 42%);
     color: var(--easyedu-primary-strong);
+  }
+
+  &:not(:disabled):focus-visible {
+    @include focus.ring(
+      $border-color: color-mix(in srgb, var(--easyedu-primary) 58%, var(--easyedu-card-border) 42%)
+    );
   }
 
   > span {

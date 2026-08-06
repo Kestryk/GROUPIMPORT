@@ -11,6 +11,12 @@ The EasyEdu guide kit has two layers:
   checklist.
 - rich optional layers: navigation thumbnails, visual demos and guided panel.
 
+Consumer agents should also read
+[Guide adapter integration](guide-adapter-integration.md) before synchronizing
+the controller, template or SCSS into a Moodle plugin. The copy-ready
+configuration examples are in
+[Guide adapter configuration examples](../examples/guide-adapter-config.md).
+
 ## Base guide
 
 ```scss
@@ -78,8 +84,13 @@ navigation card.
 
 Expected interaction:
 
+- Opening the modal locks page scrolling, moves focus into the dialog and traps
+  `Tab`/`Shift+Tab` until the modal closes.
+- Closing with the close action or Escape restores focus to the control that
+  opened the guide. Showing a target in the interface intentionally moves focus
+  to that target instead.
 - Left and right arrow keys move to the previous or next guide slide while the
-  guide modal is open.
+  guide modal is open. Their meaning follows the document direction in RTL.
 - Home and End move to the first or last guide slide.
 - Escape closes the guide modal.
 - Vertical mouse-wheel movement over the slide navigation should scroll the
@@ -144,9 +155,9 @@ already open through `aria-expanded="true"` or `aria-pressed="true"` so a
 checklist step does not accidentally close a panel that is already visible.
 
 Configured targets may be arrays of selectors. The resolver picks the first
-visible match, then falls back to the first available match. Prefer this pattern
-for repeated cards, filters or creation panels that can appear in several
-layouts:
+visible, connected match and returns no target when all matches are hidden or
+detached. Prefer this pattern for repeated cards, filters or creation panels
+that can appear in several layouts:
 
 ```js
 targets: {
@@ -168,6 +179,36 @@ jumpy. The guide owns this motion with a requestAnimationFrame-based animation
 and falls back to immediate scrolling when reduced motion is active. Plugins
 should therefore put checklist targets on the field, card or control the user
 actually needs, not only on an outer column.
+
+## Responsive shell and lifecycle
+
+The canonical modal becomes a bounded bottom sheet at narrow widths or short
+viewport heights. It uses safe-area insets, `dvh` with a `vh` fallback, a
+scrollable body and wrapping header/footer actions. The guided checklist is
+also viewport-bounded: its step region owns vertical scrolling while its
+header, feedback and return action remain reachable. Consumers must not add
+fixed heights or an outer page scrollbar to repair translated content.
+
+The reusable template avoids fixed title IDs because several guide roots may
+exist on one Moodle page. Checklist feedback is a polite live region. Forced
+colours retain explicit dialog, panel and highlight boundaries, while reduced
+motion disables modal, slide, checklist and highlight animation without hiding
+state changes.
+
+The controller observes only the active target's local parent subtree. When a
+target becomes hidden or detached, it clears the highlight instead of retaining
+stale geometry. Call the public teardown before removing or replacing a guide
+root:
+
+```js
+import {destroy} from './easyedu_guide';
+
+destroy(document.querySelector('[data-easyedu-guide-root]'));
+```
+
+Teardown removes tracked listeners and observers, cancels highlight refresh
+frames and timers, removes the owned highlight and releases the page scroll
+lock. It does not erase the visitor's saved checklist progress.
 
 ## Visual demos
 
@@ -285,10 +326,10 @@ Implementation guidance:
   navigation-action mixin to direct child buttons only. A descendant `.btn`
   selector also reaches buttons inside the guide modal and replaces their
   rounded action contract with the square navigation-tab treatment.
-- Guided checklist panels should not create nested scrollbars for normal
-  three-to-five-step paths. Keep step content concise and let the panel size
-  naturally; only add plugin-local scrolling for exceptionally long custom
-  paths after visual validation.
+- Guided checklist panels keep normal three-to-five-step paths visible without
+  unnecessary scrollbars. When height is constrained, the shared step region
+  scrolls vertically while the header and actions stay fixed; do not add a
+  second plugin-local scroll owner.
 
 ## Guided path slide cards
 
@@ -568,12 +609,24 @@ by prerequisites, checklists and plugin configuration. Prefer `targetselector`
 when the target key is known server-side and the button should remain robust if
 the JavaScript config is rebound or refreshed.
 
+When the same instruction reaches different usable controls in compact and
+desktop workspaces, use `targetselectorcompact` and/or
+`targetselectordesktop`. The shared controller selects the matching variant at
+the 64rem workspace boundary and otherwise falls back to `targetselector`.
+Each variant must resolve to the real visible control, not merely its enclosing
+panel. For example, a compact participant card may expose a More actions
+button while desktop exposes a bulk Move participant action.
+
 ```json
 {
   "target": "adminNav",
   "targetselector": "[data-easyedu-guide-target=\"adminNav\"]"
 }
 ```
+
+Guided-path steps use the same principle through `highlightTargetCompact` and
+`highlightTargetDesktop`; keep `target` semantic for completion ownership and
+declare the distinct visible highlight controls explicitly.
 
 ## Conditional slides and guided paths
 

@@ -1,0 +1,71 @@
+// Shared keyboard-focus geometry for EasyEdu interactive components.
+//
+// Keep the ring outside the hit target and let each component retain its own
+// border radius. Semantic variants change colour only, never thickness.
+
+@mixin ring(
+  $color: var(--easyedu-focus-ring),
+  $border-color: null,
+  $base-shadow: null
+) {
+  @if $border-color != null {
+    border-color: $border-color;
+  }
+
+  @if $base-shadow != null {
+    box-shadow:
+      0 0 0 var(--easyedu-focus-ring-width) $color,
+      $base-shadow;
+  } @else {
+    box-shadow: 0 0 0 var(--easyedu-focus-ring-width) $color;
+  }
+
+  // Forced-colors mode suppresses box shadows and promotes this transparent
+  // outline to a system colour without adding a nested Sass rule.
+  outline: var(--easyedu-focus-outline-width) solid transparent;
+  outline-offset: var(--easyedu-focus-outline-offset);
+}
+
+// Context focus belongs to a non-interactive host which contains the actual
+// focused control (for example, an identity-rail card). Keep the host's state
+// visible without painting into a tightly aligned list gutter; the control
+// itself must still use `ring` and retain the normal outer indicator.
+@mixin contained-context-ring(
+  $color: var(--easyedu-focus-ring),
+  $border-color: null,
+  $base-shadow: null,
+  $preserve-identity-rail: false,
+  $identity-rail-color: null
+) {
+  @if $border-color != null {
+    border-color: $border-color;
+  }
+
+  @if $identity-rail-color != null {
+    border-left-color: $identity-rail-color;
+  }
+
+  @if $preserve-identity-rail {
+    $context-shadow:
+      inset 0 var(--easyedu-focus-ring-width) 0 $color,
+      inset calc(var(--easyedu-focus-ring-width) * -1) 0 0 $color,
+      inset 0 calc(var(--easyedu-focus-ring-width) * -1) 0 $color;
+
+    @if $base-shadow != null {
+      box-shadow: $context-shadow, $base-shadow;
+    } @else {
+      box-shadow: $context-shadow;
+    }
+  } @else if $base-shadow != null {
+    box-shadow:
+      inset 0 0 0 var(--easyedu-focus-ring-width) $color,
+      $base-shadow;
+  } @else {
+    box-shadow: inset 0 0 0 var(--easyedu-focus-ring-width) $color;
+  }
+
+  // A negative offset retains a system-colour indicator in forced-colors
+  // without reintroducing the outer-gutter overflow this variant avoids.
+  outline: var(--easyedu-focus-outline-width) solid transparent;
+  outline-offset: calc(var(--easyedu-focus-outline-width) * -1);
+}

@@ -156,15 +156,55 @@ Do not stop after matching colours or rough layout.
 ## Accessibility
 
 - [ ] Keyboard navigation works with ArrowLeft, ArrowRight, Home, End and Escape.
+- [ ] Arrow and horizontal rail movement follow RTL document direction.
+- [ ] Opening the modal locks page scrolling and traps Tab/Shift+Tab focus.
+- [ ] Normal close restores focus to the guide opener.
+- [ ] Show-in-interface focuses the visible target rather than restoring the
+      launcher.
 - [ ] Guide controls are real buttons or links.
 - [ ] Focus-visible state is visible.
 - [ ] Disabled controls expose disabled state.
 - [ ] Icon-only controls have accessible labels.
 - [ ] Custom tooltips do not duplicate native `title` tooltips.
 - [ ] No focus is trapped behind hidden modal content.
+- [ ] Reusable guide roots do not share a fixed title ID.
+- [ ] Checklist feedback uses a polite live region.
+- [ ] Forced-colours mode preserves modal, panel and highlight boundaries.
+
+## Responsive and lifecycle
+
+- [ ] A compact navigation consumer portals the initialized Guide root outside
+      any transformed drawer; its overlay is never a descendant of that
+      drawer.
+- [ ] A compact forwarding launcher may be cloned, but its style selector does
+      not require the absent desktop Guide wrapper and no second Guide root is
+      created.
+- [ ] The fixed Guide modal has an explicit elevation above the compact drawer
+      and the focused 390 px check proves the dialog owns its centre point.
+- [ ] The consumer's launcher wrapper does not use `transform` or another
+      containing-block rule around the fixed modal; if launcher and modal share
+      a root, centre the launcher without transforming that root.
+- [ ] The consumer's desktop launcher wrapper does not create a stacking
+      context above Moodle-native dropdowns; the fixed modal retains its own
+      explicit elevation.
+- [ ] Narrow or short viewports use the bounded guide bottom sheet.
+- [ ] Modal and floating panels respect viewport safe areas.
+- [ ] Guided steps scroll independently while header, feedback and actions
+      remain reachable.
+- [ ] Hidden, zero-sized and detached targets are ignored.
+- [ ] Removing the active target clears its highlight.
+- [ ] Target mutation observation stays local to the active target subtree.
+- [ ] `destroy()` removes listeners, observer, frames, timers and owned
+      highlight, and releases the page scroll lock.
+- [ ] Teardown preserves stored visitor progress.
+- [ ] Reduced motion disables guide shell and highlight motion while preserving
+      understandable state changes.
 
 ## Moodle integration
 
+- [ ] The canonical controller, template and guide SCSS were reviewed as one
+      atomic source set.
+- [ ] Canonical, embedded and runtime copies were compared before writing.
 - [ ] User-facing guide strings are in language files.
 - [ ] Plugin target selectors are configured in plugin code, not hardcoded in
       the kit.
@@ -173,7 +213,13 @@ Do not stop after matching colours or rough layout.
 - [ ] Plugin-specific slide content remains in plugin data.
 - [ ] Shared behaviour remains in the kit.
 - [ ] AMD source/build artifacts are synchronized when the plugin ships builds.
+- [ ] A direct AMD wrapper exports both `init` and `destroy`.
+- [ ] Direct-wrapper conversion removes both named `export` keywords and
+      `export default init`.
+- [ ] The consumer module namespace is preserved in generated AMD output.
 - [ ] SCSS is compiled after syncing the kit.
+- [ ] The canonical source state and consumer runtime/version evidence are
+      recorded.
 
 ## Final answer requirement
 

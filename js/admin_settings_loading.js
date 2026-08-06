@@ -1,0 +1,179 @@
+/*
+ * EasyStud administration settings loading state.
+ *
+ * Moodle builds the settings form from PHP after the plugin settings file is
+ * evaluated. This small classic bootstrap keeps the server-rendered skeleton
+ * visible while native dependency/show-hide controls settle, then fails open.
+ */
+(function() {
+    'use strict';
+
+    var bodyLoadingClass = 'local-groupimport-admin-settings-page--loading';
+    var loadingStateAttribute = 'data-easystud-loading-state';
+    var quietPeriod = 240;
+    var minimumVisiblePeriod = 1200;
+    var initialise = function() {
+        var root = document.querySelector('#page-admin-setting-local_groupimport');
+        var form = document.querySelector('#adminsettings');
+        var skeleton = root ? root.querySelector('[data-easystud-loading-skeleton]') : null;
+        if (!root || !form || !skeleton) {
+            document.body.classList.remove(bodyLoadingClass);
+            return;
+        }
+
+        var content = form.querySelector('.settingsform') || form;
+        var skeletonHeading = skeleton.closest('.formsettingheading');
+        var skeletonFieldset = skeletonHeading ? skeletonHeading.parentElement : null;
+        var nativeDisplayStates = [];
+        var label = skeleton.getAttribute('data-easyedu-action-busy-label') || '';
+        var quietTimer = null;
+        var deadlineTimer = null;
+        var observer = null;
+        var cleared = false;
+        var revealDuration = function() {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return 0;
+            }
+            return 180;
+        };
+        var now = function() {
+            return window.performance && typeof window.performance.now === 'function' ?
+                window.performance.now() : Date.now();
+        };
+        var startedAt = now();
+
+        root.setAttribute(loadingStateAttribute, 'loading');
+        root.setAttribute('aria-busy', 'true');
+        root.setAttribute('data-easyedu-action-busy-label', label);
+        root.classList.add('is-action-busy');
+
+        if (skeletonFieldset) {
+            Array.prototype.forEach.call(skeletonFieldset.children, function(node) {
+                if (node === skeletonHeading) {
+                    return;
+                }
+                nativeDisplayStates.push({
+                    node: node,
+                    display: node.style.getPropertyValue('display'),
+                    priority: node.style.getPropertyPriority('display')
+                });
+            });
+        }
+
+        var enforceNativeHidden = function() {
+            nativeDisplayStates.forEach(function(state) {
+                var display = state.node.style.getPropertyValue('display');
+                var priority = state.node.style.getPropertyPriority('display');
+                if (display !== 'none' || priority !== 'important') {
+                    state.display = display;
+                    state.priority = priority;
+                    state.node.style.setProperty('display', 'none', 'important');
+                }
+            });
+        };
+
+        var restoreNativeDisplay = function() {
+            nativeDisplayStates.forEach(function(state) {
+                if (state.display) {
+                    state.node.style.setProperty('display', state.display, state.priority);
+                } else {
+                    state.node.style.removeProperty('display');
+                }
+            });
+        };
+
+        enforceNativeHidden();
+
+        var clearTimers = function() {
+            if (quietTimer !== null) {
+                window.clearTimeout(quietTimer);
+                quietTimer = null;
+            }
+            if (deadlineTimer !== null) {
+                window.clearTimeout(deadlineTimer);
+                deadlineTimer = null;
+            }
+            if (observer) {
+                observer.disconnect();
+                observer = null;
+            }
+        };
+
+        var reveal = function(reason) {
+            if (cleared) {
+                return;
+            }
+            cleared = true;
+            clearTimers();
+            window.requestAnimationFrame(function() {
+                window.requestAnimationFrame(function() {
+                    var duration = revealDuration();
+                    var revealContent = function() {
+                        root.classList.remove('is-easystud-loading-skeleton-exiting');
+                        root.classList.add('is-easystud-loading-content-entering');
+                        root.classList.remove(bodyLoadingClass);
+                        document.body.classList.remove(bodyLoadingClass);
+                        restoreNativeDisplay();
+                        skeleton.hidden = true;
+                        skeleton.setAttribute('aria-hidden', 'true');
+                        window.requestAnimationFrame(function() {
+                            window.requestAnimationFrame(function() {
+                                root.classList.add('is-easystud-loading-content-entered');
+                                window.setTimeout(function() {
+                                    root.setAttribute(loadingStateAttribute, reason === 'deadline' ? 'degraded' : 'ready');
+                                    root.setAttribute('aria-busy', 'false');
+                                    root.classList.remove('is-action-busy');
+                                    root.classList.remove('is-easystud-loading-content-entering');
+                                    root.classList.remove('is-easystud-loading-content-entered');
+                                    root.setAttribute('data-easyedu-loading-ready', '1');
+                                }, duration);
+                            });
+                        });
+                    };
+                    if (duration > 0) {
+                        root.classList.add('is-easystud-loading-skeleton-exiting');
+                        window.setTimeout(revealContent, duration);
+                    } else {
+                        revealContent();
+                    }
+                });
+            });
+        };
+
+        var scheduleReveal = function() {
+            if (cleared) {
+                return;
+            }
+            if (quietTimer !== null) {
+                window.clearTimeout(quietTimer);
+            }
+            enforceNativeHidden();
+            var elapsed = Math.max(0, now() - startedAt);
+            var delay = Math.max(quietPeriod, minimumVisiblePeriod - elapsed);
+            quietTimer = window.setTimeout(function() {
+                reveal('quiet');
+            }, delay);
+        };
+
+        observer = new MutationObserver(scheduleReveal);
+        observer.observe(content, {
+            attributes: true,
+            attributeFilter: ['aria-expanded', 'aria-hidden', 'class', 'hidden', 'style'],
+            childList: true,
+            subtree: true
+        });
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(scheduleReveal, scheduleReveal);
+        }
+        deadlineTimer = window.setTimeout(function() {
+            reveal('deadline');
+        }, 1500);
+        scheduleReveal();
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialise, {once: true});
+    } else {
+        initialise();
+    }
+})();

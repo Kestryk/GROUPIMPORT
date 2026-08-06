@@ -1,4 +1,125 @@
-# EasyStud motion audit
+# EasyStud Playwright audits
+
+## Authenticated Moodle 5.1 runner
+
+Authenticated EasyStud checks must use
+`Invoke-EasyStudPlaywrightWithSavedCredentials.ps1`. The runner accepts the
+workstation-local DPAPI loader and EasyEdu orchestration module as parameters;
+versioned commands therefore contain no fixed `C:` or `D:` root.
+
+```powershell
+$loader = '<local DPAPI loader path>'
+$orchestration = '<local EasyEduOrchestration.psm1 path>'
+
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -WaitForLease
+```
+
+The runner executes `playwright test --list` first and refuses zero, two or
+more selected tests. Only after that gate does it acquire the shared
+`groupimport-active-runtime-write` lease and load the saved credential into the
+current PowerShell process. The credential is inherited only by the owned Node
+child and is cleared in `finally`; no password, cookie or authentication file
+is written. Cache purges and fixture writes use their own explicit resources
+rather than this test lease.
+
+`playwright.config.js` is the versioned discovery configuration for this
+directory. The supervised runner passes it to both `--list` and the child run,
+so an exact `-Spec` is resolved from `tools/playwright` rather than Playwright's
+implicit `./tests` directory. The config does not own artifact output; the
+runner still supplies an external manifested output path for every real run.
+
+Use `-Spec` and an exact `-Grep` for another scenario. The one-test gate cannot
+be disabled. `-DiscoveryOnly` validates selection and artifact registration
+without loading credentials or taking the runtime lease.
+
+The responsive card-menu alignment check is
+`responsive-audit.spec.js` / `responsive card menu triggers align with their
+card row controls`. At 768 px it compares the vertical centres of the menu
+trigger and the relevant Participant, Group and Grouping row control with a
+maximum two-pixel delta, and writes three external screenshots.
+
+The same file also owns `Guide target audit resolves every slide and guided
+step to an actionable control`. The supervised scenario runs the full Guide
+target inventory at 1280 x 900 and 390 x 844: each Show in interface slide and
+guided-path step must first open, then visibly highlight, its usable desktop or
+compact control. It intentionally checks the desktop Move participant/card
+variant against the compact participant-card More actions variant; it never
+treats an invisible native selection input as an actionable target.
+
+The responsive selected-action tray check is `selected-action-tray.spec.js` /
+`selected group action tray remains contained at intermediate responsive width`.
+At 777 px it opens a Group, selects it, and checks that the count has its own
+row above all four actions. It also checks tray/action containment and the
+absence of hidden horizontal action-row overflow. It writes one external
+screenshot; it is `local-supervised` because it requires the leased
+authenticated Moodle 5.1 fixture.
+
+The responsive expanded-Grouping rail check is
+`grouping-rail-containment.spec.js` / `responsive expanded Grouping rail stays
+inside its card`. At 390 px it opens a Grouping and checks that the expanded
+rail and its icon stay within the unchanged card width, checks the rail as the
+hit target at several heights, and rejects horizontal overflow. It also detects
+any fixed shared-navigation trigger that covers the rail. It writes one
+external screenshot and is `local-supervised` because it uses the leased
+authenticated Moodle 5.1 fixture.
+
+The reusable desktop navigation centring matrix is kept in
+`responsive-audit.spec.js`. Run each exact title separately through the
+authenticated runner:
+
+- `desktop navigation remains centred at 1280`;
+- `desktop navigation remains centred at 1440`;
+- `desktop navigation remains centred at 1920`;
+- `desktop navigation remains centred at rtl-1440`.
+
+Each case proves that guide hover does not move the destinations or create
+horizontal overflow. These specs are retained as candidates for the paused
+Docker/CI visual-regression plan; they do not authorize Docker execution.
+
+The compact-trigger matrix uses the following exact titles, each selected and
+run separately: `responsive navigation trigger remains left-centred at
+tablet-landscape`, `… at tablet-portrait` and `… at phone`. It proves the
+left-edge fixed half-pill remains at its stable nearest-centre placement after
+scroll/resize events, avoids the live Moodle drawer and participant selector,
+reveals its hover label completely and creates no horizontal overflow.
+
+The `desktop layouts and guide launcher remain available` case additionally
+opens and closes the Guide modal. The page readiness ordering initialises the
+Guide AMD before the manager AMD so this click path is not raced by the loading
+skeleton gate. It also asserts viewport-sized modal and dialog geometry, so a
+DOM-visible but collapsed navigation-slot modal is treated as a failure.
+The same case opens Moodle's native participant select-menu and verifies that
+the guide source has no elevated stacking context and does not paint above an
+overlapping menu. It finishes at the compact breakpoint and records
+`guide-desktop.png` plus `guide-mobile.png` in the run's external Playwright
+output for the explicit human visual gate. These captures are registered in the
+external artifact manifest and must not be copied into Git.
+
+`mobile Guide modal aligns its internal content` is the focused compact-layout
+case. It verifies the title and close control share a row, the slide uses one
+content column, the interface action has its own full-width row, and footer
+actions remain within the viewport. It also finds a visible guided-path card
+and verifies its centred vertical composition and full-width child action. It
+writes `guide-mobile-internal-alignment.png` and
+`guide-mobile-guided-path-composition.png` to the external run output. A
+failure that still reports the former two-column layout after source and Sass
+checks is evidence of a stale Moodle theme aggregate, not a reason to weaken
+the test.
+
+When a reviewed spec belongs to a separate `local_groupimport` source checkout,
+pass that checkout's own `tools/playwright` directory as `-AllowedSpecRoot`.
+The runner verifies that root against the checkout's `version.php`; it does not
+accept an arbitrary directory or a spec outside the allowlisted root.
+
+Browser output and the isolated profile are written below the external
+`EASYEDU_PLAYWRIGHT_ARTIFACTS_ROOT`, or below the local application-data
+default when that process variable is unset. Each run contains
+`runner-result.json`, `cleanup.json`, `phase-progress.jsonl`, sanitized logs
+and `artifact-manifest.json`. Use `-ArtifactRoot` only for another external
+location; the checkout and any ancestor containing it are rejected.
 
 ## Accessibility smoke
 
@@ -6,12 +127,12 @@ The accessibility smoke uses `@axe-core/playwright` and targets only regions
 owned by the plugin. It is explicit and non-destructive:
 
 ```powershell
-$env:EASYEDU_MOODLE_URL = 'http://localhost/local/groupimport/manage.php?id=5'
-$env:EASYEDU_MASS_IMPORT_URL = 'http://localhost/local/groupimport/index.php?id=5'
-$env:EASYEDU_MOODLE_USERNAME = 'Admin'
-$env:EASYEDU_MOODLE_PASSWORD = '<local test password>'
-npx --yes node@20 .\node_modules\@playwright\test\cli.js test `
-    .\accessibility-smoke.spec.js --reporter=line
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -Spec 'accessibility-smoke.spec.js' `
+    -Grep '<exact test title>' `
+    -WaitForLease
 ```
 
 It fails on critical or serious axe violations within
@@ -22,14 +143,10 @@ course fixture. See `docs/testing/accessibility.md`.
 This Playwright scenario validates the shared motion controller in normal and
 reduced-motion modes. It does not change Moodle data or administration settings.
 
-From the plugin root:
+The historical scenario-specific launchers remain useful for unauthenticated
+discovery, but they are not the approved path for an authenticated run until
+they delegate credential handling to the DPAPI-backed runner.
 
-    .\tools\playwright\run-motion-audit.ps1
-
-The launcher prompts for the local Moodle password when the
-`EASYEDU_MOODLE_PASSWORD` environment variable is not set. It installs the
-isolated Playwright test dependency under `tools/playwright/node_modules` on
-first use; credentials and generated results are ignored by Git.
 The audit intentionally uses one browser worker because the local Moodle
 Windows stack becomes unreliable under several simultaneous login requests.
 
@@ -40,11 +157,13 @@ semantic checkbox colour and desktop/mobile hit areas:
     npx playwright test .\card-title-selection-audit.spec.js `
         --reporter=line --workers=1 --timeout=90000
 
-Override the course or account when needed:
+Override the target course when needed:
 
-    .\tools\playwright\run-motion-audit.ps1 `
+    .\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+        -CredentialLoaderPath $loader `
+        -OrchestrationModulePath $orchestration `
         -MoodleUrl 'http://localhost/local/groupimport/manage.php?id=8' `
-        -Username 'Admin'
+        -WaitForLease
 
 Run the same scenario after disabling **Enable interface animations** in the
 plugin administration page to validate the server policy. Browser execution is
@@ -52,20 +171,69 @@ deliberately manual because visual audits are comparatively expensive.
 
 ## Mass Import and administration audit
 
-The Mass Import audit is read-only. It checks the shared EasyEdu navigation,
+The Mass Import audit checks the shared EasyEdu navigation,
 centred page containment, the left-anchored guide launcher, desktop and mobile
 containment, the history modal, the Excel example download and the legacy-safe
-feature setting:
+feature setting. Run it through the authenticated runner with its exact test
+title and one worker.
 
-    .\tools\playwright\run-mass-import-audit.ps1
+### Focused Mass Import navigation
 
-Override the course URL with `-MoodleUrl` when the test course id is not `5`.
+`mass-import-navigation-audit.spec.js` is a read-only, single-test regression
+for the navigation consumer introduced by `EED-NAV-2026-0005`. It checks the
+shared navigation is a sibling before the Mass Import loading root, exposes
+only the two product destinations, marks Mass group import current and keeps
+the compact trigger/panel usable at 390 px without horizontal overflow.
+
+From the plugin root, use configured local paths rather than versioned drive
+letters:
+
+```powershell
+$loader = '<credential-loader-path>'
+$orchestration = '<easyedu-orchestration-module-path>'
+
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -Spec 'mass-import-navigation-audit.spec.js' `
+    -Grep 'Mass Import uses the shared navigation without entering the loading root' `
+    -MoodleUrl 'http://localhost/local/groupimport/index.php?id=8' `
+    -WaitForLease
+```
+
+Run the wrapper with `-DiscoveryOnly` first and confirm it selects exactly one
+test. The wrapper uses the process-local saved credential and an external
+artifact manifest; it does not require, print or persist credentials.
 
 The restoration audit intentionally creates and removes one prefixed group,
 grouping and history record. It verifies import, manual deletion, state restore
-and annotated XLSX export, then cleans up its data:
-
-    .\tools\playwright\run-mass-import-restore-audit.ps1
+and annotated XLSX export, then cleans up its data in `finally`. It requires the
+same shared lease and single-test discovery gate.
 
 The read-only audit also replaces the file in an active preview and confirms
 that mixed username and email identifiers are recognised before import.
+
+The canonical artifact-retention policy is
+`<EASYEDU_PLATFORM_ROOT>\docs\development\playwright-artifact-retention.md`.
+
+## Visual artifact policy
+
+All three launchers write Playwright output outside the Git worktree and
+register a manifest with the shared EasyEdu orchestration tooling:
+
+- `run-motion-audit.ps1` uses `easystud\motion`;
+- `run-mass-import-audit.ps1` uses `easystud\mass-import`;
+- `run-mass-import-restore-audit.ps1` uses `easystud\mass-import-restore`.
+
+The default root is `%LOCALAPPDATA%\EasyEdu\artifacts`. Set
+`EASYEDU_PLAYWRIGHT_ARTIFACTS_ROOT` to use another approved local root when a
+workstation stores heavy artifacts on a separate configured volume.
+Set `EASYEDU_ARTIFACT_MANIFEST_SCRIPT` only when the shared orchestration
+checkout is not at its standard path. Do not point either variable into Git or
+Syncthing-managed project folders.
+
+Each run keeps its Playwright output in a unique run directory and writes a
+manifest containing the status and generated media. The shared retention tool
+is dry-run by default; unmanifested legacy captures are inventory-only and
+must not be deleted automatically. Read the canonical policy before pruning:
+`<EASYEDU_PLATFORM_ROOT>\docs\development\playwright-artifact-retention.md`.

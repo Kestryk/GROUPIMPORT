@@ -930,6 +930,10 @@ if (!$animationsenabled) {
     $PAGE->add_body_class('local-groupimport-motion-disabled');
     $PAGE->add_body_class('easyedu-motion-disabled');
 }
+$PAGE->requires->js('/local/groupimport/js/loading_state_bootstrap.js', true);
+$PAGE->requires->js_call_amd('local_groupimport/easyedu_navigation', 'init', [
+    '#local-groupimport-import-navigation',
+]);
 $PAGE->requires->js_call_amd('local_groupimport/csv_import', 'init', [
     'local-groupimport-import',
     [
@@ -963,9 +967,6 @@ if ($rollbackhistoryid) {
         $errors[] = $exception->getMessage();
     }
 }
-
-// Template CSV download button URL.
-$templateurl = new moodle_url('/local/groupimport/template.php', ['id' => $course->id]);
 
 $confirmimport = optional_param('confirmimport', 0, PARAM_BOOL);
 
@@ -1069,11 +1070,64 @@ $historyrecords = local_groupimport_get_import_history((int)$course->id);
 // Output.
 echo $OUTPUT->header();
 
+// The shared navigation replaces the legacy Mass Import action row only. The
+// Skeleton lifecycle, its root attributes and real-content wrapper stay owned
+// by the loading implementation.
+$navigationdata = local_groupimport_build_mass_import_navigation_context($course);
+$navigationmarkup = html_writer::tag('div',
+    $OUTPUT->render_from_template('local_groupimport/easyedu_navigation', $navigationdata),
+    [
+        'class' => 'local-groupimport-import-navigation local-groupimport-easystud local-groupimport-easystud__navigation',
+        'data-region' => 'local-groupimport-import-navigation',
+    ]
+);
+
 // Main container.
 echo html_writer::start_div('local-groupimport-import' . ($preview !== null ? ' has-preview is-upload-collapsed' : ''), [
     'id' => 'local-groupimport-import',
     'data-region' => 'local-groupimport-import',
     'data-easyedu-motion-policy' => $animationsenabled ? 'enabled' : 'disabled',
+    'data-easystud-loading-state' => 'loading',
+    'data-easyedu-loading-bootstrap' => '1',
+    'data-easyedu-loading-ready-attribute' => 'data-easyedu-loading-ready',
+    'data-easyedu-action-busy-label' => get_string('actioninprogress', 'local_groupimport'),
+    'aria-busy' => 'true',
+]);
+
+echo html_writer::start_div('local-groupimport-import__loading-skeleton', [
+    'data-easystud-loading-skeleton' => '1',
+    'aria-hidden' => 'true',
+]);
+echo html_writer::start_div('local-groupimport-import__loading-header');
+echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-eyebrow']);
+echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-title']);
+echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-intro']);
+echo html_writer::tag('div',
+    html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-action']) .
+    html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-action']),
+    ['class' => 'local-groupimport-import__loading-actions']
+);
+echo html_writer::end_div();
+echo html_writer::start_div('local-groupimport-import__loading-grid');
+for ($skeletoncard = 0; $skeletoncard < 2; $skeletoncard++) {
+    echo html_writer::start_div('local-groupimport-import__loading-card');
+    echo html_writer::tag('div',
+        html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-icon']) .
+        html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-card-title']),
+        ['class' => 'local-groupimport-import__loading-card-header']
+    );
+    echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-field']);
+    echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-field local-groupimport-import__loading-field--short']);
+    echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-row']);
+    echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-row']);
+    echo html_writer::tag('span', '', ['class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-button']);
+    echo html_writer::end_div();
+}
+echo html_writer::end_div();
+echo html_writer::end_div();
+
+echo html_writer::start_div('local-groupimport-import__content', [
+    'data-easystud-real-content' => '1',
 ]);
 
 echo html_writer::tag('div',
@@ -1086,40 +1140,7 @@ echo html_writer::tag('div',
             'class' => 'local-groupimport-import__intro',
         ])
     ) .
-    html_writer::tag('div',
-        html_writer::tag('span',
-            html_writer::span('', 'fa fa-file-import me-2', ['aria-hidden' => 'true']) .
-                html_writer::span(get_string('groupimport', 'local_groupimport')),
-            ['class' => 'btn active', 'aria-current' => 'page']
-        ) .
-        (local_groupimport_is_simplified_view_enabled()
-            ? html_writer::link(new moodle_url('/local/groupimport/manage.php', ['id' => $course->id]),
-                html_writer::span('', 'fa fa-users me-2', ['aria-hidden' => 'true']) .
-                    html_writer::span(get_string('easystudmanager', 'local_groupimport')), [
-                    'class' => 'btn btn-primary',
-                ])
-            : '') .
-        html_writer::link($templateurl,
-            html_writer::span('', 'fa fa-file-excel me-2', ['aria-hidden' => 'true']) .
-                html_writer::span(get_string('downloadtemplate', 'local_groupimport')), [
-            'class' => 'btn btn-outline-primary local-groupimport-import__template-link',
-        ]) .
-        html_writer::tag('button',
-            html_writer::tag('span', '', ['class' => 'fa fa-history me-2', 'aria-hidden' => 'true']) .
-            html_writer::tag('span', get_string('importhistory', 'local_groupimport')),
-            [
-                'type' => 'button',
-                'class' => 'btn btn-outline-secondary',
-                'data-local-groupimport-history-open' => '1',
-            ]
-        ) .
-        html_writer::link(course_get_url($course),
-            html_writer::span('', 'fa fa-arrow-left me-2', ['aria-hidden' => 'true']) .
-                html_writer::span(get_string('backtocourse', 'local_groupimport')), [
-            'class' => 'btn btn-outline-secondary',
-        ]),
-        ['class' => 'local-groupimport-import__header-actions']
-    ),
+    $navigationmarkup,
     ['class' => 'local-groupimport-import__header']
 );
 
@@ -1694,6 +1715,7 @@ echo html_writer::tag('div',
     ]
 );
 
+echo html_writer::end_div(); // Real content.
 echo html_writer::end_div(); // Container.
 
 echo $OUTPUT->footer();

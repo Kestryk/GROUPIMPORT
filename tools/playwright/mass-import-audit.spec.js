@@ -5,8 +5,12 @@ const baseUrl = process.env.EASYEDU_MASS_IMPORT_URL ||
 const username = process.env.EASYEDU_MOODLE_USERNAME || 'Admin';
 const password = process.env.EASYEDU_MOODLE_PASSWORD || '';
 
-const login = async page => {
-    await page.goto(baseUrl);
+const login = async(page, {expectMassImport = true} = {}) => {
+    // Moodle may keep unrelated theme or analytics resources pending after the
+    // document and the plugin bootstrap are available. The assertions below
+    // still wait for the real plugin root, so this avoids treating that global
+    // page-load tail as a Mass Import loading-state failure.
+    await page.goto(baseUrl, {waitUntil: 'domcontentloaded'});
     if (page.url().includes('/login/')) {
         if (!password) {
             throw new Error('Set EASYEDU_MOODLE_PASSWORD before running the Mass Import audit.');
@@ -14,9 +18,13 @@ const login = async page => {
         await page.locator('#username').fill(username);
         await page.locator('#password').fill(password);
         await page.locator('#loginbtn').click();
-        await page.waitForURL(url => !url.pathname.includes('/login/'));
+        await page.waitForURL(url => !url.pathname.includes('/login/'), {
+            waitUntil: 'domcontentloaded',
+        });
     }
-    await expect(page.locator('#local-groupimport-import')).toBeVisible({timeout: 30000});
+    if (expectMassImport) {
+        await expect(page.locator('#local-groupimport-import')).toBeVisible({timeout: 30000});
+    }
 };
 
 const expectNoPageOverflow = async page => {
@@ -76,6 +84,121 @@ test('renders the EasyEdu Mass Import navigation and history modal', async({page
     )).toBeVisible();
     await root.locator('[data-local-groupimport-history-close]').first().click();
     await expect(root.locator('[data-local-groupimport-history-modal]')).toBeHidden();
+});
+
+test('Mass Import real-content surfaces expose shared keyboard focus', async({page}, testInfo) => {
+    await login(page);
+
+    const root = page.locator('#local-groupimport-import');
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
+    await expect(root.locator('[data-easystud-real-content]')).toBeVisible({timeout: 60000});
+    const historyOpen = root.locator('[data-local-groupimport-history-open]:visible').first();
+    await expect(historyOpen).toBeVisible();
+    await page.keyboard.press('Tab');
+    await historyOpen.focus();
+    await expect.poll(async() => historyOpen.evaluate(node => {
+        const style = getComputedStyle(node);
+        return style.outlineStyle !== 'none' && style.boxShadow !== 'none' &&
+            style.borderColor.includes('138, 188, 227');
+    })).toBe(true);
+    await page.screenshot({
+        path: testInfo.outputPath('mass-import-focus-history-open.png'),
+        fullPage: false,
+    });
+
+    await root.locator('[data-local-groupimport-history-open]').click();
+    const modal = root.locator('[data-local-groupimport-history-modal]');
+    await expect(modal).toBeVisible();
+    const close = modal.locator('[data-local-groupimport-history-close]:visible').first();
+    await expect(close).toBeVisible();
+    await page.keyboard.press('Tab');
+    await close.focus();
+    await expect.poll(async() => close.evaluate(node => {
+        const style = getComputedStyle(node);
+        return style.outlineStyle !== 'none' && style.boxShadow !== 'none' &&
+            style.borderColor.includes('138, 188, 227');
+    })).toBe(true);
+    await page.screenshot({
+        path: testInfo.outputPath('mass-import-focus-history-close.png'),
+        fullPage: false,
+    });
+    await close.click();
+    await expect(modal).toBeHidden();
+});
+
+test('keeps the Mass Import skeleton and shared bottom-end busy indicator contract', async({page}) => {
+    await login(page);
+
+    const root = page.locator('#local-groupimport-import');
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready');
+    await expect(root.locator('[data-easystud-loading-skeleton]')).toHaveCount(1);
+    await expect(root.locator('[data-easystud-loading-skeleton]')).toBeHidden();
+    await expect(root.locator('[data-easystud-real-content]')).toBeVisible();
+
+    const animationName = await root.locator(
+        '[data-easystud-loading-skeleton] .local-groupimport-import__loading-surface'
+    ).first().evaluate(node => getComputedStyle(node).animationName);
+    await root.evaluate(node => node.classList.add('is-action-busy'));
+    await page.waitForTimeout(40);
+    const contract = await page.evaluate(animationName => {
+        const node = document.querySelector('#local-groupimport-import');
+        const spinner = getComputedStyle(node, '::after');
+        const label = getComputedStyle(node, '::before');
+        return {
+            animationName,
+            spinnerPosition: spinner.position,
+            spinnerBottom: spinner.bottom,
+            spinnerRight: spinner.right,
+            labelContent: label.content,
+        };
+    }, animationName);
+    await root.evaluate(node => node.classList.remove('is-action-busy'));
+
+    if (contract.spinnerPosition !== 'fixed') {
+        const cssDiagnostics = await page.evaluate(() => {
+            const root = document.querySelector('#local-groupimport-import');
+            root?.classList.add('is-action-busy');
+            const matchedRules = [];
+            const stylesheetPaths = Array.from(document.styleSheets).map(sheet => {
+                try {
+                    const path = sheet.href ? new URL(sheet.href, window.location.href).pathname : 'inline';
+                    Array.from(sheet.cssRules || []).forEach(rule => {
+                        if (root && rule.selectorText && rule.selectorText.includes('.local-groupimport-import.is-action-busy') &&
+                                root.matches(rule.selectorText.replace(/::after$/, ''))) {
+                            matchedRules.push({
+                                path,
+                                selector: rule.selectorText,
+                                position: rule.style.position,
+                                bottom: rule.style.bottom,
+                                right: rule.style.right,
+                            });
+                        }
+                    });
+                    return {
+                        path,
+                        hasMassImportSpinner: Array.from(sheet.cssRules || []).some(rule =>
+                            rule.selectorText && rule.selectorText.includes('.local-groupimport-import.is-action-busy')
+                        ),
+                    };
+                } catch (error) {
+                    return {path: 'unreadable', hasMassImportSpinner: false};
+                }
+            });
+            return {
+                rootClass: root?.className || '',
+                computedPosition: root ? getComputedStyle(root, '::after').position : '',
+                matchedRules,
+                stylesheetPaths,
+            };
+        });
+        console.log(`MASS_IMPORT_LOADING_DIAGNOSTIC ${JSON.stringify(cssDiagnostics)}`);
+    }
+
+    expect(contract.animationName).toContain('local-groupimport-easystud-loading-shimmer-v4');
+    expect(contract.spinnerPosition).toBe('fixed');
+    expect(contract.spinnerBottom).not.toBe('auto');
+    expect(contract.spinnerRight).not.toBe('auto');
+    expect(contract.labelContent).toContain('Loading in progress');
 });
 
 test('anchors the EasyStud guide at the start of the primary navigation', async({page}) => {
@@ -248,4 +371,253 @@ test('shows the legacy-safe EasyStud feature setting', async({page}) => {
     expect(saveLayout.justifyContent).toBe('flex-end');
     expect(saveLayout.gapAbove).toBeGreaterThanOrEqual(12);
     await expectNoPageOverflow(page);
+});
+
+test('Administration real-content controls expose shared keyboard focus', async({page}, testInfo) => {
+    const consoleErrors = [];
+    page.on('console', message => {
+        if (message.type() === 'error') {
+            consoleErrors.push(message.text());
+        }
+    });
+    page.on('pageerror', error => consoleErrors.push(error.message));
+    await login(page, {expectMassImport: false});
+    await page.goto(new URL('/admin/settings.php?section=local_groupimport', baseUrl).toString(), {
+        waitUntil: 'domcontentloaded',
+    });
+
+    const root = page.locator('#page-admin-setting-local_groupimport');
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
+    await expect(root.locator('[data-local-groupimport-admin-features]')).toBeVisible({timeout: 60000});
+
+    const focusContract = async(control, painted, requireBorder = true) => {
+        await page.keyboard.press('Tab');
+        await control.focus();
+        await expect.poll(async() => painted.evaluate((node, borderRequired) => {
+            const style = getComputedStyle(node);
+            return style.outlineStyle !== 'none' && style.boxShadow !== 'none' &&
+                (!borderRequired || style.borderColor.includes('138, 188, 227'));
+        }, requireBorder)).toBe(true);
+    };
+
+    const checkbox = root.locator('#id_s_local_groupimport_enablesimplifiedview');
+    await expect(checkbox).toBeVisible();
+    await focusContract(checkbox, checkbox, false);
+    await page.screenshot({path: testInfo.outputPath('admin-focus-checkbox.png'), fullPage: false});
+
+    const select = root.locator('select[name="s_local_groupimport_participantprimarybadgefield"]');
+    await expect(select).toBeVisible();
+    await focusContract(select, select);
+    await page.screenshot({path: testInfo.outputPath('admin-focus-select.png'), fullPage: false});
+
+    const color = root.locator('input[name="s_local_groupimport_participantprimarybadgebgcolor"]');
+    const colorShell = color.locator('xpath=ancestor::*[contains(@class, "local-groupimport-admin-settings__color-control")][1]');
+    await expect(color).toBeVisible();
+    await focusContract(color, colorShell);
+    await page.screenshot({path: testInfo.outputPath('admin-focus-color.png'), fullPage: false});
+
+    const save = root.locator('#adminsettings > .settingsform > .row:last-child button, #adminsettings > .settingsform > .row:last-child input[type="submit"]').first();
+    await expect(save).toBeVisible();
+    await focusContract(save, save);
+    await page.screenshot({path: testInfo.outputPath('admin-focus-save.png'), fullPage: false});
+
+    expect(consoleErrors).toEqual([]);
+    await expectNoPageOverflow(page);
+});
+
+test('Inline and advanced-filter controls expose shared keyboard focus', async({page}, testInfo) => {
+    const consoleErrors = [];
+    page.on('console', message => {
+        if (message.type() === 'error') {
+            consoleErrors.push(message.text());
+        }
+    });
+    page.on('pageerror', error => consoleErrors.push(error.message));
+    await login(page);
+    await page.goto(new URL('/local/groupimport/manage.php?id=5', baseUrl).toString(), {
+        waitUntil: 'domcontentloaded',
+    });
+
+    const root = page.locator('#local-groupimport-easystud');
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
+    await expect(root).toHaveAttribute('aria-busy', 'false');
+    const focusContract = async(control) => {
+        await page.keyboard.press('Tab');
+        await control.focus();
+        await expect.poll(async() => control.evaluate(node => {
+            const style = getComputedStyle(node);
+            return style.outlineStyle !== 'none' && style.boxShadow !== 'none' &&
+                style.borderColor.includes('138, 188, 227');
+        })).toBe(true);
+    };
+
+    const createInput = root.locator(
+        '[data-easystud-mobile-entity-region="groups"] .local-groupimport-easystud-create input[name="groupname"]:visible'
+    ).first();
+    await expect(createInput).toBeVisible();
+    await focusContract(createInput);
+    await page.screenshot({path: testInfo.outputPath('inline-focus-create.png'), fullPage: false});
+
+    const renameToggle = root.locator('[data-easystud-rename-toggle]:visible').first();
+    await expect(renameToggle).toBeVisible();
+    await renameToggle.click();
+    const renameInput = root.locator('.local-groupimport-easystud-rename__edit input[name="name"]:visible').first();
+    await expect(renameInput).toBeVisible();
+    await focusContract(renameInput);
+    await page.screenshot({path: testInfo.outputPath('inline-focus-rename.png'), fullPage: false});
+
+    const structureMode = root.locator('[data-easystud-layout-mode="structure"]:visible').first();
+    await expect(structureMode).toBeVisible();
+    await structureMode.click();
+    const filterToggle = root.locator('[data-easystud-advanced-filters-toggle="structure-groups"]:visible').first();
+    await expect(filterToggle).toBeVisible();
+    await filterToggle.click();
+    const filterSelect = root.locator('#local-groupimport-structure-catalog-grouping-filter:visible');
+    await expect(filterSelect).toBeVisible();
+    await focusContract(filterSelect);
+    await page.screenshot({path: testInfo.outputPath('advanced-filter-focus-select.png'), fullPage: false});
+
+    expect(consoleErrors).toEqual([]);
+    await expectNoPageOverflow(page);
+});
+
+test('Structure card actions expose shared keyboard focus', async({page}, testInfo) => {
+    const consoleErrors = [];
+    page.on('console', message => {
+        if (message.type() === 'error') {
+            consoleErrors.push(message.text());
+        }
+    });
+    page.on('pageerror', error => consoleErrors.push(error.message));
+    await login(page);
+    await page.goto(new URL('/local/groupimport/manage.php?id=5', baseUrl).toString(), {
+        waitUntil: 'domcontentloaded',
+    });
+
+    const root = page.locator('#local-groupimport-easystud');
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
+    await expect(root).toHaveAttribute('aria-busy', 'false');
+    const structureMode = root.locator('[data-easystud-layout-mode="structure"]:visible').first();
+    await expect(structureMode).toBeVisible();
+    await structureMode.click();
+
+    const focusContract = async(control) => {
+        await page.keyboard.press('Tab');
+        await control.focus();
+        await expect.poll(async() => control.evaluate(node => {
+            const style = getComputedStyle(node);
+            return style.outlineStyle !== 'none' && style.boxShadow !== 'none' &&
+                style.borderColor.includes('138, 188, 227');
+        })).toBe(true);
+    };
+
+    for (const [name, selector] of [
+        ['duplicate', '.local-groupimport-easystud-group__duplicate-button:visible'],
+        ['member-search', '.local-groupimport-easystud-group__member-search-button:visible'],
+        ['settings', '.local-groupimport-easystud-group__settings-button:visible'],
+    ]) {
+        const control = root.locator(selector).first();
+        await expect(control, `${name} action is present`).toBeVisible();
+        await focusContract(control);
+        await page.screenshot({path: testInfo.outputPath(`structure-focus-${name}.png`), fullPage: false});
+    }
+
+    expect(consoleErrors).toEqual([]);
+    await expectNoPageOverflow(page);
+});
+
+test('keeps the EasyStud administration skeleton and shared bottom-end indicator contract', async({page}) => {
+    const consoleErrors = [];
+    page.on('console', message => {
+        if (message.type() === 'error') {
+            consoleErrors.push(message.text());
+        }
+    });
+    page.on('pageerror', error => consoleErrors.push(error.message));
+    await login(page, {expectMassImport: false});
+    await page.goto(new URL('/admin/settings.php?section=local_groupimport', baseUrl).toString(), {
+        waitUntil: 'domcontentloaded',
+    });
+    const initialObservedAt = await page.evaluate(() => performance.now());
+
+    const root = page.locator('#page-admin-setting-local_groupimport');
+    const skeleton = root.locator('[data-easystud-loading-skeleton]');
+    const initialLoading = await page.evaluate(() => {
+        const pageRoot = document.querySelector('#page-admin-setting-local_groupimport');
+        const loadingSkeleton = pageRoot && pageRoot.querySelector('[data-easystud-loading-skeleton]');
+        const skeletonHeading = loadingSkeleton && loadingSkeleton.closest('.formsettingheading');
+        const skeletonFieldset = skeletonHeading && skeletonHeading.parentElement;
+        return {
+            state: pageRoot ? pageRoot.getAttribute('data-easystud-loading-state') : null,
+            hidden: loadingSkeleton ? loadingSkeleton.hidden : null,
+            display: loadingSkeleton ? getComputedStyle(loadingSkeleton).display : null,
+            visibleNativeChildren: skeletonFieldset ? Array.from(skeletonFieldset.children).filter(node =>
+                node !== skeletonHeading && !node.hidden && getComputedStyle(node).display !== 'none'
+            ).length : null,
+            fieldsetMatchesFirst: skeletonFieldset ? skeletonFieldset.matches(
+                '#adminsettings > .settingsform > fieldset:first-of-type'
+            ) : false,
+            fieldsetIndex: skeletonFieldset && skeletonFieldset.parentElement ?
+                Array.from(skeletonFieldset.parentElement.children).indexOf(skeletonFieldset) : -1,
+            fieldsetParent: skeletonFieldset && skeletonFieldset.parentElement ? {
+                tag: skeletonFieldset.parentElement.tagName,
+                id: skeletonFieldset.parentElement.id,
+                className: skeletonFieldset.parentElement.className,
+            } : null,
+            visibleNativeClasses: skeletonFieldset ? Array.from(skeletonFieldset.children).filter(node =>
+                node !== skeletonHeading && !node.hidden && getComputedStyle(node).display !== 'none'
+            ).map(node => node.className) : [],
+        };
+    });
+    expect(initialLoading.state).toBe('loading');
+    expect(initialLoading.hidden).toBe(false);
+    expect(initialLoading.display).toBe('grid');
+    expect(initialLoading.visibleNativeChildren, JSON.stringify(initialLoading)).toBe(0);
+    await expect(skeleton.locator('.local-groupimport-admin-settings__loading-section')).toHaveCount(3);
+    await expect(skeleton.locator('.local-groupimport-admin-settings__loading-form-row')).toHaveCount(10);
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 30000});
+    await expect(root).toHaveAttribute('aria-busy', 'false');
+    await expect(skeleton).toBeHidden();
+    const revealElapsed = await page.evaluate(startedAt => performance.now() - startedAt, initialObservedAt);
+    expect(revealElapsed).toBeGreaterThanOrEqual(1100);
+    await expect(root.locator('[data-local-groupimport-admin-features]')).toBeVisible();
+
+    await skeleton.evaluate(node => {
+        node.hidden = false;
+        node.style.display = 'grid';
+    });
+    const skeletonAnimation = await skeleton.locator(
+        '.local-groupimport-admin-settings__loading-surface'
+    ).first().evaluate(node => getComputedStyle(node).animationName);
+    await root.evaluate(node => node.classList.add('is-action-busy'));
+    await page.waitForTimeout(40);
+    try {
+        const contract = await page.evaluate(() => {
+            const root = document.querySelector('#page-admin-setting-local_groupimport');
+            const spinner = getComputedStyle(root, '::after');
+            const label = getComputedStyle(root, '::before');
+            return {
+                spinnerAnimation: spinner.animationName,
+                spinnerPosition: spinner.position,
+                spinnerBottom: spinner.bottom,
+                spinnerRight: spinner.right,
+                labelContent: label.content,
+            };
+        });
+
+        expect(skeletonAnimation).toContain('local-groupimport-easystud-loading-shimmer-v4');
+        expect(contract.spinnerAnimation).toContain('easyedu-busy-spin');
+        expect(contract.spinnerPosition).toBe('fixed');
+        expect(contract.spinnerBottom).not.toBe('auto');
+        expect(contract.spinnerRight).not.toBe('auto');
+        expect(contract.labelContent).toContain('Loading in progress');
+    } finally {
+        await root.evaluate(node => node.classList.remove('is-action-busy'));
+        await skeleton.evaluate(node => {
+            node.hidden = true;
+            node.style.removeProperty('display');
+        });
+    }
+    await expectNoPageOverflow(page);
+    expect(consoleErrors).toEqual([]);
 });
