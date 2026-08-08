@@ -10,6 +10,21 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-08
+
+#### Fixed
+
+- `EED-UI-2026-0023`: stabilize the responsive Moodle-native Send message
+  modal with an opaque dialog/content surface, viewport-bounded dimensions,
+  body-only overflow at short mobile heights and a comfortable fixed textarea;
+  native Moodle messaging, JavaScript, templates, UI Kit and global backdrop
+  behavior remain unchanged.
+
+#### Validated
+
+- Visually validated the modal in the cumulative EasyStud Moodle 5.1 preview
+  after commit `758cf22`; no Playwright run was performed for this validation.
+
 ### 2026-08-06
 
 #### Fixed
