@@ -127,6 +127,13 @@ Maintenance convention:
 
 ### 2026-08-08
 
+#### Added
+
+- `EED-UI-2026-0023`: add the versioned `local-supervised` responsive Send
+  message modal scenario. It opens and closes the Moodle-native composer at
+  390 x 844 without entering or sending a message, captures external evidence,
+  and asserts the corrected opaque, contained mobile layout.
+
 #### Fixed
 
 - Correct Grouping presentation and filter regressions for EED-UI-2026-0022:
