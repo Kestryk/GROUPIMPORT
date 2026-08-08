@@ -110,6 +110,7 @@ Assert-Contains 'manage.mustache' $template '\{\{>\s*core/select_menu\s*\}\}' 'h
 Assert-NotContains 'manage.mustache' $template 'navigationhtml|data-easystud-mobile-nav|data-easystud-mobile-nav-panel' 'old duplicated navigation markup must be absent'
 Assert-Contains 'easyedu_guide.mustache' $guideTemplate 'guidehoverlabel' 'guide capsule must use a localized visual label'
 Assert-Contains 'easyedu_guide.mustache' $guideTemplate 'aria-hidden="true"' 'guide capsule label must not duplicate the button accessible name'
+Assert-NotContains 'easyedu_guide.mustache' $guideTemplate 'data-easystud-hover-help' 'responsive Guide launcher must not add a redundant hover-help bubble'
 
 Assert-Contains 'easyedu_navigation.mustache' $wrapper 'data-easyedu-navigation="1"' 'wrapper root contract is missing'
 Assert-Contains 'easyedu_navigation.mustache' $wrapper 'data-easyedu-navigation-panel="1"' 'compact panel contract is missing'

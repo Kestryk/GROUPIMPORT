@@ -319,10 +319,13 @@ Within the compact panel, the existing Guide launcher is one full-width
 navigation button just below the panel header. Its compass icon shares the
 same icon column as the EasyStud tool rows and its permanent localized
 `Open guide` / `Ouvrir le guide` label is part of that same button: neither
-the icon nor the label creates a second capsule. The background keeps the two
-established EasyEdu launcher colours but uses a white overlay for a lighter
-gradient. Hover and keyboard focus change the button to a white surface with a
-gradient border, then move that same gradient onto the enlarged icon and label.
+the icon nor the label creates a second capsule or hover-help bubble. The
+launcher deliberately has no `data-easystud-hover-help` attribute in its
+responsive consumer template; its visible label and accessible name are the
+single source of guidance. The background keeps the two established EasyEdu
+launcher colours but uses a white overlay for a lighter gradient. Hover and
+keyboard focus change the button to a white surface with a gradient border,
+then move that same gradient onto the enlarged icon and label.
 The resting overlay uses 48% to 28% white so the gradient remains visibly
 darker than the first compact-button iteration while preserving its contrast.
 The label uses a flexible, non-clipping text area with explicit line-height
