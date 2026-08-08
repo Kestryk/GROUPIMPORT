@@ -513,13 +513,28 @@
       gap: 0.55rem;
     }
 
-    [data-easystud-advanced-filters="structure-groupings"]:not([hidden]) {
-      // Override the desktop-only guard only inside the responsive breakpoint.
+    [data-easystud-advanced-filters="structure-groupings"].is-expanded {
+      // The controller keeps the panel in the DOM during its collapse
+      // transition, so the state class—not [hidden]—is authoritative here.
       display: block !important;
     }
 
+    [data-easystud-advanced-filters="structure-groupings"].is-collapsed,
     [data-easystud-advanced-filters="structure-groupings"][hidden] {
       display: none !important;
+    }
+
+    // Search/add panels auto-expand their Grouping card. Their child list
+    // already sits beside the card's own border, so remove only the redundant
+    // inner guide while those panels are open; the card size is unchanged.
+    &--responsive-workspace
+      .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded:has(
+        > .local-groupimport-easystud-container-search.is-open,
+        > .local-groupimport-easystud-group-email.is-open
+      )
+      > .local-groupimport-easystud-tree__children {
+      border-left: 0;
+      padding-left: 0;
     }
 
     &-advanced-filters__control--groupings-mobile {
