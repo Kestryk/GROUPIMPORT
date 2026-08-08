@@ -10,6 +10,22 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-08
+
+#### Added
+
+- Add a one-test authenticated Playwright diagnostic for the Participant role
+  filter. It selects Teacher on course 5, records the served Course Manager
+  AMD asset and checks that the Student-only canonical participant card is
+  hidden without mutating Moodle data.
+
+#### Validation
+
+- The supervised discovery gate selects exactly the new role-filter scenario.
+  Authenticated product confirmation remains pending: the first two attempts
+  stopped before applying the filter, respectively at the login-page load gate
+  and at the runtime's native-select presentation.
+
 ### 2026-08-06
 
 #### Fixed

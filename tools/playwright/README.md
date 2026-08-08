@@ -35,6 +35,25 @@ Use `-Spec` and an exact `-Grep` for another scenario. The one-test gate cannot
 be disabled. `-DiscoveryOnly` validates selection and artifact registration
 without loading credentials or taking the runtime lease.
 
+### Participant role-filter integrity
+
+`participant-role-filter-integrity.spec.js` owns the focused non-destructive
+course-5 diagnostic for the Participant role filter. It selects the native
+Teacher option, verifies that the Student-only canonical participant card is
+hidden, records any separate group-member representation for that user, and
+records the Course Manager AMD resource actually served by Moodle. Its exact
+run remains one test and uses the saved-credential wrapper; it does not create
+or change enrolments, roles, fixtures, caches or settings.
+
+```powershell
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -Spec 'participant-role-filter-integrity.spec.js' `
+    -Grep 'Teacher role filter hides the Student-only canonical participant card' `
+    -WaitForLease
+```
+
 The responsive card-menu alignment check is
 `responsive-audit.spec.js` / `responsive card menu triggers align with their
 card row controls`. At 768 px it compares the vertical centres of the menu
