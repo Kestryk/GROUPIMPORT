@@ -4261,8 +4261,10 @@ const syncPagination = root => {
         }
 
         Array.from(list.querySelectorAll('[data-easystud-page-hidden="1"]')).forEach(item => {
-            item.hidden = false;
             item.removeAttribute('data-easystud-page-hidden');
+            if (!item.hasAttribute('data-easystud-filter-hidden')) {
+                item.hidden = false;
+            }
         });
 
         sortListItems(list, config);
@@ -4549,7 +4551,13 @@ const applyFilters = (root, options = {}) => {
             }
             return groupings.indexOf(groupingid) !== -1;
         });
-        user.hidden = !(matchesQuery && matchesRole && matchesGroup && matchesGrouping);
+        const matches = matchesQuery && matchesRole && matchesGroup && matchesGrouping;
+        user.hidden = !matches;
+        if (matches) {
+            user.removeAttribute('data-easystud-filter-hidden');
+        } else {
+            user.setAttribute('data-easystud-filter-hidden', '1');
+        }
     });
     if (options.pagination !== false) {
         syncPagination(root);

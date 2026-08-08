@@ -32,15 +32,22 @@ test('Teacher role filter hides the Student-only canonical participant card', as
 
     const roleSelect = page.locator('[data-easystud-role-filter="1"]');
     const teacherOption = roleSelect.locator('option[value="teacher"]');
+    const advancedFiltersToggle = page.locator(
+        '[data-easystud-advanced-filters-toggle="participants"]'
+    );
+    const teacherChoice = page.locator('[data-easystud-role-choice="teacher"]');
     const canonicalCard = page.locator('[data-easystud-user="1"][data-user-id="22"]');
     await expect(roleSelect).toHaveCount(1);
     await expect(teacherOption).toHaveCount(1);
+    await expect(advancedFiltersToggle).toBeVisible();
     await expect(canonicalCard).toHaveCount(1);
     await expect(canonicalCard).toHaveAttribute('data-role-text', 'student');
 
-    await roleSelect.selectOption(['teacher']);
+    await advancedFiltersToggle.click();
+    await expect(advancedFiltersToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(teacherChoice).toBeVisible();
+    await teacherChoice.click();
     await expect.poll(() => teacherOption.evaluate(option => option.selected)).toBe(true);
-    await expect(canonicalCard).toBeHidden();
 
     const diagnostics = await page.evaluate(() => {
         const select = document.querySelector('[data-easystud-role-filter="1"]');
@@ -56,6 +63,8 @@ test('Teacher role filter hides the Student-only canonical participant card', as
                 inlineStyle: node.getAttribute('style'),
                 computedDisplay: style.display,
                 computedVisibility: style.visibility,
+                filterHidden: node.getAttribute('data-easystud-filter-hidden'),
+                pageHidden: node.getAttribute('data-easystud-page-hidden'),
             };
         };
 
@@ -85,6 +94,7 @@ test('Teacher role filter hides the Student-only canonical participant card', as
     expect(diagnostics.selectedRoles).toEqual(['teacher']);
     expect(diagnostics.canonical.hidden).toBe(true);
     expect(diagnostics.canonical.computedDisplay).toBe('none');
+    expect(diagnostics.canonical.filterHidden).toBe('1');
     expect(diagnostics.servedCourseManagerAssets.length).toBeGreaterThan(0);
     expect(consoleErrors).toEqual([]);
 });

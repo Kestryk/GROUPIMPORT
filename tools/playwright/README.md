@@ -38,12 +38,13 @@ without loading credentials or taking the runtime lease.
 ### Participant role-filter integrity
 
 `participant-role-filter-integrity.spec.js` owns the focused non-destructive
-course-5 diagnostic for the Participant role filter. It selects the native
-Teacher option, verifies that the Student-only canonical participant card is
-hidden, records any separate group-member representation for that user, and
-records the Course Manager AMD resource actually served by Moodle. Its exact
-run remains one test and uses the saved-credential wrapper; it does not create
-or change enrolments, roles, fixtures, caches or settings.
+course-5 diagnostic for the Participant role filter. It opens the Participant
+advanced-filters panel, selects Teacher through the visible control, verifies
+that the Student-only canonical participant card is hidden, records any
+separate group-member representation for that user, and records the Course
+Manager AMD resource actually served by Moodle. Its exact run remains one test
+and uses the saved-credential wrapper; it does not create or change enrolments,
+roles, fixtures, caches or settings.
 
 ```powershell
 .\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
