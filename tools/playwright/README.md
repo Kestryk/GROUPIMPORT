@@ -57,6 +57,30 @@ absence of hidden horizontal action-row overflow. It writes one external
 screenshot; it is `local-supervised` because it requires the leased
 authenticated Moodle 5.1 fixture.
 
+The EED-UI-2026-0023 message-modal check is
+`message-modal-responsive.spec.js` / `responsive native Send message modal
+remains opaque and contained`. At 390 x 844 it selects one visible
+participant, opens Moodle's native Send message modal, and proves the
+EasyStud-decorated dialog/content surfaces are opaque and bounded, only the
+body scrolls, the compact textarea keeps its fixed height, and there is no
+horizontal overflow. It captures `message-modal-responsive-390.png` in the
+external run output, then closes the modal using Moodle's native close control;
+it never enters or sends a message. It is `local-supervised` and requires an
+authenticated Moodle 5.1 fixture with participant-messaging capability.
+
+Run only after an explicit runtime-review authorization, using the
+authenticated runner, its exact title, and the `groupimport-active-runtime-write`
+lease:
+
+```powershell
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -Spec 'message-modal-responsive.spec.js' `
+    -Grep 'responsive native Send message modal remains opaque and contained' `
+    -WaitForLease
+```
+
 The responsive expanded-Grouping rail check is
 `grouping-rail-containment.spec.js` / `responsive expanded Grouping rail stays
 inside its card`. At 390 px it opens a Grouping and checks that the expanded
