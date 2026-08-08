@@ -6014,7 +6014,11 @@
   animation: easyedu-modal-out var(--easyedu-motion-fast) ease both;
 }
 .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__dialog {
+  background-color: var(--easyedu-surface);
+  box-sizing: border-box;
   height: min(58vh, 34rem);
+  max-height: calc(100vh - 1rem);
+  max-height: calc(100dvh - 1rem);
   max-width: min(48rem, 100vw - 2rem);
   width: min(48rem, 100vw - 2rem);
 }
@@ -6027,11 +6031,13 @@
   background: linear-gradient(180deg, #f7fbff 0%, var(--easyedu-surface) 11rem);
   --easyedu-context-modal-accent: var(--easyedu-modal-success-accent);
   --easyedu-context-modal-header-bg: var(--easyedu-modal-header-success-bg);
+  background-color: var(--easyedu-surface);
   border-color: var(--local-groupimport-easystud-border);
   box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.24);
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__content .modal-header {
@@ -6046,6 +6052,7 @@
   border-top: 1px solid var(--easyedu-modal-border);
 }
 .local-groupimport-easystud-message-modal .modal-header {
+  flex: 0 0 auto;
   padding: 0.9rem 1rem;
 }
 .local-groupimport-easystud-message-modal .modal-title {
@@ -6056,7 +6063,11 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  max-height: 100%;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.2rem;
 }
 .local-groupimport-easystud-message-modal.is-loading .modal-body {
@@ -6078,6 +6089,7 @@
   width: 100%;
 }
 .local-groupimport-easystud-message-modal .modal-footer {
+  flex: 0 0 auto;
   padding: 0.8rem 1rem;
 }
 .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__textarea {
@@ -6096,6 +6108,33 @@
   box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring);
   outline: var(--easyedu-focus-outline-width) solid transparent;
   outline-offset: var(--easyedu-focus-outline-offset);
+}
+@media (max-width: 575.98px) {
+  .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__dialog {
+    height: min(34rem, 100vh - 1rem);
+    height: min(34rem, 100dvh - 1rem);
+    margin: 0.5rem auto;
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
+    max-width: calc(100vw - 1rem);
+    width: calc(100vw - 1rem);
+  }
+  .local-groupimport-easystud-message-modal .modal-body {
+    padding: 0.9rem;
+  }
+  .local-groupimport-easystud-message-modal .modal-body form {
+    flex: 0 0 auto;
+  }
+  .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__textarea-wrap {
+    flex: 0 0 auto;
+  }
+  .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__textarea {
+    flex: 0 0 auto;
+    height: clamp(11rem, 30dvh, 16rem) !important;
+    max-height: 16rem;
+    min-height: 11rem;
+    resize: none;
+  }
 }
 
 .local-groupimport-easystud .easyedu-guided-panel {
