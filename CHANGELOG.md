@@ -10,6 +10,14 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-08
+
+#### Fixed
+
+- Remove only the redundant responsive hover-help bubble from the EasyStud
+  Guide launcher. Its visible localized label, accessible name, focus styling,
+  gradient animation and Guide activation remain unchanged.
+
 ### 2026-08-06
 
 #### Fixed
