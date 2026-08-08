@@ -4355,7 +4355,7 @@
   margin-left: auto;
 }
 .local-groupimport-easystud-tree__toggle[aria-expanded=true] > .fa {
-  transform: rotate(90deg);
+  transform: none;
 }
 .local-groupimport-easystud-grouping__name, .local-groupimport-easystud-group__name {
   display: inline-block;
@@ -5817,6 +5817,9 @@
     margin-block-start: auto;
     pointer-events: none;
     visibility: hidden;
+  }
+  .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded {
+    z-index: 12;
   }
   .local-groupimport-easystud--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) .local-groupimport-easystud__filters, .local-groupimport-easystud--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) .local-groupimport-easystud-participant-groups__create, .local-groupimport-easystud--participant-focus:not(.local-groupimport-easystud--participants-filters-expanded).local-groupimport-easystud--participant-groups-filters-expanded .local-groupimport-easystud__filters, .local-groupimport-easystud--participant-focus:not(.local-groupimport-easystud--participants-filters-expanded).local-groupimport-easystud--participant-groups-filters-expanded .local-groupimport-easystud-participant-groups__create, .local-groupimport-easystud--structure-focus.local-groupimport-easystud--structure-groups-filters-expanded:not(.local-groupimport-easystud--structure-groupings-filters-expanded) .local-groupimport-easystud-create-card, .local-groupimport-easystud--structure-focus:not(.local-groupimport-easystud--structure-groups-filters-expanded).local-groupimport-easystud--structure-groupings-filters-expanded .local-groupimport-easystud-create-card {
     align-self: start;
@@ -15931,11 +15934,17 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     display: grid;
     gap: 0.55rem;
   }
-  .local-groupimport-easystud [data-easystud-advanced-filters=structure-groupings]:not([hidden]) {
+  .local-groupimport-easystud [data-easystud-advanced-filters=structure-groupings].is-expanded {
     display: block !important;
   }
+  .local-groupimport-easystud [data-easystud-advanced-filters=structure-groupings].is-collapsed,
   .local-groupimport-easystud [data-easystud-advanced-filters=structure-groupings][hidden] {
     display: none !important;
+  }
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded:has(> .local-groupimport-easystud-container-search.is-open,
+  > .local-groupimport-easystud-group-email.is-open) > .local-groupimport-easystud-tree__children {
+    border-left: 0;
+    padding-left: 0;
   }
   .local-groupimport-easystud-advanced-filters__control--groupings-mobile {
     display: inline-flex !important;

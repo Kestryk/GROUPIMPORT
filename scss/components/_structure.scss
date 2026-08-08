@@ -624,7 +624,9 @@
   }
 
   &-tree__toggle[aria-expanded="true"] > .fa {
-    @include easyedu.card-disclosure-expanded-icon;
+    // The controller swaps the glyph to fa-chevron-down when open. Do not
+    // rotate that already-directional glyph a second time.
+    transform: none;
   }
 
   &-grouping__name,
@@ -1840,6 +1842,13 @@
       margin-block-start: auto;
       pointer-events: none;
       visibility: hidden;
+    }
+
+    // In Complete View an expanded Grouping rail is painted outside the
+    // card's normal border. Lift only that card's paint stack so neighbouring
+    // cards cannot cover the rail; this does not change its box geometry.
+    &-tree__section[data-easystud-grouping-id].is-expanded {
+      z-index: 12;
     }
 
     &--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) &__filters,

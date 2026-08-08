@@ -14,9 +14,23 @@ Maintenance convention:
 
 #### Fixed
 
+- Correct Grouping presentation and filter regressions for EED-UI-2026-0022:
+  keep the responsive child guide from duplicating the card border while
+  search/add panels are open, keep the open chevron pointing down, lift the
+  expanded Complete View Grouping rail above neighbouring cards without
+  changing geometry, and let the collapsed responsive Grouping filter release
+  its reserved height.
 - Remove only the redundant responsive hover-help bubble from the EasyStud
   Guide launcher. Its visible localized label, accessible name, focus styling,
   gradient animation and Guide activation remain unchanged.
+
+#### Validation
+
+- EED-UI-2026-0022 runtime validation is blocked before geometry assertions:
+  the prepared Playwright scenario expects the absent `is-easyedu-disclosing`
+  animation class while the current AMD controller exposes `is-expanded`.
+  The lease, credentials and isolated profile were cleaned up successfully;
+  visual acceptance remains pending the QA/AMD contract decision.
 
 ### 2026-08-06
 
