@@ -1,9 +1,10 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: follow-up visual regression confirmed on promoted commit `d93acd7`;
-the corrected single-frame composition is implemented and statically
-validated. A new preview promotion, Playwright run and human visual acceptance
-remain pending.
+Status: corrected single-frame composition is implemented, statically
+validated and promoted. The desktop 1440 px rail assertion and capture pass.
+Responsive completion is blocked by a separately owned cumulative-preview AMD
+regression introduced after that proof; human visual acceptance remains
+pending.
 
 ## Scope
 
@@ -103,3 +104,20 @@ files were changed.
   surface `rgb(247, 250, 252)`. This isolated the remaining focus-within colour
   override; credentials, owned browser process, external profile and runtime
   lease were all cleaned up.
+- After preserving the open surface through focus-within, run
+  `easystud-authenticated-20260809T191821283Z-12276` passed the new desktop rail
+  assertions and produced `grouping-open-rail-desktop-1440.png`. It then
+  exposed a test-only Complete View wait that incorrectly required a collapsed
+  hidden panel to have visible geometry; the wait was corrected in `ded0285`.
+- The cumulative preview subsequently received separately owned commit
+  `b4fa06d` (source `c6cba959`). Its generated
+  `amd/build/course_manager.min.js` declares
+  `local_groupimport-role-filter-integration/course_manager` with `./motion`
+  instead of the required `local_groupimport/course_manager` with
+  `local_groupimport/motion`. Runs
+  `easystud-authenticated-20260809T192531765Z-34520` and
+  `easystud-authenticated-20260809T193001737Z-11668` therefore could not obtain
+  a normally initialised manager; the latter recorded loading state `degraded`
+  and inert desktop mode controls. Both runs completed credential, browser,
+  profile and lease cleanup. This AMD hunk belongs to the role-filter owner and
+  is not modified by EED-UI-2026-0022.

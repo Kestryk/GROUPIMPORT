@@ -28,6 +28,11 @@ Maintenance convention:
   browser scenario now measures one overlaid rail width at desktop and 390 px;
   its first leased run isolated the remaining desktop focus colour mismatch
   and completed credential, browser, profile and lease cleanup.
+- The corrected desktop rail subsequently passed its 1440 px computed-style,
+  unchanged-width and screenshot checks. Responsive completion is temporarily
+  blocked by a separately owned cumulative-preview commit whose generated AMD
+  declares the wrong module namespace; the EasyStud controller consequently
+  enters degraded loading before responsive assertions can run.
 
 ### 2026-08-08
 
