@@ -1851,17 +1851,6 @@
       z-index: 12;
     }
 
-    // Complete View scrolls the tree vertically and therefore clips paint
-    // that extends to the left of the card. Keep the open frame inside the
-    // existing card box; the card dimensions and its Motion state are intact.
-    &-tree__section[data-easystud-grouping-id].is-expanded::after {
-      left: 0;
-    }
-
-    &-tree__section[data-easystud-grouping-id].is-expanded::before {
-      transform: translate(calc(var(--easyedu-identity-border-width) / 2), -50%);
-    }
-
     &--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) &__filters,
     &--participant-focus.local-groupimport-easystud--participants-filters-expanded:not(.local-groupimport-easystud--participant-groups-filters-expanded) &-participant-groups__create,
     &--participant-focus:not(.local-groupimport-easystud--participants-filters-expanded).local-groupimport-easystud--participant-groups-filters-expanded &__filters,

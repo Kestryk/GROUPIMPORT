@@ -170,6 +170,71 @@ const ensureCollapsed = async(page, key, expectMotion = false) => {
     await expect(panel).toHaveAttribute('aria-hidden', 'true');
 };
 
+const expectSingleOpenGroupingRail = async(page, testInfo, viewportLabel) => {
+    const grouping = page.locator(
+        `${structureGroupingsListSelector} > [data-easystud-grouping-id]:visible`
+    ).first();
+    const toggle = grouping.locator(
+        ':scope > .local-groupimport-easystud-grouping__header [data-easystud-collapse-toggle]'
+    );
+    const children = grouping.locator(':scope > .local-groupimport-easystud-tree__children');
+
+    await expect(grouping).toBeVisible();
+    if (await toggle.getAttribute('aria-expanded') === 'true') {
+        await toggle.click();
+        await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+        await expect(children).toBeHidden();
+    }
+    const collapsed = await grouping.boundingBox();
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(grouping).toHaveClass(/is-expanded/);
+    await expect(children).toBeVisible();
+    await expect(children).not.toHaveClass(/is-tree-animating/);
+    await page.mouse.move(1, 1);
+
+    const open = await grouping.boundingBox();
+    const rail = await grouping.evaluate(node => {
+        const card = getComputedStyle(node);
+        const frame = getComputedStyle(node, '::after');
+        const borderWidth = parseFloat(card.borderLeftWidth) || 0;
+        const frameLeft = parseFloat(frame.left) || 0;
+        const frameWidth = parseFloat(frame.width) || 0;
+        return {
+            borderColor: card.borderLeftColor,
+            borderWidth,
+            frameBackground: frame.backgroundColor,
+            frameDisplay: frame.display,
+            frameLeft,
+            frameWidth,
+        };
+    });
+
+    expect(
+        Math.abs(open.width - collapsed.width),
+        `${viewportLabel}: Grouping width`
+    ).toBeLessThanOrEqual(1);
+    expect(rail.frameDisplay, `${viewportLabel}: open frame display`).toBe('block');
+    expect(
+        Math.abs(rail.frameLeft + rail.borderWidth),
+        `${viewportLabel}: open frame overlays the identity rail`
+    ).toBeLessThanOrEqual(2);
+    expect(
+        Math.abs(rail.frameWidth - rail.borderWidth),
+        `${viewportLabel}: one canonical rail width`
+    ).toBeLessThanOrEqual(2);
+    expect(
+        rail.borderColor,
+        `${viewportLabel}: base rail merges into open frame`
+    ).toBe(rail.frameBackground);
+
+    await page.screenshot({
+        path: testInfo.outputPath(`grouping-open-rail-${viewportLabel}.png`),
+        fullPage: true,
+    });
+};
+
 const readWideGeometry = async page => page.evaluate((selectors) => {
     const root = document.querySelector(selectors.root);
     const participant = document.querySelector(selectors.participant);
@@ -597,6 +662,7 @@ test('filter columns preserve desktop alignment and responsive accessibility', a
             });
 
             await ensureOverviewMode(page);
+            await expectSingleOpenGroupingRail(page, testInfo, 'desktop-1440');
             await ensureCollapsed(page, 'participants');
             await waitForStableGeometry(page, [
                 participantListSelector,
@@ -679,6 +745,7 @@ test('filter columns preserve desktop alignment and responsive accessibility', a
                 path: testInfo.outputPath('filter-alignment-responsive-groupings.png'),
                 fullPage: true,
             });
+            await expectSingleOpenGroupingRail(page, testInfo, 'responsive-390');
         }
     }
 
