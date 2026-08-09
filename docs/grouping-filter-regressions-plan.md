@@ -30,6 +30,10 @@ Grouping rail owner (EED-UI-2026-0021), Guide, Skeleton, the message modal
   again overlays the existing identity-border width in desktop and responsive
   layouts, while the existing Complete View z-index prevents neighbouring
   cards from covering it. Card width and padding are unchanged.
+- Expanded focus-within states preserve the open surface colour on the left
+  identity border. The contained focus treatment still paints the top, right
+  and bottom edges, but no longer exposes a blue closed-state rail underneath
+  the open pseudo-frame.
 - Complete View now follows the live Motion disclosure height on each
   animation frame. The structure column therefore moves with the existing
   filter transition instead of jumping only after the transition completes.
@@ -89,3 +93,9 @@ files were changed.
   and responsive layouts. The focused scenario now asserts that the open frame
   overlays exactly one identity-border width and that opening does not change
   card width; its corrected-build run is pending.
+- The first corrected-build run
+  `easystud-authenticated-20260809T191515645Z-38564` stopped on the new desktop
+  assertion with measured base border `rgb(138, 188, 227)` versus open-frame
+  surface `rgb(247, 250, 252)`. This isolated the remaining focus-within colour
+  override; credentials, owned browser process, external profile and runtime
+  lease were all cleaned up.
