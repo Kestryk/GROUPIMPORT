@@ -1,8 +1,9 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: source correction implemented; static validation passed; the single
-leased Moodle 5.1 scenario was executed and is blocked by a stale animation
-class assertion before the geometry checks; visual acceptance remains pending.
+Status: source correction implemented; static validation passed; the earlier
+leased Moodle 5.1 runtime validation passed for WIP `86ad03e`. The follow-up
+rail and Complete View animation corrections below still need a new preview
+promotion/runtime pass and human visual acceptance.
 
 ## Scope
 
@@ -22,6 +23,16 @@ Grouping rail owner (EED-UI-2026-0021), Guide, Skeleton, the message modal
   dimensions and the responsive open rail remain unchanged.
 - Complete View gives an expanded Grouping card a local paint-stack z-index so
   neighbouring cards cannot cover its externally painted rail.
+- In Complete View, the open Grouping frame is kept inside the existing card
+  box (`::after { left: 0; }`) and its identity icon is recentered inside the
+  same box. This addresses the tree scroll container clipping the old
+  externally painted left edge without changing card dimensions.
+- Responsive Grouping cards keep the base identity rail as their only left
+  edge. The later mobile rule that re-enabled the generic open pseudo-frame is
+  explicitly overridden, so an expanded Grouping cannot render a double rail.
+- Complete View now follows the live Motion disclosure height on each
+  animation frame. The structure column therefore moves with the existing
+  filter transition instead of jumping only after the transition completes.
 - The responsive `structure-groupings` filter now uses `.is-expanded` and
   `.is-collapsed` instead of treating `hidden=false` as the open state. This
   preserves the existing Motion expand/collapse transition while releasing the
@@ -31,28 +42,43 @@ Grouping rail owner (EED-UI-2026-0021), Guide, Skeleton, the message modal
 
 - `scss/components/_structure.scss`
 - `scss/responsive/_desktop.scss`
+- `scss/responsive/_mobile.scss`
+- `amd/src/course_manager.js`
+- `amd/build/course_manager.min.js` and `.map`
+- `tools/playwright/filter-panel-geometry.spec.js`
 - `styles.css` (generated from `scss/easystud.scss`)
 
-No JavaScript, Mustache template, Navigation, Guide, Skeleton, UI Kit or
-runtime fixture files were changed.
+No Mustache template, Navigation, Guide, Skeleton, UI Kit or runtime fixture
+files were changed.
 
 ## Validation record
 
 - `sass scss\\easystud.scss styles.css --no-source-map`: passed; existing Sass
   mixed-declaration deprecation warnings remain.
 - `git diff --check`: passed.
-- `node --experimental-default-type=module --check amd\\src\\course_manager.js`:
-  passed; the AMD source was not modified.
-- Generated CSS assertions for chevron, filter states, Complete View z-index
-  and responsive border selector: passed.
-- The single leased scenario
-  `filter-panel-geometry.spec.js` / `filter columns preserve desktop alignment
-  and responsive accessibility` ran with one worker and failed at
-  `filter-panel-geometry.spec.js:140`: the test expects
-  `is-easyedu-disclosing`, while the current AMD controller exposes only
-  `is-expanded`. The geometry assertions were not reached.
-- External evidence is retained under
-  `%LOCALAPPDATA%\EasyEdu\artifacts\easystud\authenticated\easystud-authenticated-20260808T154105449Z-28388`;
+- `node --experimental-default-type=module --check amd\\src\\course_manager.js`
+  and `node --check tools\\playwright\\filter-panel-geometry.spec.js`: passed.
+- `node tools\\release\\build-course-manager-amd.js` with the approved local
+  Terser toolchain: passed; generated AMD and source map were refreshed.
+- Generated CSS assertions for chevron, filter states, Complete View z-index,
+  the internal desktop frame and the responsive single-rail override: passed.
+- Source/AMD assertions for the Complete View animation-frame synchronisation:
+  passed.
+- A first run against the unpromoted active runtime stopped at
+  `filter-panel-geometry.spec.js:140` because the served AMD/cache state did
+  not expose the transient `is-easyedu-disclosing` class. Source and generated
+  Motion assets already contained that class; no JavaScript correction was
+  required.
+- The WIP commit `86ad03e` was then promoted to
+  `preview/moodle51/easystud-ui-2026-0022` at runtime HEAD
+  `986b23e229cec2cf325656e506b59a761bc75d46`, Moodle caches were purged, and
+  the same single-worker scenario passed (`1 passed`).
+- Passing evidence is retained under
+  `%LOCALAPPDATA%\EasyEdu\artifacts\easystud\authenticated\easystud-authenticated-20260808T160448608Z-30656`;
   `cleanup.json` records credential clearing, child shutdown, lease release and
-  an external profile as complete. No preview, cache purge or human visual
-  review was performed.
+  an external profile as complete. The preview record is
+  `%LOCALAPPDATA%\EasyEdu\orchestration\artifacts\preview-promotions\easystud\20260808T160432Z.json`.
+- Human visual review remains pending; no media was added to Git.
+- The new source/asset set has not been promoted to the Moodle 5.1 preview and
+  has not been exercised by Playwright yet. Those actions remain lease-gated
+  and require a distinct runtime request.

@@ -112,6 +112,17 @@ const ensureStructureMode = async page => {
     await expect(page.locator('[data-easystud-structure-groups]')).toBeVisible();
 };
 
+const ensureOverviewMode = async page => {
+    const root = page.locator(rootSelector);
+    const toggle = page.locator('[data-easystud-layout-mode="both"]');
+    await expect(toggle).toBeVisible();
+    if (await toggle.getAttribute('aria-pressed') !== 'true') {
+        await toggle.click();
+    }
+    await expect(root).not.toHaveClass(/local-groupimport-easystud--participant-focus/);
+    await expect(root).not.toHaveClass(/local-groupimport-easystud--structure-focus/);
+};
+
 const selectResponsiveWorkspace = async(page, workspace) => {
     const root = page.locator(rootSelector);
     const toggle = page.locator(`[data-easystud-mobile-view="${workspace}"]`);
@@ -247,6 +258,23 @@ const readStructureGeometry = async page => page.evaluate((selectors) => {
     groupings: structureGroupingsSelector,
     groupsList: structureGroupsListSelector,
     groupingsList: structureGroupingsListSelector,
+});
+
+const readOverviewListGeometry = async page => page.evaluate((selectors) => {
+    const participantList = document.querySelector(selectors.participantList);
+    const structureList = document.querySelector(selectors.structureList);
+    const tree = document.querySelector(selectors.tree);
+    const participantRect = participantList.getBoundingClientRect();
+    const structureRect = structureList.getBoundingClientRect();
+    return {
+        participantTop: participantRect.top,
+        structureTop: structureRect.top,
+        treePaddingTop: parseFloat(getComputedStyle(tree).paddingTop) || 0,
+    };
+}, {
+    participantList: participantListSelector,
+    structureList: structureGroupingsListSelector,
+    tree: '[data-easystud-tree]',
 });
 
 const readResponsiveGeometry = async(page, shellSelector, key) => page.evaluate((selectors) => {
@@ -565,6 +593,34 @@ test('filter columns preserve desktop alignment and responsive accessibility', a
         if (viewport.width === 1440) {
             await page.screenshot({
                 path: testInfo.outputPath('filter-alignment-desktop-structure-open.png'),
+                fullPage: true,
+            });
+
+            await ensureOverviewMode(page);
+            await ensureCollapsed(page, 'participants');
+            await waitForStableGeometry(page, [
+                participantListSelector,
+                structureGroupingsListSelector,
+                '[data-easystud-advanced-filters="participants"]',
+            ]);
+            const overviewCollapsed = await readOverviewListGeometry(page);
+            await ensureExpanded(page, 'participants', true);
+            await waitForStableGeometry(page, [
+                participantListSelector,
+                structureGroupingsListSelector,
+                '[data-easystud-advanced-filters="participants"]',
+            ]);
+            const overviewOpen = await readOverviewListGeometry(page);
+            expect(
+                Math.abs(overviewOpen.participantTop - overviewOpen.structureTop),
+                `${viewportLabel} Complete View: aligned list tops`
+            ).toBeLessThanOrEqual(2);
+            expect(
+                Math.abs(overviewOpen.structureTop - overviewCollapsed.structureTop),
+                `${viewportLabel} Complete View: right list follows opening filter`
+            ).toBeGreaterThan(8);
+            await page.screenshot({
+                path: testInfo.outputPath('filter-alignment-complete-view-participants-open.png'),
                 fullPage: true,
             });
         }

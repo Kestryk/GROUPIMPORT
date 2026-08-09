@@ -445,6 +445,16 @@
       display: block;
     }
 
+    // Responsive Grouping cards keep the base identity rail as their single
+    // left edge. The generic open-state frame above is for non-responsive
+    // cards and would otherwise paint a second border inside the same card.
+    &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded::after,
+    &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded:focus-within::after,
+    &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded.is-selected::after,
+    &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded.is-selected:focus-within::after {
+      display: none;
+    }
+
     &--responsive-workspace &-rename__edit:not([hidden]) {
       background: color-mix(in srgb, var(--easyedu-surface) 92%, var(--easyedu-primary-soft) 8%);
       border: 1px solid var(--easyedu-card-border);
