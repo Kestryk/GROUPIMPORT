@@ -1,9 +1,9 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: source correction implemented; static validation passed; the earlier
-leased Moodle 5.1 runtime validation passed for WIP `86ad03e`. The follow-up
-rail and Complete View animation corrections below still need a new preview
-promotion/runtime pass and human visual acceptance.
+Status: follow-up visual regression confirmed on promoted commit `d93acd7`;
+the corrected single-frame composition is implemented and statically
+validated. A new preview promotion, Playwright run and human visual acceptance
+remain pending.
 
 ## Scope
 
@@ -23,13 +23,13 @@ Grouping rail owner (EED-UI-2026-0021), Guide, Skeleton, the message modal
   dimensions and the responsive open rail remain unchanged.
 - Complete View gives an expanded Grouping card a local paint-stack z-index so
   neighbouring cards cannot cover its externally painted rail.
-- In Complete View, the open Grouping frame is kept inside the existing card
-  box (`::after { left: 0; }`) and its identity icon is recentered inside the
-  same box. This addresses the tree scroll container clipping the old
-  externally painted left edge without changing card dimensions.
-- Responsive Grouping cards keep the base identity rail as their only left
-  edge. The later mobile rule that re-enabled the generic open pseudo-frame is
-  explicitly overridden, so an expanded Grouping cannot render a double rail.
+- The attempted internal frame (`left: 0`) painted beside the card's existing
+  identity border and caused the visually duplicated desktop rail. Replacing
+  the open frame with the base rail also lost the established responsive open
+  treatment. Both overrides are removed: the canonical open pseudo-frame once
+  again overlays the existing identity-border width in desktop and responsive
+  layouts, while the existing Complete View z-index prevents neighbouring
+  cards from covering it. Card width and padding are unchanged.
 - Complete View now follows the live Motion disclosure height on each
   animation frame. The structure column therefore moves with the existing
   filter transition instead of jumping only after the transition completes.
@@ -60,8 +60,10 @@ files were changed.
   and `node --check tools\\playwright\\filter-panel-geometry.spec.js`: passed.
 - `node tools\\release\\build-course-manager-amd.js` with the approved local
   Terser toolchain: passed; generated AMD and source map were refreshed.
-- Generated CSS assertions for chevron, filter states, Complete View z-index,
-  the internal desktop frame and the responsive single-rail override: passed.
+- Generated CSS assertions for chevron, filter states, Complete View z-index
+  and the canonical negative-offset open frame: passed. Assertions also
+  confirm that no desktop/responsive internal-frame or frame-suppression
+  override remains.
 - Source/AMD assertions for the Complete View animation-frame synchronisation:
   passed.
 - A first run against the unpromoted active runtime stopped at
@@ -79,6 +81,11 @@ files were changed.
   an external profile as complete. The preview record is
   `%LOCALAPPDATA%\EasyEdu\orchestration\artifacts\preview-promotions\easystud\20260808T160432Z.json`.
 - Human visual review remains pending; no media was added to Git.
-- The new source/asset set has not been promoted to the Moodle 5.1 preview and
-  has not been exercised by Playwright yet. Those actions remain lease-gated
-  and require a distinct runtime request.
+- The new source/asset set is visible at
+  `http://localhost/local/groupimport/manage.php?id=5`; it has not yet been
+  exercised by Playwright. No new runtime screenshots or raw media were added
+  to Git.
+- The visual review of that preview found duplicated Grouping rails on desktop
+  and responsive layouts. The focused scenario now asserts that the open frame
+  overlays exactly one identity-border width and that opening does not change
+  card width; its corrected-build run is pending.

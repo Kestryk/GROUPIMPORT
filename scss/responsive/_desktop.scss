@@ -417,29 +417,6 @@
       transform: none;
     }
 
-    // The expanded Grouping rail is an absolutely positioned open-state frame.
-    // Its desktop offset deliberately lives outside the card, but the
-    // responsive workspace clips horizontal overflow. Keep the same rail
-    // width inside the existing card box so nested cards cannot cover it.
-    &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded {
-      border-left-color: var(--local-groupimport-easystud-grouping-rail);
-
-      &::after {
-        // The card's existing identity rail is the single responsive rail.
-        // The desktop open frame would otherwise create a second vertical
-        // border inside the same card.
-        display: none;
-      }
-
-      &::before {
-        // The base icon is centred on an outward rail. Move it by the canonical
-        // half-rail width when the frame becomes internal, including focus
-        // states whose more specific colour rules retain the original left
-        // offset.
-        transform: translate(calc(var(--easyedu-identity-border-width) / 2), -50%);
-      }
-    }
-
     &__participant-list,
     &-participant-groups__list,
     &-structure-groups__list,

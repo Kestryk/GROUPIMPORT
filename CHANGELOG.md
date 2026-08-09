@@ -10,6 +10,21 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-09
+
+#### Fixed
+
+- Restore the established single open Grouping frame on desktop and responsive
+  layouts. The open pseudo-frame again overlays the existing identity rail
+  instead of being placed beside it or replaced by the closed-state rail;
+  card width, padding and disclosure motion remain unchanged.
+
+#### Validation
+
+- Static Sass, generated-CSS and Playwright syntax checks pass. The focused
+  browser scenario now measures one overlaid rail width at desktop and 390 px;
+  preview promotion and the leased run remain pending.
+
 ### 2026-08-08
 
 #### Fixed
@@ -20,11 +35,8 @@ Maintenance convention:
   expanded Complete View Grouping rail above neighbouring cards without
   changing geometry, and let the collapsed responsive Grouping filter release
   its reserved height.
-- Keep the expanded desktop Grouping frame and identity icon inside the
-  existing card box so the Complete View scroll container cannot hide the
-  left edge, suppress the later mobile rule that reintroduced a second
-  responsive rail, and follow the existing Motion filter height on each frame
-  so the Complete View structure column moves with the same transition.
+- Follow the existing Motion filter height on each frame so the Complete View
+  structure column moves with the same transition as the opposite column.
 - Remove only the redundant responsive hover-help bubble from the EasyStud
   Guide launcher. Its visible localized label, accessible name, focus styling,
   gradient animation and Guide activation remain unchanged.
