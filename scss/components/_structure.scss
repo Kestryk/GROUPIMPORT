@@ -496,7 +496,11 @@
       @include easyedu.open-identity-rail-state(#f7fafc, #b7c5d1, #8ca0b1);
 
       background: linear-gradient(180deg, #fff 0%, #f7fafc 100%);
-      @include easyedu.card-focus-context(0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18));
+      @include easyedu.card-focus-context(
+        0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18),
+        $preserve-identity-rail: true,
+        $identity-rail-color: #f7fafc
+      );
     }
 
     &.is-drop-target,
@@ -528,7 +532,11 @@
       @include easyedu.open-identity-rail-state(#edf2f7, #9eb0c2, #8a9dad);
 
       background: #edf2f7;
-      @include easyedu.card-focus-context(0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22));
+      @include easyedu.card-focus-context(
+        0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22),
+        $preserve-identity-rail: true,
+        $identity-rail-color: #edf2f7
+      );
     }
 
     &[data-easystud-grouping-id].is-expanded:not(:focus-within)::before,

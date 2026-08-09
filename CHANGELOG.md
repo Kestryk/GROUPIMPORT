@@ -18,12 +18,16 @@ Maintenance convention:
   layouts. The open pseudo-frame again overlays the existing identity rail
   instead of being placed beside it or replaced by the closed-state rail;
   card width, padding and disclosure motion remain unchanged.
+- Preserve the open rail surface during expanded card focus-within so the
+  contained focus border cannot reveal a second blue rail underneath the open
+  frame.
 
 #### Validation
 
 - Static Sass, generated-CSS and Playwright syntax checks pass. The focused
   browser scenario now measures one overlaid rail width at desktop and 390 px;
-  preview promotion and the leased run remain pending.
+  its first leased run isolated the remaining desktop focus colour mismatch
+  and completed credential, browser, profile and lease cleanup.
 
 ### 2026-08-08
 

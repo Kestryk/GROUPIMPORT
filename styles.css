@@ -4155,7 +4155,8 @@
   border-left-color: #f7fafc;
   background: linear-gradient(180deg, #fff 0%, #f7fafc 100%);
   border-color: var(--easyedu-control-focus-border);
-  box-shadow: inset 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring), 0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18);
+  border-left-color: #f7fafc;
+  box-shadow: inset 0 var(--easyedu-focus-ring-width) 0 var(--easyedu-focus-ring), inset calc(var(--easyedu-focus-ring-width) * -1) 0 0 var(--easyedu-focus-ring), inset 0 calc(var(--easyedu-focus-ring-width) * -1) 0 var(--easyedu-focus-ring), 0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18);
   outline: var(--easyedu-focus-outline-width) solid transparent;
   outline-offset: calc(var(--easyedu-focus-outline-width) * -1);
 }
@@ -4200,7 +4201,8 @@
   border-left-color: #edf2f7;
   background: #edf2f7;
   border-color: var(--easyedu-control-focus-border);
-  box-shadow: inset 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring), 0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22);
+  border-left-color: #edf2f7;
+  box-shadow: inset 0 var(--easyedu-focus-ring-width) 0 var(--easyedu-focus-ring), inset calc(var(--easyedu-focus-ring-width) * -1) 0 0 var(--easyedu-focus-ring), inset 0 calc(var(--easyedu-focus-ring-width) * -1) 0 var(--easyedu-focus-ring), 0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22);
   outline: var(--easyedu-focus-outline-width) solid transparent;
   outline-offset: calc(var(--easyedu-focus-outline-width) * -1);
 }
