@@ -20,6 +20,7 @@ target runner.
 | Main UI motion, drag/drop and guide | `tools/playwright/motion-audit.spec.js` | Explicit browser audit |
 | Responsive workspaces and long press | `tools/playwright/responsive-audit.spec.js` | Explicit browser audit |
 | Card title and selection alignment | `tools/playwright/card-title-selection-audit.spec.js` | Visual geometry audit |
+| Participant role-filter integrity | `tools/playwright/participant-role-filter-integrity.spec.js` | Focused authenticated diagnostic; runtime confirmation pending |
 | Mass import UI and history | `tools/playwright/mass-import-audit.spec.js` | Explicit browser audit |
 | Mass import restore | `tools/playwright/mass-import-restore-audit.spec.js` | Destructive opt-in audit |
 | Moodle-native functional scenarios | None before this protocol | First Behat smoke added |
@@ -60,6 +61,7 @@ create their own scenario data and must not share state with another scenario.
 | Pagination and Select all/Select results | Behat plus Playwright geometry | Partial |
 | Participant/group/grouping advanced filters | Behat | Planned |
 | Search in containers and ungrouped groups | Behat | Planned |
+| Participant role filter | Focused Playwright then Behat fixture | Targeted runtime diagnostic pending |
 | Group/grouping create, duplicate, rename, delete | Behat | Planned |
 | Group/grouping settings dialogs | Behat accessibility plus functional | Planned |
 | Add users to a group by identifiers | Behat | Missing identifier fixture |
