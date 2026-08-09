@@ -37,8 +37,10 @@ Maintenance convention:
   geometry, responsive accessibility, Motion and focus assertions; lease,
   credentials and isolated profile cleanup completed successfully. Human
   visual acceptance remains pending. The follow-up rail and Complete View
-  animation corrections are statically validated but still await a new
-  preview/runtime pass under the Moodle 5.1 lease.
+  animation corrections are statically validated and are now promoted in the
+  cumulative Moodle 5.1 preview at runtime HEAD `58cf46b`; caches were purged
+  successfully. Human visual acceptance and the focused Playwright rerun
+  remain pending.
 
 ### 2026-08-06
 

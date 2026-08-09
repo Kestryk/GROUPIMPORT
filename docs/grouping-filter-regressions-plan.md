@@ -1,9 +1,9 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: source correction implemented; static validation passed; the earlier
-leased Moodle 5.1 runtime validation passed for WIP `86ad03e`. The follow-up
-rail and Complete View animation corrections below still need a new preview
-promotion/runtime pass and human visual acceptance.
+Status: source correction implemented; static validation passed; follow-up
+commit `d93acd7` is promoted in the cumulative Moodle 5.1 preview with caches
+purged. Human visual acceptance remains pending; Playwright has not been run
+for this follow-up.
 
 ## Scope
 
@@ -73,12 +73,17 @@ files were changed.
   `preview/moodle51/easystud-ui-2026-0022` at runtime HEAD
   `986b23e229cec2cf325656e506b59a761bc75d46`, Moodle caches were purged, and
   the same single-worker scenario passed (`1 passed`).
+- Follow-up commit `d93acd7` was promoted to the same cumulative preview at
+  runtime HEAD `58cf46bf90dbd6b3699d0aa745fc08fc4b759f31`; Moodle caches were
+  purged successfully. The promotion record is
+  `%LOCALAPPDATA%\\EasyEdu\\orchestration\\artifacts\\preview-promotions\\easystud\\20260809T172555Z.json`.
 - Passing evidence is retained under
   `%LOCALAPPDATA%\EasyEdu\artifacts\easystud\authenticated\easystud-authenticated-20260808T160448608Z-30656`;
   `cleanup.json` records credential clearing, child shutdown, lease release and
   an external profile as complete. The preview record is
   `%LOCALAPPDATA%\EasyEdu\orchestration\artifacts\preview-promotions\easystud\20260808T160432Z.json`.
 - Human visual review remains pending; no media was added to Git.
-- The new source/asset set has not been promoted to the Moodle 5.1 preview and
-  has not been exercised by Playwright yet. Those actions remain lease-gated
-  and require a distinct runtime request.
+- The new source/asset set is visible at
+  `http://localhost/local/groupimport/manage.php?id=5`; it has not yet been
+  exercised by Playwright. No new runtime screenshots or raw media were added
+  to Git.
