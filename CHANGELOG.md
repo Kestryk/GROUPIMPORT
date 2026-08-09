@@ -56,6 +56,27 @@ Maintenance convention:
   animation corrections are statically validated but still await a new
   preview/runtime pass under the Moodle 5.1 lease.
 
+#### Added
+
+- Add a one-test authenticated Playwright diagnostic for the Participant role
+  filter. It selects Teacher on course 5, records the served Course Manager
+  AMD asset and checks that the Student-only canonical participant card is
+  hidden without mutating Moodle data.
+
+#### Fixed
+
+- Keep participant-filter visibility distinct from pagination visibility so a
+  pagination refresh cannot make a card visible again after the active role,
+  search, group or grouping filter hid it.
+
+#### Validation
+
+- The supervised discovery gate selects exactly the new role-filter scenario.
+  Authenticated product confirmation remains pending: the first three attempts
+  stopped before applying the filter, respectively at the login-page load gate,
+  the runtime's native-select presentation and the collapsed advanced-filters
+  panel.
+
 ### 2026-08-06
 
 #### Fixed
