@@ -673,7 +673,6 @@ test('filter columns preserve desktop alignment and responsive accessibility', a
             await waitForStableGeometry(page, [
                 participantListSelector,
                 structureGroupingsListSelector,
-                '[data-easystud-advanced-filters="participants"]',
             ]);
             const overviewCollapsed = await readOverviewListGeometry(page);
             await ensureExpanded(page, 'participants', true);
