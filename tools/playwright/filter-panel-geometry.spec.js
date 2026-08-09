@@ -233,6 +233,12 @@ const expectSingleOpenGroupingRail = async(page, testInfo, viewportLabel) => {
         path: testInfo.outputPath(`grouping-open-rail-${viewportLabel}.png`),
         fullPage: true,
     });
+
+    // Restore the list state so this focused rail check cannot influence the
+    // following Complete View/filter geometry assertions.
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(children).toBeHidden();
 };
 
 const readWideGeometry = async page => page.evaluate((selectors) => {
