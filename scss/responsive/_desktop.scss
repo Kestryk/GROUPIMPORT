@@ -422,8 +422,13 @@
     // responsive workspace clips horizontal overflow. Keep the same rail
     // width inside the existing card box so nested cards cannot cover it.
     &--responsive-workspace &-tree__section[data-easystud-grouping-id].is-expanded {
+      border-left-color: var(--local-groupimport-easystud-grouping-rail);
+
       &::after {
-        left: 0;
+        // The card's existing identity rail is the single responsive rail.
+        // The desktop open frame would otherwise create a second vertical
+        // border inside the same card.
+        display: none;
       }
 
       &::before {

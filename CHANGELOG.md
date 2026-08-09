@@ -20,17 +20,25 @@ Maintenance convention:
   expanded Complete View Grouping rail above neighbouring cards without
   changing geometry, and let the collapsed responsive Grouping filter release
   its reserved height.
+- Keep the expanded desktop Grouping frame and identity icon inside the
+  existing card box so the Complete View scroll container cannot hide the
+  left edge, suppress the later mobile rule that reintroduced a second
+  responsive rail, and follow the existing Motion filter height on each frame
+  so the Complete View structure column moves with the same transition.
 - Remove only the redundant responsive hover-help bubble from the EasyStud
   Guide launcher. Its visible localized label, accessible name, focus styling,
   gradient animation and Guide activation remain unchanged.
 
 #### Validation
 
-- EED-UI-2026-0022 runtime validation is blocked before geometry assertions:
-  the prepared Playwright scenario expects the absent `is-easyedu-disclosing`
-  animation class while the current AMD controller exposes `is-expanded`.
-  The lease, credentials and isolated profile were cleaned up successfully;
-  visual acceptance remains pending the QA/AMD contract decision.
+- EED-UI-2026-0022 runtime validation first exposed an unpromoted Moodle
+  AMD/cache state, then passed after WIP commit `86ad03e` was promoted and
+  Moodle caches were purged. The prepared single-worker scenario reached all
+  geometry, responsive accessibility, Motion and focus assertions; lease,
+  credentials and isolated profile cleanup completed successfully. Human
+  visual acceptance remains pending. The follow-up rail and Complete View
+  animation corrections are statically validated but still await a new
+  preview/runtime pass under the Moodle 5.1 lease.
 
 ### 2026-08-06
 

@@ -2157,8 +2157,7 @@ const syncCompleteListAlignment = root => {
     if (
         root.classList.contains(participantFocusClass) ||
         root.classList.contains(structureFocusClass) ||
-        isResponsiveWorkspace() ||
-        root.querySelector('.local-groupimport-easystud-advanced-filters.is-expanded')
+        isResponsiveWorkspace()
     ) {
         return;
     }
@@ -2191,6 +2190,32 @@ const scheduleCompleteListAlignment = root => {
     window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => syncCompleteListAlignment(root));
     });
+};
+
+// In Complete View the participant filter and the structure list are separate
+// grid columns. Follow the live Motion height on every animation frame so the
+// right-hand list moves with the same timing as the opening/closing filter,
+// rather than jumping only when the transition has completed.
+const animateCompleteListAlignment = root => {
+    if (root.easystudCompleteAlignmentFrame) {
+        window.cancelAnimationFrame(root.easystudCompleteAlignmentFrame);
+        root.easystudCompleteAlignmentFrame = null;
+    }
+
+    const tick = () => {
+        syncCompleteListAlignment(root);
+        const animating = root.querySelector(
+            '.local-groupimport-easystud-advanced-filters.is-easyedu-disclosing'
+        );
+        if (animating) {
+            root.easystudCompleteAlignmentFrame = window.requestAnimationFrame(tick);
+            return;
+        }
+        root.easystudCompleteAlignmentFrame = null;
+        syncCompleteListAlignment(root);
+    };
+
+    root.easystudCompleteAlignmentFrame = window.requestAnimationFrame(tick);
 };
 
 // Keep compact entity navigation independent from the three desktop workspaces.
@@ -7231,6 +7256,7 @@ const bindAdvancedFilters = root => {
             toggleAdvancedFilters(key);
             emitGuidedCompletion(root, 2);
             scheduleResponsiveUiRefresh(root);
+            animateCompleteListAlignment(root);
             scheduleCompleteListAlignment(root);
         }
     });
