@@ -2,9 +2,10 @@
 
 Status: corrected single-frame composition is implemented, statically
 validated and promoted. The desktop 1440 px rail assertion and capture pass.
-Responsive completion is blocked by a separately owned cumulative-preview AMD
-regression introduced after that proof; human visual acceptance remains
-pending.
+The cumulative AMD regression was repaired and promoted on 2026-08-10. The
+next focused run exposed a test-only Complete View wrapper measurement; its
+first-visible-card assertion is corrected and awaits the same scenario rerun.
+Human visual acceptance remains pending.
 
 ## Scope
 
@@ -121,3 +122,15 @@ files were changed.
   and inert desktop mode controls. Both runs completed credential, browser,
   profile and lease cleanup. This AMD hunk belongs to the role-filter owner and
   is not modified by EED-UI-2026-0022.
+- Integration commit `a9756bfd5fb4321ce4e07a17bdcc0de24b2a36c3` repaired the
+  Role Filter generated AMD and is visible in the clean cumulative preview at
+  runtime HEAD `c0868105e9bb16b3106158cbf243d5d0624831da`. The served module is
+  again `local_groupimport/course_manager`.
+- Run `easystud-authenticated-20260810T150538031Z-29200` reached the desktop
+  Grouping rail capture, then failed the Complete View alignment assertion by
+  comparing the two list wrappers rather than their first visible cards. The
+  production `syncCompleteListAlignment()` function aligns those cards, so the
+  scenario now measures that visible baseline. Its runner left the named lease
+  record behind after its test failure; the stopped owner PID and exact Run ID
+  were verified before the lease was explicitly released. Credentials were
+  cleared, the owned browser stopped and the profile remained external.
