@@ -334,13 +334,27 @@ const readStructureGeometry = async page => page.evaluate((selectors) => {
 const readOverviewListGeometry = async page => page.evaluate((selectors) => {
     const participantList = document.querySelector(selectors.participantList);
     const structureList = document.querySelector(selectors.structureList);
-    const tree = document.querySelector(selectors.tree);
-    const participantRect = participantList.getBoundingClientRect();
-    const structureRect = structureList.getBoundingClientRect();
+    const firstVisible = (container, selector) => Array.from(
+        container.querySelectorAll(selector)
+    ).find(item => !item.hidden && item.offsetParent !== null);
+    const participantEntry = firstVisible(
+        participantList,
+        '[data-easystud-user], [data-easystud-empty-state]'
+    );
+    const structureEntry = firstVisible(
+        structureList,
+        '.local-groupimport-easystud-tree__section--ungrouped, ' +
+            '.local-groupimport-easystud-tree__section[data-easystud-grouping-id], ' +
+            '[data-easystud-empty-state]'
+    );
+    if (!participantEntry || !structureEntry) {
+        throw new Error('Complete View requires visible participant and structure entries.');
+    }
+    const participantRect = participantEntry.getBoundingClientRect();
+    const structureRect = structureEntry.getBoundingClientRect();
     return {
         participantTop: participantRect.top,
         structureTop: structureRect.top,
-        treePaddingTop: parseFloat(getComputedStyle(tree).paddingTop) || 0,
     };
 }, {
     participantList: participantListSelector,
