@@ -333,7 +333,7 @@ const readStructureGeometry = async page => page.evaluate((selectors) => {
 
 const readOverviewListGeometry = async page => page.evaluate((selectors) => {
     const participantList = document.querySelector(selectors.participantList);
-    const structureList = document.querySelector(selectors.structureList);
+    const tree = document.querySelector(selectors.tree);
     const firstVisible = (container, selector) => Array.from(
         container.querySelectorAll(selector)
     ).find(item => !item.hidden && item.offsetParent !== null);
@@ -342,7 +342,7 @@ const readOverviewListGeometry = async page => page.evaluate((selectors) => {
         '[data-easystud-user], [data-easystud-empty-state]'
     );
     const structureEntry = firstVisible(
-        structureList,
+        tree,
         '.local-groupimport-easystud-tree__section--ungrouped, ' +
             '.local-groupimport-easystud-tree__section[data-easystud-grouping-id], ' +
             '[data-easystud-empty-state]'
@@ -358,7 +358,6 @@ const readOverviewListGeometry = async page => page.evaluate((selectors) => {
     };
 }, {
     participantList: participantListSelector,
-    structureList: structureGroupingsListSelector,
     tree: '[data-easystud-tree]',
 });
 
