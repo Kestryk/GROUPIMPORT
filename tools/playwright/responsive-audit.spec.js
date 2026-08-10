@@ -13,6 +13,27 @@ const loadingDiagnosticsUrl = url => {
     return diagnosticUrl.toString();
 };
 
+const waitForGuideCaptureSurface = async modal => {
+    await expect(modal).toBeVisible();
+    await expect.poll(async() => modal.evaluate(node => {
+        const dialog = node.querySelector('.easyedu-guide-modal__dialog');
+        if (!dialog) {
+            return false;
+        }
+        const dialogStyle = window.getComputedStyle(dialog);
+        const hasRunningEntryMotion = [node, dialog].some(surface =>
+            surface.getAnimations().some(animation => animation.playState === 'running')
+        );
+        return node.classList.contains('is-open') &&
+            !node.classList.contains('is-closing') &&
+            Number.parseFloat(dialogStyle.opacity) >= 0.99 &&
+            !hasRunningEntryMotion;
+    }), {
+        message: 'Guide evidence must wait for the fully opaque, settled modal after normal-motion entry',
+        timeout: 3000,
+    }).toBe(true);
+};
+
 const login = async page => {
     page.on('pageerror', error => console.log('PAGE_ERROR:', error.message));
     page.on('console', message => {
@@ -1651,6 +1672,7 @@ test('Guide target audit resolves every slide and guided step to an actionable c
             if (compactPanel) {
                 await expect(compactPanel).toHaveAttribute('aria-hidden', 'true');
             }
+            await waitForGuideCaptureSurface(modal);
             await page.screenshot({
                 path: testInfo.outputPath('guide-target-audit-' + viewport.name + '.png'),
                 fullPage: false,

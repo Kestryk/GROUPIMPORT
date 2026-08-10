@@ -76,6 +76,9 @@ guided-path step must first open, then visibly highlight, its usable desktop or
 compact control. It intentionally checks the desktop Move participant/card
 variant against the compact participant-card More actions variant; it never
 treats an invisible native selection input as an actionable target.
+Before it writes either review capture, it waits for the normal-motion Guide
+entry to finish and for the dialog to be fully opaque; the evidence therefore
+shows the settled modal rather than a transparent animation frame.
 
 The responsive selected-action tray check is `selected-action-tray.spec.js` /
 `selected group action tray remains contained at intermediate responsive width`.

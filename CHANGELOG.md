@@ -10,6 +10,19 @@ Maintenance convention:
 
 ## Unreleased
 
+### Guide validation — 2026-08-10
+
+#### Fixed
+
+- Stabilize the Guide target-audit evidence boundary: its desktop and compact
+  captures now wait for the normal-motion entry to finish and the dialog to be
+  fully opaque, without disabling the user-facing animation.
+
+#### Documentation
+
+- Document the settled-modal capture rule for the authenticated Guide target
+  audit.
+
 ### 2026-08-10
 
 #### Fixed
