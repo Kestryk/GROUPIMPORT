@@ -50,9 +50,11 @@ const prepareIsolatedZoomProfile = async(profileRoot, baseUrl, zoom) => {
     const preferences = {
         partition: {
             per_host_zoom_levels: {
-                [endpoint.host]: {
-                    last_modified: String((Date.now() + 11644473600000) * 1000),
-                    zoom_level: nativeZoomLevel(zoom),
+                x: {
+                    [endpoint.host]: {
+                        last_modified: String((Date.now() + 11644473600000) * 1000),
+                        zoom_level: nativeZoomLevel(zoom),
+                    },
                 },
             },
         },
