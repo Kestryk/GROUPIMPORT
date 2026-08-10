@@ -45,6 +45,13 @@ Maintenance convention:
   staged component retains its real `local/groupimport` path, restoring the
   `local_groupimport/course_manager` module definition required by Moodle.
 
+#### Validation
+
+- Human review confirmed that the regenerated Course Manager AMD module loads
+  correctly and that the Participant role-filter correction is usable on the
+  cumulative Moodle 5.1 preview. No Playwright run was performed for this
+  confirmation.
+
 #### Documentation
 
 - Record the selective vendoring boundary, animated-surface measurement,
