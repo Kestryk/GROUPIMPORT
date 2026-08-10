@@ -41,7 +41,10 @@ Navigation Skeleton check. It covers Student Management and Mass Import at
 320 and 390 CSS px in LTR and RTL. Its isolated per-run Chromium profile sets
 the 100% or 200% per-host preference before launch; it never sends Ctrl+plus,
 Ctrl+zero or any desktop-window automation, so it cannot alter a user's active
-browser profile or zoom.
+browser profile or zoom. When the Playwright-managed browser is not installed,
+the supervised process may pass the non-secret `EASYEDU_CHROMIUM_EXECUTABLE`
+path to a locally installed Chromium browser; the scenario still creates and
+uses only its external per-run profile.
 
 ### Participant role-filter integrity
 
