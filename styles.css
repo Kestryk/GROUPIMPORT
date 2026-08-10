@@ -3616,8 +3616,10 @@
   min-width: 0;
 }
 .local-groupimport-easystud:not(.local-groupimport-easystud--participant-focus):not(.local-groupimport-easystud--structure-focus) .local-groupimport-easystud-tree {
+  margin-inline-start: calc((var(--easyedu-identity-border-width) + 0.2rem) * -1);
   overflow-x: visible;
   padding-bottom: 0.8rem;
+  padding-inline-start: calc(var(--easyedu-identity-border-width) + 0.2rem);
   padding-top: 2.7rem;
 }
 .local-groupimport-easystud:not(.local-groupimport-easystud--participant-focus):not(.local-groupimport-easystud--structure-focus) .local-groupimport-easystud-tree__section--ungrouped {

@@ -9,8 +9,15 @@
   }
 
   &:not(.local-groupimport-easystud--participant-focus):not(.local-groupimport-easystud--structure-focus) &-tree {
+    // The open Grouping frame is deliberately painted one identity-rail width
+    // to the inline start of its card. Extend the scrolling surface by that
+    // paint-only allowance so its outline is never cropped in Complete View.
+    // The equal negative margin keeps every card's rendered width and x-axis
+    // position unchanged.
+    margin-inline-start: calc((var(--easyedu-identity-border-width) + 0.2rem) * -1);
     overflow-x: visible;
     padding-bottom: 0.8rem;
+    padding-inline-start: calc(var(--easyedu-identity-border-width) + 0.2rem);
     padding-top: 2.7rem;
   }
 

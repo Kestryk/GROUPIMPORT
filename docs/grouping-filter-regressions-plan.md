@@ -1,7 +1,8 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: corrected single-frame composition is implemented, statically
-validated and promoted. The desktop 1440 px rail assertion and capture pass.
+Status: corrected single-frame composition is implemented and promoted. A
+follow-up paint-only left allowance for Complete View is statically validated
+and awaiting promotion. The desktop 1440 px rail assertion and capture pass.
 The cumulative AMD regression was repaired and promoted on 2026-08-10. The
 focused run now passes after the Complete View assertion was corrected to
 measure its first visible cards. Human visual acceptance remains pending.
@@ -24,6 +25,11 @@ Grouping rail owner (EED-UI-2026-0021), Guide, Skeleton, the message modal
   dimensions and the responsive open rail remain unchanged.
 - Complete View gives an expanded Grouping card a local paint-stack z-index so
   neighbouring cards cannot cover its externally painted rail.
+- Complete View extends only the Grouping tree's scrolling surface into its
+  pre-existing left gutter. The frame therefore has a small paint allowance
+  instead of meeting a clipping edge; the compensating negative margin keeps
+  the card's width and inline position unchanged. The same focused test checks
+  that allowance at desktop Complete View and at 390 px responsive width.
 - The attempted internal frame (`left: 0`) painted beside the card's existing
   identity border and caused the visually duplicated desktop rail. Replacing
   the open frame with the base rail also lost the established responsive open
@@ -142,3 +148,12 @@ files were changed.
   rail assertions, responsive filter states, keyboard focus and scoped
   accessibility checks. The runner cleared credentials, released the lease,
   stopped its owned browser and retained its profile outside Git.
+- The follow-up baseline run
+  `easystud-authenticated-20260810T154217274Z-14680` passed the same selected
+  scenario on runtime HEAD `86697d51cb0a2f34e16b382a74c962db902f67be`; cleanup
+  again cleared credentials, released the lease and stopped the owned browser.
+  Its captures confirmed the remaining responsive overlap is the separately
+  owned Navigation trigger, while this lot's Complete View frame has a
+  clipping-edge risk. The paint-allowance correction and its new computed
+  geometry assertion are statically validated; runtime verification follows
+  managed preview promotion.

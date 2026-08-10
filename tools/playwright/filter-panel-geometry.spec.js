@@ -198,16 +198,21 @@ const expectSingleOpenGroupingRail = async(page, testInfo, viewportLabel) => {
     const rail = await grouping.evaluate(node => {
         const card = getComputedStyle(node);
         const frame = getComputedStyle(node, '::after');
+        const scrollHost = node.closest('[data-easystud-tree]');
+        const cardRect = node.getBoundingClientRect();
+        const scrollHostRect = scrollHost.getBoundingClientRect();
         const borderWidth = parseFloat(card.borderLeftWidth) || 0;
         const frameLeft = parseFloat(frame.left) || 0;
         const frameWidth = parseFloat(frame.width) || 0;
         return {
             borderColor: card.borderLeftColor,
             borderWidth,
+            frameDocumentLeft: cardRect.left + frameLeft,
             frameBackground: frame.backgroundColor,
             frameDisplay: frame.display,
             frameLeft,
             frameWidth,
+            scrollHostLeft: scrollHostRect.left,
         };
     });
 
@@ -228,6 +233,10 @@ const expectSingleOpenGroupingRail = async(page, testInfo, viewportLabel) => {
         rail.borderColor,
         `${viewportLabel}: base rail merges into open frame`
     ).toBe(rail.frameBackground);
+    expect(
+        rail.frameDocumentLeft - rail.scrollHostLeft,
+        `${viewportLabel}: open frame has a left paint allowance`
+    ).toBeGreaterThanOrEqual(1);
 
     await page.screenshot({
         path: testInfo.outputPath(`grouping-open-rail-${viewportLabel}.png`),
