@@ -10,6 +10,15 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-10
+
+#### Validation
+
+- Correct the Complete View geometry assertion to compare the first visible
+  participant and Grouping cards rather than their differently structured list
+  wrappers. This verifies the user-visible aligned-card baseline that the
+  existing Motion-driven alignment code maintains when filters open.
+
 ### 2026-08-09
 
 #### Fixed

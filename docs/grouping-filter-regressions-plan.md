@@ -1,9 +1,11 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: follow-up visual regression confirmed on promoted commit `d93acd7`;
-the corrected single-frame composition is implemented and statically
-validated. A new preview promotion, Playwright run and human visual acceptance
-remain pending.
+Status: corrected single-frame composition is implemented, statically
+validated and promoted. The desktop 1440 px rail assertion and capture pass.
+The cumulative AMD regression was repaired and promoted on 2026-08-10. The
+next focused run exposed a test-only Complete View wrapper measurement; its
+first-visible-card assertion is corrected and awaits the same scenario rerun.
+Human visual acceptance remains pending.
 
 ## Scope
 
@@ -99,3 +101,32 @@ files were changed.
   surface `rgb(247, 250, 252)`. This isolated the remaining focus-within colour
   override; credentials, owned browser process, external profile and runtime
   lease were all cleaned up.
+- After preserving the open surface through focus-within, run
+  `easystud-authenticated-20260809T191821283Z-12276` passed the new desktop rail
+  assertions and produced `grouping-open-rail-desktop-1440.png`. It then
+  exposed a test-only Complete View wait that incorrectly required a collapsed
+  hidden panel to have visible geometry; the wait was corrected in `ded0285`.
+- The cumulative preview subsequently received separately owned commit
+  `b4fa06d` (source `c6cba959`). Its generated
+  `amd/build/course_manager.min.js` declares
+  `local_groupimport-role-filter-integration/course_manager` with `./motion`
+  instead of the required `local_groupimport/course_manager` with
+  `local_groupimport/motion`. Runs
+  `easystud-authenticated-20260809T192531765Z-34520` and
+  `easystud-authenticated-20260809T193001737Z-11668` therefore could not obtain
+  a normally initialised manager; the latter recorded loading state `degraded`
+  and inert desktop mode controls. Both runs completed credential, browser,
+  profile and lease cleanup. This AMD hunk belongs to the role-filter owner and
+  is not modified by EED-UI-2026-0022.
+- Integration commit `a9756bfd5fb4321ce4e07a17bdcc0de24b2a36c3` repaired the
+  Role Filter generated AMD and is visible in the clean cumulative preview at
+  runtime HEAD `c0868105e9bb16b3106158cbf243d5d0624831da`. The served module is
+  again `local_groupimport/course_manager`.
+- Run `easystud-authenticated-20260810T150538031Z-29200` reached the desktop
+  Grouping rail capture, then failed the Complete View alignment assertion by
+  comparing the two list wrappers rather than their first visible cards. The
+  production `syncCompleteListAlignment()` function aligns those cards, so the
+  scenario now measures that visible baseline. Its runner left the named lease
+  record behind after its test failure; the stopped owner PID and exact Run ID
+  were verified before the lease was explicitly released. Credentials were
+  cleared, the owned browser stopped and the profile remained external.
