@@ -39,6 +39,12 @@ Maintenance convention:
   retain their loading feedback; no loading lifecycle, no-script or fail-open
   behavior changes.
 
+#### Fixed
+
+- Regenerate the Course Manager AMD artifact from a build checkout where the
+  staged component retains its real `local/groupimport` path, restoring the
+  `local_groupimport/course_manager` module definition required by Moodle.
+
 #### Documentation
 
 - Record the selective vendoring boundary, animated-surface measurement,
