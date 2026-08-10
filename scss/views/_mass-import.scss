@@ -67,11 +67,7 @@
   }
 
   &__loading-surface {
-    @include easyedu.skeleton-surface($radius: 0.72rem);
-    @include easyedu.skeleton-shimmer-direct(
-      $animation-name: local-groupimport-easystud-loading-shimmer-v4,
-      $duration: 2s
-    );
+    @include easyedu.navigation-skeleton-cue($radius: 0.72rem);
   }
 
   &__loading-eyebrow {
@@ -102,14 +98,19 @@
   }
 
   &__loading-card {
-    background: #f7fbff;
-    border: 1px solid #cfdee9;
-    border-radius: 1rem;
-    display: grid;
-    gap: 0.75rem;
-    min-height: 23rem;
-    min-width: 0;
-    padding: 1rem;
+    @include easyedu.navigation-skeleton-frame(
+      $surface: #f7fbff,
+      $border: #cfdee9,
+      $radius: 1rem
+    );
+
+    & {
+      display: grid;
+      gap: 0.75rem;
+      min-height: 23rem;
+      min-width: 0;
+      padding: 1rem;
+    }
   }
 
   &__loading-card-header {
@@ -151,6 +152,11 @@
     height: 2.45rem;
     margin-top: auto;
     width: 10.5rem;
+  }
+
+  &[data-easyedu-motion-policy="disabled"] &__loading-surface,
+  &.is-easyedu-motion-off &__loading-surface {
+    animation: none;
   }
 
   &__header {
@@ -1069,7 +1075,6 @@
     }
   }
 }
-
 @media (max-width: 1024px) {
   .local-groupimport-import__loading-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -1077,11 +1082,5 @@
 
   .local-groupimport-import__loading-card {
     min-height: 18rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce), (forced-colors: active) {
-  .local-groupimport-import__loading-surface {
-    animation: none;
   }
 }

@@ -10,6 +10,29 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-10
+
+#### Changed
+
+- Consume immutable UI Kit snapshot `c9277a82` for the Navigation Skeleton
+  primitive in Student Management and Mass Import. Large skeleton frames stay
+  static while the existing 48 and 19 decorative internal cues respectively
+  retain their loading feedback; no loading lifecycle, no-script or fail-open
+  behavior changes.
+
+#### Documentation
+
+- Record the selective vendoring boundary, animated-surface measurement,
+  deferred runtime review and focused static contract for `EED-UI-2026-0025`.
+
+#### Validation
+
+- Pass the focused Navigation Skeleton source contract, official Sass build,
+  `index.php` PHP lint, affected Playwright-source syntax checks and
+  `git diff --check`. The separately supervised native-zoom scenario uses a
+  new external Chromium profile and never sends browser zoom shortcuts to an
+  existing desktop window.
+
 ### 2026-08-08
 
 #### Fixed
