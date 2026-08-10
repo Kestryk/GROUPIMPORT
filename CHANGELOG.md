@@ -12,6 +12,14 @@ Maintenance convention:
 
 ### 2026-08-10
 
+#### Fixed
+
+- Give the externally painted open Grouping frame a paint-only left allowance
+  in Complete View. The scroll surface extends into its existing gutter while
+  the negative margin preserves every card's rendered width, position and
+  disclosure animation. The focused scenario now verifies that allowance at
+  desktop and 390 px.
+
 #### Validation
 
 - Correct the Complete View geometry assertion to compare the first visible
