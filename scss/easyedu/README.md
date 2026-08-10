@@ -33,6 +33,8 @@ scss/easyedu/
     _forms.scss                Dropdown/menu surfaces.
     _modals.scss               Modal shell surfaces.
     _feedback.scss             Tokens, count badges, empty states.
+    _loading.scss              Skeleton surfaces, shimmer, rhythm and fade.
+    _navigation-skeleton.scss  Static navigation frames and internal cues.
     _overlays.scss             Drag/drop overlays and hover help surfaces.
 ```
 
@@ -111,6 +113,12 @@ Prefer generic `--easyedu-*` variables. Plugin-specific aliases such as
 - `token-pill`: semantic labels.
 - `count-badge`: small quantity badges.
 - `empty-state`: empty or no-result placeholders.
+- `skeleton-surface`, `skeleton-shimmer-direct`,
+  `skeleton-shimmer-overlay`, `skeleton-stack`: loading-state primitives.
+- `navigation-skeleton-frame`: static large navigation-shaped frame.
+- `navigation-skeleton-cue`, `navigation-skeleton-cue-overlay`: animated
+  decorative internal marks only.
+- `navigation-skeleton-cue-stack`: logical internal-cue group alignment.
 - `drop-target-overlay`: drag/drop compatible target feedback.
 - `tooltip-surface`: hover-only help bubbles.
 
@@ -125,6 +133,15 @@ Treat `scss/easyedu/` as a vendored kit:
 4. Recompile each plugin after synchronisation.
 
 This keeps the kit easy to copy while still allowing each plugin to evolve.
+
+## Navigation Skeleton consumer boundary
+
+The embedded `navigation-skeleton` component comes from immutable UI Kit
+snapshot `c9277a82fb471018f4cc07b24dd336d2adfa310d` for
+`EED-UI-2026-0025`. Apply `navigation-skeleton-frame` only to a static outer
+frame and apply a cue mixin only to decorative descendants. The component
+supplies RTL reversal, reduced-motion and forced-colors behavior; EasyStud
+keeps its own panel geometry, no-script path, readiness and fail-open policy.
 
 ## Porting checklist for a new plugin
 

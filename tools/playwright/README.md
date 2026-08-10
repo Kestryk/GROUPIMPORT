@@ -35,6 +35,14 @@ Use `-Spec` and an exact `-Grep` for another scenario. The one-test gate cannot
 be disabled. `-DiscoveryOnly` validates selection and artifact registration
 without loading credentials or taking the runtime lease.
 
+`navigation-skeleton-zoom.spec.js` / `Navigation Skeleton stays contained at
+320/390 with isolated native 100/200 zoom` is the focused source-owned
+Navigation Skeleton check. It covers Student Management and Mass Import at
+320 and 390 CSS px in LTR and RTL. Its isolated per-run Chromium profile sets
+the 100% or 200% per-host preference before launch; it never sends Ctrl+plus,
+Ctrl+zero or any desktop-window automation, so it cannot alter a user's active
+browser profile or zoom.
+
 ### Participant role-filter integrity
 
 `participant-role-filter-integrity.spec.js` owns the focused non-destructive

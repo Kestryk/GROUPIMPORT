@@ -131,12 +131,20 @@ test('keeps the Mass Import skeleton and shared bottom-end busy indicator contra
 
     const root = page.locator('#local-groupimport-import');
     await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready');
-    await expect(root.locator('[data-easystud-loading-skeleton]')).toHaveCount(1);
-    await expect(root.locator('[data-easystud-loading-skeleton]')).toBeHidden();
+    const skeleton = root.locator('[data-easystud-loading-skeleton]');
+    await expect(skeleton).toHaveCount(1);
+    await expect(skeleton).toHaveAttribute('data-easyedu-navigation-skeleton', '1');
+    await expect(skeleton).toHaveAttribute('aria-hidden', 'true');
+    await expect(skeleton).toBeHidden();
+    await expect(skeleton.locator('.local-groupimport-import__loading-card')).toHaveCount(2);
+    await expect(skeleton.locator('.local-groupimport-import__loading-surface')).toHaveCount(19);
     await expect(root.locator('[data-easystud-real-content]')).toBeVisible();
 
     const animationName = await root.locator(
         '[data-easystud-loading-skeleton] .local-groupimport-import__loading-surface'
+    ).first().evaluate(node => getComputedStyle(node).animationName);
+    const frameAnimationName = await root.locator(
+        '[data-easystud-loading-skeleton] .local-groupimport-import__loading-card'
     ).first().evaluate(node => getComputedStyle(node).animationName);
     await root.evaluate(node => node.classList.add('is-action-busy'));
     await page.waitForTimeout(40);
@@ -194,7 +202,8 @@ test('keeps the Mass Import skeleton and shared bottom-end busy indicator contra
         console.log(`MASS_IMPORT_LOADING_DIAGNOSTIC ${JSON.stringify(cssDiagnostics)}`);
     }
 
-    expect(contract.animationName).toContain('local-groupimport-easystud-loading-shimmer-v4');
+    expect(contract.animationName).toContain('easyedu-skeleton-shimmer');
+    expect(frameAnimationName).toBe('none');
     expect(contract.spinnerPosition).toBe('fixed');
     expect(contract.spinnerBottom).not.toBe('auto');
     expect(contract.spinnerRight).not.toBe('auto');

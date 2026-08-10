@@ -1632,21 +1632,14 @@
 }
 .local-groupimport-easystud__loading-surface {
   background: var(--local-groupimport-easystud-loading-surface);
-  border: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
   border-radius: var(--local-groupimport-easystud-loading-radius);
   display: block;
-  min-width: 0;
-  overflow: hidden;
+  max-inline-size: 100%;
+  min-inline-size: 0;
   position: relative;
 }
-@media (forced-colors: active) {
-  .local-groupimport-easystud__loading-surface {
-    background: Canvas;
-    border-color: CanvasText;
-  }
-}
 .local-groupimport-easystud__loading-surface::after {
-  animation: local-groupimport-easystud-loading-shimmer-v4 var(--local-groupimport-easystud-loading-shimmer-duration) linear infinite;
+  animation: easyedu-skeleton-shimmer var(--easyedu-loading-shimmer-duration) linear infinite;
   background-image: linear-gradient(108deg, transparent 30%, rgba(255, 255, 255, 0.16) 42%, var(--local-groupimport-easystud-loading-shimmer-highlight) 50%, rgba(255, 255, 255, 0.16) 58%, transparent 70%);
   background-position: -110% 0;
   background-repeat: no-repeat;
@@ -1662,6 +1655,18 @@
     animation: none;
   }
 }
+.local-groupimport-easystud__loading-surface:dir(rtl)::after, [dir=rtl] .local-groupimport-easystud__loading-surface::after {
+  animation-direction: reverse;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-surface {
+    background: CanvasText;
+    border: 0.0625rem solid CanvasText;
+  }
+  .local-groupimport-easystud__loading-surface::after {
+    background-image: none;
+  }
+}
 .local-groupimport-easystud__loading-layout {
   align-items: stretch;
   display: grid;
@@ -1671,8 +1676,20 @@
 }
 .local-groupimport-easystud__loading-panel {
   background: #f9fbfd;
-  border: 1px solid var(--local-groupimport-easystud-loading-border);
+  border: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
   border-radius: 1rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-panel {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-panel {
   min-width: 0;
   padding: 0.95rem;
 }
@@ -1704,8 +1721,20 @@
 }
 .local-groupimport-easystud__loading-search-filter-region {
   background: #f3f7fa;
-  border: 1px solid #dbe6ee;
+  border: 0.0625rem solid #dbe6ee;
   border-radius: var(--local-groupimport-easystud-loading-radius);
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-search-filter-region {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-search-filter-region {
   display: grid;
   gap: 0.55rem;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
@@ -1729,10 +1758,22 @@
   min-width: 0;
 }
 .local-groupimport-easystud__loading-participant-card {
-  align-items: center;
   background: #fff;
-  border: 1px solid #dbe5ed;
+  border: 0.0625rem solid #dbe5ed;
   border-radius: 0.68rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-participant-card {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-participant-card {
+  align-items: center;
   display: grid;
   gap: 0.55rem;
   grid-template-columns: 2rem minmax(0, 1fr) auto auto;
@@ -1744,16 +1785,22 @@
 }
 .local-groupimport-easystud__loading-structure-card {
   background: #fff;
-  border: 1px solid #d9e4dc;
+  border: 0.0625rem solid #d9e4dc;
   border-radius: 0.68rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-structure-card {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-structure-card {
   min-height: 3.6rem;
   padding: 0.58rem 0.65rem;
-}
-@media (prefers-reduced-motion: reduce), (forced-colors: active) {
-  .local-groupimport-easystud__loading-surface::after {
-    animation: none;
-    display: none;
-  }
 }
 @media (min-width: 769px) and (max-width: 1200px) {
   .local-groupimport-easystud__loading-participant-card:nth-child(n+11) {
@@ -1770,8 +1817,20 @@
 }
 .local-groupimport-easystud__loading-view-toggle {
   background: #f4f8fb;
-  border: 1px solid var(--local-groupimport-easystud-loading-border);
+  border: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
   border-radius: 1.15rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-view-toggle {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-view-toggle {
   box-shadow: 0 0.38rem 0.8rem rgba(31, 68, 104, 0.08);
   display: grid;
   gap: 0.38rem;
@@ -1930,12 +1989,6 @@
 .local-groupimport-easystud[data-easyedu-motion-policy=disabled] .local-groupimport-easystud__loading-surface::after, .local-groupimport-easystud.is-easyedu-motion-off .local-groupimport-easystud__loading-surface::after {
   animation: none;
   display: none;
-}
-@media (forced-colors: active) {
-  .local-groupimport-easystud__loading-surface {
-    background: Canvas;
-    border-color: CanvasText;
-  }
 }
 .local-groupimport-easystud-discovery {
   align-items: center;
@@ -2915,10 +2968,6 @@
 .local-groupimport-easystud__empty-state--structure {
   background: linear-gradient(180deg, #fbfdfb 0%, #f4f8f5 100%);
   border-color: #d8e4da;
-}
-
-[dir=rtl] .local-groupimport-easystud__loading-surface::after {
-  animation-direction: reverse;
 }
 
 [dir=rtl] .local-groupimport-easystud__loading-card-copy {
@@ -13873,28 +13922,28 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   min-width: 0;
 }
 .local-groupimport-import__loading-surface {
-  background: var(--easyedu-loading-surface);
-  border: 0.0625rem solid var(--easyedu-loading-border);
   border-radius: 0.72rem;
   display: block;
-  min-width: 0;
-  overflow: hidden;
-  position: relative;
-}
-@media (forced-colors: active) {
-  .local-groupimport-import__loading-surface {
-    background: Canvas;
-    border-color: CanvasText;
-  }
+  max-inline-size: 100%;
+  min-inline-size: 0;
 }
 .local-groupimport-import__loading-surface {
-  animation: local-groupimport-easystud-loading-shimmer-v4 2s linear infinite;
+  animation: easyedu-skeleton-shimmer var(--easyedu-loading-shimmer-duration) linear infinite;
   background: linear-gradient(90deg, var(--easyedu-loading-surface) 0%, var(--easyedu-loading-highlight) 48%, var(--easyedu-loading-surface) 100%);
   background-size: 220% 100%;
 }
 @media (prefers-reduced-motion: reduce), (forced-colors: active) {
   .local-groupimport-import__loading-surface {
     animation: none;
+  }
+}
+.local-groupimport-import__loading-surface:dir(rtl), [dir=rtl] .local-groupimport-import__loading-surface {
+  animation-direction: reverse;
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-surface {
+    background: CanvasText;
+    border: 0.0625rem solid CanvasText;
   }
 }
 .local-groupimport-import__loading-eyebrow {
@@ -13921,8 +13970,20 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
 }
 .local-groupimport-import__loading-card {
   background: #f7fbff;
-  border: 1px solid #cfdee9;
+  border: 0.0625rem solid #cfdee9;
   border-radius: 1rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-card {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-import__loading-card {
   display: grid;
   gap: 0.75rem;
   min-height: 23rem;
@@ -13962,6 +14023,9 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   height: 2.45rem;
   margin-top: auto;
   width: 10.5rem;
+}
+.local-groupimport-import[data-easyedu-motion-policy=disabled] .local-groupimport-import__loading-surface, .local-groupimport-import.is-easyedu-motion-off .local-groupimport-import__loading-surface {
+  animation: none;
 }
 .local-groupimport-import__header {
   align-items: flex-start;
@@ -15330,11 +15394,6 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
   .local-groupimport-import__loading-card {
     min-height: 18rem;
-  }
-}
-@media (prefers-reduced-motion: reduce), (forced-colors: active) {
-  .local-groupimport-import__loading-surface {
-    animation: none;
   }
 }
 .local-groupimport-easystud-hover-popover {
