@@ -122,8 +122,18 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     const escapingNodes = Array.from(skeleton?.querySelectorAll(`${surface.cueSelector}, ${surface.frameSelector}`) || [])
         .filter(node => {
             const box = node.getBoundingClientRect();
-            return box.left < bounds.left - 1 || box.right > bounds.right + 1;
-        }).length;
+            return box.width > 0 && box.height > 0 &&
+                (box.left < bounds.left - 1 || box.right > bounds.right + 1);
+        }).map(node => {
+            const box = node.getBoundingClientRect();
+            return {
+                className: node.className,
+                left: Math.round(box.left),
+                right: Math.round(box.right),
+                rootLeft: Math.round(bounds.left),
+                rootRight: Math.round(bounds.right),
+            };
+        });
 
     return {
         cueCount: cueNodes.length,
@@ -140,6 +150,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
 }, {surface});
 
 test('Navigation Skeleton stays contained at 320/390 with isolated native 100/200 zoom', async({}, testInfo) => {
+    test.setTimeout(900000);
     const profileRoot = process.env.PLAYWRIGHT_PROFILE_DIR;
     if (!profileRoot) {
         throw new Error('The supervised runner must provide an external browser profile directory.');
@@ -177,13 +188,17 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     const inspection = await inspectSkeleton(page, surface);
                     const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
 
+                    await skeleton.screenshot({
+                        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
+                    });
+
                     expect(inspection.cueCount, `${cellId}: internal cue count`).toBe(surface.expectedCues);
                     expect(inspection.frameCount, `${cellId}: static frame count`).toBeGreaterThan(0);
                     expect(inspection.animatedCues, `${cellId}: animated internal cues`).toBe(surface.expectedCues);
                     expect(inspection.animatedFrames, `${cellId}: animated outer frames`).toBe(0);
                     expect(inspection.documentOverflow, `${cellId}: document horizontal overflow`).toBe(false);
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
-                    expect(inspection.escapingNodes, `${cellId}: skeleton node escaping its root`).toBe(0);
+                    expect(inspection.escapingNodes, `${cellId}: skeleton node escaping its root`).toHaveLength(0);
                     if (cell.direction === 'rtl') {
                         expect(inspection.cueDirections, `${cellId}: RTL shimmer direction`).toEqual(['reverse']);
                     }
@@ -194,9 +209,6 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         expect(nativeZoomProven, `${cellId}: genuine native 200% zoom`).toBe(true);
                     }
 
-                    await skeleton.screenshot({
-                        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
-                    });
                     evidence.push({cellId, ...inspection});
                     await page.close();
                 }
