@@ -52,6 +52,9 @@ Maintenance convention:
 - Keep participant-filter visibility distinct from pagination visibility so a
   pagination refresh cannot make a card visible again after the active role,
   search, group or grouping filter hid it.
+- Regenerate the Course Manager AMD artifact from a build checkout where the
+  staged component retains its real `local/groupimport` path, restoring the
+  `local_groupimport/course_manager` module definition required by Moodle.
 
 #### Validation
 
