@@ -128,7 +128,8 @@ files were changed.
   again `local_groupimport/course_manager`.
 - Run `easystud-authenticated-20260810T150538031Z-29200` reached the desktop
   Grouping rail capture, then failed the Complete View alignment assertion by
-  comparing the two list wrappers rather than their first visible cards. The
+  comparing the two list wrappers rather than their first visible structure
+  and participant cards. The
   production `syncCompleteListAlignment()` function aligns those cards, so the
   scenario now measures that visible baseline. Its runner left the named lease
   record behind after its test failure; the stopped owner PID and exact Run ID
