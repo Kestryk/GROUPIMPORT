@@ -60,7 +60,9 @@ No runtime promotion, cache refresh, lease acquisition or browser execution
 is implied by this source change. When separately authorised, the focused
 `tools/playwright/navigation-skeleton-zoom.spec.js` scenario inspects both
 views at 320 and 390 CSS px in LTR and RTL, with genuine Chromium 100% and
-200% browser zoom. It creates a new profile only below the supervised run's
+200% browser zoom. It asserts the numeric document `scrollWidth` stays within
+one CSS pixel of `clientWidth`, as well as Skeleton and frame containment. It
+creates a new profile only below the supervised run's
 external artifact directory and sets the per-host zoom preference before
 launch; it does not send keyboard shortcuts or automate any existing desktop
 browser window. Reduced-motion and forced-colors remain covered by the Kit
@@ -80,3 +82,12 @@ The Sass build reports one existing mixed-declaration deprecation at
 `scss/components/_layout.scss:129`, outside this lot's Skeleton hunks. No
 Playwright process, browser, preview, cache, lease or runtime operation was
 started.
+
+### Containment follow-up - 2026-08-10
+
+The Student Management compact Navigation-shaped frame now uses `border-box`
+and a logical `max-inline-size: 100%`, so its decorative padding remains inside
+the 320 px inline width. The focused scenario records numeric document widths
+and fails when `scrollWidth` exceeds `clientWidth + 1`; it still checks both
+LTR/RTL directions, native 100%/200% zoom, static large frames and animated
+internal cues. The UI Kit snapshot and Mass Import consumer are unchanged.

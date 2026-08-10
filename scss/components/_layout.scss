@@ -347,11 +347,16 @@
     );
 
     & {
+      // The frame owns a 100%-wide compact Navigation shape. Keep its
+      // decorative padding inside that width so 320 px LTR and native zoom do
+      // not widen the Skeleton document.
+      box-sizing: border-box;
       box-shadow: 0 0.38rem 0.8rem rgba(31, 68, 104, 0.08);
       display: grid;
       gap: 0.38rem;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       margin-inline: auto;
+      max-inline-size: 100%;
       max-width: 44rem;
       min-width: 0;
       padding: 0.34rem;

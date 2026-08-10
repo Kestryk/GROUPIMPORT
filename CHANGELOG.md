@@ -98,6 +98,10 @@ Maintenance convention:
   static while the existing 48 and 19 decorative internal cues respectively
   retain their loading feedback; no loading lifecycle, no-script or fail-open
   behavior changes.
+- Keep the Student Management Navigation Skeleton's padded compact frame
+  within its inline width at 320 px LTR and native 200% zoom. The consumer now
+  uses logical maximum sizing and `border-box`; the shared UI Kit primitive,
+  Mass Import and functional Navigation remain unchanged.
 
 #### Fixed
 
@@ -117,6 +121,9 @@ Maintenance convention:
   `git diff --check`. The separately supervised native-zoom scenario uses a
   new external Chromium profile and never sends browser zoom shortcuts to an
   existing desktop window.
+- Extend the focused source contract and native-zoom scenario with the compact
+  frame containment and numeric document-width assertions. Browser execution
+  remains deferred to its supervised, leased run.
 
 ### 2026-08-08
 
