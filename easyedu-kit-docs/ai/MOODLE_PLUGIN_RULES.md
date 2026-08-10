@@ -55,6 +55,9 @@ When a plugin ships AMD build files:
 
 - keep `amd/src` and `amd/build` synchronized;
 - minified artifacts must be valid build output;
+- when staging a component for a targeted Moodle Grunt build, retain its real
+  plugin path (for example `local/groupimport`) and verify the generated
+  `define()` module name before promoting the artifact;
 - do not leave unminified code in `.min.js`;
 - avoid inline page JavaScript when an AMD module can own the behaviour.
 
@@ -152,4 +155,3 @@ versions before using them.
 
 For EasyEdu work, treat Moodle 4.5 and Moodle 5.1 compatibility as an explicit
 design constraint unless the user says otherwise.
-
