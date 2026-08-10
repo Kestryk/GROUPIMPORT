@@ -22,6 +22,10 @@ Maintenance convention:
 
 #### Validation
 
+- Human visual acceptance confirmed the restored single Grouping-card border
+  and the Complete View paint allowance on 2026-08-10. At compact width, the
+  Navigation trigger may overlap the outer rail by design; this tolerated
+  overlap is outside EED-UI-2026-0022 and is not a remaining defect.
 - Correct the Complete View geometry assertion to compare the first visible
   participant and structure cards rather than their differently structured
   list wrappers. This verifies the user-visible aligned-card baseline that the

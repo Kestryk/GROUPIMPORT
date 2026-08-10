@@ -1,11 +1,12 @@
 # EED-UI-2026-0022 — Grouping presentation and filter regressions
 
-Status: corrected single-frame composition is implemented and promoted. A
-follow-up paint-only left allowance for Complete View is statically validated
-and awaiting promotion. The desktop 1440 px rail assertion and capture pass.
+Status: corrected single-frame composition and its Complete View paint-only
+left allowance are promoted, validated and user-approved. The desktop 1440 px
+rail assertion and capture pass.
 The cumulative AMD regression was repaired and promoted on 2026-08-10. The
 focused run now passes after the Complete View assertion was corrected to
-measure its first visible cards. Human visual acceptance remains pending.
+measure its first visible cards. User visual acceptance was confirmed on
+2026-08-10.
 
 ## Scope
 
@@ -152,8 +153,8 @@ files were changed.
   `easystud-authenticated-20260810T154217274Z-14680` passed the same selected
   scenario on runtime HEAD `86697d51cb0a2f34e16b382a74c962db902f67be`; cleanup
   again cleared credentials, released the lease and stopped the owned browser.
-  Its captures confirmed the remaining responsive overlap is the separately
-  owned Navigation trigger, while this lot's Complete View frame has a
-  clipping-edge risk. The paint-allowance correction and its new computed
-  geometry assertion are statically validated; runtime verification follows
-  managed preview promotion.
+  Its captures confirmed the responsive Navigation-trigger overlap. The user
+  explicitly confirmed this overlap is necessary and tolerated at that viewport
+  size, so it is neither a defect nor a Navigation handoff from this lot. The
+  Complete View paint-allowance correction and its new computed geometry
+  assertion passed runtime verification and received user visual approval.
