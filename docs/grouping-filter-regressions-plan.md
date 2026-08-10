@@ -3,9 +3,8 @@
 Status: corrected single-frame composition is implemented, statically
 validated and promoted. The desktop 1440 px rail assertion and capture pass.
 The cumulative AMD regression was repaired and promoted on 2026-08-10. The
-next focused run exposed a test-only Complete View wrapper measurement; its
-first-visible-card assertion is corrected and awaits the same scenario rerun.
-Human visual acceptance remains pending.
+focused run now passes after the Complete View assertion was corrected to
+measure its first visible cards. Human visual acceptance remains pending.
 
 ## Scope
 
@@ -135,3 +134,11 @@ files were changed.
   record behind after its test failure; the stopped owner PID and exact Run ID
   were verified before the lease was explicitly released. Credentials were
   cleared, the owned browser stopped and the profile remained external.
+- The corrected integration candidate `70d068904d375b212fd6303e75b61989cc3739d9`
+  was promoted to the managed preview at runtime HEAD
+  `86697d51cb0a2f34e16b382a74c962db902f67be`. Run
+  `easystud-authenticated-20260810T151605242Z-30464` passed its one selected
+  scenario: desktop Complete View card alignment, desktop and 390 px Grouping
+  rail assertions, responsive filter states, keyboard focus and scoped
+  accessibility checks. The runner cleared credentials, released the lease,
+  stopped its owned browser and retained its profile outside Git.

@@ -18,6 +18,11 @@ Maintenance convention:
   participant and structure cards rather than their differently structured
   list wrappers. This verifies the user-visible aligned-card baseline that the
   existing Motion-driven alignment code maintains when filters open.
+- The exact authenticated Moodle 5.1 scenario passed on the repaired
+  cumulative preview, including desktop Complete View alignment, desktop and
+  390 px Grouping rails, responsive filter disclosures, focus visibility and
+  accessibility checks. Credentials, lease, browser and external profile
+  cleanup completed.
 
 ### 2026-08-09
 
