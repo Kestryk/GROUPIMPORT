@@ -192,16 +192,11 @@
   }
 
   &__loading-surface {
-    @include easyedu.skeleton-surface(
+    @include easyedu.navigation-skeleton-cue-overlay(
       $surface: var(--local-groupimport-easystud-loading-surface),
-      $border: var(--local-groupimport-easystud-loading-border),
-      $radius: var(--local-groupimport-easystud-loading-radius)
-    );
-    @include easyedu.skeleton-shimmer-overlay(
-      $animation-name: local-groupimport-easystud-loading-shimmer-v4,
-      $duration: var(--local-groupimport-easystud-loading-shimmer-duration),
       $soft: rgba(255, 255, 255, 0.16),
-      $highlight: var(--local-groupimport-easystud-loading-shimmer-highlight)
+      $highlight: var(--local-groupimport-easystud-loading-shimmer-highlight),
+      $radius: var(--local-groupimport-easystud-loading-radius)
     );
   }
 
@@ -214,13 +209,18 @@
   }
 
   &__loading-panel {
-    @include easyedu.skeleton-stack(0.9rem);
+    @include easyedu.navigation-skeleton-frame(
+      $surface: #f9fbfd,
+      $border: var(--local-groupimport-easystud-loading-border),
+      $radius: 1rem
+    );
 
-    background: #f9fbfd;
-    border: 1px solid var(--local-groupimport-easystud-loading-border);
-    border-radius: 1rem;
-    min-width: 0;
-    padding: 0.95rem;
+    & {
+      min-width: 0;
+      padding: 0.95rem;
+
+      @include easyedu.skeleton-stack(0.9rem);
+    }
   }
 
   &__loading-panel--participants {
@@ -252,13 +252,18 @@
   }
 
   &__loading-search-filter-region {
-    background: #f3f7fa;
-    border: 1px solid #dbe6ee;
-    border-radius: var(--local-groupimport-easystud-loading-radius);
-    display: grid;
-    gap: 0.55rem;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-    padding: 0.7rem;
+    @include easyedu.navigation-skeleton-frame(
+      $surface: #f3f7fa,
+      $border: #dbe6ee,
+      $radius: var(--local-groupimport-easystud-loading-radius)
+    );
+
+    & {
+      display: grid;
+      gap: 0.55rem;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      padding: 0.7rem;
+    }
   }
 
   &__loading-search {
@@ -283,15 +288,20 @@
   }
 
   &__loading-participant-card {
-    align-items: center;
-    background: #fff;
-    border: 1px solid #dbe5ed;
-    border-radius: 0.68rem;
-    display: grid;
-    gap: 0.55rem;
-    grid-template-columns: 2rem minmax(0, 1fr) auto auto;
-    min-height: 2.72rem;
-    padding: 0.45rem 0.55rem;
+    @include easyedu.navigation-skeleton-frame(
+      $surface: #fff,
+      $border: #dbe5ed,
+      $radius: 0.68rem
+    );
+
+    & {
+      align-items: center;
+      display: grid;
+      gap: 0.55rem;
+      grid-template-columns: 2rem minmax(0, 1fr) auto auto;
+      min-height: 2.72rem;
+      padding: 0.45rem 0.55rem;
+    }
   }
 
   &__loading-structure-list {
@@ -299,17 +309,15 @@
   }
 
   &__loading-structure-card {
-    background: #fff;
-    border: 1px solid #d9e4dc;
-    border-radius: 0.68rem;
-    min-height: 3.6rem;
-    padding: 0.58rem 0.65rem;
-  }
+    @include easyedu.navigation-skeleton-frame(
+      $surface: #fff,
+      $border: #d9e4dc,
+      $radius: 0.68rem
+    );
 
-  @media (prefers-reduced-motion: reduce), (forced-colors: active) {
-    &__loading-surface::after {
-      animation: none;
-      display: none;
+    & {
+      min-height: 3.6rem;
+      padding: 0.58rem 0.65rem;
     }
   }
 
@@ -332,18 +340,23 @@
   // V4 represents only the loading workspace hierarchy. It intentionally does
   // not imitate the ready-state title, tertiary selector or individual actions.
   &__loading-view-toggle {
-    background: #f4f8fb;
-    border: 1px solid var(--local-groupimport-easystud-loading-border);
-    border-radius: 1.15rem;
-    box-shadow: 0 0.38rem 0.8rem rgba(31, 68, 104, 0.08);
-    display: grid;
-    gap: 0.38rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-inline: auto;
-    max-width: 44rem;
-    min-width: 0;
-    padding: 0.34rem;
-    width: min(100%, 40rem);
+    @include easyedu.navigation-skeleton-frame(
+      $surface: #f4f8fb,
+      $border: var(--local-groupimport-easystud-loading-border),
+      $radius: 1.15rem
+    );
+
+    & {
+      box-shadow: 0 0.38rem 0.8rem rgba(31, 68, 104, 0.08);
+      display: grid;
+      gap: 0.38rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-inline: auto;
+      max-width: 44rem;
+      min-width: 0;
+      padding: 0.34rem;
+      width: min(100%, 40rem);
+    }
   }
 
   &__loading-view-toggle-item {
@@ -530,13 +543,6 @@
   &.is-easyedu-motion-off &__loading-surface::after {
     animation: none;
     display: none;
-  }
-
-  @media (forced-colors: active) {
-    &__loading-surface {
-      background: Canvas;
-      border-color: CanvasText;
-    }
   }
 
   &-discovery {
@@ -1316,10 +1322,6 @@
     border-color: #d8e4da;
   }
 
-}
-
-[dir="rtl"] .local-groupimport-easystud__loading-surface::after {
-  animation-direction: reverse;
 }
 
 [dir="rtl"] .local-groupimport-easystud__loading-card-copy {

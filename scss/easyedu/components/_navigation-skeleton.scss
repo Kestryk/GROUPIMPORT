@@ -1,0 +1,99 @@
+// Navigation Skeleton primitives.
+//
+// The outer frame is deliberately static. Consumers apply the animated cue
+// mixins only to decorative descendants, so a large navigation-shaped surface
+// never repaints its complete area while loading.
+
+@use "loading";
+
+// Use on the large, navigation-shaped outer frame only. Geometry, padding and
+// content structure stay consumer-owned.
+@mixin navigation-skeleton-frame(
+  $surface: var(--easyedu-loading-surface),
+  $border: var(--easyedu-loading-border),
+  $radius: var(--easyedu-loading-radius)
+) {
+  @include loading.skeleton-surface($surface, $border, $radius);
+}
+
+// Use on an opaque internal mark such as an icon, label or navigation row.
+@mixin navigation-skeleton-cue(
+  $surface: var(--easyedu-loading-surface),
+  $highlight: var(--easyedu-loading-highlight),
+  $radius: var(--easyedu-loading-radius)
+) {
+  & {
+    border-radius: $radius;
+    display: block;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  @include loading.skeleton-shimmer-direct(
+    $surface: $surface,
+    $highlight: $highlight
+  );
+
+  &:dir(rtl),
+  [dir="rtl"] & {
+    animation-direction: reverse;
+  }
+
+  @media (forced-colors: active) {
+    & {
+      background: CanvasText;
+      border: 0.0625rem solid CanvasText;
+    }
+  }
+}
+
+// Use on a softer internal mark when its stable base colour must remain
+// visible beneath the animated sweep.
+@mixin navigation-skeleton-cue-overlay(
+  $surface: var(--easyedu-loading-surface),
+  $soft: var(--easyedu-loading-shimmer-soft),
+  $highlight: var(--easyedu-loading-shimmer-highlight),
+  $radius: var(--easyedu-loading-radius)
+) {
+  & {
+    background: $surface;
+    border-radius: $radius;
+    display: block;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    position: relative;
+  }
+
+  @include loading.skeleton-shimmer-overlay(
+    $soft: $soft,
+    $highlight: $highlight
+  );
+
+  &:dir(rtl)::after,
+  [dir="rtl"] &::after {
+    animation-direction: reverse;
+  }
+
+  @media (forced-colors: active) {
+    & {
+      background: CanvasText;
+      border: 0.0625rem solid CanvasText;
+    }
+
+    &::after {
+      background-image: none;
+    }
+  }
+}
+
+// Use on the consumer-owned group of internal marks. The logical alignment
+// reverses automatically with the document direction.
+@mixin navigation-skeleton-cue-stack($gap: var(--easyedu-loading-stack-gap)) {
+  & {
+    align-content: start;
+    display: grid;
+    gap: $gap;
+    justify-items: start;
+    min-inline-size: 0;
+  }
+}

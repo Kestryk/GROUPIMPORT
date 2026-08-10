@@ -30,6 +30,13 @@ users. The visual contract is covered by the focused
 `tools/playwright/mass-import-audit.spec.js` test; generated browser media
 remains outside Git under the approved EasyEdu artifact root.
 
+Under `EED-UI-2026-0025`, the two import-card frames are explicitly static and
+only their 19 internal decorative cues animate. The embedded Navigation
+Skeleton primitive supplies RTL, reduced-motion and forced-colors behavior;
+the existing loading lifecycle remains unchanged. The paired Student Management
+measurement and static source contract are recorded in
+`docs/testing/navigation-skeleton-parity.md`.
+
 The latest Moodle 5.1 revalidation selected exactly one test and passed in
 external run `easystud-authenticated-20260730T143532846Z-33664`. Its manifest
 records an external isolated profile, process-local credentials and complete

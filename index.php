@@ -1096,6 +1096,7 @@ echo html_writer::start_div('local-groupimport-import' . ($preview !== null ? ' 
 
 echo html_writer::start_div('local-groupimport-import__loading-skeleton', [
     'data-easystud-loading-skeleton' => '1',
+    'data-easyedu-navigation-skeleton' => '1',
     'aria-hidden' => 'true',
 ]);
 echo html_writer::start_div('local-groupimport-import__loading-header');
