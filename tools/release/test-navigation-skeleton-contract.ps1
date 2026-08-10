@@ -37,6 +37,7 @@ $massImport = Read-RequiredFile 'index.php'
 $studentStyles = Read-RequiredFile 'scss\components\_layout.scss'
 $massImportStyles = Read-RequiredFile 'scss\views\_mass-import.scss'
 $documentation = Read-RequiredFile 'docs\testing\navigation-skeleton-parity.md'
+$zoomScenario = Read-RequiredFile 'tools\playwright\navigation-skeleton-zoom.spec.js'
 
 foreach ($fragment in @(
     '@mixin navigation-skeleton-frame',
@@ -70,6 +71,14 @@ Assert-Contains 'Mass Import markup' $massImport "'data-easyedu-navigation-skele
 Assert-Contains 'Mass Import markup' $massImport "'aria-hidden' => 'true'"
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-frame'
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-cue-overlay'
+$viewToggleStart = $studentStyles.IndexOf('&__loading-view-toggle {')
+$viewToggleEnd = $studentStyles.IndexOf('&__loading-view-toggle-item {', $viewToggleStart)
+if ($viewToggleStart -lt 0 -or $viewToggleEnd -le $viewToggleStart) {
+    throw 'Student Management Navigation Skeleton frame boundary is missing.'
+}
+$viewToggle = $studentStyles.Substring($viewToggleStart, $viewToggleEnd - $viewToggleStart)
+Assert-Contains 'Student Management Navigation Skeleton frame' $viewToggle 'box-sizing: border-box'
+Assert-Contains 'Student Management Navigation Skeleton frame' $viewToggle 'max-inline-size: 100%'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
 
@@ -121,5 +130,7 @@ if ($massImportCueCount -ne 19) {
 Assert-Contains 'Navigation Skeleton documentation' $documentation '| Student Management | 48 | 48 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation '| Mass Import | 19 | 19 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation $snapshot
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentScrollWidth'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClientWidth + 1'
 
 Write-Host "Navigation Skeleton source contract passed: Student Management 48 -> 48 cues; Mass Import 19 -> 19 cues."

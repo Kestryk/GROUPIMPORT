@@ -130,6 +130,8 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
         animatedCues: cueNodes.filter(node => animatedName(node) !== 'none').length,
         animatedFrames: frameNodes.filter(node => getComputedStyle(node).animationName !== 'none').length,
         cueDirections: [...new Set(cueNodes.map(animatedDirection))],
+        documentClientWidth: document.documentElement.clientWidth,
+        documentScrollWidth: document.documentElement.scrollWidth,
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
         skeletonOverflow: Boolean(root && root.scrollWidth > root.clientWidth + 1),
         escapingNodes,
@@ -180,6 +182,9 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     expect(inspection.animatedCues, `${cellId}: animated internal cues`).toBe(surface.expectedCues);
                     expect(inspection.animatedFrames, `${cellId}: animated outer frames`).toBe(0);
                     expect(inspection.documentOverflow, `${cellId}: document horizontal overflow`).toBe(false);
+                    expect(inspection.documentScrollWidth, `${cellId}: document width`).toBeLessThanOrEqual(
+                        inspection.documentClientWidth + 1
+                    );
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
                     expect(inspection.escapingNodes, `${cellId}: skeleton node escaping its root`).toBe(0);
                     if (cell.direction === 'rtl') {
