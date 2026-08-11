@@ -10,6 +10,21 @@ Maintenance convention:
 
 ## Unreleased
 
+### Member-list keyboard focus containment — 2026-08-11
+
+#### Fixed
+
+- Keep visually clipped Group member actions out of the keyboard sequence,
+  including Groups rendered inside a Grouping. Their original tab order is
+  restored when the member list opens; collapsing while one has focus returns
+  focus to the list disclosure button.
+
+#### Validation
+
+- Add a narrow static contract and one supervised Moodle 5.1 Playwright
+  scenario for collapsed nested Group member focus containment. The browser
+  scenario records only external evidence and does not mutate memberships.
+
 ### Guide validation — 2026-08-10
 
 #### Fixed

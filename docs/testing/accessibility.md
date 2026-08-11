@@ -95,6 +95,29 @@ Complete these checks on desktop at 100% and 200% browser zoom:
    checklist, and return to the guide.
 9. Verify every focused control has a visible focus indicator that is not
    clipped by overflow.
+10. In a Grouping containing a Group with at least three members, collapse the
+    member list and verify that `Tab` bypasses every clipped member action. On
+    opening, verify those actions are keyboard-reachable again. If an action
+    had focus when the list closes, focus must return to that list's disclosure
+    button.
+
+### Focused member-list containment scenario
+
+`member-list-focus-containment.spec.js` is the narrow Moodle 5.1 regression
+for this disclosure. It is read-only: it opens and closes a Grouping and a
+member list, but does not select, remove or change any membership data. The
+supervised runner first proves exactly one selected test, then takes the shared
+runtime lease and writes its isolated profile, capture and manifest outside
+Git.
+
+```powershell
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -Spec 'member-list-focus-containment.spec.js' `
+    -Grep 'collapsed nested group members stay out of keyboard focus and restore on open' `
+    -WaitForLease
+```
 
 ## Touch and responsive protocol
 

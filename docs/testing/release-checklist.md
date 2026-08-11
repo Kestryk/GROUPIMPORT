@@ -78,6 +78,8 @@ missing fixture, an upstream Moodle issue or a confirmed plugin failure.
 - [ ] Playwright axe smoke has no critical or serious plugin-region violations.
 - [ ] Moodle Behat accessibility smoke passes where Behat is configured.
 - [ ] Keyboard-only protocol in `accessibility.md` is complete.
+- [ ] Collapsed member lists keep clipped actions out of `Tab`, restore them
+      when opened and return focus to their disclosure control on collapse.
 - [ ] Modal names, focus trap, close path and trigger focus return are correct.
 - [ ] Focus indicators are visible and not clipped.
 - [ ] Colour is not the only selection, error or status indicator.
