@@ -18,6 +18,8 @@ $requiredFiles = @{
         'member\.contains\(document\.activeElement\)',
         'toggle\.focus\(\{preventScroll: true\}\)',
         'syncCollapsedMemberFocus\(member, collapsedmembers\.includes\(member\)\)',
+        'list\.classList\.add\(''is-easyedu-disclosing''\)',
+        'data-easystud-members-motion-token',
         'Motion\.resize\(list'
     )
     'amd/build/course_manager.min.js' = @(
@@ -29,6 +31,7 @@ $requiredFiles = @{
         'collapsed nested group members stay out of keyboard focus and restore on open',
         'data-easystud-grouping-id',
         'Tab must bypass clipped member actions',
+        'is-easyedu-disclosing',
         'collapsed-nested-group-member-focus\.png'
     )
 }
