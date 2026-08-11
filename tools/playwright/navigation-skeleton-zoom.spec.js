@@ -117,7 +117,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     const frameNodes = Array.from(skeleton?.querySelectorAll(surface.frameSelector) || []);
     const animatedName = node => getComputedStyle(node, surface.animatedPseudo).animationName;
     const animatedDirection = node => getComputedStyle(node, surface.animatedPseudo).animationDirection;
-    const bounds = root?.getBoundingClientRect();
+    const bounds = skeleton?.getBoundingClientRect();
     const escapingNodes = Array.from(skeleton?.querySelectorAll(`${surface.cueSelector}, ${surface.frameSelector}`) || [])
         .filter(node => {
             const box = node.getBoundingClientRect();
@@ -147,7 +147,9 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
         documentClientWidth: document.documentElement.clientWidth,
         documentScrollWidth: document.documentElement.scrollWidth,
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-        skeletonOverflow: Boolean(root && root.scrollWidth > root.clientWidth + 1),
+        skeletonClientWidth: skeleton?.clientWidth || 0,
+        skeletonScrollWidth: skeleton?.scrollWidth || 0,
+        skeletonOverflow: Boolean(skeleton && skeleton.scrollWidth > skeleton.clientWidth + 1),
         escapingNodes,
         innerWidth: window.innerWidth,
         visualViewportScale: window.visualViewport?.scale || 1,
@@ -205,6 +207,9 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     expect(inspection.documentOverflow, `${cellId}: document horizontal overflow`).toBe(false);
                     expect(inspection.documentScrollWidth, `${cellId}: document width`).toBeLessThanOrEqual(
                         inspection.documentClientWidth + 1
+                    );
+                    expect(inspection.skeletonScrollWidth, `${cellId}: skeleton width`).toBeLessThanOrEqual(
+                        inspection.skeletonClientWidth + 1
                     );
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
                     expect(inspection.escapingNodes, `${cellId}: skeleton nodes escaping its root`).toEqual([]);
