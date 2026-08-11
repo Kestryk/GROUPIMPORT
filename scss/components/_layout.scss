@@ -149,14 +149,18 @@
     box-shadow: none;
     display: none;
     gap: 0.85rem;
+    inline-size: 100%;
+    max-inline-size: 100%;
     min-width: 0;
     padding: 0.45rem 0 0;
     @include easyedu.loading-opacity-transition(320ms);
   }
 
   &__loading-header {
+    box-sizing: border-box;
     display: grid;
     gap: 0.7rem;
+    max-inline-size: 100%;
     min-height: 10.5rem;
     min-width: 0;
     padding: 0.2rem 0.4rem 0.35rem;
@@ -202,9 +206,11 @@
 
   &__loading-layout {
     align-items: stretch;
+    box-sizing: border-box;
     display: grid;
     gap: 1rem;
     grid-template-columns: minmax(0, 1fr);
+    max-inline-size: 100%;
     min-width: 0;
   }
 
@@ -216,6 +222,8 @@
     );
 
     & {
+      box-sizing: border-box;
+      max-inline-size: 100%;
       min-width: 0;
       padding: 0.95rem;
 
@@ -259,9 +267,11 @@
     );
 
     & {
+      box-sizing: border-box;
       display: grid;
       gap: 0.55rem;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      max-inline-size: 100%;
       padding: 0.7rem;
     }
   }
@@ -281,9 +291,11 @@
   &__loading-participant-list,
   &__loading-structure-list {
     align-content: start;
+    box-sizing: border-box;
     display: grid;
     gap: 0.55rem;
     grid-auto-rows: max-content;
+    max-inline-size: 100%;
     min-width: 0;
   }
 
@@ -296,9 +308,11 @@
 
     & {
       align-items: center;
+      box-sizing: border-box;
       display: grid;
       gap: 0.55rem;
       grid-template-columns: 2rem minmax(0, 1fr) auto auto;
+      max-inline-size: 100%;
       min-height: 2.72rem;
       padding: 0.45rem 0.55rem;
     }
@@ -316,6 +330,8 @@
     );
 
     & {
+      box-sizing: border-box;
+      max-inline-size: 100%;
       min-height: 3.6rem;
       padding: 0.58rem 0.65rem;
     }
@@ -415,9 +431,11 @@
 
   &__loading-structure-tools {
     align-items: start;
+    box-sizing: border-box;
     display: grid;
     gap: 0.55rem;
     grid-template-columns: minmax(0, 1fr) minmax(7rem, 0.45fr);
+    max-inline-size: 100%;
   }
 
   &__loading-structure-tools &__loading-search {

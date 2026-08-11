@@ -23,6 +23,9 @@ Maintenance convention:
   within its inline width at 320 px LTR and native 200% zoom. The consumer now
   uses logical maximum sizing and `border-box`; the shared UI Kit primitive,
   Mass Import and functional Navigation remain unchanged.
+- Extend the same containment boundary to the Student Management Skeleton's
+  grid, panels, lists and large search/card frames, preventing clipped inner
+  frames while preserving the static-frame and animated-cue contract.
 
 #### Documentation
 
@@ -39,6 +42,8 @@ Maintenance convention:
 - Extend the focused source contract and native-zoom scenario with the compact
   frame containment and numeric document-width assertions. Browser execution
   remains deferred to its supervised, leased run.
+- Preserve the native-200% screenshot and escaped-node geometry in a failing
+  Navigation Skeleton run so visual evidence remains available for diagnosis.
 
 ### 2026-08-08
 

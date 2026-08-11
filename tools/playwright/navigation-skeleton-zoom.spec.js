@@ -122,7 +122,15 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
         .filter(node => {
             const box = node.getBoundingClientRect();
             return box.left < bounds.left - 1 || box.right > bounds.right + 1;
-        }).length;
+        })
+        .map(node => {
+            const box = node.getBoundingClientRect();
+            return {
+                className: node.className,
+                left: box.left,
+                right: box.right,
+            };
+        });
 
     return {
         cueCount: cueNodes.length,
@@ -147,7 +155,7 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
     }
 
     const evidence = [];
-    for (const zoom of [100, 200]) {
+    for (const zoom of [200, 100]) {
         const zoomProfile = path.join(profileRoot, `native-zoom-${zoom}`);
         await prepareIsolatedZoomProfile(zoomProfile, massImportUrl, zoom);
         const context = await chromium.launchPersistentContext(zoomProfile, {
@@ -177,6 +185,13 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     const inspection = await inspectSkeleton(page, surface);
                     const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
 
+                    // Preserve the exact native-zoom visual evidence even if a
+                    // subsequent containment assertion diagnoses a regression.
+                    await skeleton.screenshot({
+                        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
+                    });
+                    evidence.push({cellId, ...inspection});
+
                     expect(inspection.cueCount, `${cellId}: internal cue count`).toBe(surface.expectedCues);
                     expect(inspection.frameCount, `${cellId}: static frame count`).toBeGreaterThan(0);
                     expect(inspection.animatedCues, `${cellId}: animated internal cues`).toBe(surface.expectedCues);
@@ -186,7 +201,7 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         inspection.documentClientWidth + 1
                     );
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
-                    expect(inspection.escapingNodes, `${cellId}: skeleton node escaping its root`).toBe(0);
+                    expect(inspection.escapingNodes, `${cellId}: skeleton nodes escaping its root`).toEqual([]);
                     if (cell.direction === 'rtl') {
                         expect(inspection.cueDirections, `${cellId}: RTL shimmer direction`).toEqual(['reverse']);
                     }
@@ -197,10 +212,6 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         expect(nativeZoomProven, `${cellId}: genuine native 200% zoom`).toBe(true);
                     }
 
-                    await skeleton.screenshot({
-                        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
-                    });
-                    evidence.push({cellId, ...inspection});
                     await page.close();
                 }
             }
