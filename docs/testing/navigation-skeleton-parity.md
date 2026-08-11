@@ -94,3 +94,7 @@ internal cues. Its native-200% capture is written before the containment
 assertions, so a failing run retains the requested visual evidence without
 weakening those assertions. The UI Kit snapshot and Mass Import consumer are
 unchanged.
+
+Hidden compact-only Structure placeholders are excluded from the root-boundary
+measurement because their `display: none` rectangle is `0 x 0`; every rendered
+frame and cue remains subject to the containment assertion.

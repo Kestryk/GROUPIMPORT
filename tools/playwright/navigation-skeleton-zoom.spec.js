@@ -121,6 +121,12 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     const escapingNodes = Array.from(skeleton?.querySelectorAll(`${surface.cueSelector}, ${surface.frameSelector}`) || [])
         .filter(node => {
             const box = node.getBoundingClientRect();
+            // Compact Student Management intentionally hides the Structure
+            // panel. Its display:none descendants have a 0 x 0 rectangle and
+            // cannot overflow, so only rendered frames participate here.
+            if (box.width === 0 && box.height === 0) {
+                return false;
+            }
             return box.left < bounds.left - 1 || box.right > bounds.right + 1;
         })
         .map(node => {
