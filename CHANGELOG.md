@@ -17,6 +17,8 @@ Maintenance convention:
 - Sync the shared UI Kit Guided Path card layout: its desktop action now uses a
   full final row below the icon and wrapping explanation, so long guide copy
   remains contained by the green card.
+- Preserve the body within its desktop grid track beside the icon; it no longer
+  claims the whole card width and creates horizontal overflow.
 
 #### Validation
 
