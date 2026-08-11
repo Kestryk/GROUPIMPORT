@@ -891,6 +891,7 @@ const memberFocusableSelector = [
 ].join(', ');
 
 const memberCollapsedTabindexAttribute = 'data-easystud-member-collapsed-tabindex';
+let groupMemberMotionToken = 0;
 
 /**
  * Keeps the visually clipped members out of the keyboard sequence.
@@ -7360,7 +7361,10 @@ const bindGroupMemberToggles = root => {
         }
         const expanded = toggle.getAttribute('aria-expanded') === 'true';
         const list = group.querySelector('[data-easystud-group-members]');
-        Motion.resize(list, () => {
+        const motionToken = String(++groupMemberMotionToken);
+        list.setAttribute('data-easystud-members-motion-token', motionToken);
+        list.classList.add('is-easyedu-disclosing');
+        void Motion.resize(list, () => {
             toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
             syncGroupMembersCollapsible(group);
         }, {
@@ -7369,6 +7373,11 @@ const bindGroupMemberToggles = root => {
                 scheduleGroupingResizeForGroup(group);
                 requestGuideHighlightRefresh(root);
             },
+        }).then(() => {
+            if (list.getAttribute('data-easystud-members-motion-token') === motionToken) {
+                list.classList.remove('is-easyedu-disclosing');
+                list.removeAttribute('data-easystud-members-motion-token');
+            }
         });
     });
     root.addEventListener('click', event => {

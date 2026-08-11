@@ -108,7 +108,8 @@ for this disclosure. It is read-only: it opens and closes a Grouping and a
 member list, but does not select, remove or change any membership data. The
 supervised runner first proves exactly one selected test, then takes the shared
 runtime lease and writes its isolated profile, capture and manifest outside
-Git.
+Git. The scenario also proves the existing normal-motion disclosure state while
+opening and closing the list.
 
 ```powershell
 .\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `

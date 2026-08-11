@@ -97,6 +97,7 @@ test('collapsed nested group members stay out of keyboard focus and restore on o
 
     if (await toggle.getAttribute('aria-expanded') === 'true') {
         await toggle.click();
+        await expect(list).toHaveClass(/is-easyedu-disclosing/);
         await settleMotion(page);
     }
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -132,6 +133,7 @@ test('collapsed nested group members stay out of keyboard focus and restore on o
     expect(tabTargetIsCollapsedMember, 'Tab must bypass clipped member actions').toBe(false);
 
     await toggle.click();
+    await expect(list).toHaveClass(/is-easyedu-disclosing/);
     await settleMotion(page);
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     const restoredMember = list.locator(':scope > [data-easystud-member-id]').nth(2);
@@ -142,6 +144,7 @@ test('collapsed nested group members stay out of keyboard focus and restore on o
     await expect(restoredRemove).toBeFocused();
 
     await toggle.click();
+    await expect(list).toHaveClass(/is-easyedu-disclosing/);
     await settleMotion(page);
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await expect(toggle).toBeFocused();
