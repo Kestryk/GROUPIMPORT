@@ -6090,7 +6090,7 @@
   animation: easyedu-modal-out var(--easyedu-motion-fast) ease both;
 }
 .local-groupimport-easystud-message-modal .local-groupimport-easystud-message-modal__dialog {
-  background-color: var(--easyedu-surface);
+  background-color: var(--easyedu-surface, #fff);
   box-sizing: border-box;
   height: min(58vh, 34rem);
   max-height: calc(100vh - 1rem);
@@ -6107,7 +6107,7 @@
   background: linear-gradient(180deg, #f7fbff 0%, var(--easyedu-surface) 11rem);
   --easyedu-context-modal-accent: var(--easyedu-modal-success-accent);
   --easyedu-context-modal-header-bg: var(--easyedu-modal-header-success-bg);
-  background-color: var(--easyedu-surface);
+  background-color: var(--easyedu-surface, #fff);
   border-color: var(--local-groupimport-easystud-border);
   box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.24);
   display: flex;
