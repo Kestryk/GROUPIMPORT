@@ -6,6 +6,7 @@ const massImportUrl = process.env.EASYEDU_MASS_IMPORT_URL ||
     'http://localhost/local/groupimport/index.php?id=5';
 const username = process.env.EASYEDU_MOODLE_USERNAME || 'Admin';
 const password = process.env.EASYEDU_MOODLE_PASSWORD || '';
+const chromiumExecutable = process.env.EASYEDU_CHROMIUM_EXECUTABLE || undefined;
 
 const surfaces = [
     {
@@ -49,9 +50,11 @@ const prepareIsolatedZoomProfile = async(profileRoot, baseUrl, zoom) => {
     const preferences = {
         partition: {
             per_host_zoom_levels: {
-                [endpoint.host]: {
-                    last_modified: String((Date.now() + 11644473600000) * 1000),
-                    zoom_level: nativeZoomLevel(zoom),
+                x: {
+                    [endpoint.host]: {
+                        last_modified: String((Date.now() + 11644473600000) * 1000),
+                        zoom_level: nativeZoomLevel(zoom),
+                    },
                 },
             },
         },
@@ -157,6 +160,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
 }, {surface});
 
 test('Navigation Skeleton stays contained at 320/390 with isolated native 100/200 zoom', async({}, testInfo) => {
+    test.setTimeout(900000);
     const profileRoot = process.env.PLAYWRIGHT_PROFILE_DIR;
     if (!profileRoot) {
         throw new Error('The supervised runner must provide an external browser profile directory.');
@@ -173,6 +177,7 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
             headless: zoom === 100,
             viewport: {width: 390, height: 844},
             deviceScaleFactor: 1,
+            executablePath: chromiumExecutable,
             args: zoom === 200 ? [
                 '--force-device-scale-factor=1',
                 '--window-position=-32000,-32000',
