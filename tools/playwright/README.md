@@ -76,6 +76,9 @@ guided-path step must first open, then visibly highlight, its usable desktop or
 compact control. It intentionally checks the desktop Move participant/card
 variant against the compact participant-card More actions variant; it never
 treats an invisible native selection input as an actionable target.
+It also checks the deliberately long Guided Path card at both viewports: its
+copy and start action must stay inside the green surface, with the action below
+the explanation rather than competing for the desktop text row.
 Before it writes either review capture, it waits for the normal-motion Guide
 entry to finish and for the dialog to be fully opaque; the evidence therefore
 shows the settled modal rather than a transparent animation frame.

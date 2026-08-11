@@ -350,6 +350,12 @@ explain what the path will do:
 
 The card uses `.easyedu-guide-guided-card`, keeps the start action attached to
 the explanation and should be preferred over plugin-owned guided path previews.
+At desktop, the icon and wrapping explanation occupy the first row while the
+full-width bordered start action occupies its own final row. The text must stay
+inside the green card and must never run under or beyond the action. At compact
+breakpoints the card becomes one full-width vertical flex flow: centred icon,
+full-width explanation, then that same full-width final action. It must not
+retain a visual column split.
 
 The green guided-path frame is available as a reusable surface mixin:
 

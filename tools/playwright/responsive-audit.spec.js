@@ -34,6 +34,33 @@ const waitForGuideCaptureSurface = async modal => {
     }).toBe(true);
 };
 
+const assertGuidedCardContainment = async(card, label) => {
+    await expect(card).toBeVisible();
+    const geometry = await card.evaluate(node => {
+        const cardRect = node.getBoundingClientRect();
+        const body = node.querySelector('.easyedu-guide-guided-card__body');
+        const action = node.querySelector('[data-easyedu-guide-start-path]');
+        const bodyRect = body?.getBoundingClientRect();
+        const actionRect = action?.getBoundingClientRect();
+        const inside = rect => Boolean(rect &&
+            rect.left >= cardRect.left - 1 && rect.right <= cardRect.right + 1 &&
+            rect.top >= cardRect.top - 1 && rect.bottom <= cardRect.bottom + 1);
+        return {
+            cardOverflow: node.scrollWidth > node.clientWidth + 1,
+            bodyOverflow: Boolean(body && body.scrollWidth > body.clientWidth + 1),
+            bodyInside: inside(bodyRect),
+            actionInside: inside(actionRect),
+            actionBelowBody: Boolean(bodyRect && actionRect && actionRect.top >= bodyRect.bottom - 1),
+        };
+    });
+    const details = label + ': ' + JSON.stringify(geometry);
+    expect(geometry.cardOverflow, details).toBe(false);
+    expect(geometry.bodyOverflow, details).toBe(false);
+    expect(geometry.bodyInside, details).toBe(true);
+    expect(geometry.actionInside, details).toBe(true);
+    expect(geometry.actionBelowBody, details).toBe(true);
+};
+
 const login = async page => {
     page.on('pageerror', error => console.log('PAGE_ERROR:', error.message));
     page.on('console', message => {
@@ -1672,6 +1699,10 @@ test('Guide target audit resolves every slide and guided step to an actionable c
             if (compactPanel) {
                 await expect(compactPanel).toHaveAttribute('aria-hidden', 'true');
             }
+            await assertGuidedCardContainment(
+                modal.locator('[data-easyedu-guide-slide="12"] .easyedu-guide-guided-card'),
+                viewport.name + ' guided-path card containment'
+            );
             await waitForGuideCaptureSurface(modal);
             await page.screenshot({
                 path: testInfo.outputPath('guide-target-audit-' + viewport.name + '.png'),
