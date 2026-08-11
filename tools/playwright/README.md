@@ -69,6 +69,25 @@ card row controls`. At 768 px it compares the vertical centres of the menu
 trigger and the relevant Participant, Group and Grouping row control with a
 maximum two-pixel delta, and writes three external screenshots.
 
+### Collapsed group-member keyboard focus
+
+`group-member-collapsible-focus.spec.js` owns the focused read-only course-5
+check for Group member disclosures. It finds a group with at least three
+visible members, proves that an extra member action is absent from Tab order
+while the list is collapsed, proves that it becomes keyboard-reachable after
+expansion, and verifies that collapsing returns focus to the same disclosure
+button. The normal-motion transition remains enabled. Its sole screenshot and
+diagnostic JSON remain in the external manifested run directory.
+
+```powershell
+.\tools\playwright\Invoke-EasyStudPlaywrightWithSavedCredentials.ps1 `
+    -CredentialLoaderPath $loader `
+    -OrchestrationModulePath $orchestration `
+    -Spec 'group-member-collapsible-focus.spec.js' `
+    -Grep 'collapsed group members exclude hidden actions from keyboard focus' `
+    -WaitForLease
+```
+
 The same file also owns `Guide target audit resolves every slide and guided
 step to an actionable control`. The supervised scenario runs the full Guide
 target inventory at 1280 x 900 and 390 x 844: each Show in interface slide and

@@ -10,6 +10,19 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-11
+
+#### Fixed
+
+- Keep actions in collapsed Group member rows out of the keyboard Tab order,
+  restore their original tab order on expansion and return focus to the member
+  disclosure button after collapse.
+
+#### Validation
+
+- Add the focused, non-destructive Group member disclosure Playwright scenario
+  for the authenticated Moodle 5.1 runtime.
+
 ### Guide validation — 2026-08-10
 
 #### Fixed

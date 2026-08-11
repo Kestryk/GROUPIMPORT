@@ -880,6 +880,39 @@ const syncGroupMembersHeight = (list, members, visibleCount, cancollapse) => {
     list.style.setProperty('--local-groupimport-members-expanded-height', Math.max(expandedheight, collapsedheight) + 'px');
 };
 
+const setCollapsedGroupMemberAccessibility = (member, collapsed) => {
+    const tabindexAttribute = 'data-easystud-collapsed-tabindex';
+    const controls = member.querySelectorAll('a[href], button, input, select, textarea, [tabindex]');
+
+    if (collapsed) {
+        member.setAttribute('inert', '');
+        controls.forEach(control => {
+            if (!control.hasAttribute(tabindexAttribute)) {
+                control.setAttribute(
+                    tabindexAttribute,
+                    control.hasAttribute('tabindex') ? control.getAttribute('tabindex') : ''
+                );
+            }
+            control.setAttribute('tabindex', '-1');
+        });
+        return;
+    }
+
+    member.removeAttribute('inert');
+    controls.forEach(control => {
+        if (!control.hasAttribute(tabindexAttribute)) {
+            return;
+        }
+        const previousTabindex = control.getAttribute(tabindexAttribute);
+        if (previousTabindex) {
+            control.setAttribute('tabindex', previousTabindex);
+        } else {
+            control.removeAttribute('tabindex');
+        }
+        control.removeAttribute(tabindexAttribute);
+    });
+};
+
 const syncGroupMembersCollapsible = group => {
     if (!group) {
         return;
@@ -899,12 +932,14 @@ const syncGroupMembersCollapsible = group => {
 
     allmembers.forEach(member => {
         member.classList.remove('local-groupimport-easystud-member--extra', 'is-collapsed');
+        setCollapsedGroupMemberAccessibility(member, false);
     });
 
     members.forEach((member, index) => {
         const isextra = cancollapse && index >= visibleCount;
         member.classList.toggle('local-groupimport-easystud-member--extra', isextra);
         member.classList.toggle('is-collapsed', isextra && !expanded);
+        setCollapsedGroupMemberAccessibility(member, isextra && !expanded);
     });
 
     list.classList.toggle('has-extra-members', cancollapse);
@@ -7310,6 +7345,9 @@ const bindGroupMemberToggles = root => {
             onComplete: () => {
                 scheduleGroupingResizeForGroup(group);
                 requestGuideHighlightRefresh(root);
+                if (expanded && toggle.isConnected && !toggle.hidden) {
+                    toggle.focus({preventScroll: true});
+                }
             },
         });
     });

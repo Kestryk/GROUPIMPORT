@@ -21,6 +21,7 @@ target runner.
 | Responsive workspaces and long press | `tools/playwright/responsive-audit.spec.js` | Explicit browser audit |
 | Card title and selection alignment | `tools/playwright/card-title-selection-audit.spec.js` | Visual geometry audit |
 | Participant role-filter integrity | `tools/playwright/participant-role-filter-integrity.spec.js` | Focused authenticated diagnostic; runtime confirmation pending |
+| Collapsed Group member focus | `tools/playwright/group-member-collapsible-focus.spec.js` | Focused authenticated keyboard disclosure check |
 | Mass import UI and history | `tools/playwright/mass-import-audit.spec.js` | Explicit browser audit |
 | Mass import restore | `tools/playwright/mass-import-restore-audit.spec.js` | Destructive opt-in audit |
 | Moodle-native functional scenarios | None before this protocol | First Behat smoke added |
@@ -74,6 +75,7 @@ create their own scenario data and must not share state with another scenario.
 | Guided paths/checklist/return panel | Playwright | Existing partial audit |
 | Mobile action tray and stacked columns | Playwright | Existing responsive audit |
 | Keyboard and focus lifecycle | Behat accessibility plus manual | First smoke and protocol |
+| Collapsed Group member actions | Focused Playwright | Keyboard focus and disclosure return target |
 
 ## Interaction rules
 

@@ -60,6 +60,9 @@ When a plugin ships AMD build files:
   `define()` module name before promoting the artifact;
 - do not leave unminified code in `.min.js`;
 - avoid inline page JavaScript when an AMD module can own the behaviour.
+- when a disclosure clips a descendant action visually, remove that action from
+  keyboard navigation while collapsed, restore its prior tab order on expansion
+  and return focus to the disclosure control after collapse.
 
 ## 5. CSS should use Moodle loading and kit primitives
 
