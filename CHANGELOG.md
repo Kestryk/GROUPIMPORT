@@ -24,8 +24,9 @@ Maintenance convention:
 
 - Human visual acceptance confirmed the restored single Grouping-card border
   and the Complete View paint allowance on 2026-08-10. At compact width, the
-  Navigation trigger may overlap the outer rail by design; this tolerated
-  overlap is outside EED-UI-2026-0022 and is not a remaining defect.
+  EasyEdu trigger may overlap content, including the outer rail, by design.
+  It must never cover Moodle's native course-navigation opener; that separate
+  verification remains owned by EED-NAV-2026-0010.
 - Correct the Complete View geometry assertion to compare the first visible
   participant and structure cards rather than their differently structured
   list wrappers. This verifies the user-visible aligned-card baseline that the

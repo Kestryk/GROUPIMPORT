@@ -153,8 +153,10 @@ files were changed.
   `easystud-authenticated-20260810T154217274Z-14680` passed the same selected
   scenario on runtime HEAD `86697d51cb0a2f34e16b382a74c962db902f67be`; cleanup
   again cleared credentials, released the lease and stopped the owned browser.
-  Its captures confirmed the responsive Navigation-trigger overlap. The user
-  explicitly confirmed this overlap is necessary and tolerated at that viewport
-  size, so it is neither a defect nor a Navigation handoff from this lot. The
+  Its captures confirmed the responsive EasyEdu-trigger overlap. The user
+  explicitly confirmed that this trigger may cover content, including the
+  Grouping rail, at compact width. It must never cover Moodle's native
+  course-navigation opener: that verification remains in EED-NAV-2026-0010
+  and is not a remaining defect or Navigation handoff from this lot. The
   Complete View paint-allowance correction and its new computed geometry
   assertion passed runtime verification and received user visual approval.
