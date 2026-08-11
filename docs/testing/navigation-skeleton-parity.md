@@ -103,3 +103,8 @@ The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked
 separately.
+
+When the supervised process supplies a Chromium executable, the scenario uses
+it only with the external run profile. The profile writes Chromium's partitioned
+per-host zoom preference before launch; it never changes an existing browser
+profile or sends zoom shortcuts.

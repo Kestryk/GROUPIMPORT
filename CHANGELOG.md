@@ -49,6 +49,9 @@ Maintenance convention:
   strictly contained.
 - Measure client/scroll width on the decorative Navigation Skeleton itself,
   not its application root that also contains functional Navigation overlays.
+- Use Chromium's partitioned per-host preference in the external test profile
+  so the supervised 200% check proves native zoom without touching a user
+  browser profile.
 
 ### 2026-08-08
 
