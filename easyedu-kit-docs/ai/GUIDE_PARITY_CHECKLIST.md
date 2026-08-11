@@ -47,6 +47,8 @@ Do not stop after matching colours or rough layout.
 - [ ] Guided-path cards use `has-guided-path`.
 - [ ] Guided badge text is short, normally `Guide`.
 - [ ] Guided badge never overflows card content.
+- [ ] At desktop and compact widths, guided-path copy wraps inside the green
+      card; the start action is never a competing third column or an overlap.
 - [ ] Locked cards use `is-locked` but remain clickable.
 - [ ] Locked cards use `cursor: pointer`, not `not-allowed`.
 - [ ] Requirement badge text is one short word, not a sentence.

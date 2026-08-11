@@ -24,6 +24,19 @@ Maintenance convention:
 - Add a narrow static contract and one supervised Moodle 5.1 Playwright
   scenario for collapsed nested Group member focus containment. The browser
   scenario records only external evidence and does not mutate memberships.
+### Guide guided-path containment - 2026-08-11
+
+#### Fixed
+
+- Sync the shared UI Kit Guided Path card layout: its desktop action now uses a
+  full final row below the icon and wrapping explanation, so long guide copy
+  remains contained by the green card.
+
+#### Validation
+
+- Extend the authenticated Guide target-audit contract to measure the long
+  Guided Path card at desktop and 390 px, rejecting horizontal overflow,
+  escaping children or an action that overlaps the explanation.
 
 ### Guide validation — 2026-08-10
 
