@@ -98,3 +98,8 @@ unchanged.
 Hidden compact-only Structure placeholders are excluded from the root-boundary
 measurement because their `display: none` rectangle is `0 x 0`; every rendered
 frame and cue remains subject to the containment assertion.
+
+The containment probe measures the Navigation Skeleton's own client and scroll
+width rather than its application root. This keeps the functional Navigation
+overlay outside the Skeleton contract while document overflow remains checked
+separately.

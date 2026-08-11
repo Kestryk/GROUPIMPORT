@@ -132,5 +132,8 @@ Assert-Contains 'Navigation Skeleton documentation' $documentation '| Mass Impor
 Assert-Contains 'Navigation Skeleton documentation' $documentation $snapshot
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentScrollWidth'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClientWidth + 1'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton?.getBoundingClientRect()'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeletonScrollWidth'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton.clientWidth + 1'
 
 Write-Host "Navigation Skeleton source contract passed: Student Management 48 -> 48 cues; Mass Import 19 -> 19 cues."

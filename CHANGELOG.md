@@ -132,6 +132,8 @@ Maintenance convention:
 - Exclude intentionally hidden compact Structure placeholders from the
   Navigation Skeleton geometry assertion; visible frames and cues remain
   strictly contained.
+- Measure client/scroll width on the decorative Navigation Skeleton itself,
+  not its application root that also contains functional Navigation overlays.
 
 ### 2026-08-08
 
