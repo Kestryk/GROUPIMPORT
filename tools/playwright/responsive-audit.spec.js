@@ -47,7 +47,9 @@ const assertGuidedCardContainment = async(card, label) => {
             rect.top >= cardRect.top - 1 && rect.bottom <= cardRect.bottom + 1);
         return {
             cardOverflow: node.scrollWidth > node.clientWidth + 1,
+            cardWidths: [node.clientWidth, node.scrollWidth],
             bodyOverflow: Boolean(body && body.scrollWidth > body.clientWidth + 1),
+            bodyWidths: body ? [body.clientWidth, body.scrollWidth] : null,
             bodyInside: inside(bodyRect),
             actionInside: inside(actionRect),
             actionBelowBody: Boolean(bodyRect && actionRect && actionRect.top >= bodyRect.bottom - 1),
