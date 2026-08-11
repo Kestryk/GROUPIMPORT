@@ -90,4 +90,7 @@ and a logical `max-inline-size: 100%`, so its decorative padding remains inside
 the 320 px inline width. The focused scenario records numeric document widths
 and fails when `scrollWidth` exceeds `clientWidth + 1`; it still checks both
 LTR/RTL directions, native 100%/200% zoom, static large frames and animated
-internal cues. The UI Kit snapshot and Mass Import consumer are unchanged.
+internal cues. Its native-200% capture is written before the containment
+assertions, so a failing run retains the requested visual evidence without
+weakening those assertions. The UI Kit snapshot and Mass Import consumer are
+unchanged.
