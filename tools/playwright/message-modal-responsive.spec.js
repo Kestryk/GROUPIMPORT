@@ -43,7 +43,9 @@ test('responsive native Send message modal remains opaque and contained', async(
     await expect(selector).toBeAttached();
     await selector.evaluate(input => input.click());
 
-    const messageAction = root.locator('[data-easystud-message-selected-participants]:visible').first();
+    const messageAction = root.locator(
+        '[data-easystud-mobile-action-trigger="[data-easystud-message-selected-participants]"]:visible'
+    ).first();
     await expect(messageAction).toBeEnabled();
     await messageAction.click();
 
