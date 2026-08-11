@@ -10833,27 +10833,21 @@
 .path-local-groupimport .easyedu-guide .easyedu-guide-guided-card__body {
   display: grid;
   gap: 0.16rem;
-  max-inline-size: 100%;
-  min-inline-size: 0;
   min-width: 0;
 }
 .local-groupimport-easystud-easyedu-guide .easyedu-guide-guided-card__body strong,
 .path-local-groupimport .easyedu-guide .easyedu-guide-guided-card__body strong {
   color: #203348;
-  display: block;
   font-size: 0.9rem;
   line-height: 1.18;
-  max-inline-size: 100%;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .local-groupimport-easystud-easyedu-guide .easyedu-guide-guided-card__body > span,
 .path-local-groupimport .easyedu-guide .easyedu-guide-guided-card__body > span {
   color: #536b82;
-  display: block;
   font-size: 0.76rem;
   line-height: 1.3;
-  max-inline-size: 100%;
   min-width: 0;
   overflow-wrap: anywhere;
 }
