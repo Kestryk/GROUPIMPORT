@@ -880,6 +880,54 @@ const syncGroupMembersHeight = (list, members, visibleCount, cancollapse) => {
     list.style.setProperty('--local-groupimport-members-expanded-height', Math.max(expandedheight, collapsedheight) + 'px');
 };
 
+const memberFocusableSelector = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled]):not([type="hidden"])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+    '[contenteditable="true"]',
+].join(', ');
+
+const memberCollapsedTabindexAttribute = 'data-easystud-member-collapsed-tabindex';
+
+/**
+ * Keeps the visually clipped members out of the keyboard sequence.
+ *
+ * The `inert` state is the primary containment. The saved tabindex fallback
+ * keeps the disclosure usable in browsers which do not enforce inert yet.
+ *
+ * @param {HTMLElement} member The group member item.
+ * @param {boolean} collapsed Whether the member is visually clipped.
+ * @returns {void}
+ */
+const syncCollapsedMemberFocus = (member, collapsed) => {
+    member.toggleAttribute('inert', collapsed);
+    if (collapsed) {
+        member.querySelectorAll(memberFocusableSelector).forEach(control => {
+            if (!control.hasAttribute(memberCollapsedTabindexAttribute)) {
+                control.setAttribute(
+                    memberCollapsedTabindexAttribute,
+                    control.hasAttribute('tabindex') ? control.getAttribute('tabindex') : ''
+                );
+            }
+            control.setAttribute('tabindex', '-1');
+        });
+        return;
+    }
+
+    member.querySelectorAll('[' + memberCollapsedTabindexAttribute + ']').forEach(control => {
+        const tabindex = control.getAttribute(memberCollapsedTabindexAttribute);
+        if (tabindex === '') {
+            control.removeAttribute('tabindex');
+        } else {
+            control.setAttribute('tabindex', tabindex);
+        }
+        control.removeAttribute(memberCollapsedTabindexAttribute);
+    });
+};
+
 const syncGroupMembersCollapsible = group => {
     if (!group) {
         return;
@@ -901,11 +949,21 @@ const syncGroupMembersCollapsible = group => {
         member.classList.remove('local-groupimport-easystud-member--extra', 'is-collapsed');
     });
 
+    const collapsedmembers = [];
     members.forEach((member, index) => {
         const isextra = cancollapse && index >= visibleCount;
+        const iscollapsed = isextra && !expanded;
         member.classList.toggle('local-groupimport-easystud-member--extra', isextra);
-        member.classList.toggle('is-collapsed', isextra && !expanded);
+        member.classList.toggle('is-collapsed', iscollapsed);
+        if (iscollapsed) {
+            collapsedmembers.push(member);
+        }
     });
+
+    if (collapsedmembers.some(member => member.contains(document.activeElement))) {
+        toggle.focus({preventScroll: true});
+    }
+    allmembers.forEach(member => syncCollapsedMemberFocus(member, collapsedmembers.includes(member)));
 
     list.classList.toggle('has-extra-members', cancollapse);
     list.classList.toggle('is-expanded', expanded);
