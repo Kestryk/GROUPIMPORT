@@ -129,6 +129,9 @@ Maintenance convention:
   remains deferred to its supervised, leased run.
 - Preserve the native-200% screenshot and escaped-node geometry in a failing
   Navigation Skeleton run so visual evidence remains available for diagnosis.
+- Exclude intentionally hidden compact Structure placeholders from the
+  Navigation Skeleton geometry assertion; visible frames and cues remain
+  strictly contained.
 
 ### 2026-08-08
 
