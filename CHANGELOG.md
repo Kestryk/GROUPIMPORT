@@ -57,6 +57,8 @@ Maintenance convention:
   native 200% zoom without changing Mass Import or functional Navigation.
 - Apply the same extreme-width cue stack to the Mass Import Skeleton header,
   preserving its full loading-card frame under native 200% zoom.
+- Let only the Mass Import card-title cue shrink beside its static icon at the
+  same effective width, preventing the inner cue from widening the card frame.
 - Keep the Mass Import Skeleton grid, cards, card headers and wide field/row
   cues inside their own inline size at native 200% zoom. This is a local
   consumer sizing correction; the shared UI Kit primitive and normal layout
