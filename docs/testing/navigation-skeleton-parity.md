@@ -121,6 +121,10 @@ width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked
 separately.
 
+If a rendered cue exceeds that root, the focused scenario records the measured
+root left/right bounds in its assertion message. The raw screenshot and
+manifest remain external to Git.
+
 When the supervised process supplies a Chromium executable, the scenario uses
 it only with the external run profile. The profile writes Chromium's partitioned
 per-host zoom preference before launch; it never changes an existing browser

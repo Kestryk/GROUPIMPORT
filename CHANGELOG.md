@@ -63,6 +63,9 @@ Maintenance convention:
   cues inside their own inline size at native 200% zoom. This is a local
   consumer sizing correction; the shared UI Kit primitive and normal layout
   remain unchanged.
+- Include the measured Skeleton root bounds in the focused native-zoom
+  assertion so any remaining parent/child containment regression is diagnosable
+  from its external evidence.
 
 ### 2026-08-08
 
