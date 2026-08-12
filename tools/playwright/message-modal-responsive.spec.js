@@ -54,6 +54,17 @@ test('responsive native Send message modal remains opaque and contained', async(
     await expect(modal).not.toHaveClass(/is-loading/, {timeout: 30000});
     const textarea = modal.locator('#bulk-message.local-groupimport-easystud-message-modal__textarea');
     await expect(textarea).toBeVisible();
+    const modalBody = modal.locator('.modal-body');
+    await expect.poll(async() => modalBody.evaluate(body => ({
+        inlineOverflow: body.style.overflow,
+        computedOverflowY: window.getComputedStyle(body).overflowY,
+    })), {
+        message: 'Moodle must finish its native async body transition before geometry is measured',
+        timeout: 5000,
+    }).toEqual({
+        inlineOverflow: '',
+        computedOverflowY: 'auto',
+    });
 
     const geometry = await modal.evaluate(node => {
         const rectangle = element => {
