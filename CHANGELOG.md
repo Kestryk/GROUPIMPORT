@@ -140,6 +140,8 @@ Maintenance convention:
 - Stack only Student Management's fixed-width decorative Skeleton cues below
   the effective `20rem` viewport, keeping every large frame contained at
   native 200% zoom without changing Mass Import or functional Navigation.
+- Apply the same extreme-width cue stack to the Mass Import Skeleton header,
+  preserving its full loading-card frame under native 200% zoom.
 
 ### 2026-08-08
 

@@ -105,6 +105,10 @@ and panel cues. The large Navigation-shaped frames stay fully visible; this
 consumer-only rule does not alter Mass Import, functional Navigation or the
 UI Kit primitive.
 
+Mass Import uses the same extreme-width cue stack for its loading header. Its
+cards remain static, full-width frames and its normal desktop/phone geometry is
+unchanged.
+
 The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked

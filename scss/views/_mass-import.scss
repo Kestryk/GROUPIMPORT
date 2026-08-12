@@ -45,24 +45,31 @@
   }
 
   &__loading-skeleton {
+    box-sizing: border-box;
     display: none;
     gap: 1.1rem;
+    inline-size: 100%;
+    max-inline-size: 100%;
     min-width: 0;
     padding-block: 0.45rem 0.9rem;
     @include easyedu.loading-opacity-transition(180ms);
   }
 
   &__loading-header {
+    box-sizing: border-box;
     display: grid;
     gap: 0.55rem;
+    max-inline-size: 100%;
     min-width: 0;
   }
 
   &__loading-grid {
     align-items: stretch;
+    box-sizing: border-box;
     display: grid;
     gap: 1.15rem;
     grid-template-columns: minmax(21rem, 0.88fr) minmax(25rem, 1.12fr);
+    max-inline-size: 100%;
     min-width: 0;
   }
 
@@ -105,8 +112,10 @@
     );
 
     & {
+      box-sizing: border-box;
       display: grid;
       gap: 0.75rem;
+      max-inline-size: 100%;
       min-height: 23rem;
       min-width: 0;
       padding: 1rem;
@@ -115,8 +124,10 @@
 
   &__loading-card-header {
     align-items: center;
+    box-sizing: border-box;
     display: flex;
     gap: 0.75rem;
+    max-inline-size: 100%;
     min-width: 0;
   }
 
@@ -157,6 +168,24 @@
   &[data-easyedu-motion-policy="disabled"] &__loading-surface,
   &.is-easyedu-motion-off &__loading-surface {
     animation: none;
+  }
+
+  // Preserve the full card frame at extreme effective widths such as a 320 px
+  // window viewed at native 200% zoom. Only decorative cues stack here.
+  @media (max-width: 20rem) {
+    &__loading-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      max-inline-size: 100%;
+      min-inline-size: 0;
+    }
+
+    &__loading-action {
+      inline-size: 100%;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+      width: auto;
+    }
   }
 
   &__header {
