@@ -52,6 +52,9 @@ Maintenance convention:
 - Use Chromium's partitioned per-host preference in the external test profile
   so the supervised 200% check proves native zoom without touching a user
   browser profile.
+- Stack only Student Management's fixed-width decorative Skeleton cues below
+  the effective `20rem` viewport, keeping every large frame contained at
+  native 200% zoom without changing Mass Import or functional Navigation.
 
 ### 2026-08-08
 

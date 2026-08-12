@@ -99,6 +99,12 @@ Hidden compact-only Structure placeholders are excluded from the root-boundary
 measurement because their `display: none` rectangle is `0 x 0`; every rendered
 frame and cue remains subject to the containment assertion.
 
+At an effective CSS viewport below `20rem` (including native 200% zoom on a
+320 px window), Student Management stacks its decorative fixed-width header
+and panel cues. The large Navigation-shaped frames stay fully visible; this
+consumer-only rule does not alter Mass Import, functional Navigation or the
+UI Kit primitive.
+
 The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked

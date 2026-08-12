@@ -79,6 +79,9 @@ if ($viewToggleStart -lt 0 -or $viewToggleEnd -le $viewToggleStart) {
 $viewToggle = $studentStyles.Substring($viewToggleStart, $viewToggleEnd - $viewToggleStart)
 Assert-Contains 'Student Management Navigation Skeleton frame' $viewToggle 'box-sizing: border-box'
 Assert-Contains 'Student Management Navigation Skeleton frame' $viewToggle 'max-inline-size: 100%'
+Assert-Contains 'Student Management styles' $studentStyles '@media (max-width: 20rem)'
+Assert-Contains 'Student Management styles' $studentStyles '&__loading-header-actions,'
+Assert-Contains 'Student Management styles' $studentStyles '&__loading-pagination-rail {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
 
