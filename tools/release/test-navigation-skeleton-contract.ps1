@@ -84,6 +84,9 @@ Assert-Contains 'Student Management styles' $studentStyles '&__loading-header-ac
 Assert-Contains 'Student Management styles' $studentStyles '&__loading-pagination-rail {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
+Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
+Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
+Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
 
 foreach ($consumer in @(
     @{Label = 'Student Management styles'; Contents = $studentStyles},
