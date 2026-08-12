@@ -87,6 +87,10 @@ Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
 Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
+Assert-Contains 'Mass Import Skeleton grid' $massImportStyles '&__loading-grid {'
+Assert-Contains 'Mass Import Skeleton grid' $massImportStyles 'inline-size: 100%'
+Assert-Contains 'Mass Import Skeleton fields' $massImportStyles '&__loading-field {'
+Assert-Contains 'Mass Import Skeleton fields' $massImportStyles 'box-sizing: border-box'
 
 foreach ($consumer in @(
     @{Label = 'Student Management styles'; Contents = $studentStyles},

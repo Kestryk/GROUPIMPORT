@@ -13967,6 +13967,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   display: grid;
   gap: 1.15rem;
   grid-template-columns: minmax(21rem, 0.88fr) minmax(25rem, 1.12fr);
+  inline-size: 100%;
   max-inline-size: 100%;
   min-width: 0;
 }
@@ -14036,6 +14037,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   box-sizing: border-box;
   display: grid;
   gap: 0.75rem;
+  inline-size: 100%;
   max-inline-size: 100%;
   min-height: 23rem;
   min-width: 0;
@@ -14046,6 +14048,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   box-sizing: border-box;
   display: flex;
   gap: 0.75rem;
+  inline-size: 100%;
   max-inline-size: 100%;
   min-width: 0;
 }
@@ -14060,8 +14063,10 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   width: min(13rem, 64%);
 }
 .local-groupimport-import__loading-field {
+  box-sizing: border-box;
   height: 6.2rem;
   margin-top: 0.2rem;
+  max-inline-size: 100%;
   width: 100%;
 }
 .local-groupimport-import__loading-field--short {
@@ -14069,12 +14074,16 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   width: 72%;
 }
 .local-groupimport-import__loading-row {
+  box-sizing: border-box;
   height: 2.65rem;
+  max-inline-size: 100%;
   width: 100%;
 }
 .local-groupimport-import__loading-button {
+  box-sizing: border-box;
   height: 2.45rem;
   margin-top: auto;
+  max-inline-size: 100%;
   width: 10.5rem;
 }
 .local-groupimport-import[data-easyedu-motion-policy=disabled] .local-groupimport-import__loading-surface, .local-groupimport-import.is-easyedu-motion-off .local-groupimport-import__loading-surface {
