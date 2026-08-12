@@ -109,6 +109,12 @@ Mass Import uses the same extreme-width cue stack for its loading header. Its
 cards remain static, full-width frames and its normal desktop/phone geometry is
 unchanged.
 
+The Mass Import consumer also gives its Skeleton grid, cards and card headers
+an explicit logical inline size. Its full-width field and row cues use
+`border-box` and a logical maximum width. This keeps the 200%-zoom visual
+coordinates of every rendered cue within the Skeleton root without changing
+the shared loading primitive or the final Mass Import layout.
+
 The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked
