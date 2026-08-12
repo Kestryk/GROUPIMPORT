@@ -180,7 +180,7 @@
   }
 
   // Preserve the full card frame at extreme effective widths such as a 320 px
-  // window viewed at native 200% zoom. Only decorative cues stack here.
+  // window viewed at native 200% zoom. Only decorative cues stack or shrink here.
   @media (max-width: 20rem) {
     &__loading-actions {
       display: grid;
@@ -191,6 +191,14 @@
 
     &__loading-action {
       inline-size: 100%;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+      width: auto;
+    }
+
+    &__loading-card-title {
+      flex: 1 1 0;
+      inline-size: auto;
       max-inline-size: 100%;
       min-inline-size: 0;
       width: auto;

@@ -105,9 +105,10 @@ and panel cues. The large Navigation-shaped frames stay fully visible; this
 consumer-only rule does not alter Mass Import, functional Navigation or the
 UI Kit primitive.
 
-Mass Import uses the same extreme-width cue stack for its loading header. Its
-cards remain static, full-width frames and its normal desktop/phone geometry is
-unchanged.
+Mass Import uses the same extreme-width cue stack for its loading header. At
+that width, its decorative card-title cue may also shrink beside its static
+icon, so the full card frame remains contained. Its normal desktop/phone
+geometry is unchanged.
 
 The Mass Import consumer also gives its Skeleton grid, cards and card headers
 an explicit logical inline size. Its full-width field and row cues use

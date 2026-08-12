@@ -14102,6 +14102,13 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     min-inline-size: 0;
     width: auto;
   }
+  .local-groupimport-import__loading-card-title {
+    flex: 1 1 0;
+    inline-size: auto;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    width: auto;
+  }
 }
 .local-groupimport-import__header {
   align-items: flex-start;
