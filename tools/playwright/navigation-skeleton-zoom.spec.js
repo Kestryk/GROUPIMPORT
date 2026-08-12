@@ -153,6 +153,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
         skeletonClientWidth: skeleton?.clientWidth || 0,
         skeletonScrollWidth: skeleton?.scrollWidth || 0,
         skeletonOverflow: Boolean(skeleton && skeleton.scrollWidth > skeleton.clientWidth + 1),
+        skeletonBounds: bounds ? {left: bounds.left, right: bounds.right} : null,
         escapingNodes,
         innerWidth: window.innerWidth,
         visualViewportScale: window.visualViewport?.scale || 1,
@@ -217,7 +218,10 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         inspection.skeletonClientWidth + 1
                     );
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
-                    expect(inspection.escapingNodes, `${cellId}: skeleton nodes escaping its root`).toEqual([]);
+                    expect(
+                        inspection.escapingNodes,
+                        `${cellId}: skeleton nodes escaping its root ${JSON.stringify(inspection.skeletonBounds)}`
+                    ).toEqual([]);
                     if (cell.direction === 'rtl') {
                         expect(inspection.cueDirections, `${cellId}: RTL shimmer direction`).toEqual(['reverse']);
                     }
