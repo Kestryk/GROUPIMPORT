@@ -529,6 +529,36 @@
     }
   }
 
+  // Native browser zoom can reduce the effective CSS viewport below the phone
+  // breakpoint. Keep the Skeleton's large frames visible by stacking only its
+  // decorative fixed-width cues at that extreme width.
+  @media (max-width: 20rem) {
+    &__loading-header-actions,
+    &__loading-panel-header,
+    &__loading-pagination {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: normal;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+    }
+
+    &__loading-header-action,
+    &__loading-panel-secondary,
+    &__loading-pagination-summary,
+    &__loading-pagination-rail {
+      inline-size: 100%;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+      width: auto;
+    }
+
+    &__loading-panel-secondary {
+      justify-self: start;
+      max-inline-size: 4.75rem;
+    }
+  }
+
   @media (min-width: 1025px) {
     // Reserve the desktop navigation/header height used by the ready state.
     &__loading-skeleton {
