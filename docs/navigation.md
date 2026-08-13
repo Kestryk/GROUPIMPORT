@@ -2,23 +2,29 @@
 
 ## Fixed compact trigger placement (2026-08-02)
 
-The compact EasyStud navigation trigger is a fixed, left-edge half-pill. It
-must not derive its resting position from the participant selector, an open
-participant menu or Moodle's drawer toggle: those controls can reflow while
-the page scrolls, which previously made the handle jump between positions.
+The compact EasyStud navigation trigger is a fixed, left-edge half-pill. Its
+steady placement is the visual viewport centre, with safe top and bottom
+bounds. It may cover ordinary responsive content, including the participant
+workspace, but it must never cover Moodle's native drawer-opening button.
 
-The steady placement is the visual viewport centre, with safe top and bottom
-bounds. On phone layouts up to `40rem`, Moodle places the participant selector
-across that centre; the trigger therefore uses the token-sized offset just
-above it. This keeps the trigger clear of the expanded Grouping identity rail
-without a scroll-dependent calculation or any Grouping-card geometry change.
+The controller measures only the configured Moodle drawer-toggle region and
+publishes its lower edge. The consumer SCSS uses that edge as a lower bound for
+the trigger centre, including phone layouts up to `40rem`; it does not use the
+participant selector, an open participant menu, Guide or Grouping geometry.
+This preserves the ordinary-content overlay contract while keeping the native
+Moodle opener reachable.
+
+The trigger keeps the phone token-sized centre offset when no native drawer
+opener is present. This keeps it clear of the expanded Grouping identity rail
+without a Grouping-card geometry change.
 The trigger keeps its vertical translation under
 `prefers-reduced-motion`; only the horizontal hover movement is suppressed.
 
 The dedicated `responsive navigation trigger remains left-centred at …`
 Playwright cases prove the rendered geometry before and after scroll/resize
-events, the native drawer/participant/Guide non-overlap, the hover label and
-the absence of horizontal overflow at 1024 x 768, 768 x 1024 and 390 x 844.
+events, native drawer non-overlap, the permitted ordinary-content overlay,
+the hover label and the absence of horizontal overflow at 1024 x 768, 768 x
+1024 and 390 x 844.
 
 ## Mass Import shared consumer (EED-NAV-2026-0005, 2026-08-03)
 

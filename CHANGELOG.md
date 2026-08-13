@@ -10,6 +10,15 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-12
+
+#### Fixed
+
+- EED-NAV-2026-0010: keep the responsive EasyEdu Navigation trigger below
+  Moodle's visible native drawer-opening button. The trigger still overlays
+  ordinary compact content where needed; Guide, Skeleton, Grouping cards and
+  the shared UI Kit remain unchanged.
+
 ### 2026-08-06
 
 #### Fixed
