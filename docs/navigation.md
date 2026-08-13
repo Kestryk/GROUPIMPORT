@@ -20,11 +20,12 @@ without a Grouping-card geometry change.
 The trigger keeps its vertical translation under
 `prefers-reduced-motion`; only the horizontal hover movement is suppressed.
 
-The dedicated `responsive navigation trigger remains left-centred at …`
-Playwright cases prove the rendered geometry before and after scroll/resize
-events, native drawer non-overlap, the permitted ordinary-content overlay,
-the hover label and the absence of horizontal overflow at 1024 x 768, 768 x
-1024 and 390 x 844.
+The dedicated `easystud-navigation-native-drawer-clearance` scenario is the
+only native-opener regression gate. It runs at 390 x 844 and verifies only that
+the EasyEdu trigger does not overlap Moodle's visible drawer-opening button.
+It is intentionally separate from `responsive-audit.spec.js`, so executing
+this approval does not select any of that broader audit's cases. Platform must
+allowlist the exact identifier for `easystud-moodle51` before a leased run.
 
 ## Mass Import shared consumer (EED-NAV-2026-0005, 2026-08-03)
 

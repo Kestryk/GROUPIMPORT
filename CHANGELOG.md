@@ -18,6 +18,10 @@ Maintenance convention:
   Moodle's visible native drawer-opening button. The trigger still overlays
   ordinary compact content where needed; Guide, Skeleton, Grouping cards and
   the shared UI Kit remain unchanged.
+- EED-NAV-2026-0010: add the isolated 390 px supervised scenario
+  `easystud-navigation-native-drawer-clearance`. It is pending Platform's
+  `easystud-moodle51` allowlist entry and does not execute the broader
+  responsive audit.
 
 ### 2026-08-06
 
