@@ -355,7 +355,9 @@ full-width bordered start action occupies its own final row. The text must stay
 inside the green card and must never run under or beyond the action. At compact
 breakpoints the card becomes one full-width vertical flex flow: centred icon,
 full-width explanation, then that same full-width final action. It must not
-retain a visual column split.
+retain a visual column split. The title and explanation explicitly restore
+normal wrapping so a broad consumer `white-space: nowrap` rule cannot expand
+the card beyond its track.
 
 The green guided-path frame is available as a reusable surface mixin:
 
