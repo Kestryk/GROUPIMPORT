@@ -33,6 +33,8 @@ Maintenance convention:
   remains contained by the green card.
 - Let the body use native wrapping inside its desktop grid track beside the
   icon, without an additional card-wide sizing constraint.
+- Restore normal wrapping on the guided-path title and explanation so inherited
+  slideshow no-wrap rules cannot expand the green card beyond its track.
 
 #### Validation
 
