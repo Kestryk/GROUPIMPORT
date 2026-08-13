@@ -189,6 +189,23 @@
       transform: translateY(-50%);
     }
 
+    // Nested Group cards place their compact actions menu inside the header.
+    // Reserve its existing touch-target lane before distributing the title and
+    // member-count badge. This changes neither card dimensions nor the menu,
+    // rail or disclosure animation.
+    &--responsive-workspace &-tree__children > &-group > &-group__header {
+      padding-right: calc(var(--easyedu-touch-target-min) + 0.45rem);
+
+      > .local-groupimport-easystud-group__name {
+        min-width: 0;
+      }
+
+      > .badge {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    }
+
     &-card-menu__icon.fa {
       color: inherit;
       font-size: 0.95rem;
