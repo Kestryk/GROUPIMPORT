@@ -18,6 +18,12 @@ the `actioninprogress` language string from
 `data-easyedu-action-busy-label`; no central modal or duplicate loading dialog
 is introduced.
 
+At an effective width of `20rem` or less, Mass Import alone reduces that
+circle to `1.6rem`, removes its shadow and aligns its bottom/end offset with
+the label. This keeps the localized feedback visually inside its own pill at
+320 px with native 200% browser zoom; desktop feedback and the shared action
+indicator remain unchanged.
+
 When motion is enabled, the skeleton fades out over 180 ms and the real content
 then fades in over 180 ms. The root keeps its loading state and the real region
 remains inert until both phases finish. With `prefers-reduced-motion`, both

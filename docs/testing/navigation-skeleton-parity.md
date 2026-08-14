@@ -116,6 +116,14 @@ an explicit logical inline size. Its full-width field and row cues use
 coordinates of every rendered cue within the Skeleton root without changing
 the shared loading primitive or the final Mass Import layout.
 
+At the same compact threshold, Mass Import alone reduces the fixed busy
+spinner to `1.6rem`, removes its external shadow and aligns its bottom/end
+offset with the localized `Loading in progress` label. This is action feedback,
+not a Navigation Skeleton cue: the static frames and the 19 animated internal
+cues are unchanged. The focused scenario exposes that local busy state and
+writes one full-window 320 px LTR/native-200% capture before containment
+assertions, while retaining the RTL matrix.
+
 The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked
