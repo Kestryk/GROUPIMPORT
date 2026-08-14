@@ -16,7 +16,7 @@ Maintenance convention:
 
 - At the effective 20rem breakpoint, keep Mass Import's fixed `Loading in
   progress` spinner inside its label by reducing only this local feedback
-  circle, aligning it with the label edge and removing the compact shadow.
+  circle, giving it compact lower/end-edge clearance and removing its shadow.
   Desktop feedback, the shared UI Kit mixin, Skeleton frames and animated cues
   remain unchanged.
 
