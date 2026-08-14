@@ -14091,6 +14091,14 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   animation: none;
 }
 @media (max-width: 20rem) {
+  .local-groupimport-import.is-action-busy::after {
+    bottom: 1.45rem;
+    border-width: 0.18rem;
+    box-shadow: none;
+    height: 1.6rem;
+    right: 1.45rem;
+    width: 1.6rem;
+  }
   .local-groupimport-import__loading-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

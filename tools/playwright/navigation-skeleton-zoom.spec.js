@@ -84,7 +84,7 @@ const login = async page => {
     });
 };
 
-const revealSkeleton = async(page, surface, direction) => {
+const revealSkeleton = async(page, surface, direction, showBusyIndicator = false) => {
     await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     if (page.url().includes('/login/')) {
         await login(page);
@@ -93,7 +93,7 @@ const revealSkeleton = async(page, surface, direction) => {
     await expect(page.locator(surface.rootSelector)).toBeVisible({timeout: 30000});
 
     await page.emulateMedia({reducedMotion: 'no-preference', forcedColors: 'none'});
-    await page.evaluate(({rootSelector, direction}) => {
+    await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
         const root = document.querySelector(rootSelector);
         const skeleton = root?.querySelector('[data-easystud-loading-skeleton]');
         if (!root || !skeleton) {
@@ -101,10 +101,11 @@ const revealSkeleton = async(page, surface, direction) => {
         }
         document.documentElement.dir = direction;
         root.classList.remove('is-easystud-loading-skeleton-exiting');
+        root.classList.toggle('is-action-busy', showBusyIndicator);
         root.dataset.easystudLoadingState = 'loading';
         root.setAttribute('aria-busy', 'true');
         skeleton.hidden = false;
-    }, {rootSelector: surface.rootSelector, direction});
+    }, {rootSelector: surface.rootSelector, direction, showBusyIndicator});
 
     const skeleton = page.locator(
         `${surface.rootSelector} [data-easystud-loading-skeleton]`
@@ -120,6 +121,9 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     const frameNodes = Array.from(skeleton?.querySelectorAll(surface.frameSelector) || []);
     const animatedName = node => getComputedStyle(node, surface.animatedPseudo).animationName;
     const animatedDirection = node => getComputedStyle(node, surface.animatedPseudo).animationDirection;
+    const readPixels = value => Number.parseFloat(value) || 0;
+    const busySpinner = root ? getComputedStyle(root, '::after') : null;
+    const busyLabel = root ? getComputedStyle(root, '::before') : null;
     const bounds = skeleton?.getBoundingClientRect();
     const escapingNodes = Array.from(skeleton?.querySelectorAll(`${surface.cueSelector}, ${surface.frameSelector}`) || [])
         .filter(node => {
@@ -156,7 +160,17 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
         skeletonBounds: bounds ? {left: bounds.left, right: bounds.right} : null,
         escapingNodes,
         innerWidth: window.innerWidth,
+        rootFontSize: readPixels(getComputedStyle(document.documentElement).fontSize),
         visualViewportScale: window.visualViewport?.scale || 1,
+        busyIndicator: busySpinner && busyLabel ? {
+            enabled: root.classList.contains('is-action-busy'),
+            spinnerBottom: readPixels(busySpinner.bottom),
+            spinnerHeight: readPixels(busySpinner.height),
+            spinnerRight: readPixels(busySpinner.right),
+            spinnerWidth: readPixels(busySpinner.width),
+            labelBottom: readPixels(busyLabel.bottom),
+            labelRight: readPixels(busyLabel.right),
+        } : null,
     };
 }, {surface});
 
@@ -195,7 +209,10 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                 for (const surface of surfaces) {
                     const page = await context.newPage();
                     await page.setViewportSize(cell.viewport);
-                    const skeleton = await revealSkeleton(page, surface, cell.direction);
+                    const showBusyIndicator = surface.id === 'mass-import';
+                    const skeleton = await revealSkeleton(
+                        page, surface, cell.direction, showBusyIndicator
+                    );
                     const inspection = await inspectSkeleton(page, surface);
                     const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
 
@@ -204,6 +221,12 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     await skeleton.screenshot({
                         path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
                     });
+                    if (showBusyIndicator && cell.viewport.width === 320 &&
+                        cell.direction === 'ltr' && zoom === 200) {
+                        await page.screenshot({
+                            path: testInfo.outputPath(`navigation-skeleton-${cellId}-window.png`),
+                        });
+                    }
                     evidence.push({cellId, ...inspection});
 
                     expect(inspection.cueCount, `${cellId}: internal cue count`).toBe(surface.expectedCues);
@@ -218,6 +241,22 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         inspection.skeletonClientWidth + 1
                     );
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
+                    if (showBusyIndicator && cell.viewport.width === 320 && zoom === 200) {
+                        const busy = inspection.busyIndicator;
+                        expect(busy.enabled, `${cellId}: busy indicator enabled`).toBe(true);
+                        expect(busy.spinnerWidth, `${cellId}: compact busy spinner width`).toBeLessThanOrEqual(
+                            inspection.rootFontSize * 1.61
+                        );
+                        expect(busy.spinnerHeight, `${cellId}: compact busy spinner height`).toBeLessThanOrEqual(
+                            inspection.rootFontSize * 1.61
+                        );
+                        expect(busy.spinnerBottom, `${cellId}: busy spinner bottom alignment`).toBeCloseTo(
+                            busy.labelBottom, 1
+                        );
+                        expect(busy.spinnerRight, `${cellId}: busy spinner end alignment`).toBeCloseTo(
+                            busy.labelRight, 1
+                        );
+                    }
                     expect(
                         inspection.escapingNodes,
                         `${cellId}: skeleton nodes escaping its root ${JSON.stringify(inspection.skeletonBounds)}`

@@ -10,6 +10,22 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-14
+
+#### Fixed
+
+- At the effective 20rem breakpoint, keep Mass Import's fixed `Loading in
+  progress` spinner inside its label by reducing only this local feedback
+  circle, aligning it with the label edge and removing the compact shadow.
+  Desktop feedback, the shared UI Kit mixin, Skeleton frames and animated cues
+  remain unchanged.
+
+#### Validation
+
+- Extend the focused native-zoom scenario with compact Mass Import busy-label
+  geometry and a full-window 320 px LTR/native-200% review capture. The test
+  continues to use an external Chromium profile and no browser shortcuts.
+
 ### 2026-08-10
 
 #### Changed
