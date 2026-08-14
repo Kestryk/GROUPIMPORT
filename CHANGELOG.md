@@ -19,6 +19,10 @@ Maintenance convention:
   circle, giving it compact lower/end-edge clearance and removing its shadow.
   Desktop feedback, the shared UI Kit mixin, Skeleton frames and animated cues
   remain unchanged.
+- Remove the fixed minimum widths from the two Mass Import Skeleton grid
+  tracks. Their desktop ratio and existing responsive one-column layout remain
+  unchanged, while internal cues can no longer force the Skeleton root wider
+  at native 200% zoom.
 
 #### Validation
 

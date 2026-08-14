@@ -111,10 +111,12 @@ icon, so the full card frame remains contained. Its normal desktop/phone
 geometry is unchanged.
 
 The Mass Import consumer also gives its Skeleton grid, cards and card headers
-an explicit logical inline size. Its full-width field and row cues use
-`border-box` and a logical maximum width. This keeps the 200%-zoom visual
-coordinates of every rendered cue within the Skeleton root without changing
-the shared loading primitive or the final Mass Import layout.
+an explicit logical inline size. The grid retains its desktop `0.88fr`/`1.12fr`
+ratio without fixed minimum tracks, while its responsive one-column rule stays
+in place. Its full-width field and row cues use `border-box` and a logical
+maximum width. This keeps the 200%-zoom visual coordinates of every rendered
+cue within the Skeleton root without changing the shared loading primitive or
+the final Mass Import layout.
 
 At the same compact threshold, Mass Import alone reduces the fixed busy
 spinner to `1.6rem`, removes its external shadow and aligns its bottom/end
