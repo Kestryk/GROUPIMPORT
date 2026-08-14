@@ -188,34 +188,20 @@ const bindRoot = root => {
 
     const syncTriggerPosition = () => {
         positionFrame = 0;
-        const anchors = [];
         if (anchorSelector) {
             try {
                 const anchor = document.querySelector(anchorSelector);
                 if (anchor && anchor.getClientRects().length) {
-                    anchors.push(anchor);
+                    const edge = Math.max(0, Math.ceil(anchor.getBoundingClientRect().bottom));
+                    root.style.setProperty('--easyedu-navigation-native-trigger-edge', `${edge}px`);
+                    return;
                 }
             } catch (error) {
                 // Keep the compact control available if a theme provides an
                 // invalid drawer-toggle selector.
             }
         }
-        const easystud = root.closest('.local-groupimport-easystud');
-        const participantNavigation = easystud ?
-            easystud.querySelector('[data-easystud-participant-navigation]') : null;
-        if (participantNavigation && participantNavigation.getClientRects().length) {
-            anchors.push(participantNavigation);
-            const openParticipantMenu = participantNavigation.querySelector('.dropdown-menu.show');
-            if (openParticipantMenu && openParticipantMenu.getClientRects().length) {
-                anchors.push(openParticipantMenu);
-            }
-        }
-        if (!anchors.length) {
-            root.style.removeProperty('--easyedu-navigation-native-trigger-edge');
-            return;
-        }
-        const edge = Math.max(0, ...anchors.map(anchor => Math.ceil(anchor.getBoundingClientRect().bottom)));
-        root.style.setProperty('--easyedu-navigation-native-trigger-edge', `${edge}px`);
+        root.style.removeProperty('--easyedu-navigation-native-trigger-edge');
     };
 
     const scheduleTriggerPosition = () => {

@@ -166,22 +166,37 @@ const assertResponsiveNavigationTrigger = async page => {
             participantOverlap: overlaps(triggerRect, rect(participant)),
             drawerOverlap: overlaps(triggerRect, rect(drawer)),
             guideOverlap: overlaps(triggerRect, rect(guide)),
+            nativeTriggerEdge: Number.parseFloat(
+                document.querySelector('[data-easyedu-navigation]')
+                    ?.style.getPropertyValue('--easyedu-navigation-native-trigger-edge') || '0'
+            ),
         };
     });
     expect(geometry.text).toBe(geometry.ariaLabel);
     expect(geometry.label).toBe(geometry.ariaLabel);
     expect(geometry.position).toBe('fixed');
     expect(geometry.left).toBeLessThanOrEqual(1);
-    const centreOffset = Math.abs((geometry.top + (geometry.height / 2)) - (geometry.viewportHeight / 2));
-    expect(
-        centreOffset,
-        'Responsive navigation trigger geometry: ' + JSON.stringify(geometry)
-    ).toBeLessThanOrEqual(geometry.compactPhone ? 36 : 2);
+    const triggerCentre = geometry.top + (geometry.height / 2);
+    const preferredCentreOffset = Math.abs(triggerCentre - (geometry.viewportHeight / 2));
+    const allowedCentreOffset = geometry.compactPhone ? 36 : 2;
+    const nativeMinimumCentre = geometry.drawer ? geometry.drawer.bottom + (geometry.height / 2) : 0;
+    if (nativeMinimumCentre <= geometry.viewportHeight / 2 + allowedCentreOffset) {
+        expect(
+            preferredCentreOffset,
+            'Responsive navigation trigger geometry: ' + JSON.stringify(geometry)
+        ).toBeLessThanOrEqual(allowedCentreOffset);
+    } else {
+        expect(triggerCentre, 'Responsive navigation trigger geometry: ' + JSON.stringify(geometry))
+            .toBeGreaterThanOrEqual(nativeMinimumCentre - 1);
+    }
     expect(geometry.outerEdgeRadius).toBe('0px');
     expect(geometry.rowHeight).toBe(0);
-    expect(geometry.participantOverlap, 'Responsive navigation trigger geometry: ' + JSON.stringify(geometry)).toBe(false);
     expect(geometry.drawerOverlap, 'Responsive navigation trigger geometry: ' + JSON.stringify(geometry)).toBe(false);
     expect(geometry.guideOverlap, 'Responsive navigation trigger geometry: ' + JSON.stringify(geometry)).toBe(false);
+    if (geometry.drawer) {
+        expect(geometry.nativeTriggerEdge, 'Responsive navigation trigger geometry: ' + JSON.stringify(geometry))
+            .toBeGreaterThanOrEqual(geometry.drawer.bottom - 1);
+    }
 
     const trigger = page.locator('[data-easyedu-navigation-open]');
     const idleWidth = await trigger.evaluate(node => node.getBoundingClientRect().width);
