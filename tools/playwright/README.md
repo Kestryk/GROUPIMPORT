@@ -25,11 +25,12 @@ child and is cleared in `finally`; no password, cookie or authentication file
 is written. Cache purges and fixture writes use their own explicit resources
 rather than this test lease.
 
-`playwright.config.js` is the versioned discovery configuration for this
-directory. The supervised runner passes it to both `--list` and the child run,
-so an exact `-Spec` is resolved from `tools/playwright` rather than Playwright's
-implicit `./tests` directory. The config does not own artifact output; the
-runner still supplies an external manifested output path for every real run.
+`playwright.config.js`, the Playwright CLI and `node_modules` always remain in
+the runtime checkout. The supervised runner passes the runtime configuration to
+both `--list` and the child run, so an exact `-Spec` is resolved from
+`tools/playwright` rather than Playwright's implicit `./tests` directory. The
+config does not own artifact output; the runner still supplies an external
+manifested output path for every real run.
 
 Use `-Spec` and an exact `-Grep` for another scenario. The one-test gate cannot
 be disabled. `-DiscoveryOnly` validates selection and artifact registration
@@ -185,9 +186,18 @@ pass that checkout's own `tools/playwright` directory as `-AllowedSpecRoot`.
 The runner verifies that root against the checkout's `version.php`; it does not
 accept an arbitrary directory or a spec outside the allowlisted root.
 
+For an external spec, the runner passes its absolute path and creates a short-
+lived configuration outside both checkouts. That configuration imports the
+runtime configuration and overrides only `testDir`; the source checkout never
+needs `node_modules`. `NODE_PATH` temporarily includes the runtime modules for
+the owned Node child and is restored in all cases. Use `-DiscoveryOnly` first:
+it must report exactly one selected external test without loading credentials,
+taking a runtime lease or launching a browser.
+
 Browser output and the isolated profile are written below the external
 `EASYEDU_PLAYWRIGHT_ARTIFACTS_ROOT`, or below the local application-data
-default when that process variable is unset. Each run contains
+default when that process variable is unset. The chosen artifact root must be
+external to both the runtime and external source checkouts. Each run contains
 `runner-result.json`, `cleanup.json`, `phase-progress.jsonl`, sanitized logs
 and `artifact-manifest.json`. Use `-ArtifactRoot` only for another external
 location; the checkout and any ancestor containing it are rejected.

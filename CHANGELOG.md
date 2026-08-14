@@ -10,6 +10,24 @@ Maintenance convention:
 
 ## Unreleased
 
+### External Playwright spec runner - 2026-08-14
+
+#### Fixed
+
+- Keep the authenticated Playwright CLI, dependencies and versioned runtime
+  configuration in the runtime checkout when a reviewed spec comes from a
+  separate allowlisted EasyStud worktree.
+- Resolve that external spec with an absolute path and a temporary external
+  configuration which changes only `testDir`; restore `NODE_PATH` and remove
+  the temporary configuration on every exit path.
+- Reject artifact locations inside either the runtime or source checkout, so
+  DiscoveryOnly and real runs leave both worktrees free of generated artifacts.
+
+#### Validation
+
+- Add a static runner contract for the runtime/source boundary and retain the
+  exact-one-test DiscoveryOnly gate before credentials, leases or browser work.
+
 ### Member-list keyboard focus containment — 2026-08-11
 
 #### Fixed

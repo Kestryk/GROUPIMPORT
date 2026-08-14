@@ -89,7 +89,9 @@ function Invoke-OwnedNodeProcess {
     $startInfo.CreateNoWindow = $true
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
-    $startInfo.WorkingDirectory = $script:PlaywrightRoot
+    # The Node child always runs from the runtime checkout. An approved spec
+    # may live in another worktree, but it must not provide the CLI or modules.
+    $startInfo.WorkingDirectory = $script:RuntimePlaywrightRoot
 
     $process = [Diagnostics.Process]::new()
     $process.StartInfo = $startInfo
@@ -149,9 +151,50 @@ function Write-JsonFile {
     [IO.File]::WriteAllText($Path, $json, [Text.UTF8Encoding]::new($false))
 }
 
+function New-ExternalSpecConfiguration {
+    param(
+        [Parameter(Mandatory = $true)][string]$RuntimeConfiguration,
+        [Parameter(Mandatory = $true)][string]$AllowedSpecRoot
+    )
+
+    # The temporary configuration stays outside both checkouts. It imports the
+    # runtime configuration unchanged and overrides only Playwright's testDir.
+    $temporaryPath = Join-Path ([IO.Path]::GetTempPath()) (
+        'easyedu-easystud-playwright-{0}.config.cjs' -f [Guid]::NewGuid().ToString('N')
+    )
+    $runtimeConfigurationJson = $RuntimeConfiguration.Replace('\', '/') | ConvertTo-Json -Compress
+    $allowedSpecRootJson = $AllowedSpecRoot.Replace('\', '/') | ConvertTo-Json -Compress
+    $content = @"
+const runtimeConfig = require($runtimeConfigurationJson);
+
+module.exports = {
+    ...runtimeConfig,
+    testDir: $allowedSpecRootJson,
+};
+"@
+    [IO.File]::WriteAllText($temporaryPath, $content, [Text.UTF8Encoding]::new($false))
+    return $temporaryPath
+}
+
+function Set-RunnerNodePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$RuntimeNodeModules,
+        [AllowNull()][string]$PreviousNodePath
+    )
+
+    $segments = @($RuntimeNodeModules)
+    if (-not [string]::IsNullOrWhiteSpace($PreviousNodePath)) {
+        $segments += $PreviousNodePath
+    }
+    [Environment]::SetEnvironmentVariable('NODE_PATH', ($segments -join [IO.Path]::PathSeparator), 'Process')
+}
+
 $runtimePlaywrightRoot = (Resolve-Path -LiteralPath (Split-Path -Parent $MyInvocation.MyCommand.Path)).Path
-$script:PlaywrightRoot = $runtimePlaywrightRoot
-$pluginRoot = (Resolve-Path -LiteralPath (Join-Path $script:PlaywrightRoot '..\..')).Path
+$script:RuntimePlaywrightRoot = $runtimePlaywrightRoot
+$runtimePluginRoot = (Resolve-Path -LiteralPath (Join-Path $runtimePlaywrightRoot '..\..')).Path
+$specRoot = $runtimePlaywrightRoot
+$sourcePluginRoot = $runtimePluginRoot
+$usesExternalSpecRoot = $false
 if (-not [string]::IsNullOrWhiteSpace($AllowedSpecRoot)) {
     $candidateSpecRoot = (Resolve-Path -LiteralPath $AllowedSpecRoot).Path
     $candidatePluginRoot = (Resolve-Path -LiteralPath (Join-Path $candidateSpecRoot '..\..')).Path
@@ -160,8 +203,9 @@ if (-not [string]::IsNullOrWhiteSpace($AllowedSpecRoot)) {
         -not (Test-Path -LiteralPath (Join-Path $candidatePluginRoot 'version.php') -PathType Leaf)) {
         throw 'AllowedSpecRoot must be the tools/playwright directory of a local_groupimport checkout.'
     }
-    $script:PlaywrightRoot = $candidateSpecRoot
-    $pluginRoot = $candidatePluginRoot
+    $specRoot = $candidateSpecRoot
+    $sourcePluginRoot = $candidatePluginRoot
+    $usesExternalSpecRoot = $true
 }
 $credentialLoader = Resolve-ExistingLeaf -Path $CredentialLoaderPath -Label 'Credential loader'
 $orchestrationModule = Resolve-ExistingLeaf -Path $OrchestrationModulePath -Label 'Orchestration module'
@@ -169,19 +213,21 @@ $manifestRegistrar = Resolve-ExistingLeaf `
     -Path (Join-Path (Split-Path -Parent $orchestrationModule) 'Register-EasyEduArtifactManifest.ps1') `
     -Label 'Artifact manifest registrar'
 $playwrightCli = Resolve-ExistingLeaf `
-    -Path (Join-Path $script:PlaywrightRoot 'node_modules\@playwright\test\cli.js') `
+    -Path (Join-Path $runtimePlaywrightRoot 'node_modules\@playwright\test\cli.js') `
     -Label 'Playwright CLI'
-$playwrightConfig = Resolve-ExistingLeaf `
-    -Path (Join-Path $script:PlaywrightRoot 'playwright.config.js') `
+$runtimePlaywrightConfig = Resolve-ExistingLeaf `
+    -Path (Join-Path $runtimePlaywrightRoot 'playwright.config.js') `
     -Label 'Playwright configuration'
-$specPath = Resolve-ExistingLeaf -Path (Join-Path $script:PlaywrightRoot $Spec) -Label 'Playwright spec'
-if (-not (Test-PathIsSameOrBelow -Path $specPath -Root $script:PlaywrightRoot)) {
+$specPath = Resolve-ExistingLeaf -Path (Join-Path $specRoot $Spec) -Label 'Playwright spec'
+if (-not (Test-PathIsSameOrBelow -Path $specPath -Root $specRoot)) {
     throw 'The Playwright spec must stay below the allowlisted tools/playwright root.'
 }
-$specArgument = $specPath.Substring($script:PlaywrightRoot.Length).TrimStart('\', '/').Replace('\', '/')
+$specArgument = $specPath.Replace('\', '/')
 if ([string]::IsNullOrWhiteSpace($Grep)) {
     throw 'Grep must identify exactly one Playwright test.'
 }
+
+$runtimeNodeModules = (Resolve-Path -LiteralPath (Join-Path $runtimePlaywrightRoot 'node_modules')).Path
 
 $nodeCommand = Get-Command node -CommandType Application -ErrorAction Stop |
     Select-Object -First 1
@@ -191,26 +237,45 @@ $script:LoadedPassword = $null
 $script:LoadedUsername = $null
 
 # Discovery is deliberately performed before artifact writes, credentials and leases.
-$listArguments = @(
-    $playwrightCli,
-    'test',
-    $specArgument,
-    ('--config=' + $playwrightConfig.Replace('\', '/')),
-    "--grep=$Grep",
-    '--list',
-    '--workers=1'
-)
-$discovery = Invoke-OwnedNodeProcess `
-    -NodePath $nodePath `
-    -Argument $listArguments `
-    -TimeoutSeconds ([Math]::Min($WatchdogSeconds, 120))
-$discoveryText = $discovery.StdOut + [Environment]::NewLine + $discovery.StdErr
-if ($discovery.ExitCode -ne 0) {
-    throw "Playwright discovery failed with exit code $($discovery.ExitCode)."
-}
-$totalMatch = [regex]::Match($discoveryText, '(?im)^\s*Total:\s*(\d+)\s+test(?:s)?\b')
-if (-not $totalMatch.Success -or [int]$totalMatch.Groups[1].Value -ne 1) {
-    throw 'Playwright discovery must select exactly one test.'
+# Source-worktree specs borrow runtime dependencies through NODE_PATH only for
+# the owned child process window, then restore the caller's environment.
+$previousDiscoveryNodePath = [Environment]::GetEnvironmentVariable('NODE_PATH', 'Process')
+$discoveryConfiguration = $null
+try {
+    $discoveryConfiguration = if ($usesExternalSpecRoot) {
+        New-ExternalSpecConfiguration `
+            -RuntimeConfiguration $runtimePlaywrightConfig `
+            -AllowedSpecRoot $specRoot
+    } else {
+        $runtimePlaywrightConfig
+    }
+    Set-RunnerNodePath -RuntimeNodeModules $runtimeNodeModules -PreviousNodePath $previousDiscoveryNodePath
+    $listArguments = @(
+        $playwrightCli,
+        'test',
+        $specArgument,
+        ('--config=' + $discoveryConfiguration.Replace('\', '/')),
+        "--grep=$Grep",
+        '--list',
+        '--workers=1'
+    )
+    $discovery = Invoke-OwnedNodeProcess `
+        -NodePath $nodePath `
+        -Argument $listArguments `
+        -TimeoutSeconds ([Math]::Min($WatchdogSeconds, 120))
+    $discoveryText = $discovery.StdOut + [Environment]::NewLine + $discovery.StdErr
+    if ($discovery.ExitCode -ne 0) {
+        throw "Playwright discovery failed with exit code $($discovery.ExitCode)."
+    }
+    $totalMatch = [regex]::Match($discoveryText, '(?im)^\s*Total:\s*(\d+)\s+test(?:s)?\b')
+    if (-not $totalMatch.Success -or [int]$totalMatch.Groups[1].Value -ne 1) {
+        throw 'Playwright discovery must select exactly one test.'
+    }
+} finally {
+    [Environment]::SetEnvironmentVariable('NODE_PATH', $previousDiscoveryNodePath, 'Process')
+    if ($usesExternalSpecRoot -and -not [string]::IsNullOrWhiteSpace($discoveryConfiguration)) {
+        Remove-Item -LiteralPath $discoveryConfiguration -Force -ErrorAction SilentlyContinue
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
@@ -221,9 +286,12 @@ if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
     }
 }
 $approvedArtifactRoot = [IO.Path]::GetFullPath($ArtifactRoot).TrimEnd('\', '/')
-if ((Test-PathIsSameOrBelow -Path $approvedArtifactRoot -Root $pluginRoot) -or
-    (Test-PathIsSameOrBelow -Path $pluginRoot -Root $approvedArtifactRoot)) {
-    throw 'ArtifactRoot must be external to, and must not contain, the EasyStud checkout.'
+$protectedPluginRoots = @($runtimePluginRoot, $sourcePluginRoot) | Select-Object -Unique
+foreach ($protectedPluginRoot in $protectedPluginRoots) {
+    if ((Test-PathIsSameOrBelow -Path $approvedArtifactRoot -Root $protectedPluginRoot) -or
+        (Test-PathIsSameOrBelow -Path $protectedPluginRoot -Root $approvedArtifactRoot)) {
+        throw 'ArtifactRoot must be external to, and must not contain, either EasyStud checkout.'
+    }
 }
 
 $runId = 'easystud-authenticated-{0}-{1}' -f
@@ -260,6 +328,8 @@ $previousRunnerEnvironment = @{}
 foreach ($name in $runnerEnvironmentNames) {
     $previousRunnerEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
 }
+$previousExecutionNodePath = [Environment]::GetEnvironmentVariable('NODE_PATH', 'Process')
+$executionConfiguration = $null
 
 $leaseAcquired = $false
 $leaseReleased = $false
@@ -276,13 +346,21 @@ try {
     if ($DiscoveryOnly) {
         $runnerExitCode = 0
     } else {
+        $executionConfiguration = if ($usesExternalSpecRoot) {
+            New-ExternalSpecConfiguration `
+                -RuntimeConfiguration $runtimePlaywrightConfig `
+                -AllowedSpecRoot $specRoot
+        } else {
+            $runtimePlaywrightConfig
+        }
+        Set-RunnerNodePath -RuntimeNodeModules $runtimeNodeModules -PreviousNodePath $previousExecutionNodePath
         Import-Module -Name $orchestrationModule -Force
         $leaseSeconds = [Math]::Min(3600, [Math]::Max(120, $WatchdogSeconds + 120))
         $leaseArguments = @{
             Resource = $LeaseResource
             ProjectNamespace = 'easystud'
             RunId = $runId
-            Repository = $pluginRoot
+            Repository = $runtimePluginRoot
             Purpose = 'Authenticated EasyStud Playwright test'
             LeaseSeconds = $leaseSeconds
             OwnerPid = $PID
@@ -320,7 +398,7 @@ try {
             $playwrightCli,
             'test',
             $specArgument,
-            ('--config=' + $playwrightConfig.Replace('\', '/')),
+            ('--config=' + $executionConfiguration.Replace('\', '/')),
             "--grep=$Grep",
             '--reporter=line',
             '--workers=1',
@@ -383,6 +461,10 @@ try {
     foreach ($name in $runnerEnvironmentNames) {
         [Environment]::SetEnvironmentVariable($name, $previousRunnerEnvironment[$name], 'Process')
     }
+    [Environment]::SetEnvironmentVariable('NODE_PATH', $previousExecutionNodePath, 'Process')
+    if ($usesExternalSpecRoot -and -not [string]::IsNullOrWhiteSpace($executionConfiguration)) {
+        Remove-Item -LiteralPath $executionConfiguration -Force -ErrorAction SilentlyContinue
+    }
 
     if ($leaseAcquired) {
         try {
@@ -409,7 +491,11 @@ $cleanup = [ordered]@{
     leaseAcquired = $leaseAcquired
     leaseReleased = $leaseReleased
     ownedChildStopped = $ownedChildStopped
-    profileExternal = -not (Test-PathIsSameOrBelow -Path $profileRoot -Root $pluginRoot)
+    profileExternal = -not [bool](
+        $protectedPluginRoots | Where-Object {
+            Test-PathIsSameOrBelow -Path $profileRoot -Root $_
+        } | Select-Object -First 1
+    )
 }
 Write-JsonFile -Path (Join-Path $runRoot 'cleanup.json') -Value $cleanup
 
