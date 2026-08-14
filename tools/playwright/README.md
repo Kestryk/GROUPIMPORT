@@ -49,7 +49,9 @@ Navigation Skeleton check. It covers Student Management and Mass Import at
 320 and 390 CSS px in LTR and RTL. Its isolated per-run Chromium profile sets
 the 100% or 200% per-host preference before launch; it never sends Ctrl+plus,
 Ctrl+zero or any desktop-window automation, so it cannot alter a user's active
-browser profile or zoom.
+browser profile or zoom. For Mass Import, it also reveals the existing busy
+label and checks that the compact spinner fits its label at 320 px/native 200%;
+the same LTR cell writes one full-window review capture.
 
 ### Participant role-filter integrity
 

@@ -182,6 +182,18 @@
   // Preserve the full card frame at extreme effective widths such as a 320 px
   // window viewed at native 200% zoom. Only decorative cues stack or shrink here.
   @media (max-width: 20rem) {
+    // The fixed action spinner shares this compact label's bottom edge. At
+    // native 200% zoom, keep the circular feedback inside the label rather
+    // than letting its desktop-sized ring and shadow spill below it.
+    &.is-action-busy::after {
+      bottom: 1.45rem;
+      border-width: 0.18rem;
+      box-shadow: none;
+      height: 1.6rem;
+      right: 1.45rem;
+      width: 1.6rem;
+    }
+
     &__loading-actions {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
