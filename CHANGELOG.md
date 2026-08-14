@@ -27,6 +27,10 @@ Maintenance convention:
 - Extend the authenticated Guide target-audit contract to measure the long
   Guided Path card at desktop and 390 px, rejecting horizontal overflow,
   escaping children or an action that overlaps the explanation.
+- Keep the target-audit action assertion reliable with normal-motion Guide
+  scenes: a continuously animated slide does not make its real action
+  unavailable, while the post-click target, highlight and return checks remain
+  mandatory.
 
 ### Guide validation — 2026-08-10
 

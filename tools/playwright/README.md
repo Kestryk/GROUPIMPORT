@@ -82,6 +82,11 @@ the explanation rather than competing for the desktop text row.
 Before it writes either review capture, it waits for the normal-motion Guide
 entry to finish and for the dialog to be fully opaque; the evidence therefore
 shows the settled modal rather than a transparent animation frame.
+When the test opens a Show-in-interface target, it dispatches that real button
+handler with Playwright force-click semantics: a decorative, continuous slide
+animation must not be mistaken for an unavailable user action. The following
+checks still require the modal to close, the real target to be highlighted and
+the return control to work.
 
 The responsive selected-action tray check is `selected-action-tray.spec.js` /
 `selected group action tray remains contained at intermediate responsive width`.
