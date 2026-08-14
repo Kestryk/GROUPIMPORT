@@ -25,6 +25,20 @@ Maintenance convention:
 - Extend the focused native-zoom scenario with compact Mass Import busy-label
   geometry and a full-window 320 px LTR/native-200% review capture. The test
   continues to use an external Chromium profile and no browser shortcuts.
+### 2026-08-13
+
+#### Fixed
+
+- Reserve the existing compact-actions touch-target lane in responsive Group
+  cards nested inside a Grouping. Member-count badges now remain before the
+  action trigger at 320, 390 and 768 px without changing card dimensions,
+  actions, rails or disclosure animation.
+
+#### Validation
+
+- Add the focused nested Group action/count geometry scenario. It checks the
+  badge/action separation, card containment, horizontal-overflow boundary and
+  existing actions-menu opening at each declared responsive width.
 
 ### Member-list keyboard focus containment — 2026-08-11
 
