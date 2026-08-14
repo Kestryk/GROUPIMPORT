@@ -250,11 +250,13 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         expect(busy.spinnerHeight, `${cellId}: compact busy spinner height`).toBeLessThanOrEqual(
                             inspection.rootFontSize * 1.61
                         );
-                        expect(busy.spinnerBottom, `${cellId}: busy spinner bottom alignment`).toBeCloseTo(
-                            busy.labelBottom, 1
+                        expect(busy.spinnerBottom - busy.labelBottom,
+                            `${cellId}: busy spinner lower-edge clearance`).toBeCloseTo(
+                            inspection.rootFontSize * 0.5, 1
                         );
-                        expect(busy.spinnerRight, `${cellId}: busy spinner end alignment`).toBeCloseTo(
-                            busy.labelRight, 1
+                        expect(busy.spinnerRight - busy.labelRight,
+                            `${cellId}: busy spinner end-edge clearance`).toBeCloseTo(
+                            inspection.rootFontSize * 0.65, 1
                         );
                     }
                     expect(
