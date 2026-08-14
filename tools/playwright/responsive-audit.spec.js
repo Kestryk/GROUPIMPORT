@@ -1639,7 +1639,10 @@ test('Guide target audit resolves every slide and guided step to an actionable c
                     await show.getAttribute('data-easyedu-guide-show-target-desktop');
                 const expectedKey = viewport.compact ? (item.compactKey || item.key) : (item.desktopKey || item.key);
                 expect(variant || await show.getAttribute('data-easyedu-guide-show-target')).toBe(expectedKey);
-                await show.click();
+                // The slide visual keeps moving during normal-motion mode.
+                // Exercise the real handler without treating that decorative
+                // motion as an unavailable interface action.
+                await show.click({force: true});
                 await expect(modal).toBeHidden();
                 await expect(interfaceReturn, 'Slide ' + item.slide + ' should expose its return control').toBeVisible();
                 await assertHighlightedTarget(viewport.compact ? (item.compactSelector || item.selector) :
