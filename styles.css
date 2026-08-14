@@ -1048,7 +1048,7 @@
   display: inline-flex;
   gap: 0;
   inline-size: var(--easyedu-touch-target-min);
-  inset-block-start: clamp(var(--easyedu-navigation-trigger-safe-edge), 50dvh, 100dvh - var(--easyedu-navigation-trigger-safe-edge));
+  inset-block-start: clamp(max(var(--easyedu-navigation-trigger-safe-edge), var(--easyedu-navigation-native-trigger-edge, 0px) + var(--easyedu-touch-target-min) / 2 + var(--easyedu-navigation-trigger-gap)), 50dvh, 100dvh - var(--easyedu-navigation-trigger-safe-edge));
   inset-inline-start: 0;
   min-height: var(--easyedu-touch-target-min);
   min-width: var(--easyedu-touch-target-min);
@@ -1081,7 +1081,7 @@
 }
 @media (max-width: 40rem) {
   .local-groupimport-easystud__navigation .easyedu-navigation__trigger {
-    inset-block-start: clamp(var(--easyedu-navigation-trigger-safe-edge), 50dvh - var(--easyedu-touch-target-min) + var(--easyedu-navigation-trigger-safe-edge), 100dvh - var(--easyedu-navigation-trigger-safe-edge));
+    inset-block-start: clamp(max(var(--easyedu-navigation-trigger-safe-edge), var(--easyedu-navigation-native-trigger-edge, 0px) + var(--easyedu-touch-target-min) / 2 + var(--easyedu-navigation-trigger-gap)), 50dvh - var(--easyedu-touch-target-min) + var(--easyedu-navigation-trigger-safe-edge), 100dvh - var(--easyedu-navigation-trigger-safe-edge));
   }
 }
 .local-groupimport-easystud__navigation .easyedu-navigation__trigger-label {

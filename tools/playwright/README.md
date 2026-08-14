@@ -35,6 +35,14 @@ Use `-Spec` and an exact `-Grep` for another scenario. The one-test gate cannot
 be disabled. `-DiscoveryOnly` validates selection and artifact registration
 without loading credentials or taking the runtime lease.
 
+The dedicated native-drawer clearance scenario is
+`easystud-navigation-native-drawer-clearance.spec.js` /
+`easystud-navigation-native-drawer-clearance`. It uses only the 390 x 844
+viewport and asserts exclusively that the fixed EasyEdu Navigation trigger does
+not overlap Moodle's visible `[data-region="drawer-toggle"]` opener. It must be
+run only after Platform allowlists that exact identifier for `easystud-moodle51`;
+do not substitute any case from `responsive-audit.spec.js`.
+
 `navigation-skeleton-zoom.spec.js` / `Navigation Skeleton stays contained at
 320/390 with isolated native 100/200 zoom` is the focused source-owned
 Navigation Skeleton check. It covers Student Management and Mass Import at

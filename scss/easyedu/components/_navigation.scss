@@ -199,9 +199,9 @@
     @include buttons.admin-primary-nav-action(destructive);
   }
 
-  // Rest at the centre of the viewport's left edge. The native Moodle drawer
-  // control remains in its own top-edge region; ordinary page controls must
-  // never determine this handle's resting place.
+  // Rest at the centre of the viewport's left edge. When Moodle renders its
+  // native drawer opener, the consumer controller supplies its bottom edge;
+  // the handle can cover ordinary content but must start below that opener.
   .easyedu-navigation__trigger-row {
     block-size: 0;
     margin: 0;
@@ -219,7 +219,14 @@
     gap: 0;
     inline-size: var(--easyedu-touch-target-min);
     inset-block-start: clamp(
-      var(--easyedu-navigation-trigger-safe-edge),
+      max(
+        var(--easyedu-navigation-trigger-safe-edge),
+        calc(
+          var(--easyedu-navigation-native-trigger-edge, 0px) +
+          (var(--easyedu-touch-target-min) / 2) +
+          var(--easyedu-navigation-trigger-gap)
+        )
+      ),
       50dvh,
       calc(100dvh - var(--easyedu-navigation-trigger-safe-edge))
     );
@@ -269,7 +276,14 @@
     @media (max-width: 40rem) {
       .easyedu-navigation__trigger {
         inset-block-start: clamp(
-          var(--easyedu-navigation-trigger-safe-edge),
+          max(
+            var(--easyedu-navigation-trigger-safe-edge),
+            calc(
+              var(--easyedu-navigation-native-trigger-edge, 0px) +
+              (var(--easyedu-touch-target-min) / 2) +
+              var(--easyedu-navigation-trigger-gap)
+            )
+          ),
           calc(50dvh - var(--easyedu-touch-target-min) + var(--easyedu-navigation-trigger-safe-edge)),
           calc(100dvh - var(--easyedu-navigation-trigger-safe-edge))
         );
