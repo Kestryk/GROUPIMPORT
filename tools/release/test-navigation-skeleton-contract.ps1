@@ -95,6 +95,7 @@ Assert-Contains 'Mass Import compact busy indicator' $massImportStyles 'bottom: 
 Assert-Contains 'Mass Import compact busy indicator' $massImportStyles 'right: 2.1rem;'
 Assert-Contains 'Mass Import Skeleton grid' $massImportStyles '&__loading-grid {'
 Assert-Contains 'Mass Import Skeleton grid' $massImportStyles 'inline-size: 100%'
+Assert-Contains 'Mass Import Skeleton grid' $massImportStyles 'grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);'
 Assert-Contains 'Mass Import Skeleton fields' $massImportStyles '&__loading-field {'
 Assert-Contains 'Mass Import Skeleton fields' $massImportStyles 'box-sizing: border-box'
 
