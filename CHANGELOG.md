@@ -10,6 +10,36 @@ Maintenance convention:
 
 ## Unreleased
 
+### Navigation Skeleton 0025 cumulative integration - 2026-08-17
+
+#### Fixed
+
+- Remove the fixed minimum widths from the two Mass Import Skeleton grid
+  tracks. Their desktop ratio and existing responsive one-column layout remain
+  unchanged, while internal cues can no longer force the Skeleton root wider
+  at native 200% zoom.
+
+#### Validation
+
+- Keep the focused native-zoom scenario's root-bound diagnostics in the
+  cumulative base and add a static contract for the unrestricted grid tracks.
+
+### External Playwright runner cumulative integration - 2026-08-17
+
+#### Fixed
+
+- Keep the authenticated Playwright CLI, dependencies and versioned runtime
+  configuration in the runtime checkout when a reviewed spec comes from a
+  separate allowlisted EasyStud worktree.
+- Resolve that external spec through a temporary configuration outside both
+  checkouts, restore `NODE_PATH` in every exit path, and reject artifact roots
+  contained by either checkout.
+
+#### Validation
+
+- Add a static runner contract for the runtime/source boundary and preserve the
+  exact-one-test DiscoveryOnly gate before credentials, leases or browser work.
+
 ### 2026-08-14
 
 #### Fixed
