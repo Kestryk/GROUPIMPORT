@@ -10,6 +10,20 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-18
+
+#### Fixed
+
+- At exactly 320 px, return the compact actions trigger of a Group nested in a
+  Grouping to the wrapping header flow. The member-count badge and trigger no
+  longer overlap; wider responsive and desktop layouts keep their existing
+  placement.
+
+#### Validation
+
+- Extend the focused geometry scenario to reject overlap in either axis and to
+  retain its established horizontal ordering assertion at 390 and 768 px.
+
 ### 2026-08-14
 
 #### Fixed
