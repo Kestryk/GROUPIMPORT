@@ -54,6 +54,8 @@ Maintenance convention:
   retain its established horizontal ordering assertion at 390 and 768 px.
 - Scope its compact-actions menu assertion to the containing Group card, which
   matches Moodle's injected menu placement.
+- Correct the Group-card locator call so the assertion can run after the 320 px
+  geometry check.
 
 ### 2026-08-14
 
