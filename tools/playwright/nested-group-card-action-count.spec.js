@@ -97,7 +97,7 @@ test('nested Group member count and compact actions remain separate at responsiv
 
         await actions.click();
         await expect(actions).toHaveAttribute('aria-expanded', 'true');
-        await expect(group.locator('[data-easystud-group-actions-menu]:not([hidden])').first()).toBeVisible();
+        await expect(root.locator('[data-easystud-context-menu]:not([hidden])')).toBeVisible();
         await actions.click();
         await expect(actions).toHaveAttribute('aria-expanded', 'false');
     }

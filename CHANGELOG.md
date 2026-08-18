@@ -56,6 +56,8 @@ Maintenance convention:
   matches Moodle's injected menu placement.
 - Correct the Group-card locator call so the assertion can run after the 320 px
   geometry check.
+- Assert the responsive card context menu actually opened; the nested Group
+  sub-menu remains desktop-only by design.
 
 ### 2026-08-14
 
