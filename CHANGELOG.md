@@ -52,6 +52,8 @@ Maintenance convention:
 
 - Extend the focused geometry scenario to reject overlap in either axis and to
   retain its established horizontal ordering assertion at 390 and 768 px.
+- Scope its compact-actions menu assertion to the containing Group card, which
+  matches Moodle's injected menu placement.
 
 ### 2026-08-14
 

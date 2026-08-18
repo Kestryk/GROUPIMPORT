@@ -22,6 +22,8 @@ card, member-count badge and action-trigger rectangles at each target width.
 It rejects overlap in either axis, keeps the trigger inside the Group card and
 rejects horizontal document overflow. At 390 and 768 px it also requires the
 badge to remain at least 4 px before the action trigger.
+The menu assertion is scoped to the Group card because Moodle injects the
+compact menu beside the header rather than as a header child.
 It also opens the existing menu to preserve its route and capture evidence.
 
 Runtime and visual validation are intentionally not executed until this
