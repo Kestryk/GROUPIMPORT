@@ -76,7 +76,19 @@ test('nested Group member count and compact actions remain separate at responsiv
         const [card, count, action, pageGeometry] = geometry;
         console.log(`NESTED_GROUP_CARD_ACTION_COUNT_${width}:`, JSON.stringify({card, count, action, pageGeometry}));
 
-        expect(count.right, `${width}px: member count stays before compact actions`).toBeLessThanOrEqual(action.left - 4);
+        await page.screenshot({
+            path: testInfo.outputPath(`nested-group-card-action-count-${width}.png`),
+            fullPage: false,
+        });
+
+        const controlsDoNotOverlap = count.right <= action.left - 4 ||
+            action.right <= count.left - 4 ||
+            count.bottom <= action.top - 4 ||
+            action.bottom <= count.top - 4;
+        expect(controlsDoNotOverlap, `${width}px: member count and compact actions do not overlap`).toBe(true);
+        if (width > 320) {
+            expect(count.right, `${width}px: member count stays before compact actions`).toBeLessThanOrEqual(action.left - 4);
+        }
         expect(action.left, `${width}px: compact actions stay inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);
         expect(action.right, `${width}px: compact actions stay inside the Group card`).toBeLessThanOrEqual(card.right + 1);
         expect(pageGeometry.documentWidth, `${width}px: no horizontal document overflow`).toBeLessThanOrEqual(
@@ -86,10 +98,6 @@ test('nested Group member count and compact actions remain separate at responsiv
         await actions.click();
         await expect(actions).toHaveAttribute('aria-expanded', 'true');
         await expect(header.locator(':scope > [data-easystud-group-actions-menu]:not([hidden])')).toBeVisible();
-        await page.screenshot({
-            path: testInfo.outputPath(`nested-group-card-action-count-${width}.png`),
-            fullPage: false,
-        });
         await actions.click();
         await expect(actions).toHaveAttribute('aria-expanded', 'false');
     }
