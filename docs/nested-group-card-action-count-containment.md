@@ -15,6 +15,9 @@ compact action touch target combined. The action therefore joins the header's
 existing wrapping flow at those widths. Grouping and member-count badges are
 also hidden there so names and essential actions remain usable; 768 px retains
 the established horizontal badge-before-action layout.
+At those compact widths, Grouping search, add-group and rename shortcuts also
+move behind the existing compact card menu so the Grouping name is not reduced
+to an unusable fragment.
 
 The Grouping selection control uses the same responsive left axis as Group
 cards and is asserted against the Grouping header's vertical centre.
@@ -26,7 +29,7 @@ card, member-count badge and action-trigger rectangles at each target width.
 It requires both compact count badges to be hidden at 320 and 390 px, keeps the
 trigger inside the Group card and rejects horizontal document overflow. At 768
 px it requires the badge to remain visible and at least 4 px before the action
-trigger.
+trigger. It also requires the compact Grouping secondary shortcuts to be hidden.
 The responsive menu assertion targets Moodle's visible shared context menu:
 the nested Group sub-menu is deliberately desktop-only, while the compact
 trigger opens the existing card context menu. The scenario closes that modal

@@ -504,6 +504,14 @@
   .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__header > .badge {
     display: none;
   }
+
+  // Keep the Grouping title readable. Its secondary direct actions remain
+  // available from the compact card menu at these widths.
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-grouping__header > .local-groupimport-easystud-group__mail-button,
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-grouping__header > .local-groupimport-easystud-container-search__toggle,
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-grouping__header > .local-groupimport-easystud-rename {
+    display: none;
+  }
 }
 
 @media (max-width: 560px) {

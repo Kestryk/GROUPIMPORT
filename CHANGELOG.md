@@ -49,6 +49,8 @@ Maintenance convention:
   placement.
 - Hide Grouping and member-count badges at 320 and 390 px so the remaining
   title and actions no longer compete for the same compact header line.
+- Move direct Grouping search, add-group and rename shortcuts behind the compact
+  card menu at those widths, preserving a readable Grouping name.
 - Align the responsive Grouping selection control with the Group card axis and
   its own header row.
 
@@ -58,6 +60,7 @@ Maintenance convention:
   retain its established horizontal ordering assertion at 768 px.
 - Assert that compact Grouping and member-count badges are absent at 320 and
   390 px, while the member count is still visible and ordered at 768 px.
+- Assert that compact Grouping secondary shortcuts are hidden at 320 and 390 px.
 - Assert the Grouping selection control's vertical alignment at all three
   target widths.
 - Scope its compact-actions menu assertion to the containing Group card, which
