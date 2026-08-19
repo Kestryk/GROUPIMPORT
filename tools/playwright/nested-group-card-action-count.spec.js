@@ -53,6 +53,17 @@ test('nested Group member count and compact actions remain separate at responsiv
         if ((await groupingToggle.getAttribute('aria-expanded')) !== 'true') {
             await groupingToggle.click();
         }
+        const groupingSelector = grouping.locator(':scope > .local-groupimport-easystud-selector');
+        const groupingGeometry = await Promise.all([
+            groupingSelector.evaluate(rectangle),
+            groupingToggle.evaluate(rectangle),
+        ]);
+        const [groupingSelection, groupingToggleBounds] = groupingGeometry;
+        const groupingCentreDelta = Math.abs(
+            (groupingSelection.top + groupingSelection.bottom) / 2 -
+            (groupingToggleBounds.top + groupingToggleBounds.bottom) / 2
+        );
+        expect(groupingCentreDelta, `${width}px: Grouping selection control aligns with its header row`).toBeLessThanOrEqual(8);
 
         const group = grouping.locator(
             ':scope > .local-groupimport-easystud-tree__children > [data-easystud-group-id]:visible'
@@ -61,19 +72,26 @@ test('nested Group member count and compact actions remain separate at responsiv
         const badge = header.locator(':scope > .badge');
         const actions = header.locator(':scope > [data-easystud-group-actions-toggle]:visible');
         await expect(group).toBeVisible();
-        await expect(badge).toBeVisible();
         await expect(actions).toBeVisible();
+
+        const compactPhone = width <= 390;
+        if (compactPhone) {
+            await expect(grouping.locator(':scope > .local-groupimport-easystud-grouping__header .badge')).toBeHidden();
+            await expect(badge).toBeHidden();
+        } else {
+            await expect(badge).toBeVisible();
+        }
 
         const geometry = await Promise.all([
             group.evaluate(rectangle),
-            badge.evaluate(rectangle),
             actions.evaluate(rectangle),
             page.evaluate(() => ({
                 documentWidth: document.documentElement.scrollWidth,
                 viewportWidth: window.innerWidth,
             })),
         ]);
-        const [card, count, action, pageGeometry] = geometry;
+        const [card, action, pageGeometry] = geometry;
+        const count = compactPhone ? null : await badge.evaluate(rectangle);
         console.log(`NESTED_GROUP_CARD_ACTION_COUNT_${width}:`, JSON.stringify({card, count, action, pageGeometry}));
 
         await page.screenshot({
@@ -81,12 +99,12 @@ test('nested Group member count and compact actions remain separate at responsiv
             fullPage: false,
         });
 
-        const controlsDoNotOverlap = count.right <= action.left - 4 ||
-            action.right <= count.left - 4 ||
-            count.bottom <= action.top - 4 ||
-            action.bottom <= count.top - 4;
-        expect(controlsDoNotOverlap, `${width}px: member count and compact actions do not overlap`).toBe(true);
-        if (width >= 768) {
+        if (!compactPhone) {
+            const controlsDoNotOverlap = count.right <= action.left - 4 ||
+                action.right <= count.left - 4 ||
+                count.bottom <= action.top - 4 ||
+                action.bottom <= count.top - 4;
+            expect(controlsDoNotOverlap, `${width}px: member count and compact actions do not overlap`).toBe(true);
             expect(count.right, `${width}px: member count stays before compact actions`).toBeLessThanOrEqual(action.left - 4);
         }
         expect(action.left, `${width}px: compact actions stay inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);

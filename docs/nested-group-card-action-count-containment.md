@@ -12,16 +12,21 @@ rail, desktop presentation or disclosure Motion.
 
 At 320 and 390 px, the nested card can be narrower than the count badge and the
 compact action touch target combined. The action therefore joins the header's
-existing wrapping flow at those widths; 768 px retains the established
-horizontal badge-before-action layout.
+existing wrapping flow at those widths. Grouping and member-count badges are
+also hidden there so names and essential actions remain usable; 768 px retains
+the established horizontal badge-before-action layout.
+
+The Grouping selection control uses the same responsive left axis as Group
+cards and is asserted against the Grouping header's vertical centre.
 
 ## Validation
 
 `tools/playwright/nested-group-card-action-count.spec.js` records the Group
 card, member-count badge and action-trigger rectangles at each target width.
-It rejects overlap in either axis, keeps the trigger inside the Group card and
-rejects horizontal document overflow. At 768 px it also requires the badge to
-remain at least 4 px before the action trigger.
+It requires both compact count badges to be hidden at 320 and 390 px, keeps the
+trigger inside the Group card and rejects horizontal document overflow. At 768
+px it requires the badge to remain visible and at least 4 px before the action
+trigger.
 The responsive menu assertion targets Moodle's visible shared context menu:
 the nested Group sub-menu is deliberately desktop-only, while the compact
 trigger opens the existing card context menu. The scenario closes that modal
@@ -30,3 +35,10 @@ It also opens the existing menu to preserve its route and capture evidence.
 
 Runtime and visual validation are intentionally not executed until this
 candidate is committed and pushed.
+
+## Planned follow-up
+
+After this production fix, redesign the compact Group card inside a Grouping
+and the distinct compact Group card in the Groups view. The member list needs a
+separate small-viewport presentation focused on readable participant rows,
+rather than adding more controls to the current card header.
