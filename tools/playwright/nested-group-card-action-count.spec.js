@@ -116,7 +116,17 @@ test('nested Group member count and compact actions remain separate at responsiv
                 documentWidth: document.documentElement.scrollWidth,
                 viewportWidth: window.innerWidth,
             })),
-            memberRows.evaluateAll(nodes => nodes.map(rectangle)),
+            memberRows.evaluateAll(nodes => nodes.map(node => {
+                const bounds = node.getBoundingClientRect();
+                return {
+                    bottom: bounds.bottom,
+                    height: bounds.height,
+                    left: bounds.left,
+                    right: bounds.right,
+                    top: bounds.top,
+                    width: bounds.width,
+                };
+            })),
         ]);
         const [card, groupSelection, groupSelectionUiBounds, headerBounds, groupNameBounds, action, pageGeometry, memberRowBounds] = geometry;
         const count = compactPhone ? null : await badge.evaluate(rectangle);

@@ -86,6 +86,8 @@ Maintenance convention:
   overlay cannot intercept the next viewport's trigger assertion.
 - Extend the same scenario to 400 px and require every visible participant row
   to remain within the nested Group card's horizontal bounds.
+- Serialize those participant-row rectangles in the browser context so the
+  containment assertion runs on the managed Moodle preview.
 
 ### 2026-08-14
 
