@@ -72,6 +72,7 @@ Maintenance convention:
 - Extend the geometry check to 1280 px and require visual checkbox/action
   centres within 2 px of their titles, plus an untruncated nested Group name at
   compact widths.
+- Tighten the compact-label assertion to reject even a one-pixel text overflow.
 - Scope its compact-actions menu assertion to the containing Group card, which
   matches Moodle's injected menu placement.
 - Correct the Group-card locator call so the assertion can run after the 320 px
