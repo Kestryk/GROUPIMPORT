@@ -57,7 +57,8 @@ Maintenance convention:
 - Keep the nested Group checkbox aligned with its compact in-flow action row,
   without changing wider responsive or desktop geometry.
 - Recover the nested card's compact internal title space without changing its
-  outer dimensions, rail or disclosure animation.
+  outer dimensions, rail or disclosure animation; compact title typography
+  keeps the full Group name visible.
 
 #### Validation
 
