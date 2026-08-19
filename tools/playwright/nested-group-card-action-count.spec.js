@@ -114,9 +114,14 @@ test('nested Group member count and compact actions remain separate at responsiv
         ]);
         const [card, groupSelection, groupSelectionUiBounds, headerBounds, groupNameBounds, action, pageGeometry] = geometry;
         const count = compactPhone ? null : await badge.evaluate(rectangle);
+        const groupNameMetrics = await groupName.evaluate(node => ({
+            clientWidth: node.clientWidth,
+            scrollWidth: node.scrollWidth,
+            text: node.textContent.trim(),
+        }));
         console.log(`NESTED_GROUP_CARD_ALIGNMENT_${width}:`, JSON.stringify({
             grouping: {selector: groupingSelection, ui: groupingSelectionUiBounds, header: groupingHeaderBounds, toggle: groupingToggleBounds},
-            group: {card, selector: groupSelection, ui: groupSelectionUiBounds, header: headerBounds, name: groupNameBounds, count, action},
+            group: {card, selector: groupSelection, ui: groupSelectionUiBounds, header: headerBounds, name: groupNameBounds, nameMetrics: groupNameMetrics, count, action},
             pageGeometry,
         }));
 
@@ -142,7 +147,7 @@ test('nested Group member count and compact actions remain separate at responsiv
             `${width}px: Group actions trigger aligns with its title line`
         ).toBeLessThanOrEqual(2);
         if (compactPhone) {
-            const groupNameFits = await groupName.evaluate(node => node.scrollWidth <= node.clientWidth + 1);
+            const groupNameFits = await groupName.evaluate(node => node.scrollWidth <= node.clientWidth);
             expect(groupNameFits, `${width}px: nested Group name remains fully visible`).toBe(true);
         }
         expect(action.left, `${width}px: compact actions stay inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);
