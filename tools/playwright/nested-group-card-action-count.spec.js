@@ -40,7 +40,7 @@ test('nested Group member count and compact actions remain separate at responsiv
     test.setTimeout(180000);
     const root = await login(page);
 
-    for (const width of [320, 390, 768, 1280]) {
+    for (const width of [320, 390, 400, 768, 1280]) {
         await page.setViewportSize({width, height: 900});
         if (width <= 1024) {
             await page.locator('[data-easystud-mobile-view="groupings"]').click();
@@ -90,7 +90,7 @@ test('nested Group member count and compact actions remain separate at responsiv
         await expect(group).toBeVisible();
         await expect(actions).toBeVisible();
 
-        const compactPhone = width <= 390;
+        const compactPhone = width <= 400;
         if (compactPhone) {
             await expect(grouping.locator(':scope > .local-groupimport-easystud-grouping__header .badge')).toBeHidden();
             await expect(badge).toBeHidden();
@@ -99,6 +99,11 @@ test('nested Group member count and compact actions remain separate at responsiv
         } else {
             await expect(badge).toBeVisible();
         }
+
+        const memberRows = group.locator(
+            ':scope > .local-groupimport-easystud-group__members > .local-groupimport-easystud-member:visible'
+        );
+        await expect(memberRows.first()).toBeVisible();
 
         const geometry = await Promise.all([
             group.evaluate(rectangle),
@@ -111,8 +116,9 @@ test('nested Group member count and compact actions remain separate at responsiv
                 documentWidth: document.documentElement.scrollWidth,
                 viewportWidth: window.innerWidth,
             })),
+            memberRows.evaluateAll(nodes => nodes.map(rectangle)),
         ]);
-        const [card, groupSelection, groupSelectionUiBounds, headerBounds, groupNameBounds, action, pageGeometry] = geometry;
+        const [card, groupSelection, groupSelectionUiBounds, headerBounds, groupNameBounds, action, pageGeometry, memberRowBounds] = geometry;
         const count = compactPhone ? null : await badge.evaluate(rectangle);
         const groupNameMetrics = await groupName.evaluate(node => ({
             clientWidth: node.clientWidth,
@@ -121,7 +127,7 @@ test('nested Group member count and compact actions remain separate at responsiv
         }));
         console.log(`NESTED_GROUP_CARD_ALIGNMENT_${width}:`, JSON.stringify({
             grouping: {selector: groupingSelection, ui: groupingSelectionUiBounds, header: groupingHeaderBounds, toggle: groupingToggleBounds},
-            group: {card, selector: groupSelection, ui: groupSelectionUiBounds, header: headerBounds, name: groupNameBounds, nameMetrics: groupNameMetrics, count, action},
+            group: {card, selector: groupSelection, ui: groupSelectionUiBounds, header: headerBounds, name: groupNameBounds, nameMetrics: groupNameMetrics, count, action, memberRows: memberRowBounds},
             pageGeometry,
         }));
 
@@ -152,6 +158,10 @@ test('nested Group member count and compact actions remain separate at responsiv
         }
         expect(action.left, `${width}px: compact actions stay inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);
         expect(action.right, `${width}px: compact actions stay inside the Group card`).toBeLessThanOrEqual(card.right + 1);
+        for (const [index, member] of memberRowBounds.entries()) {
+            expect(member.left, `${width}px: member row ${index + 1} stays inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);
+            expect(member.right, `${width}px: member row ${index + 1} stays inside the Group card`).toBeLessThanOrEqual(card.right + 1);
+        }
         expect(pageGeometry.documentWidth, `${width}px: no horizontal document overflow`).toBeLessThanOrEqual(
             pageGeometry.viewportWidth + 2
         );
