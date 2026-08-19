@@ -17354,6 +17354,10 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
   .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded::after, .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded:focus-within::after, .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded.is-selected::after, .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded.is-selected:focus-within::after {
     display: block;
+    left: 0;
+  }
+  .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded::before, .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded:focus-within::before, .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded.is-selected::before, .local-groupimport-easystud-tree__section[data-easystud-grouping-id].is-expanded.is-selected:focus-within::before {
+    left: calc(var(--easyedu-identity-border-width) / 2);
   }
   .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-rename__edit:not([hidden]) {
     background: color-mix(in srgb, var(--easyedu-surface) 92%, var(--easyedu-primary-soft) 8%);

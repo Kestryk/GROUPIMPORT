@@ -445,6 +445,18 @@
     &-tree__section[data-easystud-grouping-id].is-expanded.is-selected::after,
     &-tree__section[data-easystud-grouping-id].is-expanded.is-selected:focus-within::after {
       display: block;
+      // The desktop open frame intentionally extends into its own paint
+      // allowance. In the responsive Groupings workspace, retain the same
+      // rail width but paint it inside the card's existing identity-border
+      // slot so neither the rail nor its icon can be clipped horizontally.
+      left: 0;
+    }
+
+    &-tree__section[data-easystud-grouping-id].is-expanded::before,
+    &-tree__section[data-easystud-grouping-id].is-expanded:focus-within::before,
+    &-tree__section[data-easystud-grouping-id].is-expanded.is-selected::before,
+    &-tree__section[data-easystud-grouping-id].is-expanded.is-selected:focus-within::before {
+      left: calc(var(--easyedu-identity-border-width) / 2);
     }
 
     &--responsive-workspace &-rename__edit:not([hidden]) {

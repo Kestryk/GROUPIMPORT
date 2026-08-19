@@ -16,6 +16,15 @@ responsive `structure-groupings` More-filters disclosure. Navigation, the
 Grouping rail owner (EED-UI-2026-0021), Guide, Skeleton, the message modal
 (EED-UI-2026-0023) and the canonical UI Kit are outside this change.
 
+## EED-UI-2026-0021 responsive rail containment
+
+This separate follow-up confines the expanded Grouping identity rail and its
+icon to the existing card identity-border slot in the responsive workspace. It
+does not alter card width, rail width or disclosure motion. The Navigation
+dependency is already present in the 0021 candidate base: the accepted
+`9442187c21eaf24311203e6c39487368d6365f21` behaviour is represented by the
+native drawer-edge variable and is not duplicated by this batch.
+
 ## Source states and corrections
 
 - The Grouping disclosure controller changes the icon from

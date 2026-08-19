@@ -10,6 +10,19 @@ Maintenance convention:
 
 ## Unreleased
 
+### EED-UI-2026-0021 responsive Grouping rail containment - 2026-08-19
+
+#### Fixed
+
+- Keep the expanded responsive Grouping identity rail and its icon inside the
+  existing card identity-border slot. Card width, rail width and expansion
+  motion remain unchanged; Navigation's accepted native-drawer clearance is
+  already present in the candidate base and is not duplicated.
+
+#### Validation
+
+- Extend the static contract around the focused 390 px Grouping rail scenario.
+
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
 #### Fixed
