@@ -56,6 +56,8 @@ Maintenance convention:
   390 px; their Grouping, Group checkbox and actions align with title lines.
 - Keep the nested Group checkbox aligned with its compact in-flow action row,
   without changing wider responsive or desktop geometry.
+- Recover the nested card's compact internal title space without changing its
+  outer dimensions, rail or disclosure animation.
 
 #### Validation
 

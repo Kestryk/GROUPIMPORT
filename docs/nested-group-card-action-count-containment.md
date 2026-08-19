@@ -25,7 +25,9 @@ The visible checkbox squares are centred on their corresponding Grouping and
 Group title lines. The nested Group action trigger uses that same centre line.
 At 320 and 390 px, where the nested action participates in the header flow,
 the nested Group selector receives its compact-line alignment separately from
-wider responsive cards.
+wider responsive cards. Its internal right gutter is reduced only enough to
+preserve the full Group name; card dimensions and the identity rail are not
+changed.
 
 ## Validation
 
