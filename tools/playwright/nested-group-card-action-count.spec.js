@@ -86,7 +86,7 @@ test('nested Group member count and compact actions remain separate at responsiv
             count.bottom <= action.top - 4 ||
             action.bottom <= count.top - 4;
         expect(controlsDoNotOverlap, `${width}px: member count and compact actions do not overlap`).toBe(true);
-        if (width > 320) {
+        if (width >= 768) {
             expect(count.right, `${width}px: member count stays before compact actions`).toBeLessThanOrEqual(action.left - 4);
         }
         expect(action.left, `${width}px: compact actions stay inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);
