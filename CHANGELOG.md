@@ -43,7 +43,7 @@ Maintenance convention:
 
 #### Fixed
 
-- At exactly 320 px, return the compact actions trigger of a Group nested in a
+- At 320 and 390 px, return the compact actions trigger of a Group nested in a
   Grouping to the wrapping header flow. The member-count badge and trigger no
   longer overlap; wider responsive and desktop layouts keep their existing
   placement.
@@ -51,7 +51,7 @@ Maintenance convention:
 #### Validation
 
 - Extend the focused geometry scenario to reject overlap in either axis and to
-  retain its established horizontal ordering assertion at 390 and 768 px.
+  retain its established horizontal ordering assertion at 768 px.
 - Scope its compact-actions menu assertion to the containing Group card, which
   matches Moodle's injected menu placement.
 - Correct the Group-card locator call so the assertion can run after the 320 px
