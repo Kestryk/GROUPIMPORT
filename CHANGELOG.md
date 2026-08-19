@@ -54,6 +54,8 @@ Maintenance convention:
 - Reserve compact action space on the affected header rather than the whole
   Grouping card. Nested Group cards retain their usable title width at 320 and
   390 px; their Grouping, Group checkbox and actions align with title lines.
+- Keep the nested Group checkbox aligned with its compact in-flow action row,
+  without changing wider responsive or desktop geometry.
 
 #### Validation
 
