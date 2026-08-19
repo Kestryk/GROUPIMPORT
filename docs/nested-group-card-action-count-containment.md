@@ -39,7 +39,7 @@ trigger inside the Group card and rejects horizontal document overflow. At 768
 px it requires the badge to remain visible and at least 4 px before the action
 trigger. It also requires the compact Grouping secondary shortcuts to be hidden,
 the checkbox/action centres to match their title line within 2 px, and the
-nested Group name to fit without truncation at 320 and 390 px.
+nested Group name to fit without any text-overflow tolerance at 320 and 390 px.
 The responsive menu assertion targets Moodle's visible shared context menu:
 the nested Group sub-menu is deliberately desktop-only, while the compact
 trigger opens the existing card context menu. The scenario closes that modal
