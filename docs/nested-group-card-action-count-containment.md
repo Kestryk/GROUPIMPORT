@@ -2,7 +2,7 @@
 
 ## Scope
 
-At responsive widths of 320, 390 and 768 px, an action trigger injected into
+At responsive widths of 320, 390, 400 and 768 px, an action trigger injected into
 the header of a Group nested inside a Grouping has a dedicated touch-target
 lane. The member-count badge remains visible before that lane.
 
@@ -12,7 +12,7 @@ that contains child Groups. This keeps the full nested-card width available
 without changing the card box, member-count content, actions menu, Grouping
 rail or disclosure Motion.
 
-At 320 and 390 px, the nested card can be narrower than the count badge and the
+At 320, 390 and 400 px, the nested card can be narrower than the count badge and the
 compact action touch target combined. The action therefore joins the header's
 existing wrapping flow at those widths. Grouping and member-count badges are
 also hidden there so names and essential actions remain usable; 768 px retains
@@ -27,19 +27,22 @@ At 320 and 390 px, where the nested action participates in the header flow,
 the nested Group selector receives its compact-line alignment separately from
 wider responsive cards. Its internal right gutter and title typography are
 reduced only enough to preserve the full Group name; card dimensions and the
-identity rail are not changed.
+identity rail are not changed. The padded participant rows use border-box sizing
+at their existing responsive width, so they stay within the Group card rather
+than extending beyond its right edge.
 
 ## Validation
 
 `tools/playwright/nested-group-card-action-count.spec.js` records the Group
-card, visible checkbox square, title, member-count badge and action-trigger
-rectangles at 320, 390, 768 and 1280 px.
-It requires both compact count badges to be hidden at 320 and 390 px, keeps the
+card, visible checkbox square, title, member-count badge, participant rows and
+action-trigger rectangles at 320, 390, 400, 768 and 1280 px.
+It requires both compact count badges to be hidden at 320, 390 and 400 px, keeps the
 trigger inside the Group card and rejects horizontal document overflow. At 768
 px it requires the badge to remain visible and at least 4 px before the action
 trigger. It also requires the compact Grouping secondary shortcuts to be hidden,
-the checkbox/action centres to match their title line within 2 px, and the
-nested Group name to fit without any text-overflow tolerance at 320 and 390 px.
+the checkbox/action centres to match their title line within 2 px, every visible
+participant row to stay inside the Group card, and the nested Group name to fit
+without any text-overflow tolerance at 320, 390 and 400 px.
 The responsive menu assertion targets Moodle's visible shared context menu:
 the nested Group sub-menu is deliberately desktop-only, while the compact
 trigger opens the existing card context menu. The scenario closes that modal
