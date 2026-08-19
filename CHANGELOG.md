@@ -47,11 +47,19 @@ Maintenance convention:
   Grouping to the wrapping header flow. The member-count badge and trigger no
   longer overlap; wider responsive and desktop layouts keep their existing
   placement.
+- Hide Grouping and member-count badges at 320 and 390 px so the remaining
+  title and actions no longer compete for the same compact header line.
+- Align the responsive Grouping selection control with the Group card axis and
+  its own header row.
 
 #### Validation
 
 - Extend the focused geometry scenario to reject overlap in either axis and to
   retain its established horizontal ordering assertion at 768 px.
+- Assert that compact Grouping and member-count badges are absent at 320 and
+  390 px, while the member count is still visible and ordered at 768 px.
+- Assert the Grouping selection control's vertical alignment at all three
+  target widths.
 - Scope its compact-actions menu assertion to the containing Group card, which
   matches Moodle's injected menu placement.
 - Correct the Group-card locator call so the assertion can run after the 320 px

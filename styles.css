@@ -17265,7 +17265,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     top: 0.56rem;
   }
   .local-groupimport-easystud-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-selector {
-    left: 0.68rem;
+    left: 0.55rem;
     top: 0.56rem;
   }
   .local-groupimport-easystud-grouping__header {
@@ -17393,6 +17393,10 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     margin-left: auto;
     position: static;
     transform: none;
+  }
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__toggle > .badge,
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__header > .badge {
+    display: none;
   }
 }
 @media (max-width: 560px) {
