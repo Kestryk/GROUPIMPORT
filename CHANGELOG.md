@@ -51,8 +51,9 @@ Maintenance convention:
   title and actions no longer compete for the same compact header line.
 - Move direct Grouping search, add-group and rename shortcuts behind the compact
   card menu at those widths, preserving a readable Grouping name.
-- Align the responsive Grouping selection control with the Group card axis and
-  its own header row.
+- Reserve compact action space on the affected header rather than the whole
+  Grouping card. Nested Group cards retain their usable title width at 320 and
+  390 px; their Grouping, Group checkbox and actions align with title lines.
 
 #### Validation
 
@@ -63,6 +64,9 @@ Maintenance convention:
 - Assert that compact Grouping secondary shortcuts are hidden at 320 and 390 px.
 - Assert the Grouping selection control's vertical alignment at all three
   target widths.
+- Extend the geometry check to 1280 px and require visual checkbox/action
+  centres within 2 px of their titles, plus an untruncated nested Group name at
+  compact widths.
 - Scope its compact-actions menu assertion to the containing Group card, which
   matches Moodle's injected menu placement.
 - Correct the Group-card locator call so the assertion can run after the 320 px
