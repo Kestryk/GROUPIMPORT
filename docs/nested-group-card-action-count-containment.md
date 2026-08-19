@@ -24,7 +24,8 @@ rejects horizontal document overflow. At 390 and 768 px it also requires the
 badge to remain at least 4 px before the action trigger.
 The responsive menu assertion targets Moodle's visible shared context menu:
 the nested Group sub-menu is deliberately desktop-only, while the compact
-trigger opens the existing card context menu.
+trigger opens the existing card context menu. The scenario closes that modal
+surface through its existing backdrop before continuing to the next viewport.
 It also opens the existing menu to preserve its route and capture evidence.
 
 Runtime and visual validation are intentionally not executed until this

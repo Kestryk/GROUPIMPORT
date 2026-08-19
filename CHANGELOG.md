@@ -58,6 +58,8 @@ Maintenance convention:
   geometry check.
 - Assert the responsive card context menu actually opened; the nested Group
   sub-menu remains desktop-only by design.
+- Close that responsive modal surface through its existing backdrop so its
+  overlay cannot intercept the next viewport's trigger assertion.
 
 ### 2026-08-14
 
