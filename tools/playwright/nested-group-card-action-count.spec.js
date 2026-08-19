@@ -34,19 +34,30 @@ const rectangle = node => {
     };
 };
 
+const centreY = bounds => (bounds.top + bounds.bottom) / 2;
+
 test('nested Group member count and compact actions remain separate at responsive widths', async({page}, testInfo) => {
-    test.setTimeout(120000);
+    test.setTimeout(180000);
     const root = await login(page);
 
-    for (const width of [320, 390, 768]) {
+    for (const width of [320, 390, 768, 1280]) {
         await page.setViewportSize({width, height: 900});
-        await page.locator('[data-easystud-mobile-view="groupings"]').click();
-        await expect(root).toHaveAttribute('data-easystud-mobile-view-active', 'groupings');
+        if (width <= 1024) {
+            await page.locator('[data-easystud-mobile-view="groupings"]').click();
+            await expect(root).toHaveAttribute('data-easystud-mobile-view-active', 'groupings');
+        } else {
+            const completeView = root.locator('[data-easystud-layout-mode="both"]');
+            if ((await completeView.getAttribute('aria-pressed')) !== 'true') {
+                await completeView.click();
+            }
+            await expect(completeView).toHaveAttribute('aria-pressed', 'true');
+        }
 
         const grouping = root.locator(
             '[data-easystud-tree] [data-easystud-grouping-id]:has(.local-groupimport-easystud-group):visible'
         ).first();
         await expect(grouping).toBeVisible();
+        const groupingHeader = grouping.locator(':scope > .local-groupimport-easystud-grouping__header');
         const groupingToggle = grouping.locator(
             ':scope > .local-groupimport-easystud-grouping__header [data-easystud-collapse-toggle]'
         );
@@ -54,21 +65,26 @@ test('nested Group member count and compact actions remain separate at responsiv
             await groupingToggle.click();
         }
         const groupingSelector = grouping.locator(':scope > .local-groupimport-easystud-selector');
+        const groupingSelectionUi = groupingSelector.locator(':scope > .local-groupimport-easystud-selector__ui');
         const groupingGeometry = await Promise.all([
             groupingSelector.evaluate(rectangle),
+            groupingSelectionUi.evaluate(rectangle),
+            groupingHeader.evaluate(rectangle),
             groupingToggle.evaluate(rectangle),
         ]);
-        const [groupingSelection, groupingToggleBounds] = groupingGeometry;
-        const groupingCentreDelta = Math.abs(
-            (groupingSelection.top + groupingSelection.bottom) / 2 -
-            (groupingToggleBounds.top + groupingToggleBounds.bottom) / 2
-        );
-        expect(groupingCentreDelta, `${width}px: Grouping selection control aligns with its header row`).toBeLessThanOrEqual(8);
+        const [groupingSelection, groupingSelectionUiBounds, groupingHeaderBounds, groupingToggleBounds] = groupingGeometry;
+        expect(
+            Math.abs(centreY(groupingSelectionUiBounds) - centreY(groupingToggleBounds)),
+            `${width}px: Grouping checkbox square aligns with its title line`
+        ).toBeLessThanOrEqual(2);
 
         const group = grouping.locator(
             ':scope > .local-groupimport-easystud-tree__children > [data-easystud-group-id]:visible'
         ).first();
         const header = group.locator(':scope > .local-groupimport-easystud-group__header');
+        const groupSelector = group.locator(':scope > .local-groupimport-easystud-selector');
+        const groupSelectionUi = groupSelector.locator(':scope > .local-groupimport-easystud-selector__ui');
+        const groupName = header.locator(':scope > .local-groupimport-easystud-group__name');
         const badge = header.locator(':scope > .badge');
         const actions = header.locator(':scope > [data-easystud-group-actions-toggle]:visible');
         await expect(group).toBeVisible();
@@ -86,15 +102,23 @@ test('nested Group member count and compact actions remain separate at responsiv
 
         const geometry = await Promise.all([
             group.evaluate(rectangle),
+            groupSelector.evaluate(rectangle),
+            groupSelectionUi.evaluate(rectangle),
+            header.evaluate(rectangle),
+            groupName.evaluate(rectangle),
             actions.evaluate(rectangle),
             page.evaluate(() => ({
                 documentWidth: document.documentElement.scrollWidth,
                 viewportWidth: window.innerWidth,
             })),
         ]);
-        const [card, action, pageGeometry] = geometry;
+        const [card, groupSelection, groupSelectionUiBounds, headerBounds, groupNameBounds, action, pageGeometry] = geometry;
         const count = compactPhone ? null : await badge.evaluate(rectangle);
-        console.log(`NESTED_GROUP_CARD_ACTION_COUNT_${width}:`, JSON.stringify({card, count, action, pageGeometry}));
+        console.log(`NESTED_GROUP_CARD_ALIGNMENT_${width}:`, JSON.stringify({
+            grouping: {selector: groupingSelection, ui: groupingSelectionUiBounds, header: groupingHeaderBounds, toggle: groupingToggleBounds},
+            group: {card, selector: groupSelection, ui: groupSelectionUiBounds, header: headerBounds, name: groupNameBounds, count, action},
+            pageGeometry,
+        }));
 
         await page.screenshot({
             path: testInfo.outputPath(`nested-group-card-action-count-${width}.png`),
@@ -109,6 +133,18 @@ test('nested Group member count and compact actions remain separate at responsiv
             expect(controlsDoNotOverlap, `${width}px: member count and compact actions do not overlap`).toBe(true);
             expect(count.right, `${width}px: member count stays before compact actions`).toBeLessThanOrEqual(action.left - 4);
         }
+        expect(
+            Math.abs(centreY(groupSelectionUiBounds) - centreY(groupNameBounds)),
+            `${width}px: Group checkbox square aligns with its title line`
+        ).toBeLessThanOrEqual(2);
+        expect(
+            Math.abs(centreY(action) - centreY(groupNameBounds)),
+            `${width}px: Group actions trigger aligns with its title line`
+        ).toBeLessThanOrEqual(2);
+        if (compactPhone) {
+            const groupNameFits = await groupName.evaluate(node => node.scrollWidth <= node.clientWidth + 1);
+            expect(groupNameFits, `${width}px: nested Group name remains fully visible`).toBe(true);
+        }
         expect(action.left, `${width}px: compact actions stay inside the Group card`).toBeGreaterThanOrEqual(card.left - 1);
         expect(action.right, `${width}px: compact actions stay inside the Group card`).toBeLessThanOrEqual(card.right + 1);
         expect(pageGeometry.documentWidth, `${width}px: no horizontal document overflow`).toBeLessThanOrEqual(
@@ -118,7 +154,7 @@ test('nested Group member count and compact actions remain separate at responsiv
         await actions.click();
         await expect(actions).toHaveAttribute('aria-expanded', 'true');
         await expect(root.locator('[data-easystud-context-menu]:not([hidden])')).toBeVisible();
-        await root.locator('[data-easystud-context-backdrop]').click({position: {x: 1, y: 1}});
+        await page.keyboard.press('Escape');
         await expect(actions).toHaveAttribute('aria-expanded', 'false');
     }
 });

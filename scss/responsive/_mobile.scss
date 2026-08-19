@@ -313,10 +313,10 @@
    }
 
    &-tree__section[data-easystud-grouping-id] > .local-groupimport-easystud-selector {
-     // Keep the Grouping selection control on the same responsive card axis as
-     // Group cards; the header already reserves the corresponding title lane.
+     // Centre the visible square, not its larger touch target, on the
+     // Grouping title line.
      left: 0.55rem;
-     top: 0.56rem;
+     top: 0.15rem;
    }
 
     &-grouping__header {
@@ -355,7 +355,9 @@
 
    &-group > .local-groupimport-easystud-selector {
      left: 0.55rem;
-     top: 0.56rem;
+     // The Group title uses a slightly taller line than Grouping; keep the
+     // visible square on that line while retaining its full touch target.
+     top: 0.28rem;
    }
 
     &-group__header {
@@ -496,6 +498,24 @@
     margin-left: auto;
     position: static;
     transform: none;
+  }
+
+  // At this width the nested action trigger participates in the header flow.
+  // Do not reserve an additional absolute-action lane: that would remove the
+  // Group name's remaining width. Keep the essential title, selector and menu
+  // together on one stable row.
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__children > .local-groupimport-easystud-group > .local-groupimport-easystud-group__header {
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+    padding-right: 0;
+  }
+
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-tree__children > .local-groupimport-easystud-group > .local-groupimport-easystud-group__header > .local-groupimport-easystud-group__name {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   // At compact phone widths, Grouping and Group count badges compete with the
