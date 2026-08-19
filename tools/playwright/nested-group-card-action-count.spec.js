@@ -78,6 +78,8 @@ test('nested Group member count and compact actions remain separate at responsiv
         if (compactPhone) {
             await expect(grouping.locator(':scope > .local-groupimport-easystud-grouping__header .badge')).toBeHidden();
             await expect(badge).toBeHidden();
+            await expect(grouping.locator(':scope > .local-groupimport-easystud-grouping__header [data-easystud-container-search-toggle]')).toBeHidden();
+            await expect(grouping.locator(':scope > .local-groupimport-easystud-grouping__header [data-easystud-toggle-grouping-groups]')).toBeHidden();
         } else {
             await expect(badge).toBeVisible();
         }
