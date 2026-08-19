@@ -16084,8 +16084,11 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
   .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__members > .local-groupimport-easystud-member {
     block-size: 2.35rem;
+    box-sizing: border-box;
     margin-block: 0;
+    max-width: 100%;
     min-block-size: 2.35rem;
+    min-width: 0;
     width: 100%;
   }
   .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__groupings--inline, .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__groupings-details {

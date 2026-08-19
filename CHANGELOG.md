@@ -59,6 +59,9 @@ Maintenance convention:
 - Recover the nested card's compact internal title space without changing its
   outer dimensions, rail or disclosure animation; compact title typography
   keeps the full Group name visible.
+- Keep the padded participant rows inside their nested Group card at 400 px and
+  below. The existing row dimensions, disclosure animation and card box remain
+  unchanged.
 
 #### Validation
 
@@ -81,6 +84,8 @@ Maintenance convention:
   sub-menu remains desktop-only by design.
 - Close that responsive modal surface through its existing backdrop so its
   overlay cannot intercept the next viewport's trigger assertion.
+- Extend the same scenario to 400 px and require every visible participant row
+  to remain within the nested Group card's horizontal bounds.
 
 ### 2026-08-14
 
