@@ -6554,6 +6554,42 @@ const bindContextMenu = (root, courseId) => {
         });
     };
 
+    const canOpenAdvancedSettingsFromContext = (items, target) => {
+        const metadata = [
+            'data-easystud-advanced-name',
+            'data-easystud-advanced-raw-description',
+            'data-easystud-advanced-idnumber',
+            'data-easystud-advanced-count',
+            'data-easystud-advanced-native-url',
+        ];
+        if (!isResponsiveWorkspace() || items.length !== 1 || !target ||
+                !target.matches('[data-easystud-group-id][data-easystud-advanced-type="group"]') ||
+                !metadata.every(attribute => target.hasAttribute(attribute)) ||
+                !target.getAttribute('data-easystud-advanced-native-url')) {
+            return false;
+        }
+
+        const header = target.querySelector(':scope > .local-groupimport-easystud-group__header');
+        return !!header && !header.querySelector(':scope > [data-easystud-open-advanced-settings]');
+    };
+
+    const restoreContextFocusAfterAdvancedSettingsClose = opener => {
+        const modal = root.querySelector('[data-easystud-advanced-settings-modal]');
+        if (!modal || !opener) {
+            return;
+        }
+        modal.addEventListener('click', event => {
+            if (event.target !== modal && !event.target.closest('[data-easystud-close-advanced-settings]')) {
+                return;
+            }
+            window.setTimeout(() => {
+                if (document.contains(opener)) {
+                    opener.focus({preventScroll: true});
+                }
+            }, 0);
+        });
+    };
+
     const setVisibleActions = (type, target) => {
         const items = getContextItems(type, target);
         menu.querySelectorAll('[data-easystud-context-action]').forEach(button => {
@@ -6586,6 +6622,10 @@ const bindContextMenu = (root, courseId) => {
             }
             if (!hidden && button.getAttribute('data-easystud-context-action') === 'grouping-select-groups' &&
                     !items.some(item => getGroupsInGrouping(item).length > 0)) {
+                hidden = true;
+            }
+            if (!hidden && button.getAttribute('data-easystud-context-action') === 'group-open-advanced-settings' &&
+                    !canOpenAdvancedSettingsFromContext(items, target)) {
                 hidden = true;
             }
             button.hidden = hidden;
@@ -6867,6 +6907,10 @@ const bindContextMenu = (root, courseId) => {
                     });
                 }
             }
+        } else if (action === 'group-open-advanced-settings') {
+            const opener = document.activeElement;
+            openAdvancedSettingsModal(root, target);
+            restoreContextFocusAfterAdvancedSettingsClose(opener);
         } else if (action === 'copy-group-name') {
             copyText(getContextItems('group', target).map(group => getGroupName(group)).filter(Boolean).join('\n'));
         } else if (action === 'group-move-selected') {
