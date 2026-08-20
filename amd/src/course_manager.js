@@ -559,17 +559,47 @@ const getGroupsWithGroupingMembership = (root, groups) => {
     });
 };
 
+const getGroupingOverflowLabel = (root, count) => {
+    const labels = root ? getLabels(root) : {};
+    const overflowLabel = labels.groupingoverflowlabel || '__count__ grouping(s)';
+    return overflowLabel.replace('__count__', count).replace('{$a}', count);
+};
+
+const getGroupGroupingLabelData = group => {
+    const container = group ? group.querySelector(
+        ':scope > .local-groupimport-easystud-group__header > .local-groupimport-easystud-group__groupings--inline'
+    ) : null;
+    if (!container || !container.hasAttribute('data-easystud-grouping-accessible-label')) {
+        return null;
+    }
+
+    return {
+        container,
+        label: container.getAttribute('data-easystud-grouping-action-label') || '',
+        accessibleLabel: container.getAttribute('data-easystud-grouping-accessible-label') || '',
+    };
+};
+
 const renderGroupGroupingTags = (container, groupingnames) => {
     if (!container) {
         return;
     }
     const group = container.closest('[data-easystud-group-id]');
     const previousDetails = group ? group.querySelector(':scope > .local-groupimport-easystud-group__groupings-details') : null;
+    const previousAccessibleLabel = group ? group.querySelector(
+        ':scope > .local-groupimport-easystud-group__header > .local-groupimport-easystud-group__groupings-accessible'
+    ) : null;
     const wasExpanded = group ? group.classList.contains('is-groupings-expanded') : false;
     if (previousDetails) {
         previousDetails.remove();
     }
+    if (previousAccessibleLabel) {
+        previousAccessibleLabel.remove();
+    }
     container.innerHTML = '';
+    container.removeAttribute('data-easystud-grouping-accessible-label');
+    container.removeAttribute('data-easystud-grouping-action-label');
+    container.removeAttribute('data-easystud-grouping-label-fit');
 
     if (!groupingnames.length) {
         container.hidden = true;
@@ -580,12 +610,13 @@ const renderGroupGroupingTags = (container, groupingnames) => {
     }
 
     const root = container.closest('.local-groupimport-easystud');
-    const labels = root ? getLabels(root) : {};
-    const overflowLabel = labels.groupingoverflowlabel || '__count__ grouping(s)';
     const shouldSummarise = groupingnames.length > 1 || (groupingnames[0] || '').length > 18;
+    const groupingCountLabel = getGroupingOverflowLabel(root, groupingnames.length);
     const summary = shouldSummarise ?
-        overflowLabel.replace('__count__', groupingnames.length).replace('{$a}', groupingnames.length) :
+        groupingCountLabel :
         groupingnames[0];
+    const accessibleLabel = groupingCountLabel + ': ' + groupingnames.join(', ');
+    const header = group ? group.querySelector(':scope > .local-groupimport-easystud-group__header') : null;
 
     const summaryNode = document.createElement(shouldSummarise ? 'button' : 'span');
     summaryNode.className = 'local-groupimport-easystud-token local-groupimport-easystud-token--grouping ' +
@@ -599,11 +630,18 @@ const renderGroupGroupingTags = (container, groupingnames) => {
     }
     container.appendChild(summaryNode);
     container.hidden = false;
+    container.setAttribute('data-easystud-grouping-accessible-label', accessibleLabel);
+    container.setAttribute('data-easystud-grouping-action-label', groupingCountLabel);
 
-    if (!shouldSummarise || !group) {
-        if (group) {
-            group.classList.remove('is-groupings-expanded');
-        }
+    if (header) {
+        const accessibleNode = document.createElement('span');
+        accessibleNode.className = 'local-groupimport-easystud-group__groupings-accessible';
+        accessibleNode.textContent = accessibleLabel;
+        accessibleNode.hidden = true;
+        header.insertBefore(accessibleNode, container.nextSibling);
+    }
+
+    if (!group) {
         return;
     }
 
@@ -620,15 +658,17 @@ const renderGroupGroupingTags = (container, groupingnames) => {
         list.appendChild(token);
     });
 
-    const icon = document.createElement('span');
-    icon.className = 'fa fa-chevron-down local-groupimport-easystud-group__groupings-summary-icon';
-    icon.setAttribute('aria-hidden', 'true');
-    summaryNode.appendChild(icon);
+    if (shouldSummarise) {
+        const icon = document.createElement('span');
+        icon.className = 'fa fa-chevron-down local-groupimport-easystud-group__groupings-summary-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        summaryNode.appendChild(icon);
+    }
 
     details.appendChild(list);
     group.insertBefore(details, group.querySelector(':scope > .local-groupimport-easystud-group__members') || null);
-    group.classList.toggle('is-groupings-expanded', wasExpanded);
-    details.hidden = !wasExpanded;
+    group.classList.toggle('is-groupings-expanded', shouldSummarise && wasExpanded);
+    details.hidden = !shouldSummarise || !wasExpanded;
 };
 
 const setAdvancedAttributes = (element, data, type) => {
@@ -685,6 +725,66 @@ const syncGroupGroupingOverflow = root => {
     });
 };
 
+const syncGroupGroupingLabelFit = root => {
+    root.querySelectorAll('.local-groupimport-easystud-group__groupings--inline').forEach(container => {
+        const group = container.closest('[data-easystud-group-id]');
+        const header = group ? group.querySelector(':scope > .local-groupimport-easystud-group__header') : null;
+        const accessibleNode = header ? header.querySelector(
+            ':scope > .local-groupimport-easystud-group__groupings-accessible'
+        ) : null;
+        if (!group || !header || !container.hasAttribute('data-easystud-grouping-accessible-label')) {
+            return;
+        }
+
+        if (isResponsiveWorkspace()) {
+            container.hidden = false;
+            container.removeAttribute('data-easystud-grouping-label-fit');
+            if (accessibleNode) {
+                accessibleNode.hidden = true;
+            }
+            return;
+        }
+
+        container.hidden = false;
+        container.setAttribute('data-easystud-grouping-label-fit', 'measuring');
+        const fits = header.scrollWidth <= header.clientWidth + 1;
+        container.setAttribute('data-easystud-grouping-label-fit', fits ? 'visible' : 'hidden');
+        container.hidden = !fits;
+        if (accessibleNode) {
+            accessibleNode.hidden = fits;
+        }
+    });
+};
+
+const toggleGroupGroupingDetails = (root, group) => {
+    if (!group) {
+        return;
+    }
+
+    const expanded = !group.classList.contains('is-groupings-expanded');
+    const details = group.querySelector(':scope > [data-easystud-grouping-details]');
+    if (!details) {
+        group.classList.toggle('is-groupings-expanded', expanded);
+        return;
+    }
+    if (expanded) {
+        group.classList.add('is-groupings-expanded');
+        Motion.expand(details, {
+            duration: Motion.timing.normal,
+            onComplete: () => scheduleResponsiveUiRefresh(root),
+        });
+        return;
+    }
+
+    Motion.collapse(details, {
+        duration: Motion.timing.normal,
+        onComplete: () => {
+            group.classList.remove('is-groupings-expanded');
+            scheduleResponsiveUiRefresh(root);
+        },
+    });
+};
+
 const normaliseAllGroupGroupingTags = root => {
     root.querySelectorAll('.local-groupimport-easystud-group__groupings--inline').forEach(container => {
         const group = container.closest('[data-easystud-group-id]');
@@ -704,7 +804,10 @@ const normaliseAllGroupGroupingTags = root => {
 };
 
 const scheduleGroupGroupingOverflow = root => {
-    window.requestAnimationFrame(() => syncGroupGroupingOverflow(root));
+    window.requestAnimationFrame(() => {
+        syncGroupGroupingOverflow(root);
+        syncGroupGroupingLabelFit(root);
+    });
 };
 
 const ensureTagToggle = (container, root) => {
@@ -6472,6 +6575,30 @@ const bindContextMenu = (root, courseId) => {
     let context = null;
     let returnFocus = null;
 
+    const ensureGroupGroupingDetailsAction = () => {
+        const list = menu.querySelector('.local-groupimport-easystud-context-menu__list');
+        if (!list || list.querySelector('[data-easystud-context-action="group-show-grouping-details"]')) {
+            return;
+        }
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.hidden = true;
+        button.setAttribute('data-easystud-context-action', 'group-show-grouping-details');
+        button.setAttribute('data-easystud-contexts', 'group');
+        button.setAttribute('role', 'menuitem');
+
+        const icon = document.createElement('span');
+        icon.className = 'fa fa-layer-group';
+        icon.setAttribute('aria-hidden', 'true');
+        const text = document.createElement('span');
+        text.setAttribute('data-easystud-context-text', '1');
+        button.append(icon, text);
+        list.appendChild(button);
+    };
+
+    ensureGroupGroupingDetailsAction();
+
     const hideMenu = () => {
         menu.hidden = true;
         menu.classList.remove('is-mobile-sheet');
@@ -6593,10 +6720,25 @@ const bindContextMenu = (root, courseId) => {
     const setVisibleActions = (type, target) => {
         const items = getContextItems(type, target);
         menu.querySelectorAll('[data-easystud-context-action]').forEach(button => {
+            const action = button.getAttribute('data-easystud-context-action');
+            if (action === 'group-show-grouping-details') {
+                const data = items.length === 1 && !isResponsiveWorkspace() ?
+                    getGroupGroupingLabelData(target) : null;
+                const hidden = !data || !data.container.hidden;
+                button.hidden = hidden;
+                if (!hidden) {
+                    const text = button.querySelector('[data-easystud-context-text]');
+                    if (text) {
+                        text.textContent = data.label;
+                    }
+                    button.setAttribute('aria-label', data.accessibleLabel);
+                }
+                return;
+            }
+
             const contexts = (button.getAttribute('data-easystud-contexts') || '').split(' ');
             let hidden = contexts.indexOf(type) === -1;
             if (!hidden && items.length > 1) {
-                const action = button.getAttribute('data-easystud-context-action');
                 if ([
                     'participant-open-details',
                     'group-paste-emails',
@@ -6907,6 +7049,8 @@ const bindContextMenu = (root, courseId) => {
                     });
                 }
             }
+        } else if (action === 'group-show-grouping-details') {
+            toggleGroupGroupingDetails(root, target);
         } else if (action === 'group-open-advanced-settings') {
             const opener = document.activeElement;
             openAdvancedSettingsModal(root, target);
@@ -7462,27 +7606,7 @@ const bindTagToggles = root => {
             if (!group) {
                 return;
             }
-            const expanded = !group.classList.contains('is-groupings-expanded');
-            const details = group.querySelector(':scope > [data-easystud-grouping-details]');
-            if (!details) {
-                group.classList.toggle('is-groupings-expanded', expanded);
-                return;
-            }
-            if (expanded) {
-                group.classList.add('is-groupings-expanded');
-                Motion.expand(details, {
-                    duration: Motion.timing.normal,
-                    onComplete: () => scheduleResponsiveUiRefresh(root),
-                });
-            } else {
-                Motion.collapse(details, {
-                    duration: Motion.timing.normal,
-                    onComplete: () => {
-                        group.classList.remove('is-groupings-expanded');
-                        scheduleResponsiveUiRefresh(root);
-                    },
-                });
-            }
+            toggleGroupGroupingDetails(root, group);
             return;
         }
 
@@ -8945,6 +9069,7 @@ export const init = (rootId, courseId) => {
             () => {
                 const refreshResponsiveUi = () => {
                     scheduleResponsiveUiRefresh(root);
+                    scheduleGroupGroupingOverflow(root);
                     scheduleCompleteListAlignment(root);
                 };
                 window.addEventListener('resize', refreshResponsiveUi);
