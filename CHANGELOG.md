@@ -10,6 +10,25 @@ Maintenance convention:
 
 ## Unreleased
 
+### Grouping label desktop containment EED-UI-2026-0029 - 2026-08-20
+
+#### Fixed
+
+- Measure each desktop Group header with its complete Grouping label before it
+  is displayed. The label now remains fully readable when it fits; otherwise
+  the complete visual pill is removed instead of being compressed or ellipsed.
+- When the pill is removed, keep a non-focusable accessible description of the
+  Groupings and add the existing Group context menu's local Grouping-details
+  action. No existing menu action, Moodle permission or responsive label
+  behaviour changes.
+
+#### Validation
+
+- Add a focused desktop geometry scenario covering the 1024/1025 boundary and
+  1200, 1201, 1280 and 1440 px with short/long Group titles plus one/multiple
+  Groupings. It rejects truncated visible labels and verifies the More actions
+  fallback only when the visual pill is absent.
+
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
 #### Fixed

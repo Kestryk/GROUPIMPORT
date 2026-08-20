@@ -432,6 +432,37 @@
     @include easyedu.related-tags-inline(min(30%, 10rem));
   }
 
+  &-group__groupings--inline[data-easystud-grouping-label-fit='measuring'],
+  &-group__groupings--inline[data-easystud-grouping-label-fit='visible'] {
+    display: inline-flex;
+    max-width: none;
+    overflow: visible;
+
+    > * {
+      max-width: none;
+      min-width: max-content;
+      overflow: visible;
+      text-overflow: clip;
+    }
+  }
+
+  &-group__groupings--inline[data-easystud-grouping-label-fit='measuring'] {
+    visibility: hidden;
+  }
+
+  &-group__groupings-accessible {
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
   &-group__groupings-summary,
   &-group__groupings-overflow {
     @include easyedu.related-tags-summary(#f3eefb, #ddd1f0, #5c3b8a);
@@ -890,6 +921,12 @@
     > .local-groupimport-easystud-group__groupings--inline {
       flex: 0 1 auto;
       min-width: 0;
+    }
+
+    > .local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit='measuring'],
+    > .local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit='visible'] {
+      flex: 0 0 auto;
+      min-width: max-content;
     }
 
     .badge {

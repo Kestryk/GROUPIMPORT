@@ -4081,6 +4081,32 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=measuring], .local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=visible] {
+  display: inline-flex;
+  max-width: none;
+  overflow: visible;
+}
+.local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=measuring] > *, .local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=visible] > * {
+  max-width: none;
+  min-width: max-content;
+  overflow: visible;
+  text-overflow: clip;
+}
+.local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=measuring] {
+  visibility: hidden;
+}
+.local-groupimport-easystud-group__groupings-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
 .local-groupimport-easystud-group__groupings-summary, .local-groupimport-easystud-group__groupings-overflow {
   align-items: center;
   background: #f3eefb;
@@ -4755,6 +4781,11 @@
 .local-groupimport-easystud-group__header > .local-groupimport-easystud-group__groupings--inline {
   flex: 0 1 auto;
   min-width: 0;
+}
+.local-groupimport-easystud-group__header > .local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=measuring],
+.local-groupimport-easystud-group__header > .local-groupimport-easystud-group__groupings--inline[data-easystud-grouping-label-fit=visible] {
+  flex: 0 0 auto;
+  min-width: max-content;
 }
 .local-groupimport-easystud-group__header .badge {
   margin-left: auto;
