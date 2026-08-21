@@ -4809,6 +4809,37 @@
 .local-groupimport-easystud-group__header.is-rename-editing > .local-groupimport-easystud-rename {
   flex: 1 1 auto;
 }
+.local-groupimport-easystud-group.is-groupings-summary-hidden > .local-groupimport-easystud-group__header > .local-groupimport-easystud-card-menu {
+  align-items: center;
+  background: transparent;
+  border: 1px solid #d8e2ed;
+  border-radius: 999px;
+  color: var(--local-groupimport-easystud-primary);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 1.85rem;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: static;
+  width: 1.85rem;
+}
+.local-groupimport-easystud-group.is-groupings-summary-hidden > .local-groupimport-easystud-group__header > .local-groupimport-easystud-card-menu:hover, .local-groupimport-easystud-group.is-groupings-summary-hidden > .local-groupimport-easystud-group__header > .local-groupimport-easystud-card-menu:focus {
+  background: #f7fbff;
+  border-color: #bdd0e5;
+  color: var(--local-groupimport-easystud-primary-strong);
+}
+.local-groupimport-easystud-group.is-groupings-summary-hidden > .local-groupimport-easystud-group__header > .local-groupimport-easystud-card-menu:focus-visible {
+  border-color: var(--easyedu-control-focus-border);
+  box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring);
+  outline: var(--easyedu-focus-outline-width) solid transparent;
+  outline-offset: var(--easyedu-focus-outline-offset);
+  border-color: var(--easyedu-control-focus-border) !important;
+  box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring) !important;
+}
+.local-groupimport-easystud-group.is-groupings-summary-hidden > .local-groupimport-easystud-group__header > .local-groupimport-easystud-card-menu:focus:not(:focus-visible) {
+  box-shadow: none;
+}
 .local-groupimport-easystud-group__mail-button, .local-groupimport-easystud-group__duplicate-button, .local-groupimport-easystud-group__member-search-button, .local-groupimport-easystud-group__settings-button {
   align-items: center;
   background: transparent;

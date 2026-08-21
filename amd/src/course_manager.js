@@ -696,6 +696,33 @@ const syncMaskedGroupingDescription = (group, container, masked, expanded) => {
     description.hidden = expanded;
 };
 
+const syncMaskedGroupingMenuTrigger = (group, masked) => {
+    const header = group.querySelector(':scope > .local-groupimport-easystud-group__header');
+    if (!header) {
+        return;
+    }
+
+    const trigger = group.querySelector(':scope > [data-easystud-card-menu]') ||
+        header.querySelector(':scope > [data-easystud-card-menu]');
+    if (!trigger) {
+        return;
+    }
+
+    if (masked) {
+        if (trigger.parentElement === group) {
+            trigger.setAttribute('data-easystud-grouping-menu-relocated', '1');
+        }
+        const badge = header.querySelector(':scope > .badge');
+        header.insertBefore(trigger, badge || null);
+        return;
+    }
+
+    if (trigger.getAttribute('data-easystud-grouping-menu-relocated') === '1') {
+        group.appendChild(trigger);
+        trigger.removeAttribute('data-easystud-grouping-menu-relocated');
+    }
+};
+
 const syncGroupGroupingOverflow = root => {
     root.querySelectorAll('.local-groupimport-easystud-group__groupings--inline').forEach(container => {
         const group = container.closest('[data-easystud-group-id]');
@@ -706,6 +733,7 @@ const syncGroupGroupingOverflow = root => {
         if (isResponsiveWorkspace()) {
             container.hidden = false;
             group.classList.remove('is-groupings-summary-hidden');
+            syncMaskedGroupingMenuTrigger(group, false);
             syncMaskedGroupingDescription(group, container, false, false);
             return;
         }
@@ -725,6 +753,7 @@ const syncGroupGroupingOverflow = root => {
 
         container.hidden = masked;
         group.classList.toggle('is-groupings-summary-hidden', masked);
+        syncMaskedGroupingMenuTrigger(group, masked);
         syncMaskedGroupingDescription(group, container, masked, expanded);
 
         if (!toggle || !details) {
@@ -6807,7 +6836,8 @@ const bindContextMenu = (root, courseId) => {
 
     const ensureCardMenuButtons = () => {
         root.querySelectorAll('[data-easystud-user], [data-easystud-group-id], [data-easystud-grouping-id]').forEach(card => {
-            if (card.querySelector(':scope > [data-easystud-card-menu]')) {
+            if (card.querySelector(':scope > [data-easystud-card-menu], ' +
+                ':scope > .local-groupimport-easystud-group__header > [data-easystud-card-menu]')) {
                 return;
             }
             const existing = card.querySelector(':scope > .local-groupimport-easystud-group__header > ' +

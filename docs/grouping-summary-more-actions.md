@@ -22,6 +22,11 @@ the menu closes and focus returns to its More actions trigger. Because every
 Group context menu retains clear-selection at minimum, the recovery cannot
 produce an empty menu.
 
+Only while this recovery is needed, the existing More actions trigger moves
+into the released Group header slot and becomes visible as a desktop header
+action. It returns to its normal card placement as soon as the complete
+Grouping summary fits again; no permanent desktop menu is introduced.
+
 For a non-interactive single Grouping token, the token is hidden rather than
 ellipsed and a non-focusable screen-reader description retains the membership
 information. No artificial menu action is created for an operation that did
