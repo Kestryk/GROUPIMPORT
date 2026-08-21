@@ -28,6 +28,8 @@ Maintenance convention:
   Group renderings, verifies one recovered menu action without duplication,
   verifies focus returns to More actions, confirms the existing Grouping details
   disclosure opens, and excludes Participant and Grouping cards as controls.
+  The probe fixes its flex basis and width so its constraint cannot be relaxed
+  by the Group header's normal flex distribution.
 
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
