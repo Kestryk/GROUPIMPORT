@@ -154,7 +154,7 @@ test('desktop Group More actions recovers masked grouping summaries in every Gro
         initialTitleWidth - 1
     );
 
-    const moreActions = group.locator(':scope > [data-easystud-card-menu]');
+    const moreActions = group.locator('[data-easystud-card-menu]');
     const contextMenu = root.locator('[data-easystud-context-menu]');
     const recoveredAction = contextMenu.locator(
         '[data-easystud-masked-pill-action="grouping-summary-toggle"]'
@@ -188,7 +188,7 @@ test('desktop Group More actions recovers masked grouping summaries in every Gro
         const probeSummary = probe.locator('[data-easystud-grouping-summary-toggle]');
         const probeDetails = probe.locator(':scope > [data-easystud-grouping-details]');
         const probeDescription = probe.locator('[data-easystud-masked-groupings-description]');
-        const probeMoreActions = probe.locator(':scope > [data-easystud-card-menu]');
+        const probeMoreActions = probe.locator('[data-easystud-card-menu]');
 
         await expect(probeSummary).toBeHidden();
         await expect(probeSummary).not.toBeFocused();

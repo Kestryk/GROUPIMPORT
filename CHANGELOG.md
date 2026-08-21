@@ -21,6 +21,9 @@ Maintenance convention:
   catalogue, ungrouped and Grouping-nested renderings.
 - Keep the masked Grouping names available to screen readers without changing
   Group title, member-count, direct actions, permissions or Advanced settings.
+- Show the existing More actions trigger in the released desktop header slot
+  only while that recovery action is required, then return it to its normal
+  placement when the full Grouping summary fits again.
 
 #### Validation
 
