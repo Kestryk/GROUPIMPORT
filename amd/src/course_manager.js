@@ -670,15 +670,66 @@ const updateCatalogGroupingTags = (root, groupid) => {
     scheduleCompleteListAlignment(root);
 };
 
+const syncMaskedGroupingDescription = (group, container, masked, expanded) => {
+    let description = group.querySelector(':scope > [data-easystud-masked-groupings-description]');
+    if (!masked) {
+        if (description) {
+            description.remove();
+        }
+        return;
+    }
+
+    if (!description) {
+        description = document.createElement('span');
+        description.className = 'visually-hidden';
+        description.setAttribute('data-easystud-masked-groupings-description', '1');
+        group.insertBefore(description, group.querySelector(':scope > .local-groupimport-easystud-group__members') || null);
+    }
+
+    const details = group.querySelector(':scope > [data-easystud-grouping-details]');
+    const source = details || container;
+    const labels = getLabels(container.closest('.local-groupimport-easystud'));
+    const names = Array.from(source.querySelectorAll('.local-groupimport-easystud-token--grouping'))
+        .map(token => token.textContent.trim())
+        .filter(Boolean);
+    description.textContent = (labels.groupings || 'Groupings') + ': ' + names.join(', ');
+    description.hidden = expanded;
+};
+
 const syncGroupGroupingOverflow = root => {
     root.querySelectorAll('.local-groupimport-easystud-group__groupings--inline').forEach(container => {
         const group = container.closest('[data-easystud-group-id]');
-        const toggle = container.querySelector('[data-easystud-grouping-summary-toggle]');
-        const details = group ? group.querySelector(':scope > [data-easystud-grouping-details]') : null;
-        if (!toggle || !group || !details) {
+        if (!group) {
             return;
         }
+
+        if (isResponsiveWorkspace()) {
+            container.hidden = false;
+            group.classList.remove('is-groupings-summary-hidden');
+            syncMaskedGroupingDescription(group, container, false, false);
+            return;
+        }
+
+        // Measure the complete pill before deciding whether it may remain in the header.
+        container.hidden = false;
+        if (container.clientWidth < 1) {
+            return;
+        }
+        const pills = Array.from(container.querySelectorAll('.local-groupimport-easystud-token--grouping'));
+        const masked = container.scrollWidth > container.clientWidth || pills.some(pill =>
+            pill.scrollWidth > pill.clientWidth
+        );
+        const toggle = container.querySelector('[data-easystud-grouping-summary-toggle]');
+        const details = group.querySelector(':scope > [data-easystud-grouping-details]');
         const expanded = group.classList.contains('is-groupings-expanded');
+
+        container.hidden = masked;
+        group.classList.toggle('is-groupings-summary-hidden', masked);
+        syncMaskedGroupingDescription(group, container, masked, expanded);
+
+        if (!toggle || !details) {
+            return;
+        }
         toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         toggle.classList.toggle('is-expanded', expanded);
         details.hidden = !expanded;
@@ -6639,6 +6690,39 @@ const bindContextMenu = (root, courseId) => {
         });
     };
 
+    const syncMaskedGroupingMenuAction = (type, target) => {
+        menu.querySelectorAll('[data-easystud-masked-pill-action]').forEach(button => button.remove());
+        if (type !== 'group' || !target || isResponsiveWorkspace() ||
+                !target.classList.contains('is-groupings-summary-hidden')) {
+            return;
+        }
+
+        const summary = target.querySelector(
+            ':scope > .local-groupimport-easystud-group__header ' +
+            '[data-easystud-grouping-summary-toggle]'
+        );
+        if (!summary) {
+            return;
+        }
+
+        const item = document.createElement('button');
+        const icon = document.createElement('span');
+        const text = document.createElement('span');
+        item.type = 'button';
+        item.setAttribute('data-easystud-masked-pill-action', 'grouping-summary-toggle');
+        item.setAttribute('role', 'menuitem');
+        item.setAttribute('aria-label', summary.getAttribute('aria-label') || summary.textContent.trim());
+        icon.className = 'fa fa-layer-group';
+        icon.setAttribute('aria-hidden', 'true');
+        text.textContent = summary.textContent.trim();
+        item.append(icon, text);
+
+        const list = menu.querySelector('.local-groupimport-easystud-context-menu__list');
+        if (list) {
+            list.insertBefore(item, list.firstChild);
+        }
+    };
+
     const showMenu = (event, type, target) => {
         event.preventDefault();
         context = {type, target};
@@ -6647,6 +6731,7 @@ const bindContextMenu = (root, courseId) => {
             returnFocus.setAttribute('aria-expanded', 'true');
         }
         setVisibleActions(type, target);
+        syncMaskedGroupingMenuAction(type, target);
         menu.hidden = false;
         const mobile = isResponsiveWorkspace();
         menu.classList.toggle('is-mobile-sheet', mobile);
@@ -6663,7 +6748,10 @@ const bindContextMenu = (root, courseId) => {
             menu.style.left = Math.max(8, left) + 'px';
             menu.style.top = Math.max(8, top) + 'px';
         }
-        const first = menu.querySelector('[data-easystud-context-action]:not([hidden])');
+        const first = menu.querySelector(
+            '[data-easystud-masked-pill-action]:not([hidden]), ' +
+            '[data-easystud-context-action]:not([hidden])'
+        );
         if (first) {
             first.focus();
         }
@@ -6826,6 +6914,23 @@ const bindContextMenu = (root, courseId) => {
     root.addEventListener('scroll', clearLongPress, true);
 
     menu.addEventListener('click', event => {
+        const maskedPillAction = event.target.closest('[data-easystud-masked-pill-action]');
+        if (maskedPillAction && context) {
+            const target = context.target;
+            hideMenu();
+            if (maskedPillAction.getAttribute('data-easystud-masked-pill-action') ===
+                    'grouping-summary-toggle') {
+                const summary = target.querySelector(
+                    ':scope > .local-groupimport-easystud-group__header ' +
+                    '[data-easystud-grouping-summary-toggle]'
+                );
+                if (summary) {
+                    summary.click();
+                }
+            }
+            return;
+        }
+
         const button = event.target.closest('[data-easystud-context-action]');
         if (!button || !context) {
             return;

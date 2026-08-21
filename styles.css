@@ -4061,6 +4061,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.local-groupimport-easystud-group__groupings--inline[hidden] {
+  display: none !important;
+}
 .local-groupimport-easystud-tree__children .local-groupimport-easystud-group__groupings--inline {
   align-items: center;
   display: inline-flex;
