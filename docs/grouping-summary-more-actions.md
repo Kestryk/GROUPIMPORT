@@ -44,9 +44,11 @@ Navigation, the Grouping rail or compact action placement.
 `local-supervised` candidate. It uses temporary in-memory capacity probes for
 all four Group renderings; it does not change course data or create a Moodle
 fixture. Each probe fixes its flex basis and width so the test exercises a
-measured capacity boundary rather than an expandable header. A future leased
-run must verify the recovered menu action at desktop width, its accessible
-name, the opened details disclosure and focus restoration to More actions. It
+measured capacity boundary rather than an expandable header. The probes stay
+fixed in the viewport so opening their menu cannot trigger the product's
+intentional desktop scroll-to-close behavior. A future leased run must verify
+the recovered menu action at desktop width, its accessible name, the opened
+details disclosure and focus restoration to More actions. It
 also verifies that Participant and Grouping More menus do not receive this
 Group-only recovery action.
 
