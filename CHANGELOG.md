@@ -35,7 +35,8 @@ Maintenance convention:
   disclosure opens, and excludes Participant and Grouping cards as controls.
   The probe fixes its flex basis and width so its constraint cannot be relaxed
   by the Group header's normal flex distribution, and remains fixed in the
-  viewport so its action does not induce an unrelated scroll-to-close event.
+  viewport below the Moodle top bar so its action does not induce an unrelated
+  scroll-to-close event or fall below the fixed navigation.
 
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
