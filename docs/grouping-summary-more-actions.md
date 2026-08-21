@@ -26,6 +26,9 @@ Only while this recovery is needed, the existing More actions trigger moves
 into the released Group header slot and becomes visible as a desktop header
 action. It returns to its normal card placement as soon as the complete
 Grouping summary fits again; no permanent desktop menu is introduced.
+Opening the context menu transfers focus without scrolling, so that focus
+management cannot invoke the existing desktop rule that closes a menu after a
+real user scroll.
 
 For a non-interactive single Grouping token, the token is hidden rather than
 ellipsed and a non-focusable screen-reader description retains the membership
@@ -46,9 +49,11 @@ all four Group renderings; it does not change course data or create a Moodle
 fixture. Each probe fixes its flex basis and width so the test exercises a
 measured capacity boundary rather than an expandable header. The probes stay
 fixed in the viewport so opening their menu cannot trigger the product's
-intentional desktop scroll-to-close behavior. A future leased run must verify
-the recovered menu action at desktop width, its accessible name, the opened
-details disclosure and focus restoration to More actions. It
+intentional desktop scroll-to-close behavior. The menu's initial focus also
+uses `preventScroll`, preserving user-scroll closure while avoiding a
+focus-induced close. A future leased run must verify the recovered menu action
+at desktop width, its accessible name, the opened details disclosure and focus
+restoration to More actions. It
 also verifies that Participant and Grouping More menus do not receive this
 Group-only recovery action.
 

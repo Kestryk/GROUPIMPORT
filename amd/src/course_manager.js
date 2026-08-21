@@ -6782,7 +6782,7 @@ const bindContextMenu = (root, courseId) => {
             '[data-easystud-context-action]:not([hidden])'
         );
         if (first) {
-            first.focus();
+            first.focus({preventScroll: true});
         }
     };
 
