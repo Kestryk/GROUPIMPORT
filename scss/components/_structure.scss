@@ -426,6 +426,10 @@
 
   &-group__groupings--inline {
     @include easyedu.related-tags-inline(min(34%, 13rem));
+
+    &[hidden] {
+      display: none !important;
+    }
   }
 
   &-tree__children &-group__groupings--inline {

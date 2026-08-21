@@ -10,6 +10,25 @@ Maintenance convention:
 
 ## Unreleased
 
+### Grouping summary More-actions recovery 0029 - 2026-08-21
+
+#### Fixed
+
+- On desktop Group cards, hide a Grouping summary pill entirely when its full
+  label no longer fits in the header. The summary is no longer clipped or
+  focusable, and its existing details disclosure is exposed once through the
+  Group card's More actions menu in the Participant catalogue, Structure
+  catalogue, ungrouped and Grouping-nested renderings.
+- Keep the masked Grouping names available to screen readers without changing
+  Group title, member-count, direct actions, permissions or Advanced settings.
+
+#### Validation
+
+- Add a focused desktop scenario that forces the capacity boundary for all four
+  Group renderings, verifies one recovered menu action without duplication,
+  verifies focus returns to More actions, confirms the existing Grouping details
+  disclosure opens, and excludes Participant and Grouping cards as controls.
+
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
 #### Fixed
