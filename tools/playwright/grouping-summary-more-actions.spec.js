@@ -53,7 +53,9 @@ const installCapacityProbes = root => root.evaluate(rootNode => {
         name.textContent = rendering.name;
         container.className = 'local-groupimport-easystud-group__groupings ' +
             'local-groupimport-easystud-group__groupings--inline';
+        container.style.flex = '0 0 2rem';
         container.style.maxWidth = '2rem';
+        container.style.width = '2rem';
         summary.type = 'button';
         summary.className = 'local-groupimport-easystud-token ' +
             'local-groupimport-easystud-token--grouping ' +
@@ -114,7 +116,9 @@ test('desktop Group More actions recovers masked grouping summaries in every Gro
 
         container.className = 'local-groupimport-easystud-group__groupings ' +
             'local-groupimport-easystud-group__groupings--inline';
+        container.style.flex = '0 0 2rem';
         container.style.maxWidth = '2rem';
+        container.style.width = '2rem';
         summary.type = 'button';
         summary.className = 'local-groupimport-easystud-token ' +
             'local-groupimport-easystud-token--grouping ' +
