@@ -32,7 +32,8 @@ Maintenance convention:
   verifies focus returns to More actions, confirms the existing Grouping details
   disclosure opens, and excludes Participant and Grouping cards as controls.
   The probe fixes its flex basis and width so its constraint cannot be relaxed
-  by the Group header's normal flex distribution.
+  by the Group header's normal flex distribution, and remains fixed in the
+  viewport so its action does not induce an unrelated scroll-to-close event.
 
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
