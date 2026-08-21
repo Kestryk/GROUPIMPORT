@@ -24,6 +24,8 @@ Maintenance convention:
 - Show the existing More actions trigger in the released desktop header slot
   only while that recovery action is required, then return it to its normal
   placement when the full Grouping summary fits again.
+- Keep the context menu open when it transfers focus to its first action;
+  the existing desktop close-on-user-scroll rule remains in effect.
 
 #### Validation
 
