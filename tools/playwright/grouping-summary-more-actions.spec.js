@@ -27,7 +27,7 @@ const login = async page => {
 const installCapacityProbes = root => root.evaluate(rootNode => {
     const host = document.createElement('div');
     host.setAttribute('data-easystud-grouping-summary-probes', '1');
-    host.style.cssText = 'display:grid;gap:.6rem;left:1rem;position:fixed;top:1rem;width:34rem;z-index:20;';
+    host.style.cssText = 'display:grid;gap:.6rem;left:1rem;position:fixed;top:6rem;width:34rem;z-index:20;';
     const renderings = [
         {name: 'participant-catalogue', classes: 'local-groupimport-easystud-group--catalog'},
         {name: 'structure-catalogue', classes: 'local-groupimport-easystud-group--catalog'},

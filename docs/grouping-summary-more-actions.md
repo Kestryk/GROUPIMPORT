@@ -48,8 +48,9 @@ Navigation, the Grouping rail or compact action placement.
 all four Group renderings; it does not change course data or create a Moodle
 fixture. Each probe fixes its flex basis and width so the test exercises a
 measured capacity boundary rather than an expandable header. The probes stay
-fixed in the viewport so opening their menu cannot trigger the product's
-intentional desktop scroll-to-close behavior. The menu's initial focus also
+fixed below the Moodle top bar so opening their menu cannot trigger the
+product's intentional desktop scroll-to-close behavior or have its trigger
+covered by that bar. The menu's initial focus also
 uses `preventScroll`, preserving user-scroll closure while avoiding a
 focus-induced close. A future leased run must verify the recovered menu action
 at desktop width, its accessible name, the opened details disclosure and focus
