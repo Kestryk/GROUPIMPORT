@@ -610,6 +610,38 @@ Must not:
 - let a modal exceed the viewport because related lists are not collapsed into
   metadata sections;
 - restyle file pickers independently in each plugin.
+
+## Loading and Navigation Skeleton
+
+Canonical files:
+
+- `scss/easyedu/components/_loading.scss`;
+- `scss/easyedu/components/_navigation-skeleton.scss`;
+- `docs/components/loading.md`;
+- `docs/components/navigation-skeleton.md`.
+
+Must:
+
+- keep Skeleton markup decorative, non-focusable and `aria-hidden`;
+- keep the product root responsible for `aria-busy`, readiness, no-script
+  reveal, fail-open timing, dimensions and responsive geometry;
+- apply `navigation-skeleton-frame` only to the static large outer frame;
+- apply direct or overlay cue mixins only to internal decorative marks;
+- preserve logical RTL placement plus the Kit reduced-motion and forced-colors
+  safeguards;
+- retain the consumer's declared narrow-width and native-zoom containment
+  checks when changing a Skeleton consumer.
+
+Must not:
+
+- animate a large Skeleton frame or add meaningful text, controls or routes to
+  it;
+- change consumer panel counts, spacing, no-script behavior, lifecycle or
+  fail-open policy while importing the Kit primitive;
+- copy another product's Skeleton dimensions, responsive offsets, test timing
+  or loading data attributes;
+- use a Skeleton visual change to hide a functional Navigation regression.
+
 # Responsive compact-workspace contract
 
 - Preserve semantic identity rails at their desktop width; reserve horizontal

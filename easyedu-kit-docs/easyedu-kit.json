@@ -37,6 +37,7 @@
     "tokens",
     "typography",
     "animations",
+    "loading",
     "panels",
     "cards",
     "buttons",
@@ -66,6 +67,10 @@
     "guideValidation": {
       "script": "scripts/test-guide-contract.ps1",
       "command": "powershell -ExecutionPolicy Bypass -File ./scripts/test-guide-contract.ps1"
+    },
+    "navigationSkeletonValidation": {
+      "script": "tools/release/test-navigation-skeleton-contract.ps1",
+      "command": "powershell -ExecutionPolicy Bypass -File ./tools/release/test-navigation-skeleton-contract.ps1"
     },
     "sync": {
       "script": "sync-easyedu-kit.ps1",

@@ -136,9 +136,10 @@ This keeps the kit easy to copy while still allowing each plugin to evolve.
 
 ## Navigation Skeleton consumer boundary
 
-The embedded `navigation-skeleton` component comes from immutable UI Kit
-snapshot `c9277a82fb471018f4cc07b24dd336d2adfa310d` for
-`EED-UI-2026-0025`. Apply `navigation-skeleton-frame` only to a static outer
+The embedded `navigation-skeleton` component comes from frozen UI Kit K2
+snapshot `4fb6b05058266f390700864a03a682171171409a` for
+`EED-UI-2026-SKELETON-B`. Apply `navigation-skeleton-frame` only to a static
+outer
 frame and apply a cue mixin only to decorative descendants. The component
 supplies RTL reversal, reduced-motion and forced-colors behavior; EasyStud
 keeps its own panel geometry, no-script path, readiness and fail-open policy.

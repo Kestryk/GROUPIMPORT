@@ -14,3 +14,7 @@ Each component document follows the same structure:
 
 The kit is intentionally mixin-first. Plugins own their selectors and include
 EasyEdu component styles under plugin-specific roots.
+
+Loading migrations must also read [Loading and skeletons](loading.md) and
+[Navigation Skeleton](navigation-skeleton.md). Those contracts keep loading
+surfaces decorative and preserve the consumer-owned lifecycle and geometry.

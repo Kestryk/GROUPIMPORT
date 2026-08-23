@@ -1,11 +1,11 @@
-# Navigation Skeleton parity (`EED-UI-2026-0025`)
+# Navigation Skeleton parity (`EED-UI-2026-0025`, `EED-UI-2026-SKELETON-B`)
 
 ## Scope and immutable input
 
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
 `scss/views/_mass-import.scss`) consume only UI Kit snapshot
-`c9277a82fb471018f4cc07b24dd336d2adfa310d`.
+`4fb6b05058266f390700864a03a682171171409a` (frozen Kit K2).
 
 The selective vendoring adds only
 `scss/easyedu/components/_navigation-skeleton.scss`, its aggregator forward
@@ -16,7 +16,8 @@ message, Guide, CCB, runtime and cache remain outside this consumer lot.
 ## Composition and lifecycle boundary
 
 The existing server-rendered skeleton roots remain `aria-hidden` and now mark
-the Navigation Skeleton composition with `data-easyedu-navigation-skeleton`.
+the Navigation Skeleton composition with `data-easyedu-navigation-skeleton`
+and its explicit `data-easyedu-skeleton-contract="K2"` provenance marker.
 No real control, navigation destination or meaningful copy is added. The
 existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
 180 ms Mass Import handoff and their fail-open paths are unchanged.
@@ -71,7 +72,7 @@ source contract and its canonical CSS media rules.
 ### Static record - 2026-08-10
 
 The vendored component text was compared after line-ending normalization with
-the immutable `c9277a82` source and matched exactly. The focused source
+the immutable K2 source and matched exactly. The focused source
 contract, the official `sass scss/easystud.scss styles.css --no-source-map`
 build, PHP lint of `index.php`, `node --check` of
 `tools/playwright/mass-import-audit.spec.js` and
@@ -139,3 +140,17 @@ When the supervised process supplies a Chromium executable, the scenario uses
 it only with the external run profile. The profile writes Chromium's partitioned
 per-host zoom preference before launch; it never changes an existing browser
 profile or sends zoom shortcuts.
+
+### K2 consumer contract - 2026-08-23
+
+`EED-UI-2026-SKELETON-B` formalizes the two existing consumers against frozen
+Kit K2. The component SCSS is byte-identical to the earlier accepted source;
+this lot changes only its explicit provenance, embedded Skeleton documentation
+and static contract assertions. It does not alter markup order, cue counts,
+geometry, readiness, no-script behavior, fail-open policy, functional
+Navigation, Grouping, Guide, Settings or bootstrap/lifecycle JavaScript.
+
+The candidate requires the focused static contract, generated CSS, PHP lint,
+Playwright-source syntax and `git diff --check` before any separately
+authorised runtime scenario. No preview, cache operation, runtime lease or
+browser run belongs to this source-only lot.

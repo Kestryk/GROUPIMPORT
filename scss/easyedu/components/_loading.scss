@@ -93,6 +93,31 @@
   }
 }
 
+// A static top accent for a decorative loading section. Consumers supply an
+// existing semantic colour; this primitive deliberately owns no page geometry
+// and never adds shimmer to the large frame.
+@mixin skeleton-section-top-accent(
+  $accent,
+  $width: var(--easyedu-loading-section-accent-width)
+) {
+  & {
+    border-block-start: $width solid $accent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & {
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    & {
+      animation: none;
+      border-block-start-color: CanvasText;
+    }
+  }
+}
+
 @mixin loading-opacity-transition($duration: var(--easyedu-loading-reveal-duration)) {
   & {
     transition: opacity $duration var(--easyedu-motion-ease, ease);

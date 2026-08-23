@@ -10,6 +10,24 @@ Maintenance convention:
 
 ## Unreleased
 
+### Skeleton Kit K2 consumer contract - 2026-08-23
+
+#### Changed
+
+- Pin Student Management and Mass Import Skeleton provenance to frozen EasyEdu
+  Kit K2 (`4fb6b05058266f390700864a03a682171171409a`) without changing their
+  existing markup order, loading geometry, cue counts, readiness, no-script or
+  fail-open behavior.
+- Synchronize the embedded Navigation Skeleton documentation and consumer
+  contract so future work keeps outer frames static and limits shimmer to
+  decorative internal cues.
+
+#### Validation
+
+- Extend the focused static Skeleton contract to verify K2 provenance,
+  decorative markup, the 48/19 cue counts, zoom scenario coverage and the
+  source-only batch boundary before any runtime preview is considered.
+
 ### Navigation Skeleton 0025 cumulative integration - 2026-08-17
 
 #### Fixed

@@ -321,6 +321,7 @@
   --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
   --easyedu-loading-radius: 0.72rem;
   --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-section-accent-width: 0.32rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;
@@ -12922,6 +12923,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
   --easyedu-loading-radius: 0.72rem;
   --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-section-accent-width: 0.32rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;
@@ -13747,6 +13749,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
   --easyedu-loading-radius: 0.72rem;
   --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-section-accent-width: 0.32rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;

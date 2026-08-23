@@ -28,8 +28,10 @@ function Assert-Contains {
     }
 }
 
-$snapshot = 'c9277a82fb471018f4cc07b24dd336d2adfa310d'
+$snapshot = '4fb6b05058266f390700864a03a682171171409a'
+$tokens = Read-RequiredFile 'scss\easyedu\_tokens.scss'
 $component = Read-RequiredFile 'scss\easyedu\components\_navigation-skeleton.scss'
+$loadingComponent = Read-RequiredFile 'scss\easyedu\components\_loading.scss'
 $components = Read-RequiredFile 'scss\easyedu\_components.scss'
 $kitReadme = Read-RequiredFile 'scss\easyedu\README.md'
 $studentMarkup = Read-RequiredFile 'templates\manage.mustache'
@@ -37,6 +39,9 @@ $massImport = Read-RequiredFile 'index.php'
 $studentStyles = Read-RequiredFile 'scss\components\_layout.scss'
 $massImportStyles = Read-RequiredFile 'scss\views\_mass-import.scss'
 $documentation = Read-RequiredFile 'docs\testing\navigation-skeleton-parity.md'
+$batchContract = Read-RequiredFile 'docs\testing\skeleton-kit-b-contract.md'
+$componentDocumentation = Read-RequiredFile 'easyedu-kit-docs\components\navigation-skeleton.md'
+$loadingDocumentation = Read-RequiredFile 'easyedu-kit-docs\components\loading.md'
 $zoomScenario = Read-RequiredFile 'tools\playwright\navigation-skeleton-zoom.spec.js'
 
 foreach ($fragment in @(
@@ -64,10 +69,14 @@ if ($frameMixin.Contains('animation') -or $frameMixin.Contains('shimmer')) {
 }
 
 Assert-Contains 'Kit aggregator' $components '@forward "components/navigation-skeleton";'
+Assert-Contains 'K2 loading token' $tokens '--easyedu-loading-section-accent-width: 0.32rem;'
+Assert-Contains 'K2 loading component' $loadingComponent '@mixin skeleton-section-top-accent'
 Assert-Contains 'Embedded Kit README' $kitReadme $snapshot
 Assert-Contains 'Student Management markup' $studentMarkup 'data-easyedu-navigation-skeleton="1"'
+Assert-Contains 'Student Management K2 marker' $studentMarkup 'data-easyedu-skeleton-contract="K2"'
 Assert-Contains 'Student Management markup' $studentMarkup 'aria-hidden="true"'
 Assert-Contains 'Mass Import markup' $massImport "'data-easyedu-navigation-skeleton' => '1'"
+Assert-Contains 'Mass Import K2 marker' $massImport "'data-easyedu-skeleton-contract' => 'K2'"
 Assert-Contains 'Mass Import markup' $massImport "'aria-hidden' => 'true'"
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-frame'
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-cue-overlay'
@@ -147,6 +156,14 @@ if ($massImportCueCount -ne 19) {
 Assert-Contains 'Navigation Skeleton documentation' $documentation '| Student Management | 48 | 48 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation '| Mass Import | 19 | 19 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation $snapshot
+Assert-Contains 'Skeleton B contract' $batchContract 'EED-UI-2026-SKELETON-B'
+Assert-Contains 'Skeleton B contract' $batchContract $snapshot
+Assert-Contains 'Skeleton B contract' $batchContract 'No browser, preview, cache or lease operation'
+Assert-Contains 'Embedded component documentation' $componentDocumentation 'Navigation Skeleton'
+Assert-Contains 'Embedded component documentation' $componentDocumentation 'aria-hidden'
+Assert-Contains 'Embedded component documentation' $componentDocumentation 'navigation-skeleton-frame'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'skeleton-section-top-accent'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'fail-open'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentScrollWidth'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClientWidth + 1'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton?.getBoundingClientRect()'

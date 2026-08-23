@@ -39,6 +39,14 @@ Use this checklist for every UI task in EasyEdu plugins.
       classes while adopting visual surfaces.
 - [ ] Keep overflow and sticky offsets plugin-owned unless the component
       contract explicitly owns them.
+- [ ] For a loading or Navigation Skeleton migration, preserve the existing
+      skeleton markup, DOM order, `aria-busy`, no-script reveal, readiness and
+      fail-open policy; the kit owns decorative frame/cue styling only.
+- [ ] Keep large Skeleton frames static and apply shimmer only to decorative,
+      `aria-hidden` internal cues. Do not add focusable controls, user-visible
+      copy or navigation destinations to a Skeleton.
+- [ ] Retain the consumer's RTL, 320/390 px and native 100/200% zoom
+      containment protections when adopting the Navigation Skeleton contract.
 - [ ] For top admin navigation, use `admin-primary-nav`; keep labels on one
       line and do not restyle the guide launcher as a nav action.
 - [ ] Keep the direct guide wrapper first in the admin navigation DOM so the

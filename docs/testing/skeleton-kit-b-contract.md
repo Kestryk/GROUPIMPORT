@@ -1,0 +1,62 @@
+# Skeleton Kit K2 consumer contract (`EED-UI-2026-SKELETON-B`)
+
+## Purpose
+
+This record pins the EasyStud loading consumers to frozen EasyEdu UI Kit K2:
+`4fb6b05058266f390700864a03a682171171409a`.
+
+It applies only to Student Management and Mass Import. The shared Kit remains
+the canonical source of decorative Skeleton primitives; EasyStud remains the
+owner of page geometry and the loading lifecycle.
+
+## Included consumers
+
+| Consumer | Markup owner | Style owner | Cue contract |
+| --- | --- | --- | --- |
+| Student Management | `templates/manage.mustache` | `scss/components/_layout.scss` | 48 overlay cues, static large frames |
+| Mass Import | `index.php` | `scss/views/_mass-import.scss` | 19 direct cues, static large frames |
+
+Both server-rendered Skeleton roots must retain:
+
+- `aria-hidden="true"` and no focusable or meaningful content;
+- `data-easystud-loading-skeleton="1"`;
+- `data-easyedu-navigation-skeleton="1"`;
+- `data-easyedu-skeleton-contract="K2"`.
+
+The product roots retain `aria-busy`, their existing no-script reveal, their
+existing readiness handoff and their bounded fail-open policy.
+
+## Required behavior
+
+- `navigation-skeleton-frame` styles only static outer frames.
+- Direct or overlay shimmer styles only decorative internal cues.
+- The Kit owns RTL sweep reversal, reduced-motion and forced-colors safeguards.
+- EasyStud keeps its own DOM order, panel dimensions, offsets, LTR/RTL layout
+  and 320/390 px plus native 100/200% zoom containment protections.
+
+## Exclusions
+
+- Settings and administration Skeletons.
+- Bootstrap or lifecycle JavaScript V4.
+- Functional Navigation, Grouping, Guide, shared UI Kit source and unrelated
+  WIP.
+- Runtime preview, cache purge, fixture mutation, browser execution and lease
+  acquisition.
+
+## Targeted validation
+
+Before a runtime candidate can be proposed, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\release\test-navigation-skeleton-contract.ps1
+sass scss\easystud.scss styles.css --no-source-map
+php -l index.php
+node --check tools\playwright\navigation-skeleton-zoom.spec.js
+git diff --check
+```
+
+The future, separately authorised browser scenario is
+`tools/playwright/navigation-skeleton-zoom.spec.js`. It covers Student
+Management and Mass Import at 320 and 390 CSS px, LTR/RTL and native 100/200%
+zoom using an external profile. No browser, preview, cache or lease operation
+is authorized by this contract.
