@@ -2,8 +2,8 @@
 
 ## Purpose
 
-This record pins the EasyStud loading consumers to frozen EasyEdu UI Kit K2:
-`4fb6b05058266f390700864a03a682171171409a`.
+This record pins the EasyStud loading consumers to converged EasyEdu UI Kit K2:
+`40762e0736654ac33f1c3a25b42f9a27ae29feb7`.
 
 It applies only to Student Management and Mass Import. The shared Kit remains
 the canonical source of decorative Skeleton primitives; EasyStud remains the
@@ -31,6 +31,8 @@ existing readiness handoff and their bounded fail-open policy.
 - `navigation-skeleton-frame` styles only static outer frames.
 - Direct or overlay shimmer styles only decorative internal cues.
 - The Kit owns RTL sweep reversal, reduced-motion and forced-colors safeguards.
+- The K2 section top-border remains static and uses logical properties; it
+  augments the existing decorative frames without changing their geometry.
 - EasyStud keeps its own DOM order, panel dimensions, offsets, LTR/RTL layout
   and 320/390 px plus native 100/200% zoom containment protections.
 

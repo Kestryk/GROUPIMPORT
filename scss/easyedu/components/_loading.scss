@@ -4,6 +4,8 @@
 // The kit owns only the visual surface, shimmer, bounded stack rhythm and
 // opacity handoff used by proven EasyEdu loading states.
 
+@use "typography";
+
 @mixin skeleton-surface(
   $surface: var(--easyedu-loading-surface),
   $border: var(--easyedu-loading-border),
@@ -93,28 +95,74 @@
   }
 }
 
-// A static top accent for a decorative loading section. Consumers supply an
-// existing semantic colour; this primitive deliberately owns no page geometry
-// and never adds shimmer to the large frame.
-@mixin skeleton-section-top-accent(
-  $accent,
-  $width: var(--easyedu-loading-section-accent-width)
+// Compose with skeleton-surface for the top accent of each main skeleton
+// section. Logical properties retain the same reading order in RTL.
+@mixin skeleton-section-top-border(
+  $color: var(--easyedu-loading-section-accent),
+  $width: var(--easyedu-loading-section-border-width)
 ) {
   & {
-    border-block-start: $width solid $accent;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    & {
-      animation: none;
-    }
+    border-block-start: $width solid $color;
   }
 
   @media (forced-colors: active) {
     & {
-      animation: none;
       border-block-start-color: CanvasText;
     }
+  }
+}
+
+// Structural heading slots stay outside the decorative skeleton body so their
+// localised title remains available to assistive technology.
+@mixin skeleton-section-heading {
+  & {
+    align-items: center;
+    column-gap: var(--easyedu-loading-section-heading-gap);
+    display: grid;
+    grid-template-columns: var(--easyedu-loading-section-icon-slot-size) minmax(0, 1fr);
+    min-inline-size: 0;
+  }
+}
+
+@mixin skeleton-section-icon-slot {
+  & {
+    align-items: center;
+    color: var(--easyedu-loading-section-accent);
+    display: grid;
+    inline-size: var(--easyedu-loading-section-icon-slot-size);
+    justify-content: center;
+  }
+
+  @media (forced-colors: active) {
+    & {
+      color: CanvasText;
+    }
+  }
+}
+
+@mixin skeleton-section-title {
+  @include typography.type-section-title;
+
+  & {
+    color: var(--easyedu-loading-section-accent);
+    margin-block: 0;
+    min-inline-size: 0;
+  }
+
+  @media (forced-colors: active) {
+    & {
+      color: CanvasText;
+    }
+  }
+}
+
+// Apply to the non-interactive navigation-shaped skeleton block, not to page
+// layout or a product's real navigation control.
+@mixin skeleton-section-navigation-gap(
+  $gap: var(--easyedu-loading-section-navigation-gap)
+) {
+  & {
+    margin-block-start: $gap;
   }
 }
 

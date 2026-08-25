@@ -28,7 +28,7 @@ function Assert-Contains {
     }
 }
 
-$snapshot = '4fb6b05058266f390700864a03a682171171409a'
+$snapshot = '40762e0736654ac33f1c3a25b42f9a27ae29feb7'
 $tokens = Read-RequiredFile 'scss\easyedu\_tokens.scss'
 $component = Read-RequiredFile 'scss\easyedu\components\_navigation-skeleton.scss'
 $loadingComponent = Read-RequiredFile 'scss\easyedu\components\_loading.scss'
@@ -69,8 +69,29 @@ if ($frameMixin.Contains('animation') -or $frameMixin.Contains('shimmer')) {
 }
 
 Assert-Contains 'Kit aggregator' $components '@forward "components/navigation-skeleton";'
-Assert-Contains 'K2 loading token' $tokens '--easyedu-loading-section-accent-width: 0.32rem;'
-Assert-Contains 'K2 loading component' $loadingComponent '@mixin skeleton-section-top-accent'
+foreach ($fragment in @(
+    '--easyedu-loading-section-accent',
+    '--easyedu-loading-section-border-width',
+    '--easyedu-loading-section-icon-slot-size',
+    '--easyedu-loading-section-heading-gap',
+    '--easyedu-loading-section-navigation-gap'
+)) {
+    Assert-Contains 'K2 converged loading token' $tokens $fragment
+}
+
+foreach ($fragment in @(
+    '@mixin skeleton-section-top-border',
+    '@mixin skeleton-section-heading',
+    '@mixin skeleton-section-icon-slot',
+    '@mixin skeleton-section-title',
+    '@mixin skeleton-section-navigation-gap'
+)) {
+    Assert-Contains 'K2 converged loading component' $loadingComponent $fragment
+}
+
+if ($loadingComponent.Contains('skeleton-section-top-accent')) {
+    throw 'Superseded K2 loading accent primitive must not remain in the embedded Kit.'
+}
 Assert-Contains 'Embedded Kit README' $kitReadme $snapshot
 Assert-Contains 'Student Management markup' $studentMarkup 'data-easyedu-navigation-skeleton="1"'
 Assert-Contains 'Student Management K2 marker' $studentMarkup 'data-easyedu-skeleton-contract="K2"'
@@ -80,6 +101,7 @@ Assert-Contains 'Mass Import K2 marker' $massImport "'data-easyedu-skeleton-cont
 Assert-Contains 'Mass Import markup' $massImport "'aria-hidden' => 'true'"
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-frame'
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-cue-overlay'
+Assert-Contains 'Student Management K2 section border' $studentStyles 'skeleton-section-top-border(#6c9fc9, 0.32rem)'
 $viewToggleStart = $studentStyles.IndexOf('&__loading-view-toggle {')
 $viewToggleEnd = $studentStyles.IndexOf('&__loading-view-toggle-item {', $viewToggleStart)
 if ($viewToggleStart -lt 0 -or $viewToggleEnd -le $viewToggleStart) {
@@ -93,6 +115,7 @@ Assert-Contains 'Student Management styles' $studentStyles '&__loading-header-ac
 Assert-Contains 'Student Management styles' $studentStyles '&__loading-pagination-rail {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
+Assert-Contains 'Mass Import K2 section border' $massImportStyles '@include easyedu.skeleton-section-top-border;'
 Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
@@ -162,7 +185,8 @@ Assert-Contains 'Skeleton B contract' $batchContract 'No browser, preview, cache
 Assert-Contains 'Embedded component documentation' $componentDocumentation 'Navigation Skeleton'
 Assert-Contains 'Embedded component documentation' $componentDocumentation 'aria-hidden'
 Assert-Contains 'Embedded component documentation' $componentDocumentation 'navigation-skeleton-frame'
-Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'skeleton-section-top-accent'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'Canonical section template (K2)'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'skeleton-section-top-border'
 Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'fail-open'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentScrollWidth'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClientWidth + 1'

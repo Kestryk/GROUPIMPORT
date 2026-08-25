@@ -111,6 +111,7 @@
       $border: #cfdee9,
       $radius: 1rem
     );
+    @include easyedu.skeleton-section-top-border;
 
     & {
       box-sizing: border-box;

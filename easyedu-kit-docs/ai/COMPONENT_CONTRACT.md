@@ -611,12 +611,11 @@ Must not:
   metadata sections;
 - restyle file pickers independently in each plugin.
 
-## Loading and Navigation Skeleton
+## Loading and skeletons
 
 Canonical files:
 
 - `scss/easyedu/components/_loading.scss`;
-- `scss/easyedu/components/_navigation-skeleton.scss`;
 - `docs/components/loading.md`;
 - `docs/components/navigation-skeleton.md`.
 
@@ -625,10 +624,11 @@ Must:
 - keep Skeleton markup decorative, non-focusable and `aria-hidden`;
 - keep the product root responsible for `aria-busy`, readiness, no-script
   reveal, fail-open timing, dimensions and responsive geometry;
-- apply `navigation-skeleton-frame` only to the static large outer frame;
-- apply direct or overlay cue mixins only to internal decorative marks;
-- preserve logical RTL placement plus the Kit reduced-motion and forced-colors
-  safeguards;
+- use `skeleton-surface` with direct or overlay shimmer only on decorative
+  elements;
+- use `skeleton-section-top-border` once per main decorative Skeleton section;
+- keep any localised title outside `aria-hidden` and keep its icon decorative;
+- preserve the Kit reduced-motion and forced-colors safeguards;
 - retain the consumer's declared narrow-width and native-zoom containment
   checks when changing a Skeleton consumer.
 
@@ -641,6 +641,28 @@ Must not:
 - copy another product's Skeleton dimensions, responsive offsets, test timing
   or loading data attributes;
 - use a Skeleton visual change to hide a functional Navigation regression.
+
+## Navigation Skeleton
+
+Canonical files:
+
+- `scss/easyedu/components/_navigation-skeleton.scss`;
+- `docs/components/navigation-skeleton.md`.
+
+Must:
+
+- apply `navigation-skeleton-frame` only to a static large outer frame;
+- apply direct or overlay cue mixins only to internal decorative marks;
+- preserve Kit RTL reversal, reduced-motion and forced-colors safeguards;
+- retain consumer-owned geometry, lifecycle, no-script and fail-open policy.
+
+Must not:
+
+- apply shimmer to an outer Navigation Skeleton frame;
+- recreate navigation destinations, controls or meaningful copy inside its
+  decorative markup;
+- replace the canonical component with a local adapter or override its
+  direction and forced-colors behavior.
 
 # Responsive compact-workspace contract
 

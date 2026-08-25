@@ -10,6 +10,23 @@ Maintenance convention:
 
 ## Unreleased
 
+### Skeleton Kit K2 convergence - 2026-08-25
+
+#### Changed
+
+- Synchronize Student Management and Mass Import with converged EasyEdu UI Kit
+  K2 (`40762e0736654ac33f1c3a25b42f9a27ae29feb7`), retaining the canonical
+  Navigation Skeleton component and its static-frame, RTL, reduced-motion and
+  forced-colors guarantees.
+- Replace the interim loading accent with the K2 logical section-border
+  primitive on existing decorative Skeleton surfaces only; markup, cue counts,
+  lifecycle, no-script behavior and fail-open policy remain unchanged.
+
+#### Validation
+
+- Update the focused static contract and embedded consumer documentation for
+  the final K2 provenance and required Loading/Skeleton primitives.
+
 ### Skeleton Kit K2 consumer contract - 2026-08-23
 
 #### Changed

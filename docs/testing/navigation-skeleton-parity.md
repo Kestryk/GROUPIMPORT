@@ -5,11 +5,11 @@
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
 `scss/views/_mass-import.scss`) consume only UI Kit snapshot
-`4fb6b05058266f390700864a03a682171171409a` (frozen Kit K2).
+`40762e0736654ac33f1c3a25b42f9a27ae29feb7` (converged Kit K2).
 
-The selective vendoring adds only
-`scss/easyedu/components/_navigation-skeleton.scss`, its aggregator forward
-and the embedded-kit documentation. `tools/sync-easyedu-kit.ps1` is not used.
+The selective vendoring retains the canonical Navigation Skeleton component and
+synchronizes the converged Loading/Skeleton K2 primitives plus their embedded
+documentation. `tools/sync-easyedu-kit.ps1` is not used.
 Administration/settings, functional Navigation, filters, pagination, Send
 message, Guide, CCB, runtime and cache remain outside this consumer lot.
 
@@ -141,14 +141,15 @@ it only with the external run profile. The profile writes Chromium's partitioned
 per-host zoom preference before launch; it never changes an existing browser
 profile or sends zoom shortcuts.
 
-### K2 consumer contract - 2026-08-23
+### K2 converged consumer contract - 2026-08-25
 
-`EED-UI-2026-SKELETON-B` formalizes the two existing consumers against frozen
-Kit K2. The component SCSS is byte-identical to the earlier accepted source;
-this lot changes only its explicit provenance, embedded Skeleton documentation
-and static contract assertions. It does not alter markup order, cue counts,
-geometry, readiness, no-script behavior, fail-open policy, functional
-Navigation, Grouping, Guide, Settings or bootstrap/lifecycle JavaScript.
+`EED-UI-2026-SKELETON-B-K2-FINAL` formalizes the two existing consumers against
+converged Kit K2. The canonical Navigation Skeleton component remains in place:
+outer frames are static while direct and overlay shimmers stay on decorative
+internal cues. K2 section borders are added only to existing decorative frames.
+This does not alter markup order, cue counts, readiness, no-script behavior,
+fail-open policy, functional Navigation, Grouping, Guide, Settings or
+bootstrap/lifecycle JavaScript.
 
 The candidate requires the focused static contract, generated CSS, PHP lint,
 Playwright-source syntax and `git diff --check` before any separately
