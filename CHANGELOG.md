@@ -10,6 +10,25 @@ Maintenance convention:
 
 ## Unreleased
 
+### Visual Skeleton Kit consumer adoption - 2026-08-25
+
+#### Changed
+
+- Synchronised the embedded Loading and Navigation Skeleton primitives from
+  immutable EasyEdu UI Kit commit
+  `41e86979dc8138dd026438039143f2ba94c0531e` for Student Management and Mass
+  Import only.
+- Kept each outer Skeleton frame static with the Kit section accent, while the
+  existing 48 Student Management and 19 Mass Import decorative cues retain the
+  only shimmer animation. Loading geometry, readiness, fail-open timings,
+  server markup and Administration settings remain unchanged.
+
+#### Validation
+
+- Passed the Navigation Skeleton source contract, Sass compilation, PHP lint
+  for `index.php` and JavaScript syntax validation for the focused zoom
+  scenario. No preview, cache purge, lease acquisition or browser was used.
+
 ### Grouping summary More-actions recovery 0029 - 2026-08-21
 
 #### Fixed

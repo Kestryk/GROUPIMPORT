@@ -4,14 +4,15 @@
 
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
-`scss/views/_mass-import.scss`) consume only UI Kit snapshot
-`c9277a82fb471018f4cc07b24dd336d2adfa310d`.
+`scss/views/_mass-import.scss`) consume the immutable UI Kit snapshot
+`41e86979dc8138dd026438039143f2ba94c0531e`.
 
-The selective vendoring adds only
-`scss/easyedu/components/_navigation-skeleton.scss`, its aggregator forward
-and the embedded-kit documentation. `tools/sync-easyedu-kit.ps1` is not used.
-Administration/settings, functional Navigation, filters, pagination, Send
-message, Guide, CCB, runtime and cache remain outside this consumer lot.
+The selective vendoring synchronises only
+`scss/easyedu/_tokens.scss`, `scss/easyedu/components/_loading.scss` and
+`scss/easyedu/components/_navigation-skeleton.scss`, plus their consumer
+contract. `tools/sync-easyedu-kit.ps1` is not used. Administration/settings,
+functional Navigation, filters, pagination, Send message, Guide, CCB, runtime
+and cache remain outside this consumer lot.
 
 ## Composition and lifecycle boundary
 
@@ -22,8 +23,9 @@ existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
 180 ms Mass Import handoff and their fail-open paths are unchanged.
 
 The existing large panels, search/filter shells, view toggle and import cards
-compose `navigation-skeleton-frame`; they remain pale static surfaces. Their
-existing decorative `__loading-surface` descendants compose a Kit cue mixin.
+compose `navigation-skeleton-frame`; they remain pale static surfaces with the
+Kit section accent. Their existing decorative `__loading-surface` descendants
+compose a Kit cue mixin.
 Student Management uses the overlay cue to retain its two-line card cue base;
 Mass Import uses the direct cue. RTL sweep reversal, reduced-motion and
 forced-colors behavior come from the embedded Kit component rather than local
@@ -46,6 +48,14 @@ Mass Import has five header cues plus two cards with seven cues each
 (`5 + 2 x 7 = 19`). This migration therefore makes no unsupported performance
 reduction claim: it prevents new large-frame animation while preserving the
 existing internal-cue count and loading geometry.
+
+## Visual section refinement - 2026-08-25
+
+The two consumers adopt the Kit section-frame defaults, explicit logical cue
+stack and opt-in compact density from `41e86979`. The frame is static by
+contract; only the existing 48 Student Management and 19 Mass Import decorative
+cues animate. No Administration selector calls `navigation-skeleton-frame`, so
+its loading surface is deliberately unchanged.
 
 ## Static validation and deferred review
 

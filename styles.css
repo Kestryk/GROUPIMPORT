@@ -323,6 +323,18 @@
   --easyedu-loading-stack-gap: 0.9rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
+  --easyedu-loading-section-accent: var(--easyedu-primary);
+  --easyedu-loading-section-border-width: 0.1875rem;
+  --easyedu-loading-section-surface: var(--easyedu-loading-surface);
+  --easyedu-loading-section-border: var(--easyedu-loading-border);
+  --easyedu-loading-section-radius: var(--easyedu-loading-radius);
+  --easyedu-loading-section-stack-gap: var(--easyedu-loading-stack-gap);
+  --easyedu-loading-section-icon-slot-size: 1.5rem;
+  --easyedu-loading-section-heading-gap: var(--easyedu-action-icon-gap);
+  --easyedu-loading-section-navigation-gap: 1rem;
+  --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
+  --easyedu-loading-section-compact-heading-gap: 0.5rem;
+  --easyedu-loading-section-compact-navigation-gap: 0.75rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -1696,6 +1708,17 @@
   }
 }
 .local-groupimport-easystud__loading-panel {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-panel {
+    border-block-start-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-panel {
+  animation: none;
+}
+.local-groupimport-easystud__loading-panel {
   box-sizing: border-box;
   max-inline-size: 100%;
   min-width: 0;
@@ -1743,6 +1766,17 @@
   }
 }
 .local-groupimport-easystud__loading-search-filter-region {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-search-filter-region {
+    border-block-start-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-search-filter-region {
+  animation: none;
+}
+.local-groupimport-easystud__loading-search-filter-region {
   box-sizing: border-box;
   display: grid;
   gap: 0.55rem;
@@ -1785,6 +1819,17 @@
   }
 }
 .local-groupimport-easystud__loading-participant-card {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-participant-card {
+    border-block-start-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-participant-card {
+  animation: none;
+}
+.local-groupimport-easystud__loading-participant-card {
   align-items: center;
   box-sizing: border-box;
   display: grid;
@@ -1811,6 +1856,17 @@
     background: Canvas;
     border-color: CanvasText;
   }
+}
+.local-groupimport-easystud__loading-structure-card {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-structure-card {
+    border-block-start-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-structure-card {
+  animation: none;
 }
 .local-groupimport-easystud__loading-structure-card {
   box-sizing: border-box;
@@ -1845,6 +1901,17 @@
     background: Canvas;
     border-color: CanvasText;
   }
+}
+.local-groupimport-easystud__loading-view-toggle {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-view-toggle {
+    border-block-start-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-view-toggle {
+  animation: none;
 }
 .local-groupimport-easystud__loading-view-toggle {
   box-sizing: border-box;
@@ -12958,6 +13025,18 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-stack-gap: 0.9rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
+  --easyedu-loading-section-accent: var(--easyedu-primary);
+  --easyedu-loading-section-border-width: 0.1875rem;
+  --easyedu-loading-section-surface: var(--easyedu-loading-surface);
+  --easyedu-loading-section-border: var(--easyedu-loading-border);
+  --easyedu-loading-section-radius: var(--easyedu-loading-radius);
+  --easyedu-loading-section-stack-gap: var(--easyedu-loading-stack-gap);
+  --easyedu-loading-section-icon-slot-size: 1.5rem;
+  --easyedu-loading-section-heading-gap: var(--easyedu-action-icon-gap);
+  --easyedu-loading-section-navigation-gap: 1rem;
+  --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
+  --easyedu-loading-section-compact-heading-gap: 0.5rem;
+  --easyedu-loading-section-compact-navigation-gap: 0.75rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -13783,6 +13862,18 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-stack-gap: 0.9rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
+  --easyedu-loading-section-accent: var(--easyedu-primary);
+  --easyedu-loading-section-border-width: 0.1875rem;
+  --easyedu-loading-section-surface: var(--easyedu-loading-surface);
+  --easyedu-loading-section-border: var(--easyedu-loading-border);
+  --easyedu-loading-section-radius: var(--easyedu-loading-radius);
+  --easyedu-loading-section-stack-gap: var(--easyedu-loading-stack-gap);
+  --easyedu-loading-section-icon-slot-size: 1.5rem;
+  --easyedu-loading-section-heading-gap: var(--easyedu-action-icon-gap);
+  --easyedu-loading-section-navigation-gap: 1rem;
+  --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
+  --easyedu-loading-section-compact-heading-gap: 0.5rem;
+  --easyedu-loading-section-compact-navigation-gap: 0.75rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -14068,6 +14159,17 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     background: Canvas;
     border-color: CanvasText;
   }
+}
+.local-groupimport-import__loading-card {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-card {
+    border-block-start-color: CanvasText;
+  }
+}
+.local-groupimport-import__loading-card {
+  animation: none;
 }
 .local-groupimport-import__loading-card {
   box-sizing: border-box;

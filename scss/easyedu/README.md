@@ -115,6 +115,11 @@ Prefer generic `--easyedu-*` variables. Plugin-specific aliases such as
 - `empty-state`: empty or no-result placeholders.
 - `skeleton-surface`, `skeleton-shimmer-direct`,
   `skeleton-shimmer-overlay`, `skeleton-stack`: loading-state primitives.
+- `skeleton-section-frame`, `skeleton-section-heading`,
+  `skeleton-section-icon-slot`, `skeleton-section-title`,
+  `skeleton-section-navigation-gap`, `skeleton-cue-stack`,
+  `skeleton-section-compact`: static section-frame and compact-density
+  primitives.
 - `navigation-skeleton-frame`: static large navigation-shaped frame.
 - `navigation-skeleton-cue`, `navigation-skeleton-cue-overlay`: animated
   decorative internal marks only.
@@ -136,12 +141,12 @@ This keeps the kit easy to copy while still allowing each plugin to evolve.
 
 ## Navigation Skeleton consumer boundary
 
-The embedded `navigation-skeleton` component comes from immutable UI Kit
-snapshot `c9277a82fb471018f4cc07b24dd336d2adfa310d` for
-`EED-UI-2026-0025`. Apply `navigation-skeleton-frame` only to a static outer
-frame and apply a cue mixin only to decorative descendants. The component
-supplies RTL reversal, reduced-motion and forced-colors behavior; EasyStud
-keeps its own panel geometry, no-script path, readiness and fail-open policy.
+The embedded Loading and `navigation-skeleton` components come from immutable
+UI Kit snapshot `41e86979dc8138dd026438039143f2ba94c0531e`. Apply
+`navigation-skeleton-frame` only to a static outer frame and apply a cue mixin
+only to decorative descendants. The component supplies RTL reversal,
+reduced-motion and forced-colors behavior; EasyStud keeps its own panel
+geometry, no-script path, readiness and fail-open policy.
 
 ## Porting checklist for a new plugin
 

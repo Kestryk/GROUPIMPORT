@@ -13,7 +13,7 @@
   $border: var(--easyedu-loading-border),
   $radius: var(--easyedu-loading-radius)
 ) {
-  @include loading.skeleton-surface($surface, $border, $radius);
+  @include loading.skeleton-section-frame($surface, $border, $radius);
 }
 
 // Use on an opaque internal mark such as an icon, label or navigation row.
@@ -89,11 +89,5 @@
 // Use on the consumer-owned group of internal marks. The logical alignment
 // reverses automatically with the document direction.
 @mixin navigation-skeleton-cue-stack($gap: var(--easyedu-loading-stack-gap)) {
-  & {
-    align-content: start;
-    display: grid;
-    gap: $gap;
-    justify-items: start;
-    min-inline-size: 0;
-  }
+  @include loading.skeleton-cue-stack($gap);
 }
