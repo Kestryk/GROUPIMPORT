@@ -28,14 +28,17 @@ function Assert-Contains {
     }
 }
 
-$snapshot = 'c9277a82fb471018f4cc07b24dd336d2adfa310d'
+$snapshot = '41e86979dc8138dd026438039143f2ba94c0531e'
 $component = Read-RequiredFile 'scss\easyedu\components\_navigation-skeleton.scss'
+$loadingComponent = Read-RequiredFile 'scss\easyedu\components\_loading.scss'
+$tokens = Read-RequiredFile 'scss\easyedu\_tokens.scss'
 $components = Read-RequiredFile 'scss\easyedu\_components.scss'
 $kitReadme = Read-RequiredFile 'scss\easyedu\README.md'
 $studentMarkup = Read-RequiredFile 'templates\manage.mustache'
 $massImport = Read-RequiredFile 'index.php'
 $studentStyles = Read-RequiredFile 'scss\components\_layout.scss'
 $massImportStyles = Read-RequiredFile 'scss\views\_mass-import.scss'
+$adminStyles = Read-RequiredFile 'scss\views\_admin-settings.scss'
 $documentation = Read-RequiredFile 'docs\testing\navigation-skeleton-parity.md'
 $zoomScenario = Read-RequiredFile 'tools\playwright\navigation-skeleton-zoom.spec.js'
 
@@ -48,7 +51,9 @@ foreach ($fragment in @(
     'skeleton-shimmer-overlay',
     ':dir(rtl)',
     '[dir="rtl"]',
-    'forced-colors: active'
+    'forced-colors: active',
+    'loading.skeleton-section-frame',
+    'loading.skeleton-cue-stack'
 )) {
     Assert-Contains 'Vendored Navigation Skeleton component' $component $fragment
 }
@@ -65,6 +70,21 @@ if ($frameMixin.Contains('animation') -or $frameMixin.Contains('shimmer')) {
 
 Assert-Contains 'Kit aggregator' $components '@forward "components/navigation-skeleton";'
 Assert-Contains 'Embedded Kit README' $kitReadme $snapshot
+foreach ($fragment in @(
+    '@mixin skeleton-section-frame',
+    '@mixin skeleton-cue-stack',
+    '@mixin skeleton-section-compact',
+    'animation: none'
+)) {
+    Assert-Contains 'Vendored Loading component' $loadingComponent $fragment
+}
+foreach ($fragment in @(
+    '--easyedu-loading-section-accent',
+    '--easyedu-loading-section-surface',
+    '--easyedu-loading-section-compact-icon-slot-size'
+)) {
+    Assert-Contains 'Vendored Loading tokens' $tokens $fragment
+}
 Assert-Contains 'Student Management markup' $studentMarkup 'data-easyedu-navigation-skeleton="1"'
 Assert-Contains 'Student Management markup' $studentMarkup 'aria-hidden="true"'
 Assert-Contains 'Mass Import markup' $massImport "'data-easyedu-navigation-skeleton' => '1'"
@@ -98,6 +118,9 @@ Assert-Contains 'Mass Import Skeleton grid' $massImportStyles 'inline-size: 100%
 Assert-Contains 'Mass Import Skeleton grid' $massImportStyles 'grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);'
 Assert-Contains 'Mass Import Skeleton fields' $massImportStyles '&__loading-field {'
 Assert-Contains 'Mass Import Skeleton fields' $massImportStyles 'box-sizing: border-box'
+if ($adminStyles.Contains('navigation-skeleton-frame')) {
+    throw 'Administration must remain outside the visual Skeleton consumer lot.'
+}
 
 foreach ($consumer in @(
     @{Label = 'Student Management styles'; Contents = $studentStyles},

@@ -38,10 +38,11 @@ users. The visual contract is covered by the focused
 remains outside Git under the approved EasyEdu artifact root.
 
 Under `EED-UI-2026-0025`, the two import-card frames are explicitly static and
-only their 19 internal decorative cues animate. The embedded Navigation
-Skeleton primitive supplies RTL, reduced-motion and forced-colors behavior;
-the existing loading lifecycle remains unchanged. The paired Student Management
-measurement and static source contract are recorded in
+only their 19 internal decorative cues animate. The immutable Kit
+`41e86979dc8138dd026438039143f2ba94c0531e` provides the section-frame accent,
+logical cue stack, RTL, reduced-motion and forced-colors behavior; the existing
+loading lifecycle remains unchanged. The paired Student Management measurement
+and static source contract are recorded in
 `docs/testing/navigation-skeleton-parity.md`.
 
 The latest Moodle 5.1 revalidation selected exactly one test and passed in
