@@ -14236,6 +14236,19 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     right: 2.1rem;
     width: 1.6rem;
   }
+  .local-groupimport-import__loading-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .local-groupimport-import__loading-card-header {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: minmax(0, min(2.55rem, 40%)) minmax(0, 1fr);
+  }
+  .local-groupimport-import__loading-icon {
+    inline-size: 100%;
+    min-inline-size: 0;
+    width: auto;
+  }
   .local-groupimport-import__loading-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -14250,7 +14263,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
   .local-groupimport-import__loading-card-title {
     flex: 1 1 0;
-    inline-size: auto;
+    inline-size: 100%;
     max-inline-size: 100%;
     min-inline-size: 0;
     width: auto;

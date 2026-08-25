@@ -194,6 +194,24 @@
       width: 1.6rem;
     }
 
+    // At a 320 px viewport with native 200% zoom, preserve one usable frame
+    // width and make each decorative cue track shrink with that frame.
+    &__loading-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__loading-card-header {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: minmax(0, min(2.55rem, 40%)) minmax(0, 1fr);
+    }
+
+    &__loading-icon {
+      inline-size: 100%;
+      min-inline-size: 0;
+      width: auto;
+    }
+
     &__loading-actions {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
@@ -210,7 +228,7 @@
 
     &__loading-card-title {
       flex: 1 1 0;
-      inline-size: auto;
+      inline-size: 100%;
       max-inline-size: 100%;
       min-inline-size: 0;
       width: auto;
