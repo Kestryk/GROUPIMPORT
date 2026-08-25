@@ -610,6 +610,57 @@ Must not:
 - let a modal exceed the viewport because related lists are not collapsed into
   metadata sections;
 - restyle file pickers independently in each plugin.
+## Loading and skeletons
+
+Canonical files:
+
+- `scss/easyedu/components/_loading.scss`;
+- `easyedu-kit-docs/components/loading.md`;
+- `easyedu-kit-docs/components/navigation-skeleton.md`.
+
+Must:
+
+- keep Skeleton markup decorative, non-focusable and `aria-hidden`;
+- keep the product root responsible for `aria-busy`, readiness, no-script
+  reveal, fail-open timing, dimensions and responsive geometry;
+- use `skeleton-surface` with direct or overlay shimmer only on decorative
+  elements;
+- use `skeleton-section-top-border` once per main decorative Skeleton section;
+- preserve Kit RTL, reduced-motion and forced-colors safeguards;
+- retain consumer narrow-width and native-zoom containment checks when a
+  Skeleton consumer changes.
+
+Must not:
+
+- animate a large Skeleton frame or add meaningful text, controls or routes to
+  it;
+- change panel counts, spacing, no-script behavior, lifecycle or fail-open
+  policy while importing a Kit primitive;
+- copy another product's dimensions, responsive offsets, test timing or loading
+  data attributes.
+
+## Navigation Skeleton
+
+Canonical files:
+
+- `scss/easyedu/components/_navigation-skeleton.scss`;
+- `easyedu-kit-docs/components/navigation-skeleton.md`.
+
+Must:
+
+- apply `navigation-skeleton-frame` only to a static large outer frame;
+- apply direct or overlay cue mixins only to internal decorative marks;
+- preserve Kit RTL reversal, reduced-motion and forced-colors safeguards;
+- retain consumer-owned geometry, lifecycle, no-script and fail-open policy.
+
+Must not:
+
+- apply shimmer to an outer Navigation Skeleton frame;
+- recreate navigation destinations, controls or meaningful copy inside its
+  decorative markup;
+- replace the canonical component with a local adapter or override its
+  direction and forced-colors behavior.
+
 # Responsive compact-workspace contract
 
 - Preserve semantic identity rails at their desktop width; reserve horizontal

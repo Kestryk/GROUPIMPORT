@@ -321,6 +321,11 @@
   --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
   --easyedu-loading-radius: 0.72rem;
   --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-section-accent: var(--easyedu-primary);
+  --easyedu-loading-section-border-width: 0.1875rem;
+  --easyedu-loading-section-icon-slot-size: 1.5rem;
+  --easyedu-loading-section-heading-gap: var(--easyedu-action-icon-gap);
+  --easyedu-loading-section-navigation-gap: 1rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;
@@ -1708,11 +1713,23 @@
   grid-auto-rows: max-content;
 }
 .local-groupimport-easystud__loading-panel--participants {
-  border-top: 0.32rem solid #6c9fc9;
+  border-block-start: 0.32rem solid #6c9fc9;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-panel--participants {
+    border-block-start-color: CanvasText;
+  }
 }
 .local-groupimport-easystud__loading-panel--structure {
-  border-top: 0.32rem solid #78a78d;
   display: none;
+}
+.local-groupimport-easystud__loading-panel--structure {
+  border-block-start: 0.32rem solid #78a78d;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-panel--structure {
+    border-block-start-color: CanvasText;
+  }
 }
 .local-groupimport-easystud__loading-panel-header, .local-groupimport-easystud__loading-pagination, .local-groupimport-easystud__loading-structure-card {
   align-items: center;
@@ -12956,6 +12973,11 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
   --easyedu-loading-radius: 0.72rem;
   --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-section-accent: var(--easyedu-primary);
+  --easyedu-loading-section-border-width: 0.1875rem;
+  --easyedu-loading-section-icon-slot-size: 1.5rem;
+  --easyedu-loading-section-heading-gap: var(--easyedu-action-icon-gap);
+  --easyedu-loading-section-navigation-gap: 1rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;
@@ -13781,6 +13803,11 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-shimmer-highlight: rgba(255, 255, 255, 0.52);
   --easyedu-loading-radius: 0.72rem;
   --easyedu-loading-stack-gap: 0.9rem;
+  --easyedu-loading-section-accent: var(--easyedu-primary);
+  --easyedu-loading-section-border-width: 0.1875rem;
+  --easyedu-loading-section-icon-slot-size: 1.5rem;
+  --easyedu-loading-section-heading-gap: var(--easyedu-action-icon-gap);
+  --easyedu-loading-section-navigation-gap: 1rem;
   --easyedu-loading-shimmer-duration: 2s;
   --easyedu-loading-reveal-duration: 180ms;
   --easyedu-filter-border: #dce7f1;
@@ -14067,6 +14094,14 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   .local-groupimport-import__loading-card {
     background: Canvas;
     border-color: CanvasText;
+  }
+}
+.local-groupimport-import__loading-card {
+  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-card {
+    border-block-start-color: CanvasText;
   }
 }
 .local-groupimport-import__loading-card {

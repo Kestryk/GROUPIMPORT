@@ -28,8 +28,10 @@ function Assert-Contains {
     }
 }
 
-$snapshot = 'c9277a82fb471018f4cc07b24dd336d2adfa310d'
+$snapshot = '40762e0736654ac33f1c3a25b42f9a27ae29feb7'
+$tokens = Read-RequiredFile 'scss\easyedu\_tokens.scss'
 $component = Read-RequiredFile 'scss\easyedu\components\_navigation-skeleton.scss'
+$loadingComponent = Read-RequiredFile 'scss\easyedu\components\_loading.scss'
 $components = Read-RequiredFile 'scss\easyedu\_components.scss'
 $kitReadme = Read-RequiredFile 'scss\easyedu\README.md'
 $studentMarkup = Read-RequiredFile 'templates\manage.mustache'
@@ -37,6 +39,9 @@ $massImport = Read-RequiredFile 'index.php'
 $studentStyles = Read-RequiredFile 'scss\components\_layout.scss'
 $massImportStyles = Read-RequiredFile 'scss\views\_mass-import.scss'
 $documentation = Read-RequiredFile 'docs\testing\navigation-skeleton-parity.md'
+$batchContract = Read-RequiredFile 'docs\testing\skeleton-kit-b-contract.md'
+$componentDocumentation = Read-RequiredFile 'easyedu-kit-docs\components\navigation-skeleton.md'
+$loadingDocumentation = Read-RequiredFile 'easyedu-kit-docs\components\loading.md'
 $zoomScenario = Read-RequiredFile 'tools\playwright\navigation-skeleton-zoom.spec.js'
 
 foreach ($fragment in @(
@@ -64,6 +69,29 @@ if ($frameMixin.Contains('animation') -or $frameMixin.Contains('shimmer')) {
 }
 
 Assert-Contains 'Kit aggregator' $components '@forward "components/navigation-skeleton";'
+foreach ($fragment in @(
+    '--easyedu-loading-section-accent',
+    '--easyedu-loading-section-border-width',
+    '--easyedu-loading-section-icon-slot-size',
+    '--easyedu-loading-section-heading-gap',
+    '--easyedu-loading-section-navigation-gap'
+)) {
+    Assert-Contains 'K2 loading token' $tokens $fragment
+}
+
+foreach ($fragment in @(
+    '@mixin skeleton-section-top-border',
+    '@mixin skeleton-section-heading',
+    '@mixin skeleton-section-icon-slot',
+    '@mixin skeleton-section-title',
+    '@mixin skeleton-section-navigation-gap'
+)) {
+    Assert-Contains 'K2 loading component' $loadingComponent $fragment
+}
+
+if ($loadingComponent.Contains('skeleton-section-top-accent')) {
+    throw 'Superseded K2 loading accent primitive must not remain in the embedded Kit.'
+}
 Assert-Contains 'Embedded Kit README' $kitReadme $snapshot
 Assert-Contains 'Student Management markup' $studentMarkup 'data-easyedu-navigation-skeleton="1"'
 Assert-Contains 'Student Management markup' $studentMarkup 'aria-hidden="true"'
@@ -71,6 +99,7 @@ Assert-Contains 'Mass Import markup' $massImport "'data-easyedu-navigation-skele
 Assert-Contains 'Mass Import markup' $massImport "'aria-hidden' => 'true'"
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-frame'
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-cue-overlay'
+Assert-Contains 'Student Management K2 section border' $studentStyles 'skeleton-section-top-border(#6c9fc9, 0.32rem)'
 $viewToggleStart = $studentStyles.IndexOf('&__loading-view-toggle {')
 $viewToggleEnd = $studentStyles.IndexOf('&__loading-view-toggle-item {', $viewToggleStart)
 if ($viewToggleStart -lt 0 -or $viewToggleEnd -le $viewToggleStart) {
@@ -84,6 +113,7 @@ Assert-Contains 'Student Management styles' $studentStyles '&__loading-header-ac
 Assert-Contains 'Student Management styles' $studentStyles '&__loading-pagination-rail {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
+Assert-Contains 'Mass Import K2 section border' $massImportStyles '@include easyedu.skeleton-section-top-border;'
 Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
@@ -147,6 +177,15 @@ if ($massImportCueCount -ne 19) {
 Assert-Contains 'Navigation Skeleton documentation' $documentation '| Student Management | 48 | 48 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation '| Mass Import | 19 | 19 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation $snapshot
+Assert-Contains 'Skeleton B contract' $batchContract 'EED-UI-2026-SKELETON-B'
+Assert-Contains 'Skeleton B contract' $batchContract $snapshot
+Assert-Contains 'Skeleton B contract' $batchContract 'No browser, preview, cache or lease operation'
+Assert-Contains 'Embedded component documentation' $componentDocumentation 'Navigation Skeleton'
+Assert-Contains 'Embedded component documentation' $componentDocumentation 'aria-hidden'
+Assert-Contains 'Embedded component documentation' $componentDocumentation 'navigation-skeleton-frame'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'Canonical section template (K2)'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'skeleton-section-top-border'
+Assert-Contains 'Embedded loading documentation' $loadingDocumentation 'fail-open'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentScrollWidth'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClientWidth + 1'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton?.getBoundingClientRect()'

@@ -232,12 +232,12 @@
   }
 
   &__loading-panel--participants {
-    border-top: 0.32rem solid #6c9fc9;
+    @include easyedu.skeleton-section-top-border(#6c9fc9, 0.32rem);
   }
 
   &__loading-panel--structure {
-    border-top: 0.32rem solid #78a78d;
     display: none;
+    @include easyedu.skeleton-section-top-border(#78a78d, 0.32rem);
   }
 
   &__loading-panel-header,

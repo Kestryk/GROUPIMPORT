@@ -1,22 +1,22 @@
-# Navigation Skeleton parity (`EED-UI-2026-0025`)
+# Navigation Skeleton parity (`EED-UI-2026-0025`, `EED-UI-2026-SKELETON-B`)
 
 ## Scope and immutable input
 
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
 `scss/views/_mass-import.scss`) consume only UI Kit snapshot
-`c9277a82fb471018f4cc07b24dd336d2adfa310d`.
+`40762e0736654ac33f1c3a25b42f9a27ae29feb7` (converged Kit K2).
 
-The selective vendoring adds only
-`scss/easyedu/components/_navigation-skeleton.scss`, its aggregator forward
-and the embedded-kit documentation. `tools/sync-easyedu-kit.ps1` is not used.
+The selective vendoring retains the canonical Navigation Skeleton component and
+synchronizes the converged Loading/Skeleton K2 primitives plus their embedded
+documentation. `tools/sync-easyedu-kit.ps1` is not used.
 Administration/settings, functional Navigation, filters, pagination, Send
 message, Guide, CCB, runtime and cache remain outside this consumer lot.
 
 ## Composition and lifecycle boundary
 
-The existing server-rendered skeleton roots remain `aria-hidden` and now mark
-the Navigation Skeleton composition with `data-easyedu-navigation-skeleton`.
+The existing server-rendered skeleton roots remain `aria-hidden` and retain
+their Navigation Skeleton composition marker, `data-easyedu-navigation-skeleton`.
 No real control, navigation destination or meaningful copy is added. The
 existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
 180 ms Mass Import handoff and their fail-open paths are unchanged.
@@ -71,12 +71,27 @@ source contract and its canonical CSS media rules.
 ### Static record - 2026-08-10
 
 The vendored component text was compared after line-ending normalization with
-the immutable `c9277a82` source and matched exactly. The focused source
+the immutable K2 source and matched exactly. The focused source
 contract, the official `sass scss/easystud.scss styles.css --no-source-map`
 build, PHP lint of `index.php`, `node --check` of
 `tools/playwright/mass-import-audit.spec.js` and
 `tools/playwright/navigation-skeleton-zoom.spec.js`, and `git diff --check`
 pass.
+
+### K2 converged consumer contract - 2026-08-25
+
+`EED-UI-2026-SKELETON-B-K2-FINAL-I` formalizes the two existing consumers
+against converged Kit K2. The canonical Navigation Skeleton component remains
+in place: outer frames are static while direct and overlay shimmers stay on
+decorative internal cues. K2 section borders are added only to existing
+decorative frames. This does not alter markup order, cue counts, readiness,
+no-script behavior, fail-open policy, functional Navigation, Grouping, Guide,
+Settings or bootstrap/lifecycle JavaScript.
+
+The candidate requires the focused static contract, generated CSS, PHP lint,
+Playwright-source syntax and `git diff --check` before any separately
+authorised runtime scenario. No preview, cache operation, runtime lease or
+browser run belongs to this source-only lot.
 
 The Sass build reports one existing mixed-declaration deprecation at
 `scss/components/_layout.scss:129`, outside this lot's Skeleton hunks. No
