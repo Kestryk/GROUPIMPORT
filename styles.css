@@ -14175,6 +14175,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   box-sizing: border-box;
   display: grid;
   gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
   inline-size: 100%;
   max-inline-size: 100%;
   min-height: 23rem;
