@@ -29,4 +29,21 @@ foreach ($needle in @('is-easystud-card-action-overflow', 'is-sort-menu-open')) 
     }
 }
 
+$requiredStructure = @(
+    'is-groupings-summary-hidden',
+    'keep the same plain icon treatment as sibling actions',
+    'Do not visually shorten a Grouping name in the header',
+    'text-overflow: clip;'
+)
+
+foreach ($needle in $requiredStructure) {
+    if (-not $structure.Contains($needle)) {
+        throw "Missing card-header containment contract: $needle"
+    }
+}
+
+if ($structure -match '&-group\.is-groupings-summary-hidden[\s\S]{0,500}border:\s*1px') {
+    throw 'The recovered Grouping More trigger must not regain a pill border.'
+}
+
 Write-Output 'Card action overflow and Sort stacking contract passed.'

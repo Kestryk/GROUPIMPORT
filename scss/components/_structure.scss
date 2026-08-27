@@ -439,6 +439,15 @@
   &-group__groupings--inline {
     @include easyedu.related-tags-inline(min(34%, 13rem));
 
+    // Do not visually shorten a Grouping name in the header. The existing
+    // overflow controller measures the complete token and recovers it through
+    // More actions when the available card width is insufficient.
+    > .local-groupimport-easystud-token--grouping {
+      max-width: none;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
     &[hidden] {
       display: none !important;
     }
@@ -446,6 +455,12 @@
 
   &-tree__children &-group__groupings--inline {
     @include easyedu.related-tags-inline(min(30%, 10rem));
+
+    > .local-groupimport-easystud-token--grouping {
+      max-width: none;
+      overflow: visible;
+      text-overflow: clip;
+    }
   }
 
   &-group__groupings-summary,
@@ -962,12 +977,12 @@
 
   // A desktop Grouping summary that cannot fit is recovered through More
   // actions. Only in that state, move the existing trigger into the header's
-  // released slot; normal and responsive card-menu placement is unchanged.
+  // released slot; keep the same plain icon treatment as sibling actions.
   &-group.is-groupings-summary-hidden > &-group__header > &-card-menu {
     align-items: center;
     background: transparent;
-    border: 1px solid #d8e2ed;
-    border-radius: 999px;
+    border: 0;
+    border-radius: 0.4rem;
     color: var(--local-groupimport-easystud-primary);
     display: inline-flex;
     flex: 0 0 auto;
@@ -1123,8 +1138,9 @@
 
   &-group__actions-toggle {
     align-items: center;
-    border: 1px solid #d8e2ed;
-    border-radius: 999px;
+    background: transparent;
+    border: 0;
+    border-radius: 0.4rem;
     color: #607487;
     display: inline-flex;
     flex: 0 0 auto;
