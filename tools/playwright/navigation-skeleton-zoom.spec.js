@@ -155,11 +155,25 @@ const writeNavigationDiagnostics = async(testInfo, cellId, diagnostics) => {
     );
 };
 
+const writePhase = async(testInfo, phase, details = {}) => {
+    await fs.appendFile(
+        testInfo.outputPath('navigation-skeleton-phase-progress.jsonl'),
+        `${JSON.stringify({at: new Date().toISOString(), phase, ...details})}\n`,
+        'utf8'
+    );
+};
+
 const getVisibleNavigationReference = async(page, surface, testInfo, cellId) => {
     const deadline = Date.now() + navigationReferenceTimeout;
     let diagnostics;
+    await writePhase(testInfo, 'navigation-reference-wait-start', {cellId, surface: surface.id});
     do {
+        await writePhase(testInfo, 'navigation-reference-probe-start', {cellId});
         diagnostics = await inspectNavigationReferences(page, surface);
+        await writePhase(testInfo, 'navigation-reference-probe-complete', {
+            cellId,
+            visibleReference: diagnostics.reference?.id || null,
+        });
         if (diagnostics.reference) {
             await writeNavigationDiagnostics(testInfo, cellId, diagnostics);
             return {
@@ -181,6 +195,7 @@ const getVisibleNavigationReference = async(page, surface, testInfo, cellId) => 
             fullPage: true,
         }),
     ]);
+    await writePhase(testInfo, 'navigation-reference-unavailable', {cellId, diagnostics});
     throw new Error(`No visible real navigation control found for ${surface.id} within ${navigationReferenceTimeout} ms.`);
 };
 
@@ -212,6 +227,7 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator, testIn
         `${surface.rootSelector} [data-easystud-loading-skeleton]`
     );
     await expect(skeleton).toBeVisible();
+    await writePhase(testInfo, 'skeleton-activated', {cellId, surface: surface.id});
     await skeleton.screenshot({
         path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
     });
@@ -316,9 +332,13 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
     }
 
     const evidence = [];
+    await writePhase(testInfo, 'test-start');
     for (const zoom of [200, 100]) {
         const zoomProfile = path.join(profileRoot, `native-zoom-${zoom}`);
+        await writePhase(testInfo, 'profile-prepare-start', {zoom});
         await prepareIsolatedZoomProfile(zoomProfile, massImportUrl, zoom);
+        await writePhase(testInfo, 'profile-prepare-complete', {zoom});
+        await writePhase(testInfo, 'persistent-context-launch-start', {zoom});
         const context = await chromium.launchPersistentContext(zoomProfile, {
             // The profile is created inside this run's external artifact directory.
             // No keypress or desktop-window automation is used, so an existing browser
@@ -333,21 +353,26 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                 '--window-size=390,844',
             ] : ['--force-device-scale-factor=1'],
         });
+        await writePhase(testInfo, 'persistent-context-launch-complete', {zoom});
 
         try {
+            await writePhase(testInfo, 'authentication-start', {zoom});
             const authenticationPage = await context.newPage();
             await login(authenticationPage);
             await authenticationPage.close();
+            await writePhase(testInfo, 'authentication-complete', {zoom});
 
             for (const cell of cells) {
                 for (const surface of surfaces) {
+                    const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
+                    await writePhase(testInfo, 'cell-start', {cellId, viewport: cell.viewport, direction: cell.direction});
                     const page = await context.newPage();
                     await page.setViewportSize(cell.viewport);
                     const showBusyIndicator = surface.id === 'mass-import';
-                    const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
                     const {realNavigationHeight, realNavigationSelector, navigationDiagnostics} = await revealSkeleton(
                         page, surface, cell.direction, showBusyIndicator, testInfo, cellId
                     );
+                    await writePhase(testInfo, 'cell-skeleton-captured', {cellId, realNavigationSelector});
                     const inspection = await inspectSkeleton(page, surface);
 
                     if (showBusyIndicator && cell.viewport.width === 320 &&
