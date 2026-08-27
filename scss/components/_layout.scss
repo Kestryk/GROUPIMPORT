@@ -566,6 +566,14 @@
   // breakpoint. Keep the Skeleton's large frames visible by stacking only its
   // decorative fixed-width cues at that extreme width.
   @media (max-width: 20rem) {
+    // The native-zoom viewport can reduce the available inline space to 160 CSS
+    // px. Give the compact Navigation Skeleton its resolved mobile block size
+    // explicitly so its frame remains measurable independently of grid sizing.
+    &__loading-navigation-frame {
+      block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
+      box-sizing: border-box;
+    }
+
     &__loading-header-actions,
     &__loading-panel-header,
     &__loading-pagination {

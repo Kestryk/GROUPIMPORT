@@ -150,6 +150,12 @@ sizing. This consumer-only guard keeps the one-line frame measurable next to
 the compact real-navigation trigger at native 200% zoom; it does not alter the
 shared Kit primitive, real navigation, lifecycle or cue composition.
 
+Student Management applies the same resolved mobile K3.1 block size and
+`border-box` sizing at that threshold. Both real-navigation consumers therefore
+retain a measurable one-line decorative frame beside the compact trigger at
+native 200% zoom, without changing the shared primitive, lifecycle or
+functional navigation.
+
 The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked
