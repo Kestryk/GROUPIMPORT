@@ -10,6 +10,22 @@ Maintenance convention:
 
 ## Unreleased
 
+### EED-UI-2026-0028-B - Group menu above expanded Participants - 2026-08-27
+
+#### Fixed
+
+- Kept an expanded nested Group card's existing More-actions menu paint layer
+  above its participant-member content and neighbouring cards. The targeted
+  consumer SCSS no longer lets the expanded-member stacking rule override the
+  already-open menu state; menu ownership, actions, focus and disclosure
+  behavior are unchanged.
+
+#### Validation
+
+- Added a focused desktop scenario and source contract for an expanded nested
+  Group with its existing More-actions menu open. Runtime preview and browser
+  evidence remain separately authorised.
+
 ### Skeleton B K3.1 RF1 - 2026-08-27
 
 #### Changed

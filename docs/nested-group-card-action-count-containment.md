@@ -50,6 +50,24 @@ surface through Escape before continuing to the next viewport, which works for
 both responsive and desktop menu presentations.
 It also opens the existing menu to preserve its route and capture evidence.
 
+## EED-UI-2026-0028-B expanded-menu stacking
+
+When a nested Group's member disclosure is expanded, the card retains its
+existing elevated layer so that the desktop More-actions menu paints above the
+revealed participant rows and adjacent cards. The normal expanded-card layer
+remains in effect when that menu is closed. This is a consumer SCSS precedence
+fix only: the menu stays owned by its existing header, and no action, focus,
+keyboard, Escape, outside-click, disclosure, RTL or responsive behavior is
+redirected or reimplemented.
+
+`tools/playwright/group-expanded-menu-stack.spec.js` opens the actual member
+disclosure and existing desktop More-actions control at 1280 px, records a
+review capture, and asserts the open-card stack, menu visibility and retained
+expanded state before exercising the existing Escape route. The companion
+`tools/release/test-group-expanded-menu-stack-contract.ps1` rejects a source
+change that would restore the precedence conflict or alter this scenario's
+required open-state checks.
+
 Runtime and visual validation are intentionally not executed until this
 candidate is committed and pushed.
 
