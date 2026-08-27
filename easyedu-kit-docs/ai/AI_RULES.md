@@ -54,6 +54,11 @@ Avoid:
 - applying standard nav/action button styles to the guide launcher;
 - admin navigation labels that wrap onto two lines instead of using the kit
   non-wrapping rail.
+- a Skeleton de navigation K3 interactif, focalisable ou exposé aux lecteurs
+  d'ecran : il reste decoratif (`aria-hidden="true"`) et ne remplace jamais la
+  navigation Moodle reelle.
+- des accents Skeleton superieurs sur les cartes K3 : employer l'accent
+  logique `border-inline-start` pour conserver le RTL natif.
 
 ## Required update set for reusable changes
 

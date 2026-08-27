@@ -16,6 +16,46 @@
   @include loading.skeleton-section-frame($surface, $border, $radius);
 }
 
+// CCB Slideshow establishes the reference density for a real Navigation
+// placeholder. This remains decorative and does not create navigation markup.
+@mixin navigation-skeleton-compact-frame(
+  $surface: var(--easyedu-loading-section-surface),
+  $border: var(--easyedu-loading-section-border),
+  $radius: var(--easyedu-loading-section-radius)
+) {
+  @include navigation-skeleton-frame($surface, $border, $radius);
+
+  & {
+    align-items: center;
+    column-gap: var(--easyedu-navigation-skeleton-compact-guide-cue-gap);
+    display: grid;
+    grid-template-columns: var(--easyedu-navigation-skeleton-compact-guide-cue-size) minmax(0, 1fr);
+    min-block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
+    padding: var(--easyedu-navigation-skeleton-compact-padding);
+  }
+}
+
+// Use only for the decorative circle that mirrors an existing Guide start
+// affordance. It carries no focus, action or accessible name.
+@mixin navigation-skeleton-guide-start-cue(
+  $surface: var(--easyedu-loading-surface),
+  $soft: var(--easyedu-loading-shimmer-soft),
+  $highlight: var(--easyedu-loading-shimmer-highlight)
+) {
+  & {
+    block-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
+    flex: none;
+    inline-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
+  }
+
+  @include navigation-skeleton-cue-overlay(
+    $surface: $surface,
+    $soft: $soft,
+    $highlight: $highlight,
+    $radius: 50%
+  );
+}
+
 // Use on an opaque internal mark such as an icon, label or navigation row.
 @mixin navigation-skeleton-cue(
   $surface: var(--easyedu-loading-surface),
@@ -88,6 +128,33 @@
 
 // Use on the consumer-owned group of internal marks. The logical alignment
 // reverses automatically with the document direction.
-@mixin navigation-skeleton-cue-stack($gap: var(--easyedu-loading-stack-gap)) {
+@mixin navigation-skeleton-cue-stack(
+  $gap: var(--easyedu-navigation-skeleton-compact-cue-gap)
+) {
   @include loading.skeleton-cue-stack($gap);
+}
+
+@mixin navigation-skeleton-compact-cue(
+  $surface: var(--easyedu-loading-surface),
+  $soft: var(--easyedu-loading-shimmer-soft),
+  $highlight: var(--easyedu-loading-shimmer-highlight),
+  $radius: var(--easyedu-loading-radius)
+) {
+  & {
+    min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
+  }
+
+  @include navigation-skeleton-cue-overlay($surface, $soft, $highlight, $radius);
+}
+
+// Consumers opt into this under their own mobile query. It changes only the
+// reusable visual density, not the consumer's navigation lifecycle or layout.
+@mixin navigation-skeleton-compact-mobile {
+  & {
+    --easyedu-navigation-skeleton-compact-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-min-block-size);
+    --easyedu-navigation-skeleton-compact-padding: var(--easyedu-navigation-skeleton-compact-mobile-padding);
+    --easyedu-navigation-skeleton-compact-guide-cue-size: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-size);
+    --easyedu-navigation-skeleton-compact-guide-cue-gap: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-gap);
+    --easyedu-navigation-skeleton-compact-cue-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-cue-min-block-size);
+  }
 }

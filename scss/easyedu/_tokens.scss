@@ -22,6 +22,13 @@
   --easyedu-navigation-layer-trigger: 1064;
   --easyedu-navigation-layer-backdrop: 1065;
   --easyedu-navigation-layer-panel: 1066;
+  --easyedu-navigation-guide-surface: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--easyedu-primary) 10%, var(--easyedu-surface) 90%) 0%,
+    color-mix(in srgb, var(--easyedu-accent) 14%, var(--easyedu-surface) 86%) 100%
+  );
+  --easyedu-navigation-guide-border: color-mix(in srgb, var(--easyedu-accent) 28%, var(--easyedu-card-border) 72%);
+  --easyedu-navigation-guide-shadow: 0 0.4rem 1rem rgba(22, 45, 68, 0.12);
   --easyedu-radius: 0.75rem;
   --easyedu-radius-sm: 0.5rem;
   --easyedu-radius-lg: 1rem;
@@ -120,6 +127,17 @@
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;

@@ -10,6 +10,23 @@ Maintenance convention:
 
 ## Unreleased
 
+### Skeleton B K3 consumers - 2026-08-27
+
+#### Changed
+
+- Adopted immutable EasyEdu UI Kit K3
+  `e5fe986a4a21ce630d4b952af3dfccd82818232b` for the two EasyStud views with
+  real navigation: Student Management and Mass Import.
+- Replaced high Skeleton card accents with K3 logical inline-start accents and
+  added static compact Navigation Skeleton frames, decorative Guide circles
+  and internal cues without changing real navigation or loading lifecycle.
+
+#### Validation
+
+- Static contract, Sass build, PHP lint, JavaScript syntax, allowlist and diff
+  checks are recorded with this consumer batch. Runtime preview and browser
+  evidence require separate authorization.
+
 ### Visual Skeleton Kit consumer adoption - 2026-08-25
 
 #### Changed

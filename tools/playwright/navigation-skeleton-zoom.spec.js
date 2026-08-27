@@ -21,7 +21,7 @@ const surfaces = [
             '.local-groupimport-easystud__loading-structure-card',
             '.local-groupimport-easystud__loading-view-toggle',
         ].join(', '),
-        expectedCues: 48,
+        expectedCues: 51,
         animatedPseudo: '::after',
     },
     {
@@ -30,7 +30,7 @@ const surfaces = [
         rootSelector: '#local-groupimport-import',
         cueSelector: '.local-groupimport-import__loading-surface',
         frameSelector: '.local-groupimport-import__loading-card',
-        expectedCues: 19,
+        expectedCues: 22,
         animatedPseudo: '',
     },
 ];

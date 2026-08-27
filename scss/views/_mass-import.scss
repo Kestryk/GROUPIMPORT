@@ -78,6 +78,36 @@
     @include easyedu.navigation-skeleton-cue($radius: 0.72rem);
   }
 
+  &__loading-navigation {
+    @include easyedu.skeleton-section-navigation-gap;
+  }
+
+  &__loading-navigation-frame {
+    @include easyedu.navigation-skeleton-compact-frame(
+      $surface: #f7fbff,
+      $border: #cfdee9,
+      $radius: 1rem
+    );
+  }
+
+  &__loading-navigation-guide {
+    @include easyedu.navigation-skeleton-guide-start-cue;
+  }
+
+  &__loading-navigation-cues {
+    @include easyedu.navigation-skeleton-cue-stack;
+  }
+
+  &__loading-navigation-cue {
+    @include easyedu.navigation-skeleton-compact-cue($radius: 0.72rem);
+
+    inline-size: 100%;
+  }
+
+  &__loading-navigation-cue--short {
+    inline-size: min(70%, 14rem);
+  }
+
   &__loading-eyebrow {
     height: 0.72rem;
     width: min(9rem, 32%);
@@ -178,6 +208,12 @@
   &[data-easyedu-motion-policy="disabled"] &__loading-surface,
   &.is-easyedu-motion-off &__loading-surface {
     animation: none;
+  }
+
+  @media (max-width: 64rem) {
+    &__loading-navigation-frame {
+      @include easyedu.navigation-skeleton-compact-mobile;
+    }
   }
 
   // Preserve the full card frame at extreme effective widths such as a 320 px

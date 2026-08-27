@@ -27,21 +27,30 @@
   }
 }
 
-// Compose with skeleton-surface for the top accent of each main skeleton
-// section. Logical properties retain the same reading order in RTL.
-@mixin skeleton-section-top-border(
+// Compose with skeleton-surface for the inline-start accent of each principal
+// Skeleton section. Logical properties place it on the correct side in RTL.
+@mixin skeleton-section-inline-accent(
   $color: var(--easyedu-loading-section-accent),
   $width: var(--easyedu-loading-section-border-width)
 ) {
   & {
-    border-block-start: $width solid $color;
+    border-inline-start: $width solid $color;
   }
 
   @media (forced-colors: active) {
     & {
-      border-block-start-color: CanvasText;
+      border-inline-start-color: CanvasText;
     }
   }
+}
+
+// Deprecated name retained for source compatibility. It deliberately paints
+// the inline-start accent; K3 does not permit a top Skeleton accent.
+@mixin skeleton-section-top-border(
+  $color: var(--easyedu-loading-section-accent),
+  $width: var(--easyedu-loading-section-border-width)
+) {
+  @include skeleton-section-inline-accent($color, $width);
 }
 
 // A principal Skeleton frame is static by contract. Consumers select it under
@@ -54,7 +63,7 @@
   $accent-width: var(--easyedu-loading-section-border-width)
 ) {
   @include skeleton-surface($surface, $border, $radius);
-  @include skeleton-section-top-border($accent, $accent-width);
+  @include skeleton-section-inline-accent($accent, $accent-width);
 
   & {
     animation: none;
