@@ -2191,6 +2191,10 @@
   }
 }
 @media (max-width: 20rem) {
+  .local-groupimport-easystud__loading-navigation-frame {
+    block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
+    box-sizing: border-box;
+  }
   .local-groupimport-easystud__loading-header-actions, .local-groupimport-easystud__loading-panel-header, .local-groupimport-easystud__loading-pagination {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

@@ -124,6 +124,8 @@ if ($viewToggle.Contains('skeleton-')) {
     throw 'Student Management view toggle must not receive a Skeleton frame or border.'
 }
 Assert-Contains 'Student Management styles' $studentStyles '@media (max-width: 20rem)'
+Assert-Contains 'Student Management compact Navigation Skeleton frame' $studentStyles 'block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);'
+Assert-Contains 'Student Management compact Navigation Skeleton frame' $studentStyles 'box-sizing: border-box;'
 Assert-Contains 'Student Management styles' $studentStyles '&__loading-header-actions,'
 Assert-Contains 'Student Management styles' $studentStyles '&__loading-pagination-rail {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
