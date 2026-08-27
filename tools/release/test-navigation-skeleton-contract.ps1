@@ -104,9 +104,14 @@ Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skelet
 Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-guide-start-cue'
 Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-compact-cue'
 Assert-Contains 'Student Management K3 styles' $studentStyles 'border-inline-start: 0.32rem solid #6c9fc9;'
-if ($studentStyles.Contains('border-top: 0.32rem')) {
-    throw 'Student Management must not restore a top Skeleton accent.'
-}
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'border-block-start: 0.32rem solid transparent;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'border-block-start-color: #6c9fc9;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'border-block-start-color: #78a78d;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'border-inline-start: 0.32rem solid #78a78d;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'border: 0;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'display: flex;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'min-block-size: 3.65rem;'
+Assert-Contains 'Student Management K3.1 styles' $studentStyles 'min-block-size: 3.35rem;'
 $viewToggleStart = $studentStyles.IndexOf('&__loading-view-toggle {')
 $viewToggleEnd = $studentStyles.IndexOf('&__loading-view-toggle-item {', $viewToggleStart)
 if ($viewToggleStart -lt 0 -or $viewToggleEnd -le $viewToggleStart) {
@@ -123,6 +128,11 @@ Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
 Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-compact-frame'
 Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-guide-start-cue'
 Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-compact-cue'
+Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'border-block-start: 0.32rem solid var(--local-groupimport-easystud-primary);'
+Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'border-inline-start: 0.0625rem solid #cfdee9;'
+Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'display: flex;'
+Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'min-block-size: 3.65rem;'
+Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'min-block-size: 3.35rem;'
 Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
@@ -198,8 +208,16 @@ Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClien
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton?.getBoundingClientRect()'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeletonScrollWidth'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton.clientWidth + 1'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'navigationCueRows'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'navigationGuideIsCircle'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'skeletonFocusableCount'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'navigationHeightDelta'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'realNavigationHeight'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'mainFrameBorders'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'cardBorders'
+Assert-Contains 'Navigation Skeleton K3.1 scenario' $zoomScenario 'toggleBorder'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'EASYEDU_CHROMIUM_EXECUTABLE'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'per_host_zoom_levels: {'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'x: {'
 
-Write-Host "Navigation Skeleton K3 source contract passed: Student Management 48 -> 51 cues; Mass Import 19 -> 22 cues."
+Write-Host "Navigation Skeleton K3.1 source contract passed: single-row navigation, top-accent principal frames, card-only lateral accents and borderless view toggle."

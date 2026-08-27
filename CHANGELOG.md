@@ -10,6 +10,24 @@ Maintenance convention:
 
 ## Unreleased
 
+### Skeleton B K3.1 RF1 - 2026-08-27
+
+#### Changed
+
+- Refined the EasyStud K3 consumer Skeletons without changing the immutable
+  Kit, real Navigation, lifecycle or business behavior.
+- Kept Navigation Skeleton cues on one compact row with a shorter frame, moved
+  accents to the logical top edge of principal workspace containers, retained
+  logical side accents on cards only, and removed the outer border from the
+  Simplified Student Management view toggle.
+
+#### Validation
+
+- Extended the source contract and native-zoom scenario to assert one-row
+  Navigation cues, real-navigation height proximity, top-versus-side accent
+  ownership, and the borderless toggle. Browser preview remains pending one
+  grouped authorization.
+
 ### Skeleton B K3 consumers - 2026-08-27
 
 #### Changed

@@ -1738,6 +1738,11 @@
   min-block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
   padding: var(--easyedu-navigation-skeleton-compact-padding);
 }
+.local-groupimport-easystud__loading-navigation-frame {
+  border-inline-start: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
+  min-block-size: 3.65rem;
+  padding: 0.55rem 0.7rem;
+}
 .local-groupimport-easystud__loading-navigation-guide {
   block-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
   flex: none;
@@ -1787,8 +1792,12 @@
   justify-items: start;
   min-inline-size: 0;
 }
-.local-groupimport-easystud__loading-navigation-cue {
-  inline-size: 100%;
+.local-groupimport-easystud__loading-navigation-cues {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.55rem;
+  min-inline-size: 0;
 }
 .local-groupimport-easystud__loading-navigation-cue {
   min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
@@ -1830,8 +1839,15 @@
     background-image: none;
   }
 }
+.local-groupimport-easystud__loading-navigation-cue {
+  flex: 1 1 0;
+  inline-size: auto;
+  max-inline-size: 100%;
+}
 .local-groupimport-easystud__loading-navigation-cue--short {
-  inline-size: min(70%, 14rem);
+  flex: 0.7 1 0;
+  inline-size: auto;
+  max-inline-size: 14rem;
 }
 .local-groupimport-easystud__loading-layout {
   align-items: stretch;
@@ -1873,6 +1889,8 @@
   max-inline-size: 100%;
   min-width: 0;
   padding: 0.95rem;
+  border-block-start: 0.32rem solid transparent;
+  border-inline-start: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
 }
 .local-groupimport-easystud__loading-panel {
   align-content: start;
@@ -1881,10 +1899,10 @@
   grid-auto-rows: max-content;
 }
 .local-groupimport-easystud__loading-panel--participants {
-  border-inline-start: 0.32rem solid #6c9fc9;
+  border-block-start-color: #6c9fc9;
 }
 .local-groupimport-easystud__loading-panel--structure {
-  border-inline-start: 0.32rem solid #78a78d;
+  border-block-start-color: #78a78d;
   display: none;
 }
 .local-groupimport-easystud__loading-panel-header, .local-groupimport-easystud__loading-pagination, .local-groupimport-easystud__loading-structure-card {
@@ -1933,6 +1951,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   max-inline-size: 100%;
   padding: 0.7rem;
+  border-inline-start: 0.0625rem solid #dbe6ee;
 }
 .local-groupimport-easystud__loading-search {
   background: #f7fafc;
@@ -1988,6 +2007,8 @@
   max-inline-size: 100%;
   min-height: 2.72rem;
   padding: 0.45rem 0.55rem;
+  border-block-start: 0.0625rem solid #dbe5ed;
+  border-inline-start: 0.32rem solid #6c9fc9;
 }
 .local-groupimport-easystud__loading-structure-list {
   gap: 0.65rem;
@@ -2023,6 +2044,8 @@
   max-inline-size: 100%;
   min-height: 3.6rem;
   padding: 0.58rem 0.65rem;
+  border-block-start: 0.0625rem solid #d9e4dc;
+  border-inline-start: 0.32rem solid #78a78d;
 }
 @media (min-width: 769px) and (max-width: 1200px) {
   .local-groupimport-easystud__loading-participant-card:nth-child(n+11) {
@@ -2075,6 +2098,7 @@
   min-width: 0;
   padding: 0.34rem;
   width: min(100%, 40rem);
+  border: 0;
 }
 .local-groupimport-easystud__loading-view-toggle-item {
   background: var(--local-groupimport-easystud-loading-surface-soft);
@@ -2203,6 +2227,10 @@
     --easyedu-navigation-skeleton-compact-guide-cue-size: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-size);
     --easyedu-navigation-skeleton-compact-guide-cue-gap: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-gap);
     --easyedu-navigation-skeleton-compact-cue-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-cue-min-block-size);
+  }
+  .local-groupimport-easystud__loading-navigation-frame {
+    min-block-size: 3.35rem;
+    padding: 0.45rem 0.55rem;
   }
 }
 @media (max-width: 20rem) {
@@ -14355,6 +14383,11 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   min-block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
   padding: var(--easyedu-navigation-skeleton-compact-padding);
 }
+.local-groupimport-import__loading-navigation-frame {
+  border-inline-start: 0.0625rem solid #cfdee9;
+  min-block-size: 3.65rem;
+  padding: 0.55rem 0.7rem;
+}
 .local-groupimport-import__loading-navigation-guide {
   block-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
   flex: none;
@@ -14404,8 +14437,12 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   justify-items: start;
   min-inline-size: 0;
 }
-.local-groupimport-import__loading-navigation-cue {
-  inline-size: 100%;
+.local-groupimport-import__loading-navigation-cues {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.55rem;
+  min-inline-size: 0;
 }
 .local-groupimport-import__loading-navigation-cue {
   min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
@@ -14447,8 +14484,15 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     background-image: none;
   }
 }
+.local-groupimport-import__loading-navigation-cue {
+  flex: 1 1 0;
+  inline-size: auto;
+  max-inline-size: 100%;
+}
 .local-groupimport-import__loading-navigation-cue--short {
-  inline-size: min(70%, 14rem);
+  flex: 0.7 1 0;
+  inline-size: auto;
+  max-inline-size: 14rem;
 }
 .local-groupimport-import__loading-eyebrow {
   height: 0.72rem;
@@ -14508,6 +14552,8 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   min-height: 23rem;
   min-width: 0;
   padding: 1rem;
+  border-block-start: 0.32rem solid var(--local-groupimport-easystud-primary);
+  border-inline-start: 0.0625rem solid #cfdee9;
 }
 .local-groupimport-import__loading-card-header {
   align-items: center;
@@ -14562,6 +14608,10 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     --easyedu-navigation-skeleton-compact-guide-cue-size: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-size);
     --easyedu-navigation-skeleton-compact-guide-cue-gap: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-gap);
     --easyedu-navigation-skeleton-compact-cue-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-cue-min-block-size);
+  }
+  .local-groupimport-import__loading-navigation-frame {
+    min-block-size: 3.35rem;
+    padding: 0.45rem 0.55rem;
   }
 }
 @media (max-width: 20rem) {

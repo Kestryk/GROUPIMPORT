@@ -88,6 +88,14 @@
       $border: #cfdee9,
       $radius: 1rem
     );
+
+    // K3.1 keeps the navigation placeholder compact and single-row. Its
+    // lateral edge is neutral because accents belong only to cards.
+    & {
+      border-inline-start: 0.0625rem solid #cfdee9;
+      min-block-size: 3.65rem;
+      padding: 0.55rem 0.7rem;
+    }
   }
 
   &__loading-navigation-guide {
@@ -96,16 +104,30 @@
 
   &__loading-navigation-cues {
     @include easyedu.navigation-skeleton-cue-stack;
+
+    & {
+      align-items: center;
+      display: flex;
+      flex: 1 1 auto;
+      gap: 0.55rem;
+      min-inline-size: 0;
+    }
   }
 
   &__loading-navigation-cue {
     @include easyedu.navigation-skeleton-compact-cue($radius: 0.72rem);
 
-    inline-size: 100%;
+    & {
+      flex: 1 1 0;
+      inline-size: auto;
+      max-inline-size: 100%;
+    }
   }
 
   &__loading-navigation-cue--short {
-    inline-size: min(70%, 14rem);
+    flex: 0.7 1 0;
+    inline-size: auto;
+    max-inline-size: 14rem;
   }
 
   &__loading-eyebrow {
@@ -152,6 +174,11 @@
       min-height: 23rem;
       min-width: 0;
       padding: 1rem;
+
+      // Mass Import cards are the principal loading containers in this view:
+      // K3.1 gives them a top accent and keeps their lateral edge neutral.
+      border-block-start: 0.32rem solid var(--local-groupimport-easystud-primary);
+      border-inline-start: 0.0625rem solid #cfdee9;
     }
   }
 
@@ -213,6 +240,11 @@
   @media (max-width: 64rem) {
     &__loading-navigation-frame {
       @include easyedu.navigation-skeleton-compact-mobile;
+
+      & {
+        min-block-size: 3.35rem;
+        padding: 0.45rem 0.55rem;
+      }
     }
   }
 

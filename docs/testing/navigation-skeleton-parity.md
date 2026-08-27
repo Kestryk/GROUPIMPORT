@@ -15,7 +15,7 @@ contract and durable coverage matrix. `tools/sync-easyedu-kit.ps1` is not
 used. Administration/settings, functional Navigation, filters, pagination,
 Send message, Guide, CCB, runtime and cache remain outside this consumer lot.
 
-## Composition and lifecycle boundary
+## K3.1 composition and lifecycle boundary
 
 The existing server-rendered skeleton roots remain `aria-hidden` and now mark
 the Navigation Skeleton composition with `data-easyedu-navigation-skeleton`.
@@ -24,12 +24,18 @@ existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
 180 ms Mass Import handoff and their fail-open paths are unchanged.
 
 The existing large panels, search/filter shells, view toggle and import cards
-compose `navigation-skeleton-frame`; K3 gives each frame a static logical
-`border-inline-start` accent. Their existing decorative `__loading-surface`
-descendants compose a Kit cue mixin. Each real Navigation view also adds the
-K3 compact static frame, decorative Guide-start circle and two internal cues.
+compose `navigation-skeleton-frame`; K3.1 keeps the two principal workspace
+containers on a logical `border-block-start` accent, keeps the existing
+participant/structure card accents on logical `border-inline-start`, and leaves
+non-card shells neutral. The three-way Simplified Student Management view
+toggle is explicitly borderless. Their existing decorative
+`__loading-surface` descendants compose a Kit cue mixin. Each real Navigation
+view also adds the K3 compact static frame, decorative Guide-start circle and
+two internal cues.
 Student Management uses the overlay cue to retain its two-line card cue base;
-Mass Import uses the direct cue. RTL sweep reversal, reduced-motion and
+Mass Import uses the direct cue. K3.1 renders the two Navigation cues in one
+compact row and shortens the frame to stay close to the real Navigation height
+at desktop and mobile widths. RTL sweep reversal, reduced-motion and
 forced-colors behavior come from the embedded Kit component rather than local
 overrides.
 
@@ -73,7 +79,10 @@ No runtime promotion, cache refresh, lease acquisition or browser execution
 is implied by this source change. When separately authorised, the focused
 `tools/playwright/navigation-skeleton-zoom.spec.js` scenario inspects both
 views at 320 and 390 CSS px in LTR and RTL, with genuine Chromium 100% and
-200% browser zoom. It asserts the numeric document `scrollWidth` stays within
+200% browser zoom. It asserts one cue row, compares the compact frame height
+with a measured real Navigation variant, checks top accents on principal
+containers, logical side accents on cards, and the borderless Student
+Management toggle. It also asserts the numeric document `scrollWidth` stays within
 one CSS pixel of `clientWidth`, as well as Skeleton and frame containment. It
 creates a new profile only below the supervised run's
 external artifact directory and sets the per-host zoom preference before

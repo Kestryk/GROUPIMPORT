@@ -66,10 +66,12 @@ Treat the embedded K3 Navigation Skeleton as mandatory for every EasyStud view
 that renders real `easyedu_navigation` markup. Its compact frame, decorative
 Guide-start circle and internal cues stay `aria-hidden`, non-focusable and
 independent from navigation destinations, loading readiness, no-script and
-fail-open behavior. Principal Skeleton frames use the logical K3
-`border-inline-start` accent; never restore a top or physical-side accent.
-Update the durable coverage matrix and the local source contract whenever a
-real Navigation view is added or removed.
+fail-open behavior. K3.1 consumer geometry keeps logical `border-block-start` accents on principal
+workspace frames, reserves logical `border-inline-start` accents for internal
+cards, and leaves Navigation/toggle shells neutral. This is a consumer-owned
+layout refinement; the immutable Kit primitives and RTL safeguards remain
+unchanged. Update the durable coverage matrix and the local source contract
+whenever a real Navigation view is added or removed.
 
 For existing EasyStud disclosures, preserve the normal-motion open/close
 transition as well as the final geometry and ARIA state. Do not replace Motion

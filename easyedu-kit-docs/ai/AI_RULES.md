@@ -57,8 +57,10 @@ Avoid:
 - a Skeleton de navigation K3 interactif, focalisable ou exposé aux lecteurs
   d'ecran : il reste decoratif (`aria-hidden="true"`) et ne remplace jamais la
   navigation Moodle reelle.
-- des accents Skeleton superieurs sur les cartes K3 : employer l'accent
-  logique `border-inline-start` pour conserver le RTL natif.
+- des accents Skeleton superieurs sur les cartes K3. Les consommateurs K3.1
+  peuvent reserver `border-block-start` aux conteneurs principaux et doivent
+  conserver l'accent logique `border-inline-start` sur les cartes; les coques
+  Navigation et toggle restent neutres et le RTL demeure natif.
 
 ## Required update set for reusable changes
 

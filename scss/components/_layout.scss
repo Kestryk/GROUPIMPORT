@@ -214,6 +214,14 @@
       $border: var(--local-groupimport-easystud-loading-border),
       $radius: 1rem
     );
+
+    // K3.1 keeps the real navigation-shaped placeholder on one compact row.
+    // The frame is a neutral shell; lateral accents are reserved for cards.
+    & {
+      border-inline-start: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
+      min-block-size: 3.65rem;
+      padding: 0.55rem 0.7rem;
+    }
   }
 
   &__loading-navigation-guide {
@@ -226,6 +234,14 @@
 
   &__loading-navigation-cues {
     @include easyedu.navigation-skeleton-cue-stack;
+
+    & {
+      align-items: center;
+      display: flex;
+      flex: 1 1 auto;
+      gap: 0.55rem;
+      min-inline-size: 0;
+    }
   }
 
   &__loading-navigation-cue {
@@ -236,11 +252,17 @@
       $radius: var(--local-groupimport-easystud-loading-radius)
     );
 
-    inline-size: 100%;
+    & {
+      flex: 1 1 0;
+      inline-size: auto;
+      max-inline-size: 100%;
+    }
   }
 
   &__loading-navigation-cue--short {
-    inline-size: min(70%, 14rem);
+    flex: 0.7 1 0;
+    inline-size: auto;
+    max-inline-size: 14rem;
   }
 
   &__loading-layout {
@@ -266,16 +288,21 @@
       min-width: 0;
       padding: 0.95rem;
 
+      // K3.1 uses a top accent for the two principal workspace containers;
+      // their inline-start edge remains the neutral frame border.
+      border-block-start: 0.32rem solid transparent;
+      border-inline-start: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
+
       @include easyedu.skeleton-stack(0.9rem);
     }
   }
 
   &__loading-panel--participants {
-    border-inline-start: 0.32rem solid #6c9fc9;
+    border-block-start-color: #6c9fc9;
   }
 
   &__loading-panel--structure {
-    border-inline-start: 0.32rem solid #78a78d;
+    border-block-start-color: #78a78d;
     display: none;
   }
 
@@ -312,6 +339,9 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
       max-inline-size: 100%;
       padding: 0.7rem;
+
+      // This is a filter shell, not a card; keep the K3 frame edge neutral.
+      border-inline-start: 0.0625rem solid #dbe6ee;
     }
   }
 
@@ -354,6 +384,11 @@
       max-inline-size: 100%;
       min-height: 2.72rem;
       padding: 0.45rem 0.55rem;
+
+      // Card-only semantic accent; all other edges stay the approved neutral
+      // frame border so the principal panels can own the top accent.
+      border-block-start: 0.0625rem solid #dbe5ed;
+      border-inline-start: 0.32rem solid #6c9fc9;
     }
   }
 
@@ -373,6 +408,9 @@
       max-inline-size: 100%;
       min-height: 3.6rem;
       padding: 0.58rem 0.65rem;
+
+      border-block-start: 0.0625rem solid #d9e4dc;
+      border-inline-start: 0.32rem solid #78a78d;
     }
   }
 
@@ -416,6 +454,10 @@
       min-width: 0;
       padding: 0.34rem;
       width: min(100%, 40rem);
+
+      // The three-way Simplified Student Management switch is not a card.
+      // Its surrounding Skeleton shell must not draw a border in K3.1.
+      border: 0;
     }
   }
 
@@ -571,6 +613,11 @@
   @media (max-width: 64rem) {
     &__loading-navigation-frame {
       @include easyedu.navigation-skeleton-compact-mobile;
+
+      & {
+        min-block-size: 3.35rem;
+        padding: 0.45rem 0.55rem;
+      }
     }
   }
 

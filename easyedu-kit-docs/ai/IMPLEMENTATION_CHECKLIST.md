@@ -42,8 +42,10 @@ Use this checklist for every UI task in EasyEdu plugins.
 - [ ] For each rendered EasyStud view with real navigation, use the compact K3
       Navigation Skeleton as decorative markup only; retain the real navigation,
       lifecycle, `aria-busy`, no-script and fail-open contracts unchanged.
-- [ ] Use the K3 logical `border-inline-start` Skeleton accent rather than a
-      physical or top-border accent; preserve native RTL behaviour.
+- [ ] For K3.1 EasyStud consumers, keep Navigation cues on one row, use a
+      logical `border-block-start` accent only on principal loading containers,
+      reserve `border-inline-start` accents for cards, and keep the simplified
+      view toggle borderless; preserve native RTL behaviour.
 - [ ] For top admin navigation, use `admin-primary-nav`; keep labels on one
       line and do not restyle the guide launcher as a nav action.
 - [ ] Keep the direct guide wrapper first in the admin navigation DOM so the

@@ -149,9 +149,12 @@ The embedded Loading and `navigation-skeleton` components come from immutable
 UI Kit snapshot `e5fe986a4a21ce630d4b952af3dfccd82818232b`. K3 uses the
 logical inline-start accent and requires the compact static Navigation frame,
 decorative Guide-start circle and internal cues wherever a consumer renders
-real navigation. The component supplies RTL reversal, reduced-motion and
-forced-colors behavior; EasyStud keeps its own panel geometry, no-script path,
-readiness and fail-open policy.
+real navigation. The EasyStud K3.1 consumer refinement keeps the Navigation
+cues on one row, puts logical top accents on principal workspace containers,
+reserves logical side accents for cards, and removes the outer border from the
+Simplified Student Management view toggle. The component supplies RTL reversal,
+reduced-motion and forced-colors behavior; EasyStud keeps its own panel
+geometry, no-script path, readiness and fail-open policy.
 
 ## Porting checklist for a new plugin
 

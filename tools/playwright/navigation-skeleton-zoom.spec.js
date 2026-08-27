@@ -21,6 +21,21 @@ const surfaces = [
             '.local-groupimport-easystud__loading-structure-card',
             '.local-groupimport-easystud__loading-view-toggle',
         ].join(', '),
+        navigationFrameSelector: '.local-groupimport-easystud__loading-navigation-frame',
+        navigationCueStackSelector: '.local-groupimport-easystud__loading-navigation-cues',
+        navigationCueSelector: '.local-groupimport-easystud__loading-navigation-cue',
+        navigationGuideSelector: '.local-groupimport-easystud__loading-navigation-guide',
+        realNavigationSelector: '.local-groupimport-easystud__navigation',
+        realNavigationVariantSelector: '[data-easyedu-navigation-desktop]',
+        mainFrameSelector: [
+            '.local-groupimport-easystud__loading-panel--participants',
+            '.local-groupimport-easystud__loading-panel--structure',
+        ].join(', '),
+        cardSelector: [
+            '.local-groupimport-easystud__loading-participant-card',
+            '.local-groupimport-easystud__loading-structure-card',
+        ].join(', '),
+        toggleSelector: '.local-groupimport-easystud__loading-view-toggle',
         expectedCues: 51,
         animatedPseudo: '::after',
     },
@@ -30,6 +45,15 @@ const surfaces = [
         rootSelector: '#local-groupimport-import',
         cueSelector: '.local-groupimport-import__loading-surface',
         frameSelector: '.local-groupimport-import__loading-card',
+        navigationFrameSelector: '.local-groupimport-import__loading-navigation-frame',
+        navigationCueStackSelector: '.local-groupimport-import__loading-navigation-cues',
+        navigationCueSelector: '.local-groupimport-import__loading-navigation-cue',
+        navigationGuideSelector: '.local-groupimport-import__loading-navigation-guide',
+        realNavigationSelector: '.local-groupimport-import-navigation',
+        realNavigationVariantSelector: '[data-easyedu-navigation-desktop]',
+        mainFrameSelector: '.local-groupimport-import__loading-card',
+        cardSelector: '',
+        toggleSelector: '',
         expectedCues: 22,
         animatedPseudo: '',
     },
@@ -119,12 +143,67 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     const skeleton = root?.querySelector('[data-easystud-loading-skeleton]');
     const cueNodes = Array.from(skeleton?.querySelectorAll(surface.cueSelector) || []);
     const frameNodes = Array.from(skeleton?.querySelectorAll(surface.frameSelector) || []);
+    const navigationFrame = skeleton?.querySelector(surface.navigationFrameSelector);
+    const navigationCueStack = skeleton?.querySelector(surface.navigationCueStackSelector);
+    const navigationCueNodes = Array.from(
+        navigationCueStack?.querySelectorAll(surface.navigationCueSelector) || []
+    );
+    const navigationGuide = skeleton?.querySelector(surface.navigationGuideSelector);
+    const realNavigation = root?.querySelector(surface.realNavigationSelector);
+    const realNavigationVariant = realNavigation?.querySelector(surface.realNavigationVariantSelector);
     const animatedName = node => getComputedStyle(node, surface.animatedPseudo).animationName;
     const animatedDirection = node => getComputedStyle(node, surface.animatedPseudo).animationDirection;
     const readPixels = value => Number.parseFloat(value) || 0;
+    const borderMetrics = node => {
+        if (!node) {
+            return null;
+        }
+        const style = getComputedStyle(node);
+        return {
+            blockStart: readPixels(style.borderBlockStartWidth),
+            inlineStart: readPixels(style.borderInlineStartWidth),
+            border: readPixels(style.borderTopWidth),
+        };
+    };
+    const measureNavigationReference = node => {
+        if (!node) {
+            return 0;
+        }
+        const clone = node.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.querySelectorAll('[id]').forEach(idNode => idNode.removeAttribute('id'));
+        clone.style.cssText = [
+            'display: flex !important',
+            'position: absolute',
+            'visibility: hidden',
+            'inset: -10000px auto auto -10000px',
+            'inline-size: 100%',
+            'max-inline-size: 100%',
+        ].join(';');
+        document.body.appendChild(clone);
+        const height = clone.getBoundingClientRect().height;
+        clone.remove();
+        return height;
+    };
     const busySpinner = root ? getComputedStyle(root, '::after') : null;
     const busyLabel = root ? getComputedStyle(root, '::before') : null;
     const bounds = skeleton?.getBoundingClientRect();
+    const navigationCueRects = navigationCueNodes.map(node => {
+        const box = node.getBoundingClientRect();
+        return {height: box.height, top: box.top, width: box.width};
+    });
+    const navigationCueRows = [...new Set(navigationCueRects.map(box => Math.round(box.top * 10) / 10))];
+    const navigationFrameStyle = navigationFrame ? getComputedStyle(navigationFrame) : null;
+    const navigationFrameHeight = navigationFrame?.getBoundingClientRect().height || 0;
+    const navigationGuideRect = navigationGuide?.getBoundingClientRect();
+    const focusableCount = skeleton?.querySelectorAll(
+        'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    ).length || 0;
+    const realNavigationHeight = measureNavigationReference(realNavigationVariant);
+    const mainFrames = Array.from(skeleton?.querySelectorAll(surface.mainFrameSelector || '') || []);
+    const cards = surface.cardSelector ?
+        Array.from(skeleton?.querySelectorAll(surface.cardSelector) || []) : [];
+    const toggle = surface.toggleSelector ? skeleton?.querySelector(surface.toggleSelector) : null;
     const escapingNodes = Array.from(skeleton?.querySelectorAll(`${surface.cueSelector}, ${surface.frameSelector}`) || [])
         .filter(node => {
             const box = node.getBoundingClientRect();
@@ -151,6 +230,28 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
         animatedCues: cueNodes.filter(node => animatedName(node) !== 'none').length,
         animatedFrames: frameNodes.filter(node => getComputedStyle(node).animationName !== 'none').length,
         cueDirections: [...new Set(cueNodes.map(animatedDirection))],
+        navigationCueRows,
+        navigationCueRects,
+        navigationGuideRect: navigationGuideRect ? {
+            height: navigationGuideRect.height,
+            width: navigationGuideRect.width,
+        } : null,
+        navigationGuideIsCircle: Boolean(
+            navigationGuideRect && navigationGuideRect.width > 0 &&
+            Math.abs(navigationGuideRect.width - navigationGuideRect.height) <= 1
+        ),
+        skeletonAriaHidden: skeleton?.getAttribute('aria-hidden') === 'true',
+        skeletonFocusableCount: focusableCount,
+        navigationFrameHeight,
+        navigationFrameBorder: navigationFrameStyle ? {
+            blockStart: readPixels(navigationFrameStyle.borderBlockStartWidth),
+            inlineStart: readPixels(navigationFrameStyle.borderInlineStartWidth),
+        } : null,
+        navigationHeightDelta: Math.abs(navigationFrameHeight - realNavigationHeight),
+        realNavigationHeight,
+        mainFrameBorders: mainFrames.map(borderMetrics),
+        cardBorders: cards.map(borderMetrics),
+        toggleBorder: borderMetrics(toggle),
         documentClientWidth: document.documentElement.clientWidth,
         documentScrollWidth: document.documentElement.scrollWidth,
         documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
@@ -174,7 +275,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     };
 }, {surface});
 
-test('Navigation Skeleton stays contained at 320/390 with isolated native 100/200 zoom', async({}, testInfo) => {
+test('K3.1 Navigation Skeleton stays single-row and contained at 320/390 with isolated native 100/200 zoom', async({}, testInfo) => {
     test.setTimeout(900000);
     const profileRoot = process.env.PLAYWRIGHT_PROFILE_DIR;
     if (!profileRoot) {
@@ -241,6 +342,38 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         inspection.skeletonClientWidth + 1
                     );
                     expect(inspection.skeletonOverflow, `${cellId}: skeleton horizontal overflow`).toBe(false);
+                    expect(inspection.navigationCueRows, `${cellId}: Navigation Skeleton cue rows`).toHaveLength(1);
+                    expect(inspection.navigationCueRects, `${cellId}: Navigation Skeleton cue count`).toHaveLength(2);
+                    expect(inspection.navigationGuideIsCircle, `${cellId}: Guide cue circle`).toBe(true);
+                    expect(inspection.skeletonAriaHidden, `${cellId}: Skeleton aria-hidden`).toBe(true);
+                    expect(inspection.skeletonFocusableCount, `${cellId}: Skeleton focusable nodes`).toBe(0);
+                    expect(inspection.navigationFrameHeight, `${cellId}: Navigation Skeleton frame height`).toBeGreaterThan(0);
+                    expect(inspection.realNavigationHeight, `${cellId}: real Navigation reference height`).toBeGreaterThan(0);
+                    expect(
+                        inspection.navigationHeightDelta,
+                        `${cellId}: Navigation Skeleton height close to real Navigation`
+                    ).toBeLessThanOrEqual(Math.max(inspection.rootFontSize * 1.25, 20));
+                    expect(
+                        inspection.navigationFrameBorder.inlineStart,
+                        `${cellId}: Navigation Skeleton frame has no lateral accent`
+                    ).toBeLessThanOrEqual(2);
+                    for (const border of inspection.mainFrameBorders) {
+                        expect(border.blockStart, `${cellId}: principal frame top accent`).toBeGreaterThanOrEqual(
+                            inspection.rootFontSize * 0.2
+                        );
+                        expect(border.inlineStart, `${cellId}: principal frame lateral edge is neutral`).toBeLessThanOrEqual(2);
+                    }
+                    for (const border of inspection.cardBorders) {
+                        expect(border.inlineStart, `${cellId}: card lateral accent`).toBeGreaterThanOrEqual(
+                            inspection.rootFontSize * 0.2
+                        );
+                        expect(border.blockStart, `${cellId}: card top edge is neutral`).toBeLessThanOrEqual(2);
+                    }
+                    if (inspection.toggleBorder) {
+                        expect(inspection.toggleBorder.border, `${cellId}: view toggle has no border`).toBe(0);
+                        expect(inspection.toggleBorder.blockStart, `${cellId}: view toggle top edge has no border`).toBe(0);
+                        expect(inspection.toggleBorder.inlineStart, `${cellId}: view toggle lateral edge has no border`).toBe(0);
+                    }
                     if (showBusyIndicator && cell.viewport.width === 320 && zoom === 200) {
                         const busy = inspection.busyIndicator;
                         expect(busy.enabled, `${cellId}: busy indicator enabled`).toBe(true);

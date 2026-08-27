@@ -40,11 +40,13 @@ remains outside Git under the approved EasyEdu artifact root.
 Under `SKELETON-B-K3-CONSUMERS`, the two import-card frames are explicitly
 static and their 19 internal decorative cues remain unchanged; the compact
 K3 Navigation Skeleton adds three decorative cues for a total of 22. The
-immutable Kit `e5fe986a4a21ce630d4b952af3dfccd82818232b` provides the logical
-`border-inline-start` section accent, compact navigation frame, Guide cue,
-logical cue stack, RTL, reduced-motion and forced-colors behavior. The existing
-loading lifecycle remains unchanged. The paired Student Management measurement,
-static source contract and exhaustive rendered-view inventory are recorded in
+immutable Kit `e5fe986a4a21ce630d4b952af3dfccd82818232b` provides the compact
+navigation frame, Guide cue, logical cue stack, RTL, reduced-motion and
+forced-colors behavior. K3.1 keeps the two Navigation cues on one row and uses
+a logical top accent on each principal Mass Import card; the navigation shell
+itself remains neutral. The existing loading lifecycle remains unchanged. The
+paired Student Management measurement, static source contract and exhaustive
+rendered-view inventory are recorded in
 `docs/testing/navigation-skeleton-parity.md` and
 `docs/testing/skeleton-k3-coverage.md`.
 
