@@ -95,17 +95,12 @@
   }
 
   &__loading-navigation-cues {
-    @include easyedu.navigation-skeleton-cue-stack;
+    @include easyedu.navigation-skeleton-single-line;
   }
 
   &__loading-navigation-cue {
     @include easyedu.navigation-skeleton-compact-cue($radius: 0.72rem);
 
-    inline-size: 100%;
-  }
-
-  &__loading-navigation-cue--short {
-    inline-size: min(70%, 14rem);
   }
 
   &__loading-eyebrow {
@@ -136,7 +131,7 @@
   }
 
   &__loading-card {
-    @include easyedu.navigation-skeleton-frame(
+    @include easyedu.skeleton-structural-container-frame(
       $surface: #f7fbff,
       $border: #cfdee9,
       $radius: 1rem

@@ -17,7 +17,8 @@
 }
 
 // CCB Slideshow establishes the reference density for a real Navigation
-// placeholder. This remains decorative and does not create navigation markup.
+// placeholder. The compact frame represents exactly one navigation line; it
+// remains decorative and does not create navigation markup.
 @mixin navigation-skeleton-compact-frame(
   $surface: var(--easyedu-loading-section-surface),
   $border: var(--easyedu-loading-section-border),
@@ -126,12 +127,32 @@
   }
 }
 
-// Use on the consumer-owned group of internal marks. The logical alignment
-// reverses automatically with the document direction.
+// Use for the one canonical navigation line. The declared row does not wrap,
+// so consumers cannot turn the compact Navigation Skeleton into two text rows.
+@mixin navigation-skeleton-single-line {
+  & {
+    display: block;
+    inline-size: var(--easyedu-navigation-skeleton-compact-line-inline-size);
+    max-inline-size: 100%;
+    min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
+  }
+}
+
+// Source-compatible cue-group primitive. It is a single non-wrapping logical
+// row; new consumers use navigation-skeleton-single-line with one compact cue.
 @mixin navigation-skeleton-cue-stack(
   $gap: var(--easyedu-navigation-skeleton-compact-cue-gap)
 ) {
-  @include loading.skeleton-cue-stack($gap);
+  & {
+    align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: $gap;
+    justify-content: start;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    overflow: hidden;
+  }
 }
 
 @mixin navigation-skeleton-compact-cue(

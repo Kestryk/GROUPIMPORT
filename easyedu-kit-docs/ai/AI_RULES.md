@@ -59,6 +59,10 @@ Avoid:
   navigation Moodle reelle.
 - des accents Skeleton superieurs sur les cartes K3 : employer l'accent
   logique `border-inline-start` pour conserver le RTL natif.
+- une Navigation Skeleton locale a deux rangees : employer le cadre K3.1
+  compact a une seule ligne, le cercle Guide et un seul cue interne.
+- une bordure Skeleton sur un toggle/selecteur de vue : ce controle ne recoit
+  ni cadre de carte ni cadre structural.
 
 ## Required update set for reusable changes
 

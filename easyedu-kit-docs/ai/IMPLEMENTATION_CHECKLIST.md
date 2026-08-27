@@ -43,7 +43,12 @@ Use this checklist for every UI task in EasyEdu plugins.
       Navigation Skeleton as decorative markup only; retain the real navigation,
       lifecycle, `aria-busy`, no-script and fail-open contracts unchanged.
 - [ ] Use the K3 logical `border-inline-start` Skeleton accent rather than a
-      physical or top-border accent; preserve native RTL behaviour.
+  physical or top-border accent; preserve native RTL behaviour.
+- [ ] Use K3.1 `skeleton-structural-container-frame` only for a large
+      left/right region; internal cards retain `border-inline-start` and a
+      view toggle/selector receives no Skeleton border.
+- [ ] Every real Navigation Skeleton has one compact cue line, one decorative
+      Guide circle and no focusable descendant.
 - [ ] For top admin navigation, use `admin-primary-nav`; keep labels on one
       line and do not restyle the guide launcher as a nav action.
 - [ ] Keep the direct guide wrapper first in the admin navigation DOM so the

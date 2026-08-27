@@ -14,14 +14,23 @@ const surfaces = [
         url: new URL('/local/groupimport/manage.php?id=5', massImportUrl).toString(),
         rootSelector: '#local-groupimport-easystud',
         cueSelector: '.local-groupimport-easystud__loading-surface',
+        realNavigationSelector: '.local-groupimport-easystud__navigation',
+        navigationFrameSelector: '.local-groupimport-easystud__loading-navigation-frame',
+        navigationCuesSelector: '.local-groupimport-easystud__loading-navigation-cues',
+        structuralSelector: '.local-groupimport-easystud__loading-panel',
+        cardSelector: [
+            '.local-groupimport-easystud__loading-search-filter-region',
+            '.local-groupimport-easystud__loading-participant-card',
+            '.local-groupimport-easystud__loading-structure-card',
+        ].join(', '),
+        toggleSelector: '.local-groupimport-easystud__loading-view-toggle',
         frameSelector: [
             '.local-groupimport-easystud__loading-panel',
             '.local-groupimport-easystud__loading-search-filter-region',
             '.local-groupimport-easystud__loading-participant-card',
             '.local-groupimport-easystud__loading-structure-card',
-            '.local-groupimport-easystud__loading-view-toggle',
         ].join(', '),
-        expectedCues: 51,
+        expectedCues: 50,
         animatedPseudo: '::after',
     },
     {
@@ -29,8 +38,14 @@ const surfaces = [
         url: massImportUrl,
         rootSelector: '#local-groupimport-import',
         cueSelector: '.local-groupimport-import__loading-surface',
+        realNavigationSelector: '.local-groupimport-import-navigation',
+        navigationFrameSelector: '.local-groupimport-import__loading-navigation-frame',
+        navigationCuesSelector: '.local-groupimport-import__loading-navigation-cues',
+        structuralSelector: '.local-groupimport-import__loading-card',
+        cardSelector: '',
+        toggleSelector: '',
         frameSelector: '.local-groupimport-import__loading-card',
-        expectedCues: 22,
+        expectedCues: 21,
         animatedPseudo: '',
     },
 ];
@@ -91,6 +106,9 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator = false
         await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     }
     await expect(page.locator(surface.rootSelector)).toBeVisible({timeout: 30000});
+    const realNavigation = page.locator(surface.realNavigationSelector).first();
+    await expect(realNavigation).toBeVisible({timeout: 30000});
+    const realNavigationHeight = await realNavigation.evaluate(node => node.getBoundingClientRect().height);
 
     await page.emulateMedia({reducedMotion: 'no-preference', forcedColors: 'none'});
     await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
@@ -111,7 +129,7 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator = false
         `${surface.rootSelector} [data-easystud-loading-skeleton]`
     );
     await expect(skeleton).toBeVisible();
-    return skeleton;
+    return {skeleton, realNavigationHeight};
 };
 
 const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
@@ -119,12 +137,32 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     const skeleton = root?.querySelector('[data-easystud-loading-skeleton]');
     const cueNodes = Array.from(skeleton?.querySelectorAll(surface.cueSelector) || []);
     const frameNodes = Array.from(skeleton?.querySelectorAll(surface.frameSelector) || []);
+    const navigationFrame = skeleton?.querySelector(surface.navigationFrameSelector);
+    const navigationCues = skeleton?.querySelector(surface.navigationCuesSelector);
+    const structuralNodes = Array.from(skeleton?.querySelectorAll(surface.structuralSelector) || []);
+    const cardNodes = surface.cardSelector ?
+        Array.from(skeleton?.querySelectorAll(surface.cardSelector) || []) : [];
+    const toggle = surface.toggleSelector ? skeleton?.querySelector(surface.toggleSelector) : null;
     const animatedName = node => getComputedStyle(node, surface.animatedPseudo).animationName;
     const animatedDirection = node => getComputedStyle(node, surface.animatedPseudo).animationDirection;
     const readPixels = value => Number.parseFloat(value) || 0;
     const busySpinner = root ? getComputedStyle(root, '::after') : null;
     const busyLabel = root ? getComputedStyle(root, '::before') : null;
     const bounds = skeleton?.getBoundingClientRect();
+    const visibleNodes = nodes => nodes.filter(node => {
+        const box = node.getBoundingClientRect();
+        return box.width > 0 && box.height > 0;
+    });
+    const borderWidths = node => {
+        const style = getComputedStyle(node);
+        return {
+            blockStart: readPixels(style.borderBlockStartWidth),
+            inlineStart: readPixels(style.borderInlineStartWidth),
+        };
+    };
+    const focusableCount = skeleton?.querySelectorAll(
+        'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    ).length || 0;
     const escapingNodes = Array.from(skeleton?.querySelectorAll(`${surface.cueSelector}, ${surface.frameSelector}`) || [])
         .filter(node => {
             const box = node.getBoundingClientRect();
@@ -147,6 +185,12 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
 
     return {
         cueCount: cueNodes.length,
+        navigationCueCount: navigationCues?.children.length || 0,
+        navigationFrameHeight: navigationFrame?.getBoundingClientRect().height || 0,
+        structuralBorders: visibleNodes(structuralNodes).map(borderWidths),
+        cardBorders: visibleNodes(cardNodes).map(borderWidths),
+        toggleBorder: toggle ? borderWidths(toggle) : null,
+        focusableCount,
         frameCount: frameNodes.length,
         animatedCues: cueNodes.filter(node => animatedName(node) !== 'none').length,
         animatedFrames: frameNodes.filter(node => getComputedStyle(node).animationName !== 'none').length,
@@ -210,7 +254,7 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     const page = await context.newPage();
                     await page.setViewportSize(cell.viewport);
                     const showBusyIndicator = surface.id === 'mass-import';
-                    const skeleton = await revealSkeleton(
+                    const {skeleton, realNavigationHeight} = await revealSkeleton(
                         page, surface, cell.direction, showBusyIndicator
                     );
                     const inspection = await inspectSkeleton(page, surface);
@@ -230,6 +274,28 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     evidence.push({cellId, ...inspection});
 
                     expect(inspection.cueCount, `${cellId}: internal cue count`).toBe(surface.expectedCues);
+                    expect(inspection.navigationCueCount, `${cellId}: one Navigation Skeleton cue`).toBe(1);
+                    expect(inspection.navigationFrameHeight, `${cellId}: compact navigation height`).toBeGreaterThan(0);
+                    expect(
+                        Math.abs(inspection.navigationFrameHeight - realNavigationHeight),
+                        `${cellId}: compact navigation stays close to the real navigation height`
+                    ).toBeLessThanOrEqual(inspection.rootFontSize * 2);
+                    expect(inspection.structuralBorders.length, `${cellId}: structural containers`).toBeGreaterThan(0);
+                    expect(
+                        inspection.structuralBorders.every(border => border.blockStart > border.inlineStart),
+                        `${cellId}: structural containers expose only the K3.1 block-start accent`
+                    ).toBe(true);
+                    if (inspection.cardBorders.length > 0) {
+                        expect(
+                            inspection.cardBorders.every(border => border.inlineStart > border.blockStart),
+                            `${cellId}: internal cards expose only the K3.1 inline-start accent`
+                        ).toBe(true);
+                    }
+                    if (inspection.toggleBorder) {
+                        expect(inspection.toggleBorder.blockStart, `${cellId}: view toggle block border`).toBe(0);
+                        expect(inspection.toggleBorder.inlineStart, `${cellId}: view toggle inline border`).toBe(0);
+                    }
+                    expect(inspection.focusableCount, `${cellId}: decorative skeleton focusables`).toBe(0);
                     expect(inspection.frameCount, `${cellId}: static frame count`).toBeGreaterThan(0);
                     expect(inspection.animatedCues, `${cellId}: animated internal cues`).toBe(surface.expectedCues);
                     expect(inspection.animatedFrames, `${cellId}: animated outer frames`).toBe(0);

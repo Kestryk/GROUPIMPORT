@@ -342,17 +342,23 @@
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
-  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
-  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
-  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
-  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
-  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
-  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
-  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
+  --easyedu-loading-container-accent: var(--easyedu-loading-section-accent);
+  --easyedu-loading-container-border-width: var(--easyedu-loading-section-border-width);
+  --easyedu-loading-container-surface: var(--easyedu-loading-section-surface);
+  --easyedu-loading-container-border: var(--easyedu-loading-section-border);
+  --easyedu-loading-container-radius: var(--easyedu-loading-section-radius);
+  --easyedu-navigation-skeleton-compact-min-block-size: 4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.65rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 2.5rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.5rem;
+  --easyedu-navigation-skeleton-compact-line-inline-size: min(18rem, 72%);
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 1.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 3.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.25rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 1.5rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -1781,14 +1787,10 @@
   }
 }
 .local-groupimport-easystud__loading-navigation-cues {
-  align-content: start;
-  display: grid;
-  gap: var(--easyedu-navigation-skeleton-compact-cue-gap);
-  justify-items: start;
-  min-inline-size: 0;
-}
-.local-groupimport-easystud__loading-navigation-cue {
-  inline-size: 100%;
+  display: block;
+  inline-size: var(--easyedu-navigation-skeleton-compact-line-inline-size);
+  max-inline-size: 100%;
+  min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
 }
 .local-groupimport-easystud__loading-navigation-cue {
   min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
@@ -1830,9 +1832,6 @@
     background-image: none;
   }
 }
-.local-groupimport-easystud__loading-navigation-cue--short {
-  inline-size: min(70%, 14rem);
-}
 .local-groupimport-easystud__loading-layout {
   align-items: stretch;
   box-sizing: border-box;
@@ -1858,11 +1857,11 @@
   }
 }
 .local-groupimport-easystud__loading-panel {
-  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-block-start: var(--easyedu-loading-container-border-width) solid var(--easyedu-loading-container-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-easystud__loading-panel {
-    border-inline-start-color: CanvasText;
+    border-block-start-color: CanvasText;
   }
 }
 .local-groupimport-easystud__loading-panel {
@@ -1881,11 +1880,23 @@
   grid-auto-rows: max-content;
 }
 .local-groupimport-easystud__loading-panel--participants {
-  border-inline-start: 0.32rem solid #6c9fc9;
+  border-block-start: var(--easyedu-loading-container-border-width) solid #6c9fc9;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-panel--participants {
+    border-block-start-color: CanvasText;
+  }
 }
 .local-groupimport-easystud__loading-panel--structure {
-  border-inline-start: 0.32rem solid #78a78d;
   display: none;
+}
+.local-groupimport-easystud__loading-panel--structure {
+  border-block-start: var(--easyedu-loading-container-border-width) solid #78a78d;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-panel--structure {
+    border-block-start-color: CanvasText;
+  }
 }
 .local-groupimport-easystud__loading-panel-header, .local-groupimport-easystud__loading-pagination, .local-groupimport-easystud__loading-structure-card {
   align-items: center;
@@ -2036,32 +2047,6 @@
   .local-groupimport-easystud__loading-participant-card {
     min-height: 2.5rem;
   }
-}
-.local-groupimport-easystud__loading-view-toggle {
-  background: #f4f8fb;
-  border: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
-  border-radius: 1.15rem;
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  position: relative;
-}
-@media (forced-colors: active) {
-  .local-groupimport-easystud__loading-view-toggle {
-    background: Canvas;
-    border-color: CanvasText;
-  }
-}
-.local-groupimport-easystud__loading-view-toggle {
-  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
-}
-@media (forced-colors: active) {
-  .local-groupimport-easystud__loading-view-toggle {
-    border-inline-start-color: CanvasText;
-  }
-}
-.local-groupimport-easystud__loading-view-toggle {
-  animation: none;
 }
 .local-groupimport-easystud__loading-view-toggle {
   box-sizing: border-box;
@@ -13203,17 +13188,23 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
-  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
-  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
-  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
-  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
-  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
-  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
-  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
+  --easyedu-loading-container-accent: var(--easyedu-loading-section-accent);
+  --easyedu-loading-container-border-width: var(--easyedu-loading-section-border-width);
+  --easyedu-loading-container-surface: var(--easyedu-loading-section-surface);
+  --easyedu-loading-container-border: var(--easyedu-loading-section-border);
+  --easyedu-loading-container-radius: var(--easyedu-loading-section-radius);
+  --easyedu-navigation-skeleton-compact-min-block-size: 4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.65rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 2.5rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.5rem;
+  --easyedu-navigation-skeleton-compact-line-inline-size: min(18rem, 72%);
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 1.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 3.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.25rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 1.5rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -14058,17 +14049,23 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
-  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
-  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
-  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
-  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
-  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
-  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
-  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
-  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
+  --easyedu-loading-container-accent: var(--easyedu-loading-section-accent);
+  --easyedu-loading-container-border-width: var(--easyedu-loading-section-border-width);
+  --easyedu-loading-container-surface: var(--easyedu-loading-section-surface);
+  --easyedu-loading-container-border: var(--easyedu-loading-section-border);
+  --easyedu-loading-container-radius: var(--easyedu-loading-section-radius);
+  --easyedu-navigation-skeleton-compact-min-block-size: 4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.65rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 2.5rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.5rem;
+  --easyedu-navigation-skeleton-compact-line-inline-size: min(18rem, 72%);
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 1.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 3.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.25rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.5rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 1.5rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -14398,14 +14395,10 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
 }
 .local-groupimport-import__loading-navigation-cues {
-  align-content: start;
-  display: grid;
-  gap: var(--easyedu-navigation-skeleton-compact-cue-gap);
-  justify-items: start;
-  min-inline-size: 0;
-}
-.local-groupimport-import__loading-navigation-cue {
-  inline-size: 100%;
+  display: block;
+  inline-size: var(--easyedu-navigation-skeleton-compact-line-inline-size);
+  max-inline-size: 100%;
+  min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
 }
 .local-groupimport-import__loading-navigation-cue {
   min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
@@ -14447,9 +14440,6 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     background-image: none;
   }
 }
-.local-groupimport-import__loading-navigation-cue--short {
-  inline-size: min(70%, 14rem);
-}
 .local-groupimport-import__loading-eyebrow {
   height: 0.72rem;
   width: min(9rem, 32%);
@@ -14488,11 +14478,11 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
 }
 .local-groupimport-import__loading-card {
-  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-block-start: var(--easyedu-loading-container-border-width) solid var(--easyedu-loading-container-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-import__loading-card {
-    border-inline-start-color: CanvasText;
+    border-block-start-color: CanvasText;
   }
 }
 .local-groupimport-import__loading-card {
