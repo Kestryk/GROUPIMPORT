@@ -1537,10 +1537,24 @@ const normaliseCardMenuButton = (button, root) => {
 };
 
 const ensureNestedGroupActionMenus = root => {
-    root.querySelectorAll('.local-groupimport-easystud-tree__children > [data-easystud-group-id]').forEach(group => {
-        const header = group.querySelector(':scope > .local-groupimport-easystud-group__header');
-        const rename = header ? header.querySelector(':scope > .local-groupimport-easystud-rename') : null;
-        if (!header || !rename) {
+    const actionSelector = [
+        ':scope > .local-groupimport-easystud-group__mail-button',
+        ':scope > .local-groupimport-easystud-group__member-search-button',
+        ':scope > .local-groupimport-easystud-group__duplicate-button',
+        ':scope > .local-groupimport-easystud-group__settings-button',
+        ':scope > .local-groupimport-easystud-group__unlink-button',
+        ':scope > .local-groupimport-easystud-container-search__toggle',
+        ':scope > .local-groupimport-easystud-grouping__search-button',
+        ':scope > .local-groupimport-easystud-grouping__duplicate-button',
+        ':scope > .local-groupimport-easystud-grouping__settings-button',
+        ':scope > .local-groupimport-easystud-rename > .local-groupimport-easystud-rename__toggle',
+    ].join(', ');
+
+    root.querySelectorAll('[data-easystud-group-id], [data-easystud-grouping-id]').forEach(group => {
+        const header = group.querySelector(
+            ':scope > .local-groupimport-easystud-group__header, :scope > .local-groupimport-easystud-grouping__header'
+        );
+        if (!header) {
             return;
         }
 
@@ -1561,40 +1575,67 @@ const ensureNestedGroupActionMenus = root => {
             toggle.setAttribute('data-easystud-group-actions-toggle', '1');
             toggle.setAttribute('aria-expanded', 'false');
             toggle.setAttribute('aria-label', 'More actions');
-            header.insertBefore(toggle, rename.nextSibling);
+            header.appendChild(toggle);
         }
         normaliseCardMenuButton(toggle, root);
 
-        const ensureMenuButtonLabel = button => {
-            if (button.querySelector('.local-groupimport-easystud-group__actions-menu-label')) {
-                return;
-            }
-            const label = button.getAttribute('aria-label') ||
-                button.getAttribute('data-easystud-hover-help') ||
-                button.getAttribute('title') ||
-                '';
-            if (!label) {
-                return;
-            }
-            button.removeAttribute('data-easystud-hover-help');
-            button.removeAttribute('title');
-            const labelNode = document.createElement('span');
-            labelNode.className = 'local-groupimport-easystud-group__actions-menu-label';
-            labelNode.textContent = label;
-            button.appendChild(labelNode);
-        };
+        const actions = Array.from(header.querySelectorAll(actionSelector));
+        actions.forEach(button => button.classList.remove('is-easystud-card-action-overflow'));
+        toggle.hidden = true;
+        menu.hidden = true;
+        menu.innerHTML = '';
+        if (!header.offsetParent || !actions.length) {
+            return;
+        }
 
-        [
-            '.local-groupimport-easystud-group__mail-button',
-            '.local-groupimport-easystud-group__duplicate-button',
-            '.local-groupimport-easystud-group__settings-button',
-            '.local-groupimport-easystud-group__unlink-button',
-        ].forEach(selector => {
-            header.querySelectorAll(':scope > ' + selector).forEach(button => {
-                button.classList.add('local-groupimport-easystud-group__actions-menu-item');
-                ensureMenuButtonLabel(button);
-                menu.appendChild(button);
+        const cardBounds = group.getBoundingClientRect();
+        const isOutsideCard = button => {
+            if (button.hidden || button.offsetParent === null) {
+                return false;
+            }
+            const bounds = button.getBoundingClientRect();
+            return bounds.left < cardBounds.left - 1 || bounds.right > cardBounds.right + 1;
+        };
+        const responsive = isResponsiveWorkspace();
+        let overflowed = responsive ? actions.filter(button => !button.hidden) : actions.filter(isOutsideCard);
+        if (!overflowed.length && header.scrollWidth <= header.clientWidth + 1) {
+            toggle.setAttribute('aria-expanded', 'false');
+            return;
+        }
+
+        toggle.hidden = false;
+        for (let index = actions.length - 1;
+            index >= 0 && (header.scrollWidth > header.clientWidth + 1 || actions.some(isOutsideCard));
+            index--) {
+            const button = actions[index];
+            if (!button.hidden && !overflowed.includes(button)) {
+                overflowed.unshift(button);
+            }
+            button.classList.add('is-easystud-card-action-overflow');
+        }
+        overflowed.forEach(source => {
+            source.classList.add('is-easystud-card-action-overflow');
+            const clone = source.cloneNode(true);
+            const label = source.getAttribute('aria-label') || source.getAttribute('data-easystud-hover-help') ||
+                source.getAttribute('title') || '';
+            clone.removeAttribute('id');
+            clone.classList.remove('is-easystud-card-action-overflow');
+            clone.classList.add('local-groupimport-easystud-group__actions-menu-item');
+            clone.removeAttribute('data-easystud-hover-help');
+            clone.removeAttribute('title');
+            if (label) {
+                const labelNode = document.createElement('span');
+                labelNode.className = 'local-groupimport-easystud-group__actions-menu-label';
+                labelNode.textContent = label;
+                clone.appendChild(labelNode);
+            }
+            clone.addEventListener('click', event => {
+                event.preventDefault();
+                menu.hidden = true;
+                toggle.setAttribute('aria-expanded', 'false');
+                source.click();
             });
+            menu.appendChild(clone);
         });
         toggle.hidden = menu.children.length === 0;
     });
@@ -4533,6 +4574,17 @@ const getConfigFromPagination = (root, pagination) => {
 };
 
 const bindPagination = root => {
+    const setSortDropdownStackOpen = (dropdown, open) => {
+        if (!dropdown) {
+            return;
+        }
+        dropdown.classList.toggle('is-open', open);
+        const card = dropdown.closest('[data-easystud-group-id], [data-easystud-grouping-id], [data-easystud-user]');
+        if (card) {
+            card.classList.toggle('is-sort-menu-open', open);
+        }
+    };
+
     const closeSortDropdowns = except => {
         root.querySelectorAll('[data-easystud-list-sort-dropdown]').forEach(dropdown => {
             if (dropdown === except) {
@@ -4546,6 +4598,7 @@ const bindPagination = root => {
             if (toggle) {
                 toggle.setAttribute('aria-expanded', 'false');
             }
+            setSortDropdownStackOpen(dropdown, false);
         });
     };
 
@@ -4564,6 +4617,7 @@ const bindPagination = root => {
         closeSortDropdowns(dropdown);
         menu.hidden = !open;
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        setSortDropdownStackOpen(dropdown, open);
     });
 
     root.addEventListener('click', event => {
@@ -6837,11 +6891,14 @@ const bindContextMenu = (root, courseId) => {
     const ensureCardMenuButtons = () => {
         root.querySelectorAll('[data-easystud-user], [data-easystud-group-id], [data-easystud-grouping-id]').forEach(card => {
             if (card.querySelector(':scope > [data-easystud-card-menu], ' +
-                ':scope > .local-groupimport-easystud-group__header > [data-easystud-card-menu]')) {
+                ':scope > .local-groupimport-easystud-group__header > [data-easystud-card-menu], ' +
+                ':scope > .local-groupimport-easystud-grouping__header > [data-easystud-card-menu]')) {
                 return;
             }
-            const existing = card.querySelector(':scope > .local-groupimport-easystud-group__header > ' +
-                '[data-easystud-group-actions-toggle]');
+            const existing = card.querySelector(
+                ':scope > .local-groupimport-easystud-group__header > [data-easystud-group-actions-toggle], ' +
+                ':scope > .local-groupimport-easystud-grouping__header > [data-easystud-group-actions-toggle]'
+            );
             if (existing) {
                 normaliseCardMenuButton(existing, root);
                 return;
@@ -7374,11 +7431,13 @@ const bindNestedGroupActionMenus = root => {
                 return;
             }
             menu.hidden = true;
-            const group = menu.closest('[data-easystud-group-id]');
+            const group = menu.closest('[data-easystud-group-id], [data-easystud-grouping-id]');
             if (group) {
                 group.classList.remove('is-actions-menu-open');
             }
-            const header = menu.closest('.local-groupimport-easystud-group__header');
+            const header = menu.closest(
+                '.local-groupimport-easystud-group__header, .local-groupimport-easystud-grouping__header'
+            );
             const toggle = header ? header.querySelector('[data-easystud-group-actions-toggle]') : null;
             if (toggle) {
                 toggle.setAttribute('aria-expanded', 'false');
@@ -7389,11 +7448,15 @@ const bindNestedGroupActionMenus = root => {
     root.addEventListener('click', event => {
         const toggle = event.target.closest('[data-easystud-group-actions-toggle]');
         if (toggle && root.contains(toggle)) {
-            if (isResponsiveWorkspace()) {
-                return;
-            }
             event.preventDefault();
-            const header = toggle.closest('.local-groupimport-easystud-group__header');
+            // This trigger also carries the generic card-menu hook so it can
+            // open the responsive action sheet. At non-responsive widths the
+            // local overflow menu owns the click exclusively; allowing the
+            // event to reach bindContextMenu opens both menus at once.
+            event.stopImmediatePropagation();
+            const header = toggle.closest(
+                '.local-groupimport-easystud-group__header, .local-groupimport-easystud-grouping__header'
+            );
             const menu = header ? header.querySelector('[data-easystud-group-actions-menu]') : null;
             if (!menu) {
                 return;
@@ -7401,7 +7464,7 @@ const bindNestedGroupActionMenus = root => {
             const open = menu.hidden;
             closeMenus(menu);
             menu.hidden = !open;
-            const group = toggle.closest('[data-easystud-group-id]');
+            const group = toggle.closest('[data-easystud-group-id], [data-easystud-grouping-id]');
             if (group) {
                 group.classList.toggle('is-actions-menu-open', open);
             }
@@ -7420,6 +7483,38 @@ const bindNestedGroupActionMenus = root => {
     });
 
     ensureNestedGroupActionMenus(root);
+    let refreshFrame = null;
+    const refresh = () => {
+        if (refreshFrame !== null) {
+            window.cancelAnimationFrame(refreshFrame);
+        }
+        refreshFrame = window.requestAnimationFrame(() => {
+            refreshFrame = null;
+            ensureNestedGroupActionMenus(root);
+        });
+    };
+    window.addEventListener('resize', refresh);
+    if (window.ResizeObserver) {
+        const widths = new WeakMap();
+        const observer = new window.ResizeObserver(entries => {
+            const changed = entries.some(entry => {
+                const width = Math.round(entry.contentRect.width * 10) / 10;
+                const previous = widths.get(entry.target);
+                widths.set(entry.target, width);
+                return previous !== undefined && previous !== width;
+            });
+            if (changed) {
+                refresh();
+            }
+        });
+        root.querySelectorAll(
+            '.local-groupimport-easystud-group__header, .local-groupimport-easystud-grouping__header'
+        ).forEach(header => {
+            widths.set(header, Math.round(header.getBoundingClientRect().width * 10) / 10);
+            observer.observe(header);
+        });
+        root.easystudCardActionOverflowObserver = observer;
+    }
 };
 
 const closeResponsiveAdvancedFilters = (root, key) => {

@@ -10,6 +10,24 @@ Maintenance convention:
 
 ## Unreleased
 
+### EED-UI-2026-0027-R / 0028-C - Card action overflow and Sort stacking - 2026-08-27
+
+#### Fixed
+
+- Made the local Group and Grouping overflow trigger the sole click owner, so
+  one activation cannot open both the local menu and the global context menu.
+- Populate the local menu from only the actions that no longer fit inside the
+  card header, including the rename action, and recompute it when card widths
+  change.
+- Raise only the owning card while its member-list Sort dropdown is open, so
+  the list remains above expanded participants and neighbouring cards.
+
+#### Validation
+
+- Rebuilt the Course Manager AMD and EasyStud CSS assets and added focused
+  static and Playwright contracts. Runtime preview remains separately
+  authorised.
+
 ### EED-UI-2026-0028-B - Group menu above expanded Participants - 2026-08-27
 
 #### Fixed

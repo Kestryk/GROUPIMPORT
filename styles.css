@@ -4880,7 +4880,11 @@
   overflow: visible;
   z-index: 35;
 }
-.local-groupimport-easystud-group:has(> .local-groupimport-easystud-group__members.is-expanded):not(.is-actions-menu-open) {
+.local-groupimport-easystud-group.is-sort-menu-open {
+  overflow: visible;
+  z-index: 36;
+}
+.local-groupimport-easystud-group:has(> .local-groupimport-easystud-group__members.is-expanded):not(.is-actions-menu-open):not(.is-sort-menu-open) {
   z-index: 12;
 }
 .local-groupimport-easystud-group[data-easystud-user-drop].is-drop-target {
@@ -5264,6 +5268,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.local-groupimport-easystud .is-easystud-card-action-overflow {
+  display: none !important;
 }
 .local-groupimport-easystud-group__members {
   --local-groupimport-members-collapsed-height: 4.12rem;
@@ -16578,7 +16585,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__groupings--inline, .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__groupings-details {
     display: none !important;
   }
-  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__actions-menu .local-groupimport-easystud-group__settings-button {
+  .local-groupimport-easystud--responsive-workspace .local-groupimport-easystud-group__actions-menu .local-groupimport-easystud-group__actions-menu-item {
     display: inline-flex !important;
   }
   .local-groupimport-easystud-grouping-mobile-filters {
