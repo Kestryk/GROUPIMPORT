@@ -151,6 +151,12 @@ cues are unchanged. The focused scenario exposes that local busy state and
 writes one full-window 320 px LTR/native-200% capture before containment
 assertions, while retaining the RTL matrix.
 
+At an effective viewport of 20rem or less, Mass Import resolves the compact
+Navigation Skeleton frame to its mobile K3.1 block size with `border-box`
+sizing. This consumer-only guard keeps the one-line frame measurable next to
+the compact real-navigation trigger at native 200% zoom; it does not alter the
+shared Kit primitive, real navigation, lifecycle or cue composition.
+
 The containment probe measures the Navigation Skeleton's own client and scroll
 width rather than its application root. This keeps the functional Navigation
 overlay outside the Skeleton contract while document overflow remains checked
