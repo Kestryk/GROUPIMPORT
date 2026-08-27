@@ -212,6 +212,8 @@ Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'per_host_zoom
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'x: {'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'navigationCueCount'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'realNavigationHeight'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'realNavigationSelectors'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'data-easyedu-navigation-open="1"'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'structuralBorders'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'cardBorders'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'toggleBorder'
