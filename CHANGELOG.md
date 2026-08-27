@@ -16,6 +16,10 @@ Maintenance convention:
 
 - Made the local Group and Grouping overflow trigger the sole click owner, so
   one activation cannot open both the local menu and the global context menu.
+- Kept recovered Grouping labels whole: a label that no longer fits is routed
+  through the existing More-actions recovery instead of being ellipsized.
+- Harmonised the recovered More trigger with the plain icon treatment of the
+  sibling Group and Grouping card actions; it no longer gains a bordered pill.
 - Populate the local menu from only the actions that no longer fit inside the
   card header, including the rename action, and recompute it when card widths
   change.
