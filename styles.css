@@ -14555,6 +14555,10 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
 }
 @media (max-width: 20rem) {
+  .local-groupimport-import__loading-navigation-frame {
+    block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
+    box-sizing: border-box;
+  }
   .local-groupimport-import.is-action-busy::after {
     bottom: 1.95rem;
     border-width: 0.18rem;
