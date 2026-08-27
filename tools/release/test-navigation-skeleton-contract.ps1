@@ -133,6 +133,8 @@ Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'navigation-skeleton
 Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-compact-cue'
 Assert-Contains 'Mass Import K3.1 styles' $massImportStyles 'skeleton-structural-container-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
+Assert-Contains 'Mass Import compact Navigation Skeleton frame' $massImportStyles 'block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);'
+Assert-Contains 'Mass Import compact Navigation Skeleton frame' $massImportStyles 'box-sizing: border-box;'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'flex: 1 1 0;'
