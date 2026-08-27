@@ -518,10 +518,10 @@
       display: none !important;
     }
 
-    // The settings action is the existing group-information modal route. It
-    // is moved into the responsive overflow menu and must not inherit the
-    // general hidden action rule above.
-    &--responsive-workspace &-group__actions-menu &-group__settings-button {
+    // Direct card actions collapse into the local overflow menu. Clones in
+    // that menu must not inherit the direct-action hiding rules above; the
+    // controller includes only actions that no longer fit the card.
+    &--responsive-workspace &-group__actions-menu &-group__actions-menu-item {
       display: inline-flex !important;
     }
 
