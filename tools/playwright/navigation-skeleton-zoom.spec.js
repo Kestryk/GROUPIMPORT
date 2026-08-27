@@ -287,11 +287,26 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator, testIn
         await login(page);
         await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     }
-    await expect(page.locator(surface.rootSelector)).toBeVisible({timeout: 30000});
+    const root = page.locator(surface.rootSelector);
+    const skeleton = page.locator(
+        `${surface.rootSelector} [data-easystud-loading-skeleton]`
+    );
+    await expect(root).toBeVisible({timeout: 30000});
+    // The page bootstrap may still own its one-shot reveal callback while the
+    // real navigation first becomes visible. Finish that lifecycle before
+    // creating the isolated decorative-proof state below, otherwise its
+    // pending callback can re-hide the Skeleton during this assertion.
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 30000});
+    await expect(root).toHaveAttribute('aria-busy', 'false', {timeout: 30000});
+    if (surface.id === 'student-management') {
+        await expect(root).toHaveAttribute('data-easystud-manager-initialised', '1', {timeout: 30000});
+    }
+    await expect(skeleton).toBeHidden({timeout: 30000});
+    await writePhase(testInfo, 'lifecycle-settled', {cellId, surface: surface.id});
     const realNavigation = await getVisibleNavigationReference(page, surface, testInfo, cellId);
 
     await page.emulateMedia({reducedMotion: 'no-preference', forcedColors: 'none'});
-    await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
+    const forcedState = await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
         const root = document.querySelector(rootSelector);
         const skeleton = root?.querySelector('[data-easystud-loading-skeleton]');
         if (!root || !skeleton) {
@@ -303,12 +318,21 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator, testIn
         root.dataset.easystudLoadingState = 'loading';
         root.setAttribute('aria-busy', 'true');
         skeleton.hidden = false;
+        return {
+            loadingState: root.dataset.easystudLoadingState,
+            ariaBusy: root.getAttribute('aria-busy'),
+            skeletonHidden: skeleton.hidden,
+            skeletonDisplay: getComputedStyle(skeleton).display,
+        };
     }, {rootSelector: surface.rootSelector, direction, showBusyIndicator});
-
-    const skeleton = page.locator(
-        `${surface.rootSelector} [data-easystud-loading-skeleton]`
-    );
-    await expect(skeleton).toBeVisible();
+    await writePhase(testInfo, 'skeleton-forced', {cellId, forcedState});
+    expect(forcedState, `${cellId}: isolated Skeleton proof state`).toEqual({
+        loadingState: 'loading',
+        ariaBusy: 'true',
+        skeletonHidden: false,
+        skeletonDisplay: 'grid',
+    });
+    await expect(skeleton).toBeVisible({timeout: 1000});
     await writePhase(testInfo, 'skeleton-activated', {cellId, surface: surface.id});
     const capture = await captureSkeletonEvidence(skeleton, page, testInfo, cellId);
     return {

@@ -222,6 +222,9 @@ Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'Open EasyStud
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'navigation-reference-${cellId}-unavailable.png'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'navigation-skeleton-phase-progress.jsonl'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'persistent-context-launch-start'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'lifecycle-settled'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton-forced'
+Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario "data-easystud-loading-state', 'ready'"
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'cell-skeleton-captured'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton-capture-timeout'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton-capture-fallback-success'

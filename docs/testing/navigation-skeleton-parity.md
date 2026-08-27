@@ -93,6 +93,14 @@ telemetry is written to `navigation-skeleton-phase-progress.jsonl`; therefore a
 stalled visual artifact cannot consume the supervised run watchdog or mask a
 K3.1 assertion.
 
+Before each isolated Skeleton proof, the scenario waits for the real loading
+lifecycle to settle (`ready`, `aria-busy=false`, and Student Management manager
+initialisation) and confirms that the real Skeleton has been hidden. It then
+reapplies the decorative proof state in one page evaluation, verifies it
+immediately and captures it before secondary assertions. This prevents an
+already-scheduled real lifecycle reveal callback from racing the QA-only proof;
+the product lifecycle itself is not intercepted or changed.
+
 ### Static record - 2026-08-10
 
 The vendored component text was compared after line-ending normalization with

@@ -33,6 +33,9 @@ Maintenance convention:
   remain separately authorised.
 - Bound Navigation Skeleton evidence captures locally, with diagnostic and
   viewport-fallback artifacts that preserve subsequent K3.1 assertions.
+- Isolated the Navigation Skeleton QA proof from the completed real loading
+  lifecycle before forcing its decorative state, preventing a pending reveal
+  callback from remasking the Student Management Skeleton at native 200% zoom.
 - Restored a measurable mobile K3.1 Navigation Skeleton frame for Mass Import
   at the effective 20rem/native-200% threshold, without changing real
   navigation or the shared Kit.
