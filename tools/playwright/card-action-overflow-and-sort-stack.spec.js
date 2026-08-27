@@ -21,6 +21,83 @@ const login = async page => {
     return root;
 };
 
+const assertPlainMoreActionsTrigger = async trigger => {
+    const appearance = await trigger.evaluate(node => {
+        const style = window.getComputedStyle(node);
+        return {
+            borderWidths: [
+                style.borderTopWidth,
+                style.borderRightWidth,
+                style.borderBottomWidth,
+                style.borderLeftWidth,
+            ].map(value => Number.parseFloat(value)),
+            borderRadius: Number.parseFloat(style.borderTopLeftRadius),
+            height: node.getBoundingClientRect().height,
+        };
+    });
+    expect(appearance.borderWidths, 'More actions has no pill border').toEqual([0, 0, 0, 0]);
+    expect(
+        appearance.borderRadius * 2,
+        'More actions uses a compact corner radius rather than a pill shape'
+    ).toBeLessThan(appearance.height);
+};
+
+const assertOneOverflowMenu = async(root, card) => {
+    const actionToggle = card.locator('[data-easystud-group-actions-toggle]:visible').first();
+    const localMenu = card.locator('[data-easystud-group-actions-menu]').first();
+    await expect(actionToggle).toBeVisible();
+    await assertPlainMoreActionsTrigger(actionToggle);
+    await actionToggle.click();
+    await expect(localMenu).toBeVisible();
+    await expect(root.locator('[data-easystud-group-actions-menu]:visible')).toHaveCount(1);
+    await expect(root.locator('[data-easystud-context-menu]:not([hidden])')).toHaveCount(0);
+
+    const overflowState = await card.evaluate(node => ({
+        sources: node.querySelectorAll('.is-easystud-card-action-overflow').length,
+        menuItems: node.querySelectorAll('[data-easystud-group-actions-menu] ' +
+            '.local-groupimport-easystud-group__actions-menu-item').length,
+    }));
+    expect(overflowState.sources).toBeGreaterThan(0);
+    expect(overflowState.menuItems).toBe(overflowState.sources);
+};
+
+const assertGroupingLabelOrMoreActionsRecovery = async(root, card) => {
+    const summary = card.locator(
+        '.local-groupimport-easystud-group__groupings--inline ' +
+        '.local-groupimport-easystud-token--grouping'
+    ).first();
+
+    if (await summary.isVisible()) {
+        const label = await summary.evaluate(node => {
+            const style = window.getComputedStyle(node);
+            return {
+                clientWidth: node.clientWidth,
+                scrollWidth: node.scrollWidth,
+                text: node.textContent.trim(),
+                textOverflow: style.textOverflow,
+            };
+        });
+        expect(label.text).not.toBe('');
+        expect(label.textOverflow, 'a visible Grouping label is never ellipsized').not.toBe('ellipsis');
+        expect(
+            label.scrollWidth,
+            'a visible Grouping label fits its rendered token'
+        ).toBeLessThanOrEqual(label.clientWidth + 1);
+        return;
+    }
+
+    const moreActions = card.locator('[data-easystud-card-menu]:visible').first();
+    const contextMenu = root.locator('[data-easystud-context-menu]');
+    const recoveredLabel = contextMenu.locator(
+        '[data-easystud-masked-pill-action="grouping-summary-toggle"]'
+    );
+    await expect(moreActions).toBeVisible();
+    await moreActions.click();
+    await expect(recoveredLabel).toHaveCount(1);
+    await expect(recoveredLabel).toBeVisible();
+    await expect(recoveredLabel).toHaveAttribute('aria-label', /\S/);
+};
+
 test('Sort and responsive card actions keep one visible menu owner', async({page}, testInfo) => {
     test.setTimeout(180000);
     await page.setViewportSize({width: 768, height: 900});
@@ -58,18 +135,20 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
     const actionGroup = root.locator(
         '[data-easystud-group-id]:visible:has([data-easystud-group-actions-toggle]:visible)'
     ).first();
-    const actionToggle = actionGroup.locator('[data-easystud-group-actions-toggle]:visible').first();
-    const localMenu = actionGroup.locator('[data-easystud-group-actions-menu]').first();
-    await actionToggle.click();
-    await expect(localMenu).toBeVisible();
-    await expect(root.locator('[data-easystud-context-menu]:not([hidden])')).toHaveCount(0);
-
-    const overflowState = await actionGroup.evaluate(node => ({
-        sources: node.querySelectorAll('.is-easystud-card-action-overflow').length,
-        menuItems: node.querySelectorAll('[data-easystud-group-actions-menu] ' +
-            '.local-groupimport-easystud-group__actions-menu-item').length,
-    }));
-    expect(overflowState.sources).toBeGreaterThan(0);
-    expect(overflowState.menuItems).toBe(overflowState.sources);
+    await assertOneOverflowMenu(root, actionGroup);
     await page.screenshot({path: testInfo.outputPath('single-card-action-overflow-menu.png')});
+
+    const groupingsView = root.locator('[data-easystud-mobile-view="groupings"]');
+    await expect(groupingsView).toBeVisible();
+    await groupingsView.click();
+    await expect(root).toHaveAttribute('data-easystud-mobile-view-active', 'groupings');
+    await expect(root.locator('[data-easystud-tree] [data-easystud-grouping-id]:visible').first()).toBeVisible();
+
+    const groupingGroup = root.locator(
+        '[data-easystud-tree] [data-easystud-group-id]:visible:has(' +
+        '.local-groupimport-easystud-group__groupings--inline)'
+    ).first();
+    await expect(groupingGroup).toBeVisible();
+    await assertGroupingLabelOrMoreActionsRecovery(root, groupingGroup);
+    await page.screenshot({path: testInfo.outputPath('groupings-grouping-label-or-more-actions.png')});
 });
