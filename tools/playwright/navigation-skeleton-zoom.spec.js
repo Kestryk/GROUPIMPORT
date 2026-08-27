@@ -14,7 +14,10 @@ const surfaces = [
         url: new URL('/local/groupimport/manage.php?id=5', massImportUrl).toString(),
         rootSelector: '#local-groupimport-easystud',
         cueSelector: '.local-groupimport-easystud__loading-surface',
-        realNavigationSelector: '.local-groupimport-easystud__navigation',
+        realNavigationSelectors: [
+            '.local-groupimport-easystud__navigation',
+            '#local-groupimport-easystud .easyedu-navigation__trigger[data-easyedu-navigation-open="1"]',
+        ],
         navigationFrameSelector: '.local-groupimport-easystud__loading-navigation-frame',
         navigationCuesSelector: '.local-groupimport-easystud__loading-navigation-cues',
         structuralSelector: '.local-groupimport-easystud__loading-panel',
@@ -38,7 +41,10 @@ const surfaces = [
         url: massImportUrl,
         rootSelector: '#local-groupimport-import',
         cueSelector: '.local-groupimport-import__loading-surface',
-        realNavigationSelector: '.local-groupimport-import-navigation',
+        realNavigationSelectors: [
+            '.local-groupimport-import-navigation',
+            '#local-groupimport-import .easyedu-navigation__trigger[data-easyedu-navigation-open="1"]',
+        ],
         navigationFrameSelector: '.local-groupimport-import__loading-navigation-frame',
         navigationCuesSelector: '.local-groupimport-import__loading-navigation-cues',
         structuralSelector: '.local-groupimport-import__loading-card',
@@ -99,6 +105,20 @@ const login = async page => {
     });
 };
 
+const getVisibleNavigationReference = async(page, surface) => {
+    for (const selector of surface.realNavigationSelectors) {
+        const navigation = page.locator(selector).first();
+        if (await navigation.isVisible()) {
+            return {
+                height: await navigation.evaluate(node => node.getBoundingClientRect().height),
+                selector,
+            };
+        }
+    }
+
+    throw new Error(`No visible real navigation control found for ${surface.id}.`);
+};
+
 const revealSkeleton = async(page, surface, direction, showBusyIndicator = false) => {
     await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     if (page.url().includes('/login/')) {
@@ -106,9 +126,7 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator = false
         await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     }
     await expect(page.locator(surface.rootSelector)).toBeVisible({timeout: 30000});
-    const realNavigation = page.locator(surface.realNavigationSelector).first();
-    await expect(realNavigation).toBeVisible({timeout: 30000});
-    const realNavigationHeight = await realNavigation.evaluate(node => node.getBoundingClientRect().height);
+    const realNavigation = await getVisibleNavigationReference(page, surface);
 
     await page.emulateMedia({reducedMotion: 'no-preference', forcedColors: 'none'});
     await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
@@ -129,7 +147,7 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator = false
         `${surface.rootSelector} [data-easystud-loading-skeleton]`
     );
     await expect(skeleton).toBeVisible();
-    return {skeleton, realNavigationHeight};
+    return {skeleton, realNavigationHeight: realNavigation.height, realNavigationSelector: realNavigation.selector};
 };
 
 const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
@@ -254,7 +272,7 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     const page = await context.newPage();
                     await page.setViewportSize(cell.viewport);
                     const showBusyIndicator = surface.id === 'mass-import';
-                    const {skeleton, realNavigationHeight} = await revealSkeleton(
+                    const {skeleton, realNavigationHeight, realNavigationSelector} = await revealSkeleton(
                         page, surface, cell.direction, showBusyIndicator
                     );
                     const inspection = await inspectSkeleton(page, surface);
@@ -271,7 +289,7 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                             path: testInfo.outputPath(`navigation-skeleton-${cellId}-window.png`),
                         });
                     }
-                    evidence.push({cellId, ...inspection});
+                    evidence.push({cellId, realNavigationSelector, ...inspection});
 
                     expect(inspection.cueCount, `${cellId}: internal cue count`).toBe(surface.expectedCues);
                     expect(inspection.navigationCueCount, `${cellId}: one Navigation Skeleton cue`).toBe(1);
