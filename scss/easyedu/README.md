@@ -115,19 +115,21 @@ Prefer generic `--easyedu-*` variables. Plugin-specific aliases such as
 - `empty-state`: empty or no-result placeholders.
 - `skeleton-surface`, `skeleton-shimmer-direct`,
   `skeleton-shimmer-overlay`, `skeleton-stack`: loading-state primitives.
-- `skeleton-section-frame`, `skeleton-section-heading`,
+- `skeleton-section-frame`, `skeleton-structural-container-frame`,
+  `skeleton-structural-container-block-accent`, `skeleton-section-heading`,
   `skeleton-section-icon-slot`, `skeleton-section-title`,
   `skeleton-section-navigation-gap`, `skeleton-cue-stack`,
   `skeleton-section-compact`: static section-frame and compact-density
   primitives.
 - `navigation-skeleton-frame`: static large navigation-shaped frame.
-- `navigation-skeleton-compact-frame`: K3 compact static Navigation frame.
+- `navigation-skeleton-compact-frame`: K3.1 compact static one-line Navigation frame.
 - `navigation-skeleton-guide-start-cue`: decorative, non-focusable Guide circle.
 - `navigation-skeleton-cue`, `navigation-skeleton-cue-overlay`: animated
   decorative internal marks only.
-- `navigation-skeleton-cue-stack`: logical internal-cue group alignment.
+- `navigation-skeleton-single-line`: canonical one-line internal cue wrapper.
+- `navigation-skeleton-cue-stack`: source-compatible non-wrapping cue group.
 - `navigation-skeleton-compact-cue`, `navigation-skeleton-compact-mobile`:
-  K3 compact cue density and consumer-owned narrow navigation rule.
+  K3.1 compact cue density and consumer-owned narrow navigation rule.
 - `drop-target-overlay`: drag/drop compatible target feedback.
 - `tooltip-surface`: hover-only help bubbles.
 
@@ -146,12 +148,13 @@ This keeps the kit easy to copy while still allowing each plugin to evolve.
 ## Navigation Skeleton consumer boundary
 
 The embedded Loading and `navigation-skeleton` components come from immutable
-UI Kit snapshot `e5fe986a4a21ce630d4b952af3dfccd82818232b`. K3 uses the
-logical inline-start accent and requires the compact static Navigation frame,
-decorative Guide-start circle and internal cues wherever a consumer renders
-real navigation. The component supplies RTL reversal, reduced-motion and
-forced-colors behavior; EasyStud keeps its own panel geometry, no-script path,
-readiness and fail-open policy.
+UI Kit snapshot `7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4`. K3.1 separates
+logical inline-start internal-card accents from block-start structural
+left/right containers, and requires the compact static one-line Navigation
+frame, decorative Guide-start circle and one internal cue wherever a consumer
+renders real navigation. The component supplies RTL reversal, reduced-motion
+and forced-colors behavior; EasyStud keeps its own panel geometry, no-script
+path, readiness and fail-open policy.
 
 ## Porting checklist for a new plugin
 

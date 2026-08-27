@@ -44,6 +44,24 @@
   }
 }
 
+// A structural page container is not a Skeleton card. Use this block-start
+// accent only for large left/right layout regions; internal cards retain the
+// K3 logical inline-start accent above.
+@mixin skeleton-structural-container-block-accent(
+  $color: var(--easyedu-loading-container-accent),
+  $width: var(--easyedu-loading-container-border-width)
+) {
+  & {
+    border-block-start: $width solid $color;
+  }
+
+  @media (forced-colors: active) {
+    & {
+      border-block-start-color: CanvasText;
+    }
+  }
+}
+
 // Deprecated name retained for source compatibility. It deliberately paints
 // the inline-start accent; K3 does not permit a top Skeleton accent.
 @mixin skeleton-section-top-border(
@@ -64,6 +82,23 @@
 ) {
   @include skeleton-surface($surface, $border, $radius);
   @include skeleton-section-inline-accent($accent, $accent-width);
+
+  & {
+    animation: none;
+  }
+}
+
+// Use only for large structural left/right page containers. It stays static
+// and deliberately does not replace the K3 card-level section frame.
+@mixin skeleton-structural-container-frame(
+  $surface: var(--easyedu-loading-container-surface),
+  $border: var(--easyedu-loading-container-border),
+  $radius: var(--easyedu-loading-container-radius),
+  $accent: var(--easyedu-loading-container-accent),
+  $accent-width: var(--easyedu-loading-container-border-width)
+) {
+  @include skeleton-surface($surface, $border, $radius);
+  @include skeleton-structural-container-block-accent($accent, $accent-width);
 
   & {
     animation: none;

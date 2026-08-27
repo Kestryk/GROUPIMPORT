@@ -37,14 +37,15 @@ users. The visual contract is covered by the focused
 `tools/playwright/mass-import-audit.spec.js` test; generated browser media
 remains outside Git under the approved EasyEdu artifact root.
 
-Under `SKELETON-B-K3-CONSUMERS`, the two import-card frames are explicitly
-static and their 19 internal decorative cues remain unchanged; the compact
-K3 Navigation Skeleton adds three decorative cues for a total of 22. The
-immutable Kit `e5fe986a4a21ce630d4b952af3dfccd82818232b` provides the logical
-`border-inline-start` section accent, compact navigation frame, Guide cue,
-logical cue stack, RTL, reduced-motion and forced-colors behavior. The existing
-loading lifecycle remains unchanged. The paired Student Management measurement,
-static source contract and exhaustive rendered-view inventory are recorded in
+Under `SKELETON-B-K3.1-RF1`, the two large import regions compose the static
+`skeleton-structural-container-frame` with a block-start accent; their 19
+pre-existing internal decorative cues remain unchanged. The compact K3.1
+Navigation Skeleton adds a decorative Guide circle and one cue, for a total of
+21. The immutable Kit `7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4` provides the
+one-line compact navigation frame, structural accent, RTL, reduced-motion and
+forced-colors behavior. The existing 320 px/native-200% containment and loading
+lifecycle remain unchanged. The paired Student Management measurement, static
+source contract and exhaustive rendered-view inventory are recorded in
 `docs/testing/navigation-skeleton-parity.md` and
 `docs/testing/skeleton-k3-coverage.md`.
 

@@ -1119,9 +1119,6 @@ echo html_writer::tag('div',
     html_writer::tag('div',
         html_writer::tag('span', '', [
             'class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-navigation-cue',
-        ]) .
-        html_writer::tag('span', '', [
-            'class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-navigation-cue local-groupimport-import__loading-navigation-cue--short',
         ]),
         ['class' => 'local-groupimport-import__loading-navigation-cues']
     ),

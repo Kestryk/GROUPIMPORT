@@ -10,6 +10,28 @@ Maintenance convention:
 
 ## Unreleased
 
+### Skeleton B K3.1 RF1 - 2026-08-27
+
+#### Changed
+
+- Adopted immutable EasyEdu UI Kit K3.1
+  `7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4` for Student Management and Mass
+  Import: compact Navigation Skeletons now contain one decorative cue line and
+  retain their Guide circle.
+- Applied K3.1 structural block-start frames to the Student Management
+  left/right panels and Mass Import regions; internal Student Management cards
+  retain logical inline-start accents, while the view selector has no Skeleton
+  border.
+- Preserved the existing Mass Import 320 px/native-200% cue confinement and
+  all real-navigation, lifecycle, `aria-busy`, no-script and fail-open paths.
+
+#### Validation
+
+- Updated the source contract and focused zoom scenario to assert one cue line,
+  compact navigation height, structural/card accent distinction, a borderless
+  view selector and no focusable Skeleton node. Preview and browser evidence
+  remain separately authorised.
+
 ### Skeleton B K3 consumers - 2026-08-27
 
 #### Changed

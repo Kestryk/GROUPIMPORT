@@ -225,7 +225,7 @@
   }
 
   &__loading-navigation-cues {
-    @include easyedu.navigation-skeleton-cue-stack;
+    @include easyedu.navigation-skeleton-single-line;
   }
 
   &__loading-navigation-cue {
@@ -236,11 +236,6 @@
       $radius: var(--local-groupimport-easystud-loading-radius)
     );
 
-    inline-size: 100%;
-  }
-
-  &__loading-navigation-cue--short {
-    inline-size: min(70%, 14rem);
   }
 
   &__loading-layout {
@@ -254,7 +249,7 @@
   }
 
   &__loading-panel {
-    @include easyedu.navigation-skeleton-frame(
+    @include easyedu.skeleton-structural-container-frame(
       $surface: #f9fbfd,
       $border: var(--local-groupimport-easystud-loading-border),
       $radius: 1rem
@@ -271,12 +266,12 @@
   }
 
   &__loading-panel--participants {
-    border-inline-start: 0.32rem solid #6c9fc9;
+    @include easyedu.skeleton-structural-container-block-accent($color: #6c9fc9);
   }
 
   &__loading-panel--structure {
-    border-inline-start: 0.32rem solid #78a78d;
     display: none;
+    @include easyedu.skeleton-structural-container-block-accent($color: #78a78d);
   }
 
   &__loading-panel-header,
@@ -299,7 +294,7 @@
   }
 
   &__loading-search-filter-region {
-    @include easyedu.navigation-skeleton-frame(
+    @include easyedu.skeleton-section-frame(
       $surface: #f3f7fa,
       $border: #dbe6ee,
       $radius: var(--local-groupimport-easystud-loading-radius)
@@ -339,7 +334,7 @@
   }
 
   &__loading-participant-card {
-    @include easyedu.navigation-skeleton-frame(
+    @include easyedu.skeleton-section-frame(
       $surface: #fff,
       $border: #dbe5ed,
       $radius: 0.68rem
@@ -362,7 +357,7 @@
   }
 
   &__loading-structure-card {
-    @include easyedu.navigation-skeleton-frame(
+    @include easyedu.skeleton-section-frame(
       $surface: #fff,
       $border: #d9e4dc,
       $radius: 0.68rem
@@ -395,16 +390,9 @@
   // V4 represents only the loading workspace hierarchy. It intentionally does
   // not imitate the ready-state title, tertiary selector or individual actions.
   &__loading-view-toggle {
-    @include easyedu.navigation-skeleton-frame(
-      $surface: #f4f8fb,
-      $border: var(--local-groupimport-easystud-loading-border),
-      $radius: 1.15rem
-    );
-
     & {
-      // The frame owns a 100%-wide compact Navigation shape. Keep its
-      // decorative padding inside that width so 320 px LTR and native zoom do
-      // not widen the Skeleton document.
+      // This mirrors the real view selector's footprint but is not a Skeleton
+      // frame: a selector must never receive a card or structural border.
       box-sizing: border-box;
       box-shadow: 0 0.38rem 0.8rem rgba(31, 68, 104, 0.08);
       display: grid;

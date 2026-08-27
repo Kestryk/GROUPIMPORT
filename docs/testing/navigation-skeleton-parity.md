@@ -5,9 +5,9 @@
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
 `scss/views/_mass-import.scss`) consume the immutable UI Kit snapshot
-`e5fe986a4a21ce630d4b952af3dfccd82818232b`.
+`7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4`.
 
-The selective vendoring synchronises K3 Loading and Navigation Skeleton
+The selective vendoring synchronises K3.1 Loading and Navigation Skeleton
 primitives through
 `scss/easyedu/_tokens.scss`, `scss/easyedu/components/_loading.scss` and
 `scss/easyedu/components/_navigation-skeleton.scss`, plus their consumer
@@ -23,15 +23,16 @@ No real control, navigation destination or meaningful copy is added. The
 existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
 180 ms Mass Import handoff and their fail-open paths are unchanged.
 
-The existing large panels, search/filter shells, view toggle and import cards
-compose `navigation-skeleton-frame`; K3 gives each frame a static logical
-`border-inline-start` accent. Their existing decorative `__loading-surface`
-descendants compose a Kit cue mixin. Each real Navigation view also adds the
-K3 compact static frame, decorative Guide-start circle and two internal cues.
-Student Management uses the overlay cue to retain its two-line card cue base;
-Mass Import uses the direct cue. RTL sweep reversal, reduced-motion and
-forced-colors behavior come from the embedded Kit component rather than local
-overrides.
+Student Management's large left/right loading panels and Mass Import's two
+large loading regions compose `skeleton-structural-container-frame`, which
+uses the K3.1 block-start accent. Student Management's search/filter shell and
+participant/structure cards compose `skeleton-section-frame`, retaining the
+logical `border-inline-start` card accent. The view selector has no Skeleton
+frame or border. Each real Navigation view uses the K3.1 compact static
+one-line frame, decorative Guide-start circle and one internal cue. Student
+Management uses the overlay cue; Mass Import uses the direct cue. RTL sweep
+reversal, reduced-motion and forced-colors behavior come from the embedded Kit
+component rather than local overrides.
 
 ## Animated-surface measurement
 
@@ -41,13 +42,13 @@ remain zero.
 
 | Surface | Before | After | Large-frame animations |
 | --- | ---: | ---: | ---: |
-| Student Management | 48 | 51 | 0 -> 0 |
-| Mass Import | 19 | 22 | 0 -> 0 |
+| Student Management | 48 | 50 | 0 -> 0 |
+| Mass Import | 19 | 21 | 0 -> 0 |
 
-K3 adds three decorative navigation cues to each real Navigation view: one
-circular Guide-start cue and two compact navigation cues. Student Management
-therefore has 51 animated cues. Mass Import changes from five header cues plus
-two cards with seven cues each (`5 + 2 x 7 = 19`) to 22 cues. The migration
+K3.1 adds two decorative navigation cues to each real Navigation view: one
+circular Guide-start cue and one compact navigation cue. Student Management
+therefore has 50 animated cues. Mass Import changes from five header cues plus
+two cards with seven cues each (`5 + 2 x 7 = 19`) to 21 cues. The migration
 does not animate a large frame or change loading geometry, readiness or
 real-navigation behavior.
 
@@ -56,7 +57,7 @@ real-navigation behavior.
 The durable applicability inventory is recorded in
 `docs/testing/skeleton-k3-coverage.md`. Student Management and Mass Import are
 the only EasyStud product views that render the real shared
-`easyedu_navigation` template, so both adopt the compact K3 composition.
+`easyedu_navigation` template, so both adopt the compact K3.1 composition.
 Administration/settings and the Guide's internal dialog navigation do not
 qualify as product real-navigation views and keep their existing contracts.
 
@@ -64,7 +65,8 @@ qualify as product real-navigation views and keep their existing contracts.
 
 Run `tools/release/test-navigation-skeleton-contract.ps1` to verify the
 immutable snapshot reference, selective component import, decorative markup,
-canonical frame/cue composition and the two surface-count formulae. Run the
+one-line frame/cue composition, two-level border distinction, borderless view
+selector and the two surface-count formulae. Run the
 official Sass build with `sass scss/easystud.scss styles.css --no-source-map`,
 PHP lint for `index.php`, JavaScript syntax for the affected Playwright source
 and `git diff --check`.
@@ -73,7 +75,10 @@ No runtime promotion, cache refresh, lease acquisition or browser execution
 is implied by this source change. When separately authorised, the focused
 `tools/playwright/navigation-skeleton-zoom.spec.js` scenario inspects both
 views at 320 and 390 CSS px in LTR and RTL, with genuine Chromium 100% and
-200% browser zoom. It asserts the numeric document `scrollWidth` stays within
+200% browser zoom. It asserts one cue row, compact-navigation height close to
+real navigation, top accents only on structural containers, inline-start
+accents only on internal cards, no toggle border and no focusable Skeleton
+node. It also asserts the numeric document `scrollWidth` stays within
 one CSS pixel of `clientWidth`, as well as Skeleton and frame containment. It
 creates a new profile only below the supervised run's
 external artifact directory and sets the per-host zoom preference before
