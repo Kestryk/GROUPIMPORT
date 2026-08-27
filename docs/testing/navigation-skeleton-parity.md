@@ -86,6 +86,13 @@ launch; it does not send keyboard shortcuts or automate any existing desktop
 browser window. Reduced-motion and forced-colors remain covered by the Kit
 source contract and its canonical CSS media rules.
 
+Each Skeleton locator capture has a five-second local timeout. If it expires,
+the scenario records its diagnostic, attempts one equally bounded viewport
+fallback capture, and continues the cell's functional assertions. Capture
+telemetry is written to `navigation-skeleton-phase-progress.jsonl`; therefore a
+stalled visual artifact cannot consume the supervised run watchdog or mask a
+K3.1 assertion.
+
 ### Static record - 2026-08-10
 
 The vendored component text was compared after line-ending normalization with

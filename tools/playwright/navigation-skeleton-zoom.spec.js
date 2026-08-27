@@ -8,6 +8,7 @@ const username = process.env.EASYEDU_MOODLE_USERNAME || 'Admin';
 const password = process.env.EASYEDU_MOODLE_PASSWORD || '';
 const chromiumExecutable = process.env.EASYEDU_CHROMIUM_EXECUTABLE || undefined;
 const navigationReferenceTimeout = 10000;
+const screenshotTimeout = 5000;
 
 const surfaces = [
     {
@@ -163,6 +164,87 @@ const writePhase = async(testInfo, phase, details = {}) => {
     );
 };
 
+const captureSkeletonEvidence = async(skeleton, page, testInfo, cellId) => {
+    const screenshotPath = testInfo.outputPath(`navigation-skeleton-${cellId}.png`);
+    await writePhase(testInfo, 'skeleton-capture-start', {cellId, timeout: screenshotTimeout});
+    try {
+        await skeleton.screenshot({path: screenshotPath, timeout: screenshotTimeout});
+        await writePhase(testInfo, 'skeleton-capture-success', {cellId, screenshotPath});
+        return {kind: 'skeleton', path: screenshotPath};
+    } catch (error) {
+        const timedOut = error.name === 'TimeoutError';
+        const diagnostic = {
+            cellId,
+            screenshotPath,
+            timeout: screenshotTimeout,
+            errorName: error.name,
+            errorMessage: error.message,
+        };
+        await fs.writeFile(
+            testInfo.outputPath(`navigation-skeleton-${cellId}-capture-diagnostic.json`),
+            JSON.stringify(diagnostic, null, 2),
+            'utf8'
+        );
+        await writePhase(testInfo, timedOut ? 'skeleton-capture-timeout' : 'skeleton-capture-error', diagnostic);
+
+        const fallbackPath = testInfo.outputPath(`navigation-skeleton-${cellId}-fallback-window.png`);
+        await writePhase(testInfo, 'skeleton-capture-fallback-start', {
+            cellId,
+            fallbackPath,
+            timeout: screenshotTimeout,
+        });
+        try {
+            await page.screenshot({path: fallbackPath, timeout: screenshotTimeout});
+            await writePhase(testInfo, 'skeleton-capture-fallback-success', {cellId, fallbackPath});
+            return {kind: 'fallback-window', path: fallbackPath, diagnostic};
+        } catch (fallbackError) {
+            const fallbackDiagnostic = {
+                cellId,
+                fallbackPath,
+                timeout: screenshotTimeout,
+                errorName: fallbackError.name,
+                errorMessage: fallbackError.message,
+            };
+            await fs.writeFile(
+                testInfo.outputPath(`navigation-skeleton-${cellId}-fallback-diagnostic.json`),
+                JSON.stringify(fallbackDiagnostic, null, 2),
+                'utf8'
+            );
+            await writePhase(
+                testInfo,
+                fallbackError.name === 'TimeoutError' ? 'skeleton-capture-fallback-timeout' : 'skeleton-capture-fallback-error',
+                fallbackDiagnostic
+            );
+            return {kind: 'unavailable', diagnostic, fallbackDiagnostic};
+        }
+    }
+};
+
+const captureWindowEvidence = async(page, testInfo, cellId) => {
+    const screenshotPath = testInfo.outputPath(`navigation-skeleton-${cellId}-window.png`);
+    await writePhase(testInfo, 'window-capture-start', {cellId, timeout: screenshotTimeout});
+    try {
+        await page.screenshot({path: screenshotPath, timeout: screenshotTimeout});
+        await writePhase(testInfo, 'window-capture-success', {cellId, screenshotPath});
+        return {kind: 'window', path: screenshotPath};
+    } catch (error) {
+        const diagnostic = {
+            cellId,
+            screenshotPath,
+            timeout: screenshotTimeout,
+            errorName: error.name,
+            errorMessage: error.message,
+        };
+        await fs.writeFile(
+            testInfo.outputPath(`navigation-skeleton-${cellId}-window-capture-diagnostic.json`),
+            JSON.stringify(diagnostic, null, 2),
+            'utf8'
+        );
+        await writePhase(testInfo, error.name === 'TimeoutError' ? 'window-capture-timeout' : 'window-capture-error', diagnostic);
+        return {kind: 'unavailable', diagnostic};
+    }
+};
+
 const getVisibleNavigationReference = async(page, surface, testInfo, cellId) => {
     const deadline = Date.now() + navigationReferenceTimeout;
     let diagnostics;
@@ -228,13 +310,12 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator, testIn
     );
     await expect(skeleton).toBeVisible();
     await writePhase(testInfo, 'skeleton-activated', {cellId, surface: surface.id});
-    await skeleton.screenshot({
-        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
-    });
+    const capture = await captureSkeletonEvidence(skeleton, page, testInfo, cellId);
     return {
         realNavigationHeight: realNavigation.height,
         realNavigationSelector: realNavigation.selector,
         navigationDiagnostics: realNavigation.diagnostics,
+        capture,
     };
 };
 
@@ -369,17 +450,15 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     const page = await context.newPage();
                     await page.setViewportSize(cell.viewport);
                     const showBusyIndicator = surface.id === 'mass-import';
-                    const {realNavigationHeight, realNavigationSelector, navigationDiagnostics} = await revealSkeleton(
+                    const {realNavigationHeight, realNavigationSelector, navigationDiagnostics, capture} = await revealSkeleton(
                         page, surface, cell.direction, showBusyIndicator, testInfo, cellId
                     );
-                    await writePhase(testInfo, 'cell-skeleton-captured', {cellId, realNavigationSelector});
+                    await writePhase(testInfo, 'cell-skeleton-captured', {cellId, realNavigationSelector, capture});
                     const inspection = await inspectSkeleton(page, surface);
 
                     if (showBusyIndicator && cell.viewport.width === 320 &&
                         cell.direction === 'ltr' && zoom === 200) {
-                        await page.screenshot({
-                            path: testInfo.outputPath(`navigation-skeleton-${cellId}-window.png`),
-                        });
+                        await captureWindowEvidence(page, testInfo, cellId);
                     }
                     evidence.push({cellId, realNavigationSelector, navigationDiagnostics, ...inspection});
 

@@ -31,6 +31,8 @@ Maintenance convention:
   compact navigation height, structural/card accent distinction, a borderless
   view selector and no focusable Skeleton node. Preview and browser evidence
   remain separately authorised.
+- Bound Navigation Skeleton evidence captures locally, with diagnostic and
+  viewport-fallback artifacts that preserve subsequent K3.1 assertions.
 
 ### Skeleton B K3 consumers - 2026-08-27
 
