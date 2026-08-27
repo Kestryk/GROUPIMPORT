@@ -275,7 +275,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
     };
 }, {surface});
 
-test('K3.1 Navigation Skeleton stays single-row and contained at 320/390 with isolated native 100/200 zoom', async({}, testInfo) => {
+test('Navigation Skeleton stays contained at 320/390 with isolated native 100/200 zoom (K3.1 single-row, height and border ownership)', async({}, testInfo) => {
     test.setTimeout(900000);
     const profileRoot = process.env.PLAYWRIGHT_PROFILE_DIR;
     if (!profileRoot) {
