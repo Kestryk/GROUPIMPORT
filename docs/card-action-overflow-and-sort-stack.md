@@ -22,4 +22,8 @@ Invariants:
 - only actions which do not fit appear in the local overflow menu;
 - actions return to the header when space becomes available;
 - Sort stays above expanded members and neighbouring cards;
+- a Grouping label is shown whole or recovered through More actions; it is never
+  visually truncated inside a Group card header;
+- the recovered More trigger keeps the plain icon treatment of its sibling card
+  actions rather than becoming a bordered pill;
 - no permission, data, selection or action route changes.
