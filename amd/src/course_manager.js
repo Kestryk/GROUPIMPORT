@@ -4579,6 +4579,14 @@ const bindPagination = root => {
             return;
         }
         dropdown.classList.toggle('is-open', open);
+        const pagination = dropdown.closest('[data-easystud-pagination]');
+        const list = getListFromPagination(pagination);
+        if (pagination) {
+            pagination.classList.toggle('is-sort-menu-open', open);
+        }
+        if (list) {
+            list.classList.toggle('is-sort-menu-open', open);
+        }
         const card = dropdown.closest('[data-easystud-group-id], [data-easystud-grouping-id], [data-easystud-user]');
         if (card) {
             card.classList.toggle('is-sort-menu-open', open);
