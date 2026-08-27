@@ -11,8 +11,10 @@ context menu remains available through its context-menu interaction and must
 not open from the same click.
 
 Member-list Sort is independent of card actions. While its dropdown is open,
-the owning card receives `is-sort-menu-open`; this raises only that card and is
-removed whenever the dropdown closes.
+the owning card, pagination and paginated list receive `is-sort-menu-open`.
+This keeps a global Groups Sort menu above its first card as well as keeping a
+card-local Sort menu above neighbouring cards. The state is removed whenever
+the dropdown closes.
 
 Invariants:
 

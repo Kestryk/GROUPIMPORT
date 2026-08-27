@@ -9,6 +9,7 @@ $requiredSource = @(
     'is-easystud-card-action-overflow',
     'event.stopImmediatePropagation()',
     'is-sort-menu-open',
+    'pagination.classList.toggle',
     'ResizeObserver',
     'data-easystud-group-actions-menu'
 )

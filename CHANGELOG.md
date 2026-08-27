@@ -21,6 +21,8 @@ Maintenance convention:
   change.
 - Raise only the owning card while its member-list Sort dropdown is open, so
   the list remains above expanded participants and neighbouring cards.
+- Raise the pagination and its paginated list together while global Sort is
+  open, so the menu is not covered by the first card in the Groups view.
 
 #### Validation
 

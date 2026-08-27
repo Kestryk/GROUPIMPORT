@@ -286,6 +286,15 @@
     display: flex;
   }
 
+  &__participant-list.is-sort-menu-open,
+  &-participant-groups__list.is-sort-menu-open,
+  &-structure-groups__list.is-sort-menu-open,
+  &-tree__groupings.is-sort-menu-open {
+    overflow: visible;
+    position: relative;
+    z-index: 40;
+  }
+
   &-structure-groups__list {
     display: grid;
     gap: 0.8rem;
@@ -296,6 +305,9 @@
     overflow-x: hidden;
     overflow-y: auto;
     padding: 0.2rem 0.2rem 0 0.72rem;
+
+    // A Sort menu belongs to the pagination immediately above these cards.
+    // Its open state is lifted with the other paginated lists above.
   }
 
   &-structure-groups__list > * {
@@ -1652,6 +1664,11 @@
     margin-top: 0.35rem;
     min-height: 1.65rem;
     z-index: 8;
+
+    &.is-sort-menu-open {
+      position: relative;
+      z-index: 41;
+    }
 
     &--top {
       margin-bottom: 0.36rem;
