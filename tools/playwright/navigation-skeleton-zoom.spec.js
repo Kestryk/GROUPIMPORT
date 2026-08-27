@@ -7,6 +7,7 @@ const massImportUrl = process.env.EASYEDU_MASS_IMPORT_URL ||
 const username = process.env.EASYEDU_MOODLE_USERNAME || 'Admin';
 const password = process.env.EASYEDU_MOODLE_PASSWORD || '';
 const chromiumExecutable = process.env.EASYEDU_CHROMIUM_EXECUTABLE || undefined;
+const navigationReferenceTimeout = 10000;
 
 const surfaces = [
     {
@@ -14,9 +15,12 @@ const surfaces = [
         url: new URL('/local/groupimport/manage.php?id=5', massImportUrl).toString(),
         rootSelector: '#local-groupimport-easystud',
         cueSelector: '.local-groupimport-easystud__loading-surface',
-        realNavigationSelectors: [
-            '.local-groupimport-easystud__navigation',
-            '#local-groupimport-easystud .easyedu-navigation__trigger[data-easyedu-navigation-open="1"]',
+        navigationReferences: [
+            {id: 'desktop-rail', selector: '.local-groupimport-easystud__navigation'},
+            {
+                id: 'compact-trigger',
+                selector: 'button.easyedu-navigation__trigger[data-easyedu-navigation-open="1"][aria-label="Open EasyStud menu"]',
+            },
         ],
         navigationFrameSelector: '.local-groupimport-easystud__loading-navigation-frame',
         navigationCuesSelector: '.local-groupimport-easystud__loading-navigation-cues',
@@ -41,9 +45,12 @@ const surfaces = [
         url: massImportUrl,
         rootSelector: '#local-groupimport-import',
         cueSelector: '.local-groupimport-import__loading-surface',
-        realNavigationSelectors: [
-            '.local-groupimport-import-navigation',
-            '#local-groupimport-import .easyedu-navigation__trigger[data-easyedu-navigation-open="1"]',
+        navigationReferences: [
+            {id: 'desktop-rail', selector: '.local-groupimport-import-navigation'},
+            {
+                id: 'compact-trigger',
+                selector: 'button.easyedu-navigation__trigger[data-easyedu-navigation-open="1"][aria-label="Open EasyStud menu"]',
+            },
         ],
         navigationFrameSelector: '.local-groupimport-import__loading-navigation-frame',
         navigationCuesSelector: '.local-groupimport-import__loading-navigation-cues',
@@ -105,28 +112,86 @@ const login = async page => {
     });
 };
 
-const getVisibleNavigationReference = async(page, surface) => {
-    for (const selector of surface.realNavigationSelectors) {
-        const navigation = page.locator(selector).first();
-        if (await navigation.isVisible()) {
-            return {
-                height: await navigation.evaluate(node => node.getBoundingClientRect().height),
-                selector,
-            };
-        }
-    }
+const inspectNavigationReferences = async(page, surface) => {
+    const [effectiveViewport, references] = await Promise.all([
+        page.evaluate(() => ({
+            innerWidth: window.innerWidth,
+            innerHeight: window.innerHeight,
+            clientWidth: document.documentElement.clientWidth,
+            clientHeight: document.documentElement.clientHeight,
+            visualViewport: window.visualViewport ? {
+                width: window.visualViewport.width,
+                height: window.visualViewport.height,
+                scale: window.visualViewport.scale,
+            } : null,
+        })),
+        Promise.all(surface.navigationReferences.map(async reference => {
+            const locator = page.locator(reference.selector);
+            const [count, visible, nodes] = await Promise.all([
+                locator.count(),
+                locator.first().isVisible(),
+                locator.evaluateAll(elements => elements.map(element => {
+                    const style = getComputedStyle(element);
+                    return {
+                        display: style.display,
+                        visibility: style.visibility,
+                        ariaHidden: element.getAttribute('aria-hidden'),
+                    };
+                })),
+            ]);
+            return {...reference, count, visible, nodes};
+        })),
+    ]);
+    const reference = references.find(candidate => candidate.visible) || null;
 
-    throw new Error(`No visible real navigation control found for ${surface.id}.`);
+    return {effectiveViewport, references, reference};
 };
 
-const revealSkeleton = async(page, surface, direction, showBusyIndicator = false) => {
+const writeNavigationDiagnostics = async(testInfo, cellId, diagnostics) => {
+    await fs.writeFile(
+        testInfo.outputPath(`navigation-reference-${cellId}.json`),
+        JSON.stringify(diagnostics, null, 2),
+        'utf8'
+    );
+};
+
+const getVisibleNavigationReference = async(page, surface, testInfo, cellId) => {
+    const deadline = Date.now() + navigationReferenceTimeout;
+    let diagnostics;
+    do {
+        diagnostics = await inspectNavigationReferences(page, surface);
+        if (diagnostics.reference) {
+            await writeNavigationDiagnostics(testInfo, cellId, diagnostics);
+            return {
+                height: await page.locator(diagnostics.reference.selector).first().evaluate(
+                    node => node.getBoundingClientRect().height
+                ),
+                selector: diagnostics.reference.selector,
+                diagnostics,
+            };
+        }
+        await page.waitForTimeout(250);
+    } while (Date.now() < deadline);
+
+    diagnostics = await inspectNavigationReferences(page, surface);
+    await Promise.all([
+        writeNavigationDiagnostics(testInfo, cellId, diagnostics),
+        page.screenshot({
+            path: testInfo.outputPath(`navigation-reference-${cellId}-unavailable.png`),
+            fullPage: true,
+        }),
+    ]);
+    throw new Error(`No visible real navigation control found for ${surface.id} within ${navigationReferenceTimeout} ms.`);
+};
+
+const revealSkeleton = async(page, surface, direction, showBusyIndicator, testInfo, cellId) => {
     await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     if (page.url().includes('/login/')) {
         await login(page);
         await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
     }
     await expect(page.locator(surface.rootSelector)).toBeVisible({timeout: 30000});
-    const realNavigation = await getVisibleNavigationReference(page, surface);
+    const realNavigation = await getVisibleNavigationReference(page, surface, testInfo, cellId);
 
     await page.emulateMedia({reducedMotion: 'no-preference', forcedColors: 'none'});
     await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
@@ -147,7 +212,14 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator = false
         `${surface.rootSelector} [data-easystud-loading-skeleton]`
     );
     await expect(skeleton).toBeVisible();
-    return {skeleton, realNavigationHeight: realNavigation.height, realNavigationSelector: realNavigation.selector};
+    await skeleton.screenshot({
+        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
+    });
+    return {
+        realNavigationHeight: realNavigation.height,
+        realNavigationSelector: realNavigation.selector,
+        navigationDiagnostics: realNavigation.diagnostics,
+    };
 };
 
 const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
@@ -272,24 +344,19 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                     const page = await context.newPage();
                     await page.setViewportSize(cell.viewport);
                     const showBusyIndicator = surface.id === 'mass-import';
-                    const {skeleton, realNavigationHeight, realNavigationSelector} = await revealSkeleton(
-                        page, surface, cell.direction, showBusyIndicator
+                    const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
+                    const {realNavigationHeight, realNavigationSelector, navigationDiagnostics} = await revealSkeleton(
+                        page, surface, cell.direction, showBusyIndicator, testInfo, cellId
                     );
                     const inspection = await inspectSkeleton(page, surface);
-                    const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
 
-                    // Preserve the exact native-zoom visual evidence even if a
-                    // subsequent containment assertion diagnoses a regression.
-                    await skeleton.screenshot({
-                        path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
-                    });
                     if (showBusyIndicator && cell.viewport.width === 320 &&
                         cell.direction === 'ltr' && zoom === 200) {
                         await page.screenshot({
                             path: testInfo.outputPath(`navigation-skeleton-${cellId}-window.png`),
                         });
                     }
-                    evidence.push({cellId, realNavigationSelector, ...inspection});
+                    evidence.push({cellId, realNavigationSelector, navigationDiagnostics, ...inspection});
 
                     expect(inspection.cueCount, `${cellId}: internal cue count`).toBe(surface.expectedCues);
                     expect(inspection.navigationCueCount, `${cellId}: one Navigation Skeleton cue`).toBe(1);
