@@ -28,7 +28,7 @@ function Assert-Contains {
     }
 }
 
-$snapshot = '41e86979dc8138dd026438039143f2ba94c0531e'
+$snapshot = 'e5fe986a4a21ce630d4b952af3dfccd82818232b'
 $component = Read-RequiredFile 'scss\easyedu\components\_navigation-skeleton.scss'
 $loadingComponent = Read-RequiredFile 'scss\easyedu\components\_loading.scss'
 $tokens = Read-RequiredFile 'scss\easyedu\_tokens.scss'
@@ -40,13 +40,19 @@ $studentStyles = Read-RequiredFile 'scss\components\_layout.scss'
 $massImportStyles = Read-RequiredFile 'scss\views\_mass-import.scss'
 $adminStyles = Read-RequiredFile 'scss\views\_admin-settings.scss'
 $documentation = Read-RequiredFile 'docs\testing\navigation-skeleton-parity.md'
+$coverage = Read-RequiredFile 'docs\testing\skeleton-k3-coverage.md'
+$agents = Read-RequiredFile 'AGENTS.md'
 $zoomScenario = Read-RequiredFile 'tools\playwright\navigation-skeleton-zoom.spec.js'
 
 foreach ($fragment in @(
     '@mixin navigation-skeleton-frame',
+    '@mixin navigation-skeleton-compact-frame',
+    '@mixin navigation-skeleton-guide-start-cue',
     '@mixin navigation-skeleton-cue',
     '@mixin navigation-skeleton-cue-overlay',
     '@mixin navigation-skeleton-cue-stack',
+    '@mixin navigation-skeleton-compact-cue',
+    '@mixin navigation-skeleton-compact-mobile',
     'skeleton-shimmer-direct',
     'skeleton-shimmer-overlay',
     ':dir(rtl)',
@@ -59,7 +65,7 @@ foreach ($fragment in @(
 }
 
 $frameStart = $component.IndexOf('@mixin navigation-skeleton-frame')
-$frameEnd = $component.IndexOf('@mixin navigation-skeleton-cue', $frameStart)
+$frameEnd = $component.IndexOf('@mixin navigation-skeleton-compact-frame', $frameStart)
 if ($frameStart -lt 0 -or $frameEnd -le $frameStart) {
     throw 'Navigation Skeleton frame mixin boundary is missing.'
 }
@@ -72,6 +78,7 @@ Assert-Contains 'Kit aggregator' $components '@forward "components/navigation-sk
 Assert-Contains 'Embedded Kit README' $kitReadme $snapshot
 foreach ($fragment in @(
     '@mixin skeleton-section-frame',
+    '@mixin skeleton-section-inline-accent',
     '@mixin skeleton-cue-stack',
     '@mixin skeleton-section-compact',
     'animation: none'
@@ -82,6 +89,8 @@ foreach ($fragment in @(
     '--easyedu-loading-section-accent',
     '--easyedu-loading-section-surface',
     '--easyedu-loading-section-compact-icon-slot-size'
+    '--easyedu-navigation-skeleton-compact-min-block-size',
+    '--easyedu-navigation-skeleton-compact-mobile-min-block-size'
 )) {
     Assert-Contains 'Vendored Loading tokens' $tokens $fragment
 }
@@ -91,6 +100,13 @@ Assert-Contains 'Mass Import markup' $massImport "'data-easyedu-navigation-skele
 Assert-Contains 'Mass Import markup' $massImport "'aria-hidden' => 'true'"
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-frame'
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-cue-overlay'
+Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-compact-frame'
+Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-guide-start-cue'
+Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-compact-cue'
+Assert-Contains 'Student Management K3 styles' $studentStyles 'border-inline-start: 0.32rem solid #6c9fc9;'
+if ($studentStyles.Contains('border-top: 0.32rem')) {
+    throw 'Student Management must not restore a top Skeleton accent.'
+}
 $viewToggleStart = $studentStyles.IndexOf('&__loading-view-toggle {')
 $viewToggleEnd = $studentStyles.IndexOf('&__loading-view-toggle-item {', $viewToggleStart)
 if ($viewToggleStart -lt 0 -or $viewToggleEnd -le $viewToggleStart) {
@@ -104,6 +120,9 @@ Assert-Contains 'Student Management styles' $studentStyles '&__loading-header-ac
 Assert-Contains 'Student Management styles' $studentStyles '&__loading-pagination-rail {'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-frame'
 Assert-Contains 'Mass Import styles' $massImportStyles 'navigation-skeleton-cue'
+Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-compact-frame'
+Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-guide-start-cue'
+Assert-Contains 'Mass Import K3 styles' $massImportStyles 'navigation-skeleton-compact-cue'
 Assert-Contains 'Mass Import styles' $massImportStyles '@media (max-width: 20rem)'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-actions {'
 Assert-Contains 'Mass Import styles' $massImportStyles '&__loading-action {'
@@ -136,8 +155,8 @@ $studentCueCount = [regex]::Matches(
     $studentMarkup,
     'class="[^"]*local-groupimport-easystud__loading-surface[^"]*"'
 ).Count
-if ($studentCueCount -ne 48) {
-    throw "Student Management must retain 48 animated internal cues; found $studentCueCount."
+if ($studentCueCount -ne 51) {
+    throw "Student Management must retain 51 animated internal cues; found $studentCueCount."
 }
 
 $loopStart = $massImport.IndexOf('for ($skeletoncard = 0;')
@@ -158,18 +177,22 @@ $massImportCuePerCard = [regex]::Matches(
     $massImportCard,
     'local-groupimport-import__loading-surface'
 ).Count
-if ($massImportHeaderCueCount -ne 5 -or $massImportCuePerCard -ne 7 -or
+if ($massImportHeaderCueCount -ne 8 -or $massImportCuePerCard -ne 7 -or
     -not $massImportCard.Contains('$skeletoncard < 2')) {
-    throw 'Mass Import Skeleton cue formula must remain five header cues plus two cards with seven cues each.'
+    throw 'Mass Import Skeleton cue formula must remain eight header cues plus two cards with seven cues each.'
 }
 $massImportCueCount = $massImportHeaderCueCount + (2 * $massImportCuePerCard)
-if ($massImportCueCount -ne 19) {
-    throw "Mass Import must retain 19 animated internal cues; found $massImportCueCount."
+if ($massImportCueCount -ne 22) {
+    throw "Mass Import must retain 22 animated internal cues; found $massImportCueCount."
 }
 
-Assert-Contains 'Navigation Skeleton documentation' $documentation '| Student Management | 48 | 48 |'
-Assert-Contains 'Navigation Skeleton documentation' $documentation '| Mass Import | 19 | 19 |'
+Assert-Contains 'Navigation Skeleton documentation' $documentation '| Student Management | 48 | 51 |'
+Assert-Contains 'Navigation Skeleton documentation' $documentation '| Mass Import | 19 | 22 |'
 Assert-Contains 'Navigation Skeleton documentation' $documentation $snapshot
+Assert-Contains 'K3 coverage matrix' $coverage '| Student Management (`manage.php`, `templates/manage.mustache`) | Yes'
+Assert-Contains 'K3 coverage matrix' $coverage '| Mass Import (`index.php`) | Yes'
+Assert-Contains 'K3 coverage matrix' $coverage '| Administration/settings (`settings.php`) | No'
+Assert-Contains 'Local K3 agent rule' $agents 'K3 Navigation Skeleton consumers'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentScrollWidth'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'documentClientWidth + 1'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton?.getBoundingClientRect()'
@@ -179,4 +202,4 @@ Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'EASYEDU_CHROM
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'per_host_zoom_levels: {'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'x: {'
 
-Write-Host "Navigation Skeleton source contract passed: Student Management 48 -> 48 cues; Mass Import 19 -> 19 cues."
+Write-Host "Navigation Skeleton K3 source contract passed: Student Management 48 -> 51 cues; Mass Import 19 -> 22 cues."

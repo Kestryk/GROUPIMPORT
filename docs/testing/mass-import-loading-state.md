@@ -37,13 +37,16 @@ users. The visual contract is covered by the focused
 `tools/playwright/mass-import-audit.spec.js` test; generated browser media
 remains outside Git under the approved EasyEdu artifact root.
 
-Under `EED-UI-2026-0025`, the two import-card frames are explicitly static and
-only their 19 internal decorative cues animate. The immutable Kit
-`41e86979dc8138dd026438039143f2ba94c0531e` provides the section-frame accent,
-logical cue stack, RTL, reduced-motion and forced-colors behavior; the existing
-loading lifecycle remains unchanged. The paired Student Management measurement
-and static source contract are recorded in
-`docs/testing/navigation-skeleton-parity.md`.
+Under `SKELETON-B-K3-CONSUMERS`, the two import-card frames are explicitly
+static and their 19 internal decorative cues remain unchanged; the compact
+K3 Navigation Skeleton adds three decorative cues for a total of 22. The
+immutable Kit `e5fe986a4a21ce630d4b952af3dfccd82818232b` provides the logical
+`border-inline-start` section accent, compact navigation frame, Guide cue,
+logical cue stack, RTL, reduced-motion and forced-colors behavior. The existing
+loading lifecycle remains unchanged. The paired Student Management measurement,
+static source contract and exhaustive rendered-view inventory are recorded in
+`docs/testing/navigation-skeleton-parity.md` and
+`docs/testing/skeleton-k3-coverage.md`.
 
 The latest Moodle 5.1 revalidation selected exactly one test and passed in
 external run `easystud-authenticated-20260730T143532846Z-33664`. Its manifest

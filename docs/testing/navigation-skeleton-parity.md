@@ -5,14 +5,15 @@
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
 `scss/views/_mass-import.scss`) consume the immutable UI Kit snapshot
-`41e86979dc8138dd026438039143f2ba94c0531e`.
+`e5fe986a4a21ce630d4b952af3dfccd82818232b`.
 
-The selective vendoring synchronises only
+The selective vendoring synchronises K3 Loading and Navigation Skeleton
+primitives through
 `scss/easyedu/_tokens.scss`, `scss/easyedu/components/_loading.scss` and
 `scss/easyedu/components/_navigation-skeleton.scss`, plus their consumer
-contract. `tools/sync-easyedu-kit.ps1` is not used. Administration/settings,
-functional Navigation, filters, pagination, Send message, Guide, CCB, runtime
-and cache remain outside this consumer lot.
+contract and durable coverage matrix. `tools/sync-easyedu-kit.ps1` is not
+used. Administration/settings, functional Navigation, filters, pagination,
+Send message, Guide, CCB, runtime and cache remain outside this consumer lot.
 
 ## Composition and lifecycle boundary
 
@@ -23,9 +24,10 @@ existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
 180 ms Mass Import handoff and their fail-open paths are unchanged.
 
 The existing large panels, search/filter shells, view toggle and import cards
-compose `navigation-skeleton-frame`; they remain pale static surfaces with the
-Kit section accent. Their existing decorative `__loading-surface` descendants
-compose a Kit cue mixin.
+compose `navigation-skeleton-frame`; K3 gives each frame a static logical
+`border-inline-start` accent. Their existing decorative `__loading-surface`
+descendants compose a Kit cue mixin. Each real Navigation view also adds the
+K3 compact static frame, decorative Guide-start circle and two internal cues.
 Student Management uses the overlay cue to retain its two-line card cue base;
 Mass Import uses the direct cue. RTL sweep reversal, reduced-motion and
 forced-colors behavior come from the embedded Kit component rather than local
@@ -39,23 +41,24 @@ remain zero.
 
 | Surface | Before | After | Large-frame animations |
 | --- | ---: | ---: | ---: |
-| Student Management | 48 | 48 | 0 -> 0 |
-| Mass Import | 19 | 19 | 0 -> 0 |
+| Student Management | 48 | 51 | 0 -> 0 |
+| Mass Import | 19 | 22 | 0 -> 0 |
 
-Student Management's planning estimate of about 48 matches the checked-in
-template: its 48 internal cue spans are already the only animated elements.
-Mass Import has five header cues plus two cards with seven cues each
-(`5 + 2 x 7 = 19`). This migration therefore makes no unsupported performance
-reduction claim: it prevents new large-frame animation while preserving the
-existing internal-cue count and loading geometry.
+K3 adds three decorative navigation cues to each real Navigation view: one
+circular Guide-start cue and two compact navigation cues. Student Management
+therefore has 51 animated cues. Mass Import changes from five header cues plus
+two cards with seven cues each (`5 + 2 x 7 = 19`) to 22 cues. The migration
+does not animate a large frame or change loading geometry, readiness or
+real-navigation behavior.
 
-## Visual section refinement - 2026-08-25
+## K3 consumer coverage - 2026-08-27
 
-The two consumers adopt the Kit section-frame defaults, explicit logical cue
-stack and opt-in compact density from `41e86979`. The frame is static by
-contract; only the existing 48 Student Management and 19 Mass Import decorative
-cues animate. No Administration selector calls `navigation-skeleton-frame`, so
-its loading surface is deliberately unchanged.
+The durable applicability inventory is recorded in
+`docs/testing/skeleton-k3-coverage.md`. Student Management and Mass Import are
+the only EasyStud product views that render the real shared
+`easyedu_navigation` template, so both adopt the compact K3 composition.
+Administration/settings and the Guide's internal dialog navigation do not
+qualify as product real-navigation views and keep their existing contracts.
 
 ## Static validation and deferred review
 

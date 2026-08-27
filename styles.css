@@ -247,6 +247,13 @@
   --easyedu-navigation-layer-trigger: 1064;
   --easyedu-navigation-layer-backdrop: 1065;
   --easyedu-navigation-layer-panel: 1066;
+  --easyedu-navigation-guide-surface: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--easyedu-primary) 10%, var(--easyedu-surface) 90%) 0%,
+    color-mix(in srgb, var(--easyedu-accent) 14%, var(--easyedu-surface) 86%) 100%
+  );
+  --easyedu-navigation-guide-border: color-mix(in srgb, var(--easyedu-accent) 28%, var(--easyedu-card-border) 72%);
+  --easyedu-navigation-guide-shadow: 0 0.4rem 1rem rgba(22, 45, 68, 0.12);
   --easyedu-radius: 0.75rem;
   --easyedu-radius-sm: 0.5rem;
   --easyedu-radius-lg: 1rem;
@@ -335,6 +342,17 @@
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -1683,6 +1701,138 @@
     background-image: none;
   }
 }
+.local-groupimport-easystud__loading-navigation {
+  margin-block-start: var(--easyedu-loading-section-navigation-gap);
+}
+.local-groupimport-easystud__loading-navigation-frame {
+  background: #f4f8fb;
+  border: 0.0625rem solid var(--local-groupimport-easystud-loading-border);
+  border-radius: 1rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-navigation-frame {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-navigation-frame {
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-navigation-frame {
+    border-inline-start-color: CanvasText;
+  }
+}
+.local-groupimport-easystud__loading-navigation-frame {
+  animation: none;
+}
+.local-groupimport-easystud__loading-navigation-frame {
+  align-items: center;
+  column-gap: var(--easyedu-navigation-skeleton-compact-guide-cue-gap);
+  display: grid;
+  grid-template-columns: var(--easyedu-navigation-skeleton-compact-guide-cue-size) minmax(0, 1fr);
+  min-block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
+  padding: var(--easyedu-navigation-skeleton-compact-padding);
+}
+.local-groupimport-easystud__loading-navigation-guide {
+  block-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
+  flex: none;
+  inline-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
+}
+.local-groupimport-easystud__loading-navigation-guide {
+  background: var(--local-groupimport-easystud-loading-surface);
+  border-radius: 50%;
+  display: block;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  position: relative;
+}
+.local-groupimport-easystud__loading-navigation-guide::after {
+  animation: easyedu-skeleton-shimmer var(--easyedu-loading-shimmer-duration) linear infinite;
+  background-image: linear-gradient(108deg, transparent 30%, rgba(255, 255, 255, 0.16) 42%, var(--local-groupimport-easystud-loading-shimmer-highlight) 50%, rgba(255, 255, 255, 0.16) 58%, transparent 70%);
+  background-position: -110% 0;
+  background-repeat: no-repeat;
+  background-size: 190% 100%;
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .local-groupimport-easystud__loading-navigation-guide::after {
+    animation: none;
+  }
+}
+.local-groupimport-easystud__loading-navigation-guide:dir(rtl)::after, [dir=rtl] .local-groupimport-easystud__loading-navigation-guide::after {
+  animation-direction: reverse;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-navigation-guide {
+    background: CanvasText;
+    border: 0.0625rem solid CanvasText;
+  }
+  .local-groupimport-easystud__loading-navigation-guide::after {
+    background-image: none;
+  }
+}
+.local-groupimport-easystud__loading-navigation-cues {
+  align-content: start;
+  display: grid;
+  gap: var(--easyedu-navigation-skeleton-compact-cue-gap);
+  justify-items: start;
+  min-inline-size: 0;
+}
+.local-groupimport-easystud__loading-navigation-cue {
+  inline-size: 100%;
+}
+.local-groupimport-easystud__loading-navigation-cue {
+  min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
+}
+.local-groupimport-easystud__loading-navigation-cue {
+  background: var(--local-groupimport-easystud-loading-surface);
+  border-radius: var(--local-groupimport-easystud-loading-radius);
+  display: block;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  position: relative;
+}
+.local-groupimport-easystud__loading-navigation-cue::after {
+  animation: easyedu-skeleton-shimmer var(--easyedu-loading-shimmer-duration) linear infinite;
+  background-image: linear-gradient(108deg, transparent 30%, rgba(255, 255, 255, 0.16) 42%, var(--local-groupimport-easystud-loading-shimmer-highlight) 50%, rgba(255, 255, 255, 0.16) 58%, transparent 70%);
+  background-position: -110% 0;
+  background-repeat: no-repeat;
+  background-size: 190% 100%;
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .local-groupimport-easystud__loading-navigation-cue::after {
+    animation: none;
+  }
+}
+.local-groupimport-easystud__loading-navigation-cue:dir(rtl)::after, [dir=rtl] .local-groupimport-easystud__loading-navigation-cue::after {
+  animation-direction: reverse;
+}
+@media (forced-colors: active) {
+  .local-groupimport-easystud__loading-navigation-cue {
+    background: CanvasText;
+    border: 0.0625rem solid CanvasText;
+  }
+  .local-groupimport-easystud__loading-navigation-cue::after {
+    background-image: none;
+  }
+}
+.local-groupimport-easystud__loading-navigation-cue--short {
+  inline-size: min(70%, 14rem);
+}
 .local-groupimport-easystud__loading-layout {
   align-items: stretch;
   box-sizing: border-box;
@@ -1708,11 +1858,11 @@
   }
 }
 .local-groupimport-easystud__loading-panel {
-  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-easystud__loading-panel {
-    border-block-start-color: CanvasText;
+    border-inline-start-color: CanvasText;
   }
 }
 .local-groupimport-easystud__loading-panel {
@@ -1731,10 +1881,10 @@
   grid-auto-rows: max-content;
 }
 .local-groupimport-easystud__loading-panel--participants {
-  border-top: 0.32rem solid #6c9fc9;
+  border-inline-start: 0.32rem solid #6c9fc9;
 }
 .local-groupimport-easystud__loading-panel--structure {
-  border-top: 0.32rem solid #78a78d;
+  border-inline-start: 0.32rem solid #78a78d;
   display: none;
 }
 .local-groupimport-easystud__loading-panel-header, .local-groupimport-easystud__loading-pagination, .local-groupimport-easystud__loading-structure-card {
@@ -1766,11 +1916,11 @@
   }
 }
 .local-groupimport-easystud__loading-search-filter-region {
-  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-easystud__loading-search-filter-region {
-    border-block-start-color: CanvasText;
+    border-inline-start-color: CanvasText;
   }
 }
 .local-groupimport-easystud__loading-search-filter-region {
@@ -1819,11 +1969,11 @@
   }
 }
 .local-groupimport-easystud__loading-participant-card {
-  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-easystud__loading-participant-card {
-    border-block-start-color: CanvasText;
+    border-inline-start-color: CanvasText;
   }
 }
 .local-groupimport-easystud__loading-participant-card {
@@ -1858,11 +2008,11 @@
   }
 }
 .local-groupimport-easystud__loading-structure-card {
-  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-easystud__loading-structure-card {
-    border-block-start-color: CanvasText;
+    border-inline-start-color: CanvasText;
   }
 }
 .local-groupimport-easystud__loading-structure-card {
@@ -1903,11 +2053,11 @@
   }
 }
 .local-groupimport-easystud__loading-view-toggle {
-  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-easystud__loading-view-toggle {
-    border-block-start-color: CanvasText;
+    border-inline-start-color: CanvasText;
   }
 }
 .local-groupimport-easystud__loading-view-toggle {
@@ -2044,6 +2194,15 @@
   }
   .local-groupimport-easystud__loading-panel--structure {
     display: none;
+  }
+}
+@media (max-width: 64rem) {
+  .local-groupimport-easystud__loading-navigation-frame {
+    --easyedu-navigation-skeleton-compact-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-min-block-size);
+    --easyedu-navigation-skeleton-compact-padding: var(--easyedu-navigation-skeleton-compact-mobile-padding);
+    --easyedu-navigation-skeleton-compact-guide-cue-size: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-size);
+    --easyedu-navigation-skeleton-compact-guide-cue-gap: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-gap);
+    --easyedu-navigation-skeleton-compact-cue-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-cue-min-block-size);
   }
 }
 @media (max-width: 20rem) {
@@ -12949,6 +13108,13 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-navigation-layer-trigger: 1064;
   --easyedu-navigation-layer-backdrop: 1065;
   --easyedu-navigation-layer-panel: 1066;
+  --easyedu-navigation-guide-surface: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--easyedu-primary) 10%, var(--easyedu-surface) 90%) 0%,
+    color-mix(in srgb, var(--easyedu-accent) 14%, var(--easyedu-surface) 86%) 100%
+  );
+  --easyedu-navigation-guide-border: color-mix(in srgb, var(--easyedu-accent) 28%, var(--easyedu-card-border) 72%);
+  --easyedu-navigation-guide-shadow: 0 0.4rem 1rem rgba(22, 45, 68, 0.12);
   --easyedu-radius: 0.75rem;
   --easyedu-radius-sm: 0.5rem;
   --easyedu-radius-lg: 1rem;
@@ -13037,6 +13203,17 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -13786,6 +13963,13 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-navigation-layer-trigger: 1064;
   --easyedu-navigation-layer-backdrop: 1065;
   --easyedu-navigation-layer-panel: 1066;
+  --easyedu-navigation-guide-surface: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--easyedu-primary) 10%, var(--easyedu-surface) 90%) 0%,
+    color-mix(in srgb, var(--easyedu-accent) 14%, var(--easyedu-surface) 86%) 100%
+  );
+  --easyedu-navigation-guide-border: color-mix(in srgb, var(--easyedu-accent) 28%, var(--easyedu-card-border) 72%);
+  --easyedu-navigation-guide-shadow: 0 0.4rem 1rem rgba(22, 45, 68, 0.12);
   --easyedu-radius: 0.75rem;
   --easyedu-radius-sm: 0.5rem;
   --easyedu-radius-lg: 1rem;
@@ -13874,6 +14058,17 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   --easyedu-loading-section-compact-icon-slot-size: 1.25rem;
   --easyedu-loading-section-compact-heading-gap: 0.5rem;
   --easyedu-loading-section-compact-navigation-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-min-block-size: 5.4rem;
+  --easyedu-navigation-skeleton-compact-padding: 0.9rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-size: 3.2rem;
+  --easyedu-navigation-skeleton-compact-guide-cue-gap: 0.9rem;
+  --easyedu-navigation-skeleton-compact-cue-gap: 0.65rem;
+  --easyedu-navigation-skeleton-compact-cue-min-block-size: 2.35rem;
+  --easyedu-navigation-skeleton-compact-mobile-min-block-size: 4.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-padding: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-size: 2.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-guide-cue-gap: 0.75rem;
+  --easyedu-navigation-skeleton-compact-mobile-cue-min-block-size: 2.25rem;
   --easyedu-filter-border: #dce7f1;
   --easyedu-modal-border: #cfe0ef;
   --easyedu-modal-radius: 1rem;
@@ -14123,6 +14318,138 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     border: 0.0625rem solid CanvasText;
   }
 }
+.local-groupimport-import__loading-navigation {
+  margin-block-start: var(--easyedu-loading-section-navigation-gap);
+}
+.local-groupimport-import__loading-navigation-frame {
+  background: #f7fbff;
+  border: 0.0625rem solid #cfdee9;
+  border-radius: 1rem;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-navigation-frame {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+.local-groupimport-import__loading-navigation-frame {
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-navigation-frame {
+    border-inline-start-color: CanvasText;
+  }
+}
+.local-groupimport-import__loading-navigation-frame {
+  animation: none;
+}
+.local-groupimport-import__loading-navigation-frame {
+  align-items: center;
+  column-gap: var(--easyedu-navigation-skeleton-compact-guide-cue-gap);
+  display: grid;
+  grid-template-columns: var(--easyedu-navigation-skeleton-compact-guide-cue-size) minmax(0, 1fr);
+  min-block-size: var(--easyedu-navigation-skeleton-compact-min-block-size);
+  padding: var(--easyedu-navigation-skeleton-compact-padding);
+}
+.local-groupimport-import__loading-navigation-guide {
+  block-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
+  flex: none;
+  inline-size: var(--easyedu-navigation-skeleton-compact-guide-cue-size);
+}
+.local-groupimport-import__loading-navigation-guide {
+  background: var(--easyedu-loading-surface);
+  border-radius: 50%;
+  display: block;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  position: relative;
+}
+.local-groupimport-import__loading-navigation-guide::after {
+  animation: easyedu-skeleton-shimmer var(--easyedu-loading-shimmer-duration) linear infinite;
+  background-image: linear-gradient(108deg, transparent 30%, var(--easyedu-loading-shimmer-soft) 42%, var(--easyedu-loading-shimmer-highlight) 50%, var(--easyedu-loading-shimmer-soft) 58%, transparent 70%);
+  background-position: -110% 0;
+  background-repeat: no-repeat;
+  background-size: 190% 100%;
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .local-groupimport-import__loading-navigation-guide::after {
+    animation: none;
+  }
+}
+.local-groupimport-import__loading-navigation-guide:dir(rtl)::after, [dir=rtl] .local-groupimport-import__loading-navigation-guide::after {
+  animation-direction: reverse;
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-navigation-guide {
+    background: CanvasText;
+    border: 0.0625rem solid CanvasText;
+  }
+  .local-groupimport-import__loading-navigation-guide::after {
+    background-image: none;
+  }
+}
+.local-groupimport-import__loading-navigation-cues {
+  align-content: start;
+  display: grid;
+  gap: var(--easyedu-navigation-skeleton-compact-cue-gap);
+  justify-items: start;
+  min-inline-size: 0;
+}
+.local-groupimport-import__loading-navigation-cue {
+  inline-size: 100%;
+}
+.local-groupimport-import__loading-navigation-cue {
+  min-block-size: var(--easyedu-navigation-skeleton-compact-cue-min-block-size);
+}
+.local-groupimport-import__loading-navigation-cue {
+  background: var(--easyedu-loading-surface);
+  border-radius: 0.72rem;
+  display: block;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  position: relative;
+}
+.local-groupimport-import__loading-navigation-cue::after {
+  animation: easyedu-skeleton-shimmer var(--easyedu-loading-shimmer-duration) linear infinite;
+  background-image: linear-gradient(108deg, transparent 30%, var(--easyedu-loading-shimmer-soft) 42%, var(--easyedu-loading-shimmer-highlight) 50%, var(--easyedu-loading-shimmer-soft) 58%, transparent 70%);
+  background-position: -110% 0;
+  background-repeat: no-repeat;
+  background-size: 190% 100%;
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .local-groupimport-import__loading-navigation-cue::after {
+    animation: none;
+  }
+}
+.local-groupimport-import__loading-navigation-cue:dir(rtl)::after, [dir=rtl] .local-groupimport-import__loading-navigation-cue::after {
+  animation-direction: reverse;
+}
+@media (forced-colors: active) {
+  .local-groupimport-import__loading-navigation-cue {
+    background: CanvasText;
+    border: 0.0625rem solid CanvasText;
+  }
+  .local-groupimport-import__loading-navigation-cue::after {
+    background-image: none;
+  }
+}
+.local-groupimport-import__loading-navigation-cue--short {
+  inline-size: min(70%, 14rem);
+}
 .local-groupimport-import__loading-eyebrow {
   height: 0.72rem;
   width: min(9rem, 32%);
@@ -14161,11 +14488,11 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
   }
 }
 .local-groupimport-import__loading-card {
-  border-block-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
+  border-inline-start: var(--easyedu-loading-section-border-width) solid var(--easyedu-loading-section-accent);
 }
 @media (forced-colors: active) {
   .local-groupimport-import__loading-card {
-    border-block-start-color: CanvasText;
+    border-inline-start-color: CanvasText;
   }
 }
 .local-groupimport-import__loading-card {
@@ -14227,6 +14554,15 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
 }
 .local-groupimport-import[data-easyedu-motion-policy=disabled] .local-groupimport-import__loading-surface, .local-groupimport-import.is-easyedu-motion-off .local-groupimport-import__loading-surface {
   animation: none;
+}
+@media (max-width: 64rem) {
+  .local-groupimport-import__loading-navigation-frame {
+    --easyedu-navigation-skeleton-compact-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-min-block-size);
+    --easyedu-navigation-skeleton-compact-padding: var(--easyedu-navigation-skeleton-compact-mobile-padding);
+    --easyedu-navigation-skeleton-compact-guide-cue-size: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-size);
+    --easyedu-navigation-skeleton-compact-guide-cue-gap: var(--easyedu-navigation-skeleton-compact-mobile-guide-cue-gap);
+    --easyedu-navigation-skeleton-compact-cue-min-block-size: var(--easyedu-navigation-skeleton-compact-mobile-cue-min-block-size);
+  }
 }
 @media (max-width: 20rem) {
   .local-groupimport-import.is-action-busy::after {

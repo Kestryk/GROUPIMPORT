@@ -1109,6 +1109,25 @@ echo html_writer::tag('div',
     ['class' => 'local-groupimport-import__loading-actions']
 );
 echo html_writer::end_div();
+echo html_writer::start_div('local-groupimport-import__loading-navigation', [
+    'aria-hidden' => 'true',
+]);
+echo html_writer::tag('div',
+    html_writer::tag('span', '', [
+        'class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-navigation-guide',
+    ]) .
+    html_writer::tag('div',
+        html_writer::tag('span', '', [
+            'class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-navigation-cue',
+        ]) .
+        html_writer::tag('span', '', [
+            'class' => 'local-groupimport-import__loading-surface local-groupimport-import__loading-navigation-cue local-groupimport-import__loading-navigation-cue--short',
+        ]),
+        ['class' => 'local-groupimport-import__loading-navigation-cues']
+    ),
+    ['class' => 'local-groupimport-import__loading-navigation-frame']
+);
+echo html_writer::end_div();
 echo html_writer::start_div('local-groupimport-import__loading-grid');
 for ($skeletoncard = 0; $skeletoncard < 2; $skeletoncard++) {
     echo html_writer::start_div('local-groupimport-import__loading-card');

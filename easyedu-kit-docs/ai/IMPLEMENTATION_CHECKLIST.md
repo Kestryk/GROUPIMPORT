@@ -39,6 +39,11 @@ Use this checklist for every UI task in EasyEdu plugins.
       classes while adopting visual surfaces.
 - [ ] Keep overflow and sticky offsets plugin-owned unless the component
       contract explicitly owns them.
+- [ ] For each rendered EasyStud view with real navigation, use the compact K3
+      Navigation Skeleton as decorative markup only; retain the real navigation,
+      lifecycle, `aria-busy`, no-script and fail-open contracts unchanged.
+- [ ] Use the K3 logical `border-inline-start` Skeleton accent rather than a
+      physical or top-border accent; preserve native RTL behaviour.
 - [ ] For top admin navigation, use `admin-primary-nav`; keep labels on one
       line and do not restyle the guide launcher as a nav action.
 - [ ] Keep the direct guide wrapper first in the admin navigation DOM so the
@@ -81,6 +86,8 @@ Use this checklist for every UI task in EasyEdu plugins.
 
 - [ ] Compile SCSS.
 - [ ] Check JS syntax.
+- [ ] Run the Navigation Skeleton source contract when its template, cues,
+      token snapshot or coverage matrix changes.
 - [ ] Run `git diff --check`.
 - [ ] Run `.\scripts\audit-kit.ps1 -FailOnNewWarning` in the kit when kit files
       changed.

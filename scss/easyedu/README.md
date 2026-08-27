@@ -121,9 +121,13 @@ Prefer generic `--easyedu-*` variables. Plugin-specific aliases such as
   `skeleton-section-compact`: static section-frame and compact-density
   primitives.
 - `navigation-skeleton-frame`: static large navigation-shaped frame.
+- `navigation-skeleton-compact-frame`: K3 compact static Navigation frame.
+- `navigation-skeleton-guide-start-cue`: decorative, non-focusable Guide circle.
 - `navigation-skeleton-cue`, `navigation-skeleton-cue-overlay`: animated
   decorative internal marks only.
 - `navigation-skeleton-cue-stack`: logical internal-cue group alignment.
+- `navigation-skeleton-compact-cue`, `navigation-skeleton-compact-mobile`:
+  K3 compact cue density and consumer-owned narrow navigation rule.
 - `drop-target-overlay`: drag/drop compatible target feedback.
 - `tooltip-surface`: hover-only help bubbles.
 
@@ -142,11 +146,12 @@ This keeps the kit easy to copy while still allowing each plugin to evolve.
 ## Navigation Skeleton consumer boundary
 
 The embedded Loading and `navigation-skeleton` components come from immutable
-UI Kit snapshot `41e86979dc8138dd026438039143f2ba94c0531e`. Apply
-`navigation-skeleton-frame` only to a static outer frame and apply a cue mixin
-only to decorative descendants. The component supplies RTL reversal,
-reduced-motion and forced-colors behavior; EasyStud keeps its own panel
-geometry, no-script path, readiness and fail-open policy.
+UI Kit snapshot `e5fe986a4a21ce630d4b952af3dfccd82818232b`. K3 uses the
+logical inline-start accent and requires the compact static Navigation frame,
+decorative Guide-start circle and internal cues wherever a consumer renders
+real navigation. The component supplies RTL reversal, reduced-motion and
+forced-colors behavior; EasyStud keeps its own panel geometry, no-script path,
+readiness and fail-open policy.
 
 ## Porting checklist for a new plugin
 
