@@ -27,13 +27,16 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
     const root = await login(page);
 
     const groupsView = root.locator('[data-easystud-mobile-view="groups"]');
-    if (await groupsView.isVisible()) {
-        await groupsView.click();
-    }
+    await expect(groupsView).toBeVisible();
+    await groupsView.click();
+    await expect(root).toHaveAttribute('data-easystud-mobile-view-active', 'groups');
+    await expect(root.locator('[data-easystud-group-id]:visible').first()).toBeVisible();
 
     // Sort belongs to the Groups view toolbar, not to an individual Group
     // card. Validate its own stacking independently from card action menus.
-    const sortDropdown = root.locator('[data-easystud-list-sort-dropdown]:visible').first();
+    const sortDropdown = root.locator(
+        '[data-easystud-mobile-entity-region="groups"]:visible [data-easystud-list-sort-dropdown]:visible'
+    ).first();
     const sortToggle = sortDropdown.locator('[data-easystud-list-sort-toggle]');
     const sortMenu = sortDropdown.locator('[data-easystud-list-sort-menu]');
     await expect(sortToggle).toBeVisible();
