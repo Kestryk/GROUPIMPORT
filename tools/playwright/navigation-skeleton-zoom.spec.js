@@ -44,6 +44,40 @@ const cells = [
 
 const nativeZoomLevel = percentage => Math.log(percentage / 100) / Math.log(1.2);
 
+// QA diagnostics only: these bounded phase guards identify a stalled browser
+// operation without changing the Playwright test's 900-second global watchdog.
+const diagnosticPhaseTimeoutMs = 45000;
+const diagnosticLaunchTimeoutMs = 60000;
+
+const phaseMilestone = label => {
+    process.stdout.write(`[navigation-skeleton-zoom] ${new Date().toISOString()} ${label}\n`);
+};
+
+const runDiagnosticPhase = async(label, operation, timeoutMs = diagnosticPhaseTimeoutMs) => {
+    const startedAt = Date.now();
+    phaseMilestone(`${label}:start`);
+    let timer;
+    let outcome = 'complete';
+    try {
+        const timeout = new Promise((resolve, reject) => {
+            timer = setTimeout(() => reject(new Error(
+                `diagnostic timeout after ${timeoutMs}ms`
+            )), timeoutMs);
+        });
+        return await Promise.race([
+            Promise.resolve().then(operation),
+            timeout,
+        ]);
+    } catch (error) {
+        outcome = 'failed';
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`${label}: ${message}`);
+    } finally {
+        clearTimeout(timer);
+        phaseMilestone(`${label}:${outcome} (${Date.now() - startedAt}ms)`);
+    }
+};
+
 const prepareIsolatedZoomProfile = async(profileRoot, baseUrl, zoom) => {
     const endpoint = new URL(baseUrl);
     const defaultProfile = path.join(profileRoot, 'Default');
@@ -68,32 +102,47 @@ const prepareIsolatedZoomProfile = async(profileRoot, baseUrl, zoom) => {
     );
 };
 
-const login = async page => {
-    await page.goto(massImportUrl, {waitUntil: 'domcontentloaded'});
+const login = async(page, phasePrefix = 'login') => {
+    await runDiagnosticPhase(`${phasePrefix}:goto`, () => page.goto(massImportUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: diagnosticPhaseTimeoutMs,
+    }));
     if (!page.url().includes('/login/')) {
         return;
     }
     if (!password) {
         throw new Error('The supervised runner did not supply a Moodle password.');
     }
-    await page.locator('#username').fill(username);
-    await page.locator('#password').fill(password);
-    await page.locator('#loginbtn').click();
-    await page.waitForURL(url => !url.pathname.includes('/login/'), {
-        waitUntil: 'domcontentloaded',
-    });
+    await runDiagnosticPhase(`${phasePrefix}:fill-username`, () => page.locator('#username').fill(username));
+    await runDiagnosticPhase(`${phasePrefix}:fill-password`, () => page.locator('#password').fill(password));
+    await runDiagnosticPhase(`${phasePrefix}:submit`, () => page.locator('#loginbtn').click());
+    await runDiagnosticPhase(`${phasePrefix}:wait-after-login`, () => page.waitForURL(
+        url => !url.pathname.includes('/login/'),
+        {waitUntil: 'domcontentloaded', timeout: diagnosticPhaseTimeoutMs}
+    ));
 };
 
-const revealSkeleton = async(page, surface, direction, showBusyIndicator = false) => {
-    await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
+const revealSkeleton = async(page, surface, direction, showBusyIndicator = false, phasePrefix = surface.id) => {
+    await runDiagnosticPhase(`${phasePrefix}:goto`, () => page.goto(surface.url, {
+        waitUntil: 'domcontentloaded',
+        timeout: diagnosticPhaseTimeoutMs,
+    }));
     if (page.url().includes('/login/')) {
-        await login(page);
-        await page.goto(surface.url, {waitUntil: 'domcontentloaded'});
+        await login(page, `${phasePrefix}:login`);
+        await runDiagnosticPhase(`${phasePrefix}:goto-after-login`, () => page.goto(surface.url, {
+            waitUntil: 'domcontentloaded',
+            timeout: diagnosticPhaseTimeoutMs,
+        }));
     }
-    await expect(page.locator(surface.rootSelector)).toBeVisible({timeout: 30000});
+    await runDiagnosticPhase(`${phasePrefix}:root-visible`, () => expect(
+        page.locator(surface.rootSelector)
+    ).toBeVisible({timeout: diagnosticPhaseTimeoutMs}));
 
-    await page.emulateMedia({reducedMotion: 'no-preference', forcedColors: 'none'});
-    await page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
+    await runDiagnosticPhase(`${phasePrefix}:emulate-media`, () => page.emulateMedia({
+        reducedMotion: 'no-preference',
+        forcedColors: 'none',
+    }));
+    await runDiagnosticPhase(`${phasePrefix}:force-skeleton`, () => page.evaluate(({rootSelector, direction, showBusyIndicator}) => {
         const root = document.querySelector(rootSelector);
         const skeleton = root?.querySelector('[data-easystud-loading-skeleton]');
         if (!root || !skeleton) {
@@ -105,12 +154,14 @@ const revealSkeleton = async(page, surface, direction, showBusyIndicator = false
         root.dataset.easystudLoadingState = 'loading';
         root.setAttribute('aria-busy', 'true');
         skeleton.hidden = false;
-    }, {rootSelector: surface.rootSelector, direction, showBusyIndicator});
+    }, {rootSelector: surface.rootSelector, direction, showBusyIndicator}));
 
     const skeleton = page.locator(
         `${surface.rootSelector} [data-easystud-loading-skeleton]`
     );
-    await expect(skeleton).toBeVisible();
+    await runDiagnosticPhase(`${phasePrefix}:skeleton-visible`, () => expect(skeleton).toBeVisible({
+        timeout: diagnosticPhaseTimeoutMs,
+    }));
     return skeleton;
 };
 
@@ -176,6 +227,7 @@ const inspectSkeleton = async(page, surface) => page.evaluate(({surface}) => {
 
 test('Navigation Skeleton stays contained at 320/390 with isolated native 100/200 zoom', async({}, testInfo) => {
     test.setTimeout(900000);
+    phaseMilestone('test:started global-timeout=900000ms');
     const profileRoot = process.env.PLAYWRIGHT_PROFILE_DIR;
     if (!profileRoot) {
         throw new Error('The supervised runner must provide an external browser profile directory.');
@@ -183,9 +235,12 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
 
     const evidence = [];
     for (const zoom of [200, 100]) {
+        phaseMilestone(`zoom-${zoom}:started`);
         const zoomProfile = path.join(profileRoot, `native-zoom-${zoom}`);
-        await prepareIsolatedZoomProfile(zoomProfile, massImportUrl, zoom);
-        const context = await chromium.launchPersistentContext(zoomProfile, {
+        await runDiagnosticPhase(`zoom-${zoom}:prepare-profile`, () =>
+            prepareIsolatedZoomProfile(zoomProfile, massImportUrl, zoom));
+        const context = await runDiagnosticPhase(`zoom-${zoom}:launch-persistent-context`, () =>
+            chromium.launchPersistentContext(zoomProfile, {
             // The profile is created inside this run's external artifact directory.
             // No keypress or desktop-window automation is used, so an existing browser
             // profile and its zoom level cannot be changed by this scenario.
@@ -198,34 +253,41 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                 '--window-position=-32000,-32000',
                 '--window-size=390,844',
             ] : ['--force-device-scale-factor=1'],
-        });
+            }), diagnosticLaunchTimeoutMs);
 
         try {
-            const authenticationPage = await context.newPage();
-            await login(authenticationPage);
-            await authenticationPage.close();
+            const authenticationPage = await runDiagnosticPhase(
+                `zoom-${zoom}:authentication-new-page`,
+                () => context.newPage()
+            );
+            await login(authenticationPage, `zoom-${zoom}:authentication`);
+            await runDiagnosticPhase(`zoom-${zoom}:authentication-close`, () => authenticationPage.close());
 
             for (const cell of cells) {
                 for (const surface of surfaces) {
-                    const page = await context.newPage();
-                    await page.setViewportSize(cell.viewport);
+                    const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
+                    phaseMilestone(`${cellId}:started`);
+                    const page = await runDiagnosticPhase(`${cellId}:new-page`, () => context.newPage());
+                    await runDiagnosticPhase(`${cellId}:set-viewport`, () => page.setViewportSize(cell.viewport));
                     const showBusyIndicator = surface.id === 'mass-import';
                     const skeleton = await revealSkeleton(
-                        page, surface, cell.direction, showBusyIndicator
+                        page, surface, cell.direction, showBusyIndicator, cellId
                     );
-                    const inspection = await inspectSkeleton(page, surface);
-                    const cellId = `${surface.id}-${cell.viewport.width}-${cell.direction}-${zoom}`;
+                    const inspection = await runDiagnosticPhase(
+                        `${cellId}:inspect-skeleton`,
+                        () => inspectSkeleton(page, surface)
+                    );
 
                     // Preserve the exact native-zoom visual evidence even if a
                     // subsequent containment assertion diagnoses a regression.
-                    await skeleton.screenshot({
+                    await runDiagnosticPhase(`${cellId}:skeleton-capture`, () => skeleton.screenshot({
                         path: testInfo.outputPath(`navigation-skeleton-${cellId}.png`),
-                    });
+                    }));
                     if (showBusyIndicator && cell.viewport.width === 320 &&
                         cell.direction === 'ltr' && zoom === 200) {
-                        await page.screenshot({
+                        await runDiagnosticPhase(`${cellId}:window-capture`, () => page.screenshot({
                             path: testInfo.outputPath(`navigation-skeleton-${cellId}-window.png`),
-                        });
+                        }));
                     }
                     evidence.push({cellId, ...inspection});
 
@@ -273,17 +335,20 @@ test('Navigation Skeleton stays contained at 320/390 with isolated native 100/20
                         expect(nativeZoomProven, `${cellId}: genuine native 200% zoom`).toBe(true);
                     }
 
-                    await page.close();
+                    await runDiagnosticPhase(`${cellId}:close-page`, () => page.close());
+                    phaseMilestone(`${cellId}:completed`);
                 }
             }
         } finally {
-            await context.close();
+            await runDiagnosticPhase(`zoom-${zoom}:close-context`, () => context.close(), diagnosticLaunchTimeoutMs);
+            phaseMilestone(`zoom-${zoom}:completed`);
         }
     }
 
-    await fs.writeFile(
+    await runDiagnosticPhase('test:write-summary', () => fs.writeFile(
         testInfo.outputPath('navigation-skeleton-native-zoom-summary.json'),
         JSON.stringify(evidence, null, 2),
         'utf8'
-    );
+    ));
+    phaseMilestone('test:completed');
 });

@@ -201,5 +201,15 @@ Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'skeleton.clie
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'EASYEDU_CHROMIUM_EXECUTABLE'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'per_host_zoom_levels: {'
 Assert-Contains 'Navigation Skeleton zoom scenario' $zoomScenario 'x: {'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'const diagnosticPhaseTimeoutMs = 45000;'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'const diagnosticLaunchTimeoutMs = 60000;'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'const phaseMilestone = label => {'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'const runDiagnosticPhase = async(label, operation'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'diagnostic timeout after ${timeoutMs}ms'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'global-timeout=900000ms'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario 'launch-persistent-context'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario ':force-skeleton'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario ':started'
+Assert-Contains 'Navigation Skeleton QA diagnostics' $zoomScenario ':completed'
 
 Write-Host "Navigation Skeleton K3 source contract passed: Student Management 48 -> 51 cues; Mass Import 19 -> 22 cues."

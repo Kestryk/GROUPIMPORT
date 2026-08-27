@@ -26,6 +26,9 @@ Maintenance convention:
 - Static contract, Sass build, PHP lint, JavaScript syntax, allowlist and diff
   checks are recorded with this consumer batch. Runtime preview and browser
   evidence require separate authorization.
+- Added a QA-only diagnostic sub-lot to the focused zoom scenario: explicit
+  phase/cell milestones and local 45/60-second diagnostic guards retain the
+  global 900-second watchdog and do not alter product or K3 behavior.
 
 ### Visual Skeleton Kit consumer adoption - 2026-08-25
 

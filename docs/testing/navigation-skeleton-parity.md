@@ -81,6 +81,25 @@ launch; it does not send keyboard shortcuts or automate any existing desktop
 browser window. Reduced-motion and forced-colors remain covered by the Kit
 source contract and its canonical CSS media rules.
 
+## QA timeout diagnostics - 2026-08-27
+
+The prior managed-preview run started the single Playwright test but emitted no
+phase output, assertion or capture before the unchanged 900-second watchdog.
+Source order places `chromium.launchPersistentContext` for native 200% (the
+first browser await after local profile preparation) before authentication,
+navigation, forced Skeleton activation and all matrix cells; the old scenario
+had no milestone output or local guard, so the exact runtime wait could not be
+distinguished from later phases. The QA-only diagnostic sub-lot now emits
+start/completion milestones for profile preparation, persistent-context launch,
+authentication, each navigation/activation phase and every 320/390 LTR/RTL
+cell. It bounds each diagnostic phase locally (45 seconds, or 60 seconds for
+context launch/close) while retaining `test.setTimeout(900000)`. It changes no
+product, K3, lifecycle, markup or runtime behavior.
+
+The diagnostic instrumentation is source-only and is intended to establish the
+first concrete blocked phase before any further browser authorization is
+requested. No rerun is implied by this change.
+
 ### Static record - 2026-08-10
 
 The vendored component text was compared after line-ending normalization with
