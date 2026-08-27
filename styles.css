@@ -4880,7 +4880,7 @@
   overflow: visible;
   z-index: 35;
 }
-.local-groupimport-easystud-group:has(> .local-groupimport-easystud-group__members.is-expanded) {
+.local-groupimport-easystud-group:has(> .local-groupimport-easystud-group__members.is-expanded):not(.is-actions-menu-open) {
   z-index: 12;
 }
 .local-groupimport-easystud-group[data-easystud-user-drop].is-drop-target {

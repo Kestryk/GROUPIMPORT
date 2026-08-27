@@ -54,6 +54,14 @@ browser profile or zoom. For Mass Import, it also reveals the existing busy
 label and checks that the compact spinner fits its label at 320 px/native 200%;
 the same LTR cell writes one full-window review capture.
 
+`group-expanded-menu-stack.spec.js` / `expanded Group More-actions menu stays
+above revealed participant members` is the focused desktop regression for
+EED-UI-2026-0028-B. It selects the existing Complete view, expands a nested
+Group's existing participant-member disclosure, opens its existing
+More-actions control, records an external review capture and verifies the
+open card retains the menu stack. It then exercises the existing Escape route;
+it creates no groups, members, permissions or other fixture data.
+
 ### Participant role-filter integrity
 
 `participant-role-filter-integrity.spec.js` owns the focused non-destructive

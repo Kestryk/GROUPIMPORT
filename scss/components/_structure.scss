@@ -829,7 +829,7 @@
   // An expanded member list may extend beside the Groupings column in Complete
   // View. Lift only that card's paint stack so the identity rail remains
   // visible above neighbouring overflow without changing its box geometry.
-  &-group:has(> &-group__members.is-expanded) {
+  &-group:has(> &-group__members.is-expanded):not(.is-actions-menu-open) {
     z-index: 12;
   }
 
