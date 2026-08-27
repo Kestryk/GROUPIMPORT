@@ -31,6 +31,11 @@ Maintenance convention:
   compact navigation height, structural/card accent distinction, a borderless
   view selector and no focusable Skeleton node. Preview and browser evidence
   remain separately authorised.
+- Bound Navigation Skeleton evidence captures locally, with diagnostic and
+  viewport-fallback artifacts that preserve subsequent K3.1 assertions.
+- Restored a measurable mobile K3.1 Navigation Skeleton frame for Mass Import
+  at the effective 20rem/native-200% threshold, without changing real
+  navigation or the shared Kit.
 
 ### Skeleton B K3 consumers - 2026-08-27
 
