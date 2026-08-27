@@ -31,29 +31,25 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
         await groupsView.click();
     }
 
-    const group = root.locator(
-        '[data-easystud-group-id]:visible:has([data-easystud-list-sort-dropdown])'
-    ).first();
-    await expect(group).toBeVisible();
-
-    const memberToggle = group.locator(':scope > [data-easystud-group-members-toggle]:visible');
-    if (await memberToggle.count() && (await memberToggle.getAttribute('aria-expanded')) !== 'true') {
-        await memberToggle.click();
-    }
-    const sortToggle = group.locator('[data-easystud-list-sort-toggle]:visible').first();
-    const sortMenu = group.locator('[data-easystud-list-sort-menu]').first();
+    // Sort belongs to the Groups view toolbar, not to an individual Group
+    // card. Validate its own stacking independently from card action menus.
+    const sortDropdown = root.locator('[data-easystud-list-sort-dropdown]:visible').first();
+    const sortToggle = sortDropdown.locator('[data-easystud-list-sort-toggle]');
+    const sortMenu = sortDropdown.locator('[data-easystud-list-sort-menu]');
     await expect(sortToggle).toBeVisible();
     await sortToggle.click();
     await expect(sortMenu).toBeVisible();
-    await expect(group).toHaveClass(/is-sort-menu-open/);
+    await expect(sortDropdown).toHaveClass(/is-open/);
 
-    const sortBounds = await Promise.all([
-        group.evaluate(node => node.getBoundingClientRect().toJSON()),
-        sortMenu.evaluate(node => node.getBoundingClientRect().toJSON()),
-    ]);
-    expect(sortBounds[1].left).toBeGreaterThanOrEqual(sortBounds[0].left - 1);
-    expect(sortBounds[1].right).toBeLessThanOrEqual(sortBounds[0].right + 1);
-    await page.screenshot({path: testInfo.outputPath('group-sort-menu-above-members.png')});
+    const sortPaintOwner = await sortMenu.evaluate(menu => {
+        const bounds = menu.getBoundingClientRect();
+        const x = Math.min(bounds.right - 2, Math.max(bounds.left + 2, bounds.left + bounds.width / 2));
+        const y = Math.min(bounds.bottom - 2, Math.max(bounds.top + 2, bounds.top + bounds.height / 2));
+        const top = document.elementFromPoint(x, y);
+        return Boolean(top && (top === menu || menu.contains(top)));
+    });
+    expect(sortPaintOwner, 'the global Sort menu owns its painted area above the card list').toBe(true);
+    await page.screenshot({path: testInfo.outputPath('global-sort-menu-above-group-cards.png')});
     await sortToggle.click();
 
     const actionGroup = root.locator(
