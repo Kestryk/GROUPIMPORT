@@ -5054,6 +5054,8 @@
   height: 1.85rem;
   justify-content: center;
   margin: 0;
+  margin-inline-start: auto;
+  order: 2;
   padding: 0;
   position: static;
   width: 1.85rem;

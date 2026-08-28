@@ -712,8 +712,10 @@ const syncMaskedGroupingMenuTrigger = (group, masked) => {
         if (trigger.parentElement === group) {
             trigger.setAttribute('data-easystud-grouping-menu-relocated', '1');
         }
-        const badge = header.querySelector(':scope > .badge');
-        header.insertBefore(trigger, badge || null);
+        // Keep the recovery action at the logical end of the card header.
+        // The title keeps the first claim on the row; every lower-priority
+        // card action can then move into this menu as space becomes scarce.
+        header.appendChild(trigger);
         return;
     }
 
@@ -7499,6 +7501,10 @@ const bindNestedGroupActionMenus = root => {
         refreshFrame = window.requestAnimationFrame(() => {
             refreshFrame = null;
             ensureNestedGroupActionMenus(root);
+            // A nested-card action change also changes the room available to
+            // the Grouping tag. Re-evaluate its all-or-recover decision in
+            // the same frame so it never remains visually clipped.
+            scheduleGroupGroupingOverflow(root);
         });
     };
     window.addEventListener('resize', refresh);
@@ -9184,6 +9190,7 @@ export const init = (rootId, courseId) => {
                 const refreshResponsiveUi = () => {
                     scheduleResponsiveUiRefresh(root);
                     scheduleCompleteListAlignment(root);
+                    scheduleGroupGroupingOverflow(root);
                 };
                 window.addEventListener('resize', refreshResponsiveUi);
                 window.addEventListener('orientationchange', refreshResponsiveUi);
