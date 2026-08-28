@@ -13,8 +13,9 @@ not open from the same click.
 Member-list Sort is independent of card actions. While its dropdown is open,
 the owning card, pagination and paginated list receive `is-sort-menu-open`.
 This keeps a global Groups Sort menu above its first card as well as keeping a
-card-local Sort menu above neighbouring cards. The state is removed whenever
-the dropdown closes.
+card-local Sort menu above neighbouring cards. The opened Sort dropdown itself
+is the paint owner above intermediate-width card contexts; the state is removed
+whenever the dropdown closes.
 
 Invariants:
 
@@ -22,6 +23,7 @@ Invariants:
 - only actions which do not fit appear in the local overflow menu;
 - actions return to the header when space becomes available;
 - Sort stays above expanded members and neighbouring cards;
+- the opened global Sort menu is captured before its paint-owner assertion;
 - a Grouping label is shown whole or recovered through More actions; it is never
   visually truncated inside a Group card header;
 - Grouping-label recovery is recomputed after viewport and card-header width

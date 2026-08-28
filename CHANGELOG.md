@@ -36,12 +36,14 @@ Maintenance convention:
   the list remains above expanded participants and neighbouring cards.
 - Raise the pagination and its paginated list together while global Sort is
   open, so the menu is not covered by the first card in the Groups view.
+- Raise only the opened Sort dropdown above an intermediate-width Group-card
+  stacking context, keeping the global menu painted above the card list.
 
 #### Validation
 
 - Rebuilt the Course Manager AMD and EasyStud CSS assets and added focused
-  static and Playwright contracts. Runtime preview remains separately
-  authorised.
+  static and Playwright contracts. The Sort-open capture is emitted before its
+  paint-owner assertion. Runtime preview remains separately authorised.
 
 ### EED-UI-2026-0028-B - Group menu above expanded Participants - 2026-08-27
 

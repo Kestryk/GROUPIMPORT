@@ -120,6 +120,7 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
     await sortToggle.click();
     await expect(sortMenu).toBeVisible();
     await expect(sortDropdown).toHaveClass(/is-open/);
+    await page.screenshot({path: testInfo.outputPath('global-sort-menu-open-before-paint-assertion.png')});
 
     const sortPaintOwner = await sortMenu.evaluate(menu => {
         const bounds = menu.getBoundingClientRect();
