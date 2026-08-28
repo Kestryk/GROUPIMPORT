@@ -58,4 +58,9 @@ if (-not $structure.Contains('margin-inline-start: auto;') -or
     throw 'Missing logical end-alignment contract for recovered More actions.'
 }
 
+if (-not $structure.Contains('[data-easystud-list-sort-dropdown].is-open') -or
+        -not $structure.Contains('z-index: 42;')) {
+    throw 'Missing opened Sort dropdown paint-owner contract.'
+}
+
 Write-Output 'Card action overflow and Sort stacking contract passed.'

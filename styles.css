@@ -5830,6 +5830,9 @@
   position: relative;
   z-index: 41;
 }
+.local-groupimport-easystud-pagination.is-sort-menu-open [data-easystud-list-sort-dropdown].is-open {
+  z-index: 42;
+}
 .local-groupimport-easystud-pagination--top {
   margin-bottom: 0.36rem;
   margin-top: 0.12rem;
