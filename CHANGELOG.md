@@ -20,6 +20,11 @@ Maintenance convention:
   through the existing More-actions recovery instead of being ellipsized.
 - Harmonised the recovered More trigger with the plain icon treatment of the
   sibling Group and Grouping card actions; it no longer gains a bordered pill.
+- Kept that local More-actions trigger borderless at responsive/intermediate
+  widths, after the generic card-menu touch-target rule, while preserving its
+  existing focus path and touch area.
+- Preserved the existing inherited Moodle typography for More filters,
+  counters and Sort.
 - Populate the local menu from only the actions that no longer fit inside the
   card header, including the rename action, and recompute it when card widths
   change.
