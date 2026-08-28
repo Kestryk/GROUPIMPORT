@@ -26,4 +26,8 @@ Invariants:
   visually truncated inside a Group card header;
 - the recovered More trigger keeps the plain icon treatment of its sibling card
   actions rather than becoming a bordered pill;
+- at responsive and intermediate widths, the local Group/Grouping overflow
+  trigger retains the generic touch target and focus path but explicitly keeps
+  its borderless `0.4rem` icon treatment;
+- More filters, counters and Sort continue to inherit the Moodle theme font;
 - no permission, data, selection or action route changes.

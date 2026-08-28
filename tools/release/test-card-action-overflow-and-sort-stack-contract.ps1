@@ -4,6 +4,8 @@ $pluginRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $source = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'amd\src\course_manager.js')
 $build = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'amd\build\course_manager.min.js')
 $structure = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\components\_structure.scss')
+$responsive = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\responsive\_desktop.scss')
+$tokens = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\easyedu\_tokens.scss')
 
 $requiredSource = @(
     'is-easystud-card-action-overflow',
@@ -27,6 +29,22 @@ foreach ($needle in @('is-easystud-card-action-overflow', 'is-sort-menu-open')) 
     if (-not $structure.Contains($needle)) {
         throw "Missing SCSS contract: $needle"
     }
+}
+
+foreach ($needle in @(
+    '&-group__actions-toggle.local-groupimport-easystud-card-menu',
+    'border: 0;',
+    'border-radius: 0.4rem;'
+)) {
+    if (-not $responsive.Contains($needle)) {
+        throw "Missing responsive More-actions contract: $needle"
+    }
+}
+
+if (-not $tokens.Contains('--easyedu-font-family-ui: inherit;') -or
+        -not $structure.Contains('[data-easystud-list-sort-label]') -or
+        -not $structure.Contains('font: inherit;')) {
+    throw 'Missing inherited typography contract for More filters, counters or Sort.'
 }
 
 Write-Output 'Card action overflow and Sort stacking contract passed.'
