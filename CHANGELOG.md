@@ -23,6 +23,10 @@ Maintenance convention:
 - Kept that local More-actions trigger borderless at responsive/intermediate
   widths, after the generic card-menu touch-target rule, while preserving its
   existing focus path and touch area.
+- Recompute Grouping-label recovery after viewport and card-header width
+  changes, preventing a formerly fitting label from remaining clipped.
+- Keep a recovered More-actions trigger at the logical end of its Group-card
+  header, preserving the requested visual priority: title, then More actions.
 - Preserved the existing inherited Moodle typography for More filters,
   counters and Sort.
 - Populate the local menu from only the actions that no longer fit inside the

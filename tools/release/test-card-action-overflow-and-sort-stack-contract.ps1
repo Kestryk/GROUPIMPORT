@@ -13,7 +13,8 @@ $requiredSource = @(
     'is-sort-menu-open',
     'pagination.classList.toggle',
     'ResizeObserver',
-    'data-easystud-group-actions-menu'
+    'data-easystud-group-actions-menu',
+    'header.appendChild(trigger);'
 )
 
 foreach ($needle in $requiredSource) {
@@ -45,6 +46,16 @@ if (-not $tokens.Contains('--easyedu-font-family-ui: inherit;') -or
         -not $structure.Contains('[data-easystud-list-sort-label]') -or
         -not $structure.Contains('font: inherit;')) {
     throw 'Missing inherited typography contract for More filters, counters or Sort.'
+}
+
+if ($source -notmatch 'ensureNestedGroupActionMenus\(root\);\s+// A nested-card action change[\s\S]*?scheduleGroupGroupingOverflow\(root\);' -or
+        $source -notmatch 'const refreshResponsiveUi = \(\) => \{\s+scheduleResponsiveUiRefresh\(root\);\s+scheduleCompleteListAlignment\(root\);\s+scheduleGroupGroupingOverflow\(root\);') {
+    throw 'Missing Grouping-label resize recovery contract.'
+}
+
+if (-not $structure.Contains('margin-inline-start: auto;') -or
+        -not $structure.Contains('order: 2;')) {
+    throw 'Missing logical end-alignment contract for recovered More actions.'
 }
 
 Write-Output 'Card action overflow and Sort stacking contract passed.'

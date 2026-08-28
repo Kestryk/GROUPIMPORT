@@ -24,8 +24,12 @@ Invariants:
 - Sort stays above expanded members and neighbouring cards;
 - a Grouping label is shown whole or recovered through More actions; it is never
   visually truncated inside a Group card header;
+- Grouping-label recovery is recomputed after viewport and card-header width
+  changes, so a previously fitting label cannot remain clipped after a resize;
 - the recovered More trigger keeps the plain icon treatment of its sibling card
   actions rather than becoming a bordered pill;
+- the recovered More trigger stays at the logical end of the header: card title
+  first, More actions second in priority, then only lower-priority controls;
 - at responsive and intermediate widths, the local Group/Grouping overflow
   trigger retains the generic touch target and focus path but explicitly keeps
   its borderless `0.4rem` icon treatment;
