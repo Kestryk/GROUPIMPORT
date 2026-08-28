@@ -1686,6 +1686,14 @@
     &.is-sort-menu-open {
       position: relative;
       z-index: 41;
+
+      // The Sort menu is positioned inside the generic dropdown stacking
+      // context. At intermediate widths an expanded Group card creates its
+      // own paint context, so lift only the opened Sort dropdown above it.
+      // This preserves card-action ownership and all other dropdown levels.
+      [data-easystud-list-sort-dropdown].is-open {
+        z-index: 42;
+      }
     }
 
     &--top {
