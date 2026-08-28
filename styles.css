@@ -18201,3 +18201,12 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     width: 100%;
   }
 }
+.local-groupimport-easystud [data-easystud-advanced-filters-toggle=participant-groups],
+.local-groupimport-easystud [data-easystud-advanced-filters-toggle=structure-groups],
+.local-groupimport-easystud [data-easystud-advanced-filters-toggle=structure-groupings], .local-groupimport-easystud-participant-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__count, .local-groupimport-easystud-participant-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span, .local-groupimport-easystud-participant-groups__list > .local-groupimport-easystud-pagination [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button, .local-groupimport-easystud-structure-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__count, .local-groupimport-easystud-structure-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span, .local-groupimport-easystud-structure-groups__list > .local-groupimport-easystud-pagination [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button, .local-groupimport-easystud-tree__groupings > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__count, .local-groupimport-easystud-tree__groupings > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span, .local-groupimport-easystud-tree__groupings > .local-groupimport-easystud-pagination [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button {
+  font-family: inherit;
+  font-weight: normal;
+}
+.local-groupimport-easystud-group__actions-toggle:hover, .local-groupimport-easystud-group__actions-toggle:active {
+  text-decoration: none;
+}

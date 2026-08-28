@@ -5,6 +5,7 @@ $source = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'amd\src\course_m
 $build = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'amd\build\course_manager.min.js')
 $structure = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\components\_structure.scss')
 $responsive = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\responsive\_desktop.scss')
+$controlTypography = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\components\_control-typography.scss')
 $tokens = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'scss\easyedu\_tokens.scss')
 
 $requiredSource = @(
@@ -61,6 +62,28 @@ if (-not $structure.Contains('margin-inline-start: auto;') -or
 if (-not $structure.Contains('[data-easystud-list-sort-dropdown].is-open') -or
         -not $structure.Contains('z-index: 42;')) {
     throw 'Missing opened Sort dropdown paint-owner contract.'
+}
+
+foreach ($needle in @(
+    'data-easystud-advanced-filters-toggle="participant-groups"',
+    'data-easystud-advanced-filters-toggle="structure-groups"',
+    'data-easystud-advanced-filters-toggle="structure-groupings"',
+    '&-participant-groups__list > &-pagination',
+    '&-structure-groups__list > &-pagination',
+    '&-tree__groupings > &-pagination',
+    '[data-easystud-list-sort-dropdown] > &-dropdown__button',
+    'font-family: inherit;',
+    'font-weight: normal;'
+)) {
+    if (-not $controlTypography.Contains($needle)) {
+        throw "Missing restrained controls typography contract: $needle"
+    }
+}
+
+if (-not $controlTypography.Contains('&:hover,') -or
+        -not $controlTypography.Contains('&:active') -or
+        -not $controlTypography.Contains('text-decoration: none;')) {
+    throw 'Missing More-actions hover and active no-underline contract.'
 }
 
 Write-Output 'Card action overflow and Sort stacking contract passed.'
