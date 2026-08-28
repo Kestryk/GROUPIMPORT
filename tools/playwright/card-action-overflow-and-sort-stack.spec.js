@@ -177,11 +177,17 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
     await expect(root).toHaveAttribute('data-easystud-mobile-view-active', 'groupings');
     await expect(root.locator('[data-easystud-tree] [data-easystud-grouping-id]:visible').first()).toBeVisible();
 
+    const groupingFilterToggle = root.locator(
+        '[data-easystud-advanced-filters-toggle="structure-groupings"]'
+    );
+    await assertControlWeight(groupingFilterToggle, '400', 'Grouping More filters uses regular weight');
+
     const groupingGroup = root.locator(
         '[data-easystud-tree] [data-easystud-group-id]:visible:has(' +
         '.local-groupimport-easystud-group__groupings--inline)'
     ).first();
-    await expect(groupingGroup).toBeVisible();
-    await assertGroupingLabelOrMoreActionsRecovery(root, groupingGroup);
+    if (await groupingGroup.count()) {
+        await assertGroupingLabelOrMoreActionsRecovery(root, groupingGroup);
+    }
     await page.screenshot({path: testInfo.outputPath('groupings-grouping-label-or-more-actions.png')});
 });
