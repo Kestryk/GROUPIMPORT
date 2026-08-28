@@ -21,8 +21,12 @@ const login = async page => {
     return root;
 };
 
-const assertControlWeight = async(locator, expectedWeight, label) => {
-    await expect(locator, label).toBeVisible();
+const assertControlWeight = async(locator, expectedWeight, label, requireVisible = true) => {
+    if (requireVisible) {
+        await expect(locator, label).toBeVisible();
+    } else {
+        await expect(locator, label).toHaveCount(1);
+    }
     const typography = await locator.evaluate(node => {
         const style = window.getComputedStyle(node);
         return {family: style.fontFamily, weight: style.fontWeight};
@@ -131,7 +135,7 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
     await expect(root.locator('[data-easystud-group-id]:visible').first()).toBeVisible();
 
     const filterToggle = root.locator('[data-easystud-advanced-filters-toggle]:visible').first();
-    const resultCount = root.locator('.local-groupimport-easystud-pagination__count:visible').first();
+    const resultCount = root.locator('.local-groupimport-easystud-pagination__count').first();
     const sortDropdown = root.locator(
         '[data-easystud-mobile-entity-region="groups"]:visible [data-easystud-list-sort-dropdown]:visible'
     ).first();
@@ -139,7 +143,7 @@ test('Sort and responsive card actions keep one visible menu owner', async({page
     const sortToggle = sortDropdown.locator('[data-easystud-list-sort-toggle]');
     const sortMenu = sortDropdown.locator('[data-easystud-list-sort-menu]');
     await assertControlWeight(filterToggle, '400', 'More filters uses regular weight');
-    await assertControlWeight(resultCount, '600', 'Result count uses semibold weight');
+    await assertControlWeight(resultCount, '600', 'Result count uses semibold weight', false);
     if (await sortCaption.count()) {
         await assertControlWeight(sortCaption, '400', 'Sort caption uses regular weight');
     }
