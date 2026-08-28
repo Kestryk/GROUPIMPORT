@@ -10,6 +10,15 @@ Maintenance convention:
 
 ## Unreleased
 
+### EED-UI-2026-0028-D - Groups and Groupings control typography - 2026-08-28
+
+#### Fixed
+
+- Returned More filters, result counters, Sort and the selected Sort value to
+  the existing normal-weight Moodle control typography in Groups and Groupings.
+- Kept card More actions free of text underlining on hover and active without
+  changing its keyboard focus treatment or touch target.
+
 ### EED-UI-2026-0027-R / 0028-C - Card action overflow and Sort stacking - 2026-08-27
 
 #### Fixed

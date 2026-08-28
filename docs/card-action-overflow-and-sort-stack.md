@@ -34,5 +34,9 @@ Invariants:
 - at responsive and intermediate widths, the local Group/Grouping overflow
   trigger retains the generic touch target and focus path but explicitly keeps
   its borderless `0.4rem` icon treatment;
-- More filters, counters and Sort continue to inherit the Moodle theme font;
+- More filters, result counters, Sort and its selected value keep the existing
+  Moodle control family at normal weight; their geometry, colour and
+  interaction rules remain unchanged;
+- More actions is never underlined on hover or active, while its visible
+  keyboard focus and touch target remain unchanged;
 - no permission, data, selection or action route changes.
