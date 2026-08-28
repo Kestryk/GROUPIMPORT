@@ -3070,7 +3070,7 @@
   display: inline-flex;
   font-family: inherit;
   font-size: 0.76rem;
-  font-weight: 760;
+  font-weight: var(--easyedu-font-weight-regular);
   gap: 0.42rem;
   justify-content: center;
   line-height: 1.1;
@@ -5452,7 +5452,7 @@
   display: inline-flex;
   font-family: inherit;
   font-size: 0.76rem;
-  font-weight: 760;
+  font-weight: var(--easyedu-font-weight-regular);
   gap: 0.42rem;
   justify-content: center;
   line-height: 1.1;
@@ -5978,7 +5978,7 @@
   color: color-mix(in srgb, var(--easyedu-text) 74%, var(--easyedu-text-muted) 26%);
   display: inline-flex;
   font-size: 0.68rem;
-  font-weight: 720;
+  font-weight: var(--easyedu-font-weight-semibold);
   line-height: 1;
   padding: 0.32rem 0.55rem;
   white-space: nowrap;
@@ -5998,7 +5998,7 @@
 .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span {
   color: var(--easyedu-text);
   font-size: 0.66rem;
-  font-weight: 720;
+  font-weight: var(--easyedu-font-weight-regular);
   line-height: 1;
 }
 .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__select[data-easystud-deselect-results="1"] {
@@ -6094,7 +6094,7 @@
   color: #40566e;
   display: inline-flex;
   font-size: 0.68rem;
-  font-weight: 720;
+  font-weight: var(--easyedu-font-weight-regular);
   gap: 0.42rem;
   height: 1.78rem;
   justify-content: space-between;
@@ -12935,6 +12935,7 @@
   background: var(--easyedu-primary-soft);
   color: var(--easyedu-primary-strong);
   outline: 0;
+  text-decoration: none;
 }
 .local-groupimport-easystud-context-menu [role=menuitem]:hover .fa, .local-groupimport-easystud-context-menu [role=menuitem]:focus-visible .fa,
 .local-groupimport-easystud-context-menu button:hover .fa,
@@ -16645,7 +16646,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     display: inline-flex;
     font-family: inherit;
     font-size: 0.76rem;
-    font-weight: 760;
+    font-weight: var(--easyedu-font-weight-regular);
     gap: 0.42rem;
     justify-content: center;
     line-height: 1.1;
@@ -17694,7 +17695,7 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     display: inline-flex;
     font-family: inherit;
     font-size: 0.76rem;
-    font-weight: 760;
+    font-weight: var(--easyedu-font-weight-regular);
     gap: 0.42rem;
     justify-content: center;
     line-height: 1.1;
@@ -18201,12 +18202,27 @@ body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_gr
     width: 100%;
   }
 }
-.local-groupimport-easystud [data-easystud-advanced-filters-toggle=participant-groups],
-.local-groupimport-easystud [data-easystud-advanced-filters-toggle=structure-groups],
-.local-groupimport-easystud [data-easystud-advanced-filters-toggle=structure-groupings], .local-groupimport-easystud-participant-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__count, .local-groupimport-easystud-participant-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span, .local-groupimport-easystud-participant-groups__list > .local-groupimport-easystud-pagination [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button, .local-groupimport-easystud-structure-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__count, .local-groupimport-easystud-structure-groups__list > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span, .local-groupimport-easystud-structure-groups__list > .local-groupimport-easystud-pagination [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button, .local-groupimport-easystud-tree__groupings > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__count, .local-groupimport-easystud-tree__groupings > .local-groupimport-easystud-pagination .local-groupimport-easystud-pagination__sort > span, .local-groupimport-easystud-tree__groupings > .local-groupimport-easystud-pagination [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button {
+.local-groupimport-easystud [data-easystud-advanced-filters-toggle], .local-groupimport-easystud-pagination__sort > span, [data-easystud-list-sort-dropdown] > .local-groupimport-easystud-dropdown__button {
   font-family: inherit;
-  font-weight: normal;
+  font-weight: var(--easyedu-font-weight-regular);
 }
-.local-groupimport-easystud-group__actions-toggle:hover, .local-groupimport-easystud-group__actions-toggle:active {
-  text-decoration: none;
+.local-groupimport-easystud-pagination__count {
+  font-family: inherit;
+  font-weight: var(--easyedu-font-weight-semibold);
+}
+.local-groupimport-easystud [data-easystud-card-menu],
+.local-groupimport-easystud [data-easystud-panel-actions-toggle],
+.local-groupimport-easystud [data-easystud-context-action], .local-groupimport-easystud-group__actions-toggle, .local-groupimport-easystud-group__actions-menu .btn {
+  text-decoration: none !important;
+}
+.local-groupimport-easystud [data-easystud-card-menu]:hover, .local-groupimport-easystud [data-easystud-card-menu]:active, .local-groupimport-easystud [data-easystud-card-menu]:focus, .local-groupimport-easystud [data-easystud-card-menu]:focus-visible,
+.local-groupimport-easystud [data-easystud-panel-actions-toggle]:hover,
+.local-groupimport-easystud [data-easystud-panel-actions-toggle]:active,
+.local-groupimport-easystud [data-easystud-panel-actions-toggle]:focus,
+.local-groupimport-easystud [data-easystud-panel-actions-toggle]:focus-visible,
+.local-groupimport-easystud [data-easystud-context-action]:hover,
+.local-groupimport-easystud [data-easystud-context-action]:active,
+.local-groupimport-easystud [data-easystud-context-action]:focus,
+.local-groupimport-easystud [data-easystud-context-action]:focus-visible, .local-groupimport-easystud-group__actions-toggle:hover, .local-groupimport-easystud-group__actions-toggle:active, .local-groupimport-easystud-group__actions-toggle:focus, .local-groupimport-easystud-group__actions-toggle:focus-visible, .local-groupimport-easystud-group__actions-menu .btn:hover, .local-groupimport-easystud-group__actions-menu .btn:active, .local-groupimport-easystud-group__actions-menu .btn:focus, .local-groupimport-easystud-group__actions-menu .btn:focus-visible {
+  text-decoration: none !important;
 }

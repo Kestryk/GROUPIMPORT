@@ -65,25 +65,32 @@ if (-not $structure.Contains('[data-easystud-list-sort-dropdown].is-open') -or
 }
 
 foreach ($needle in @(
-    'data-easystud-advanced-filters-toggle="participant-groups"',
-    'data-easystud-advanced-filters-toggle="structure-groups"',
-    'data-easystud-advanced-filters-toggle="structure-groupings"',
-    '&-participant-groups__list > &-pagination',
-    '&-structure-groups__list > &-pagination',
-    '&-tree__groupings > &-pagination',
+    '[data-easystud-advanced-filters-toggle]',
+    '&-pagination__sort > span',
     '[data-easystud-list-sort-dropdown] > &-dropdown__button',
+    '&-pagination__count',
     'font-family: inherit;',
-    'font-weight: normal;'
+    'font-weight: var(--easyedu-font-weight-regular);',
+    'font-weight: var(--easyedu-font-weight-semibold);'
 )) {
     if (-not $controlTypography.Contains($needle)) {
         throw "Missing restrained controls typography contract: $needle"
     }
 }
 
-if (-not $controlTypography.Contains('&:hover,') -or
-        -not $controlTypography.Contains('&:active') -or
-        -not $controlTypography.Contains('text-decoration: none;')) {
-    throw 'Missing More-actions hover and active no-underline contract.'
+foreach ($needle in @(
+    '[data-easystud-card-menu]',
+    '[data-easystud-panel-actions-toggle]',
+    '[data-easystud-context-action]',
+    '&-group__actions-menu .btn',
+    '&:hover,',
+    '&:active,',
+    '&:focus-visible',
+    'text-decoration: none !important;'
+)) {
+    if (-not $controlTypography.Contains($needle)) {
+        throw "Missing transversal More-actions no-underline contract: $needle"
+    }
 }
 
 Write-Output 'Card action overflow and Sort stacking contract passed.'

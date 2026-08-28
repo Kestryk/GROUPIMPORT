@@ -1,27 +1,31 @@
-// Final consumer overrides for shared controls. Keep their existing geometry,
-// colours and interaction states while matching the restrained Moodle control
-// typography used by neighbouring EasyStud controls.
+// Final consumer overrides for shared controls. These rules are deliberately
+// view-agnostic so every EasyStud surface uses the same restrained typography
+// and link treatment at desktop and responsive widths.
 .local-groupimport-easystud {
-  [data-easystud-advanced-filters-toggle="participant-groups"],
-  [data-easystud-advanced-filters-toggle="structure-groups"],
-  [data-easystud-advanced-filters-toggle="structure-groupings"],
-  &-participant-groups__list > &-pagination &-pagination__count,
-  &-participant-groups__list > &-pagination &-pagination__sort > span,
-  &-participant-groups__list > &-pagination [data-easystud-list-sort-dropdown] > &-dropdown__button,
-  &-structure-groups__list > &-pagination &-pagination__count,
-  &-structure-groups__list > &-pagination &-pagination__sort > span,
-  &-structure-groups__list > &-pagination [data-easystud-list-sort-dropdown] > &-dropdown__button,
-  &-tree__groupings > &-pagination &-pagination__count,
-  &-tree__groupings > &-pagination &-pagination__sort > span,
-  &-tree__groupings > &-pagination [data-easystud-list-sort-dropdown] > &-dropdown__button {
+  [data-easystud-advanced-filters-toggle],
+  &-pagination__sort > span,
+  [data-easystud-list-sort-dropdown] > &-dropdown__button {
     font-family: inherit;
-    font-weight: normal;
+    font-weight: var(--easyedu-font-weight-regular);
   }
 
-  &-group__actions-toggle {
+  &-pagination__count {
+    font-family: inherit;
+    font-weight: var(--easyedu-font-weight-semibold);
+  }
+
+  [data-easystud-card-menu],
+  [data-easystud-panel-actions-toggle],
+  [data-easystud-context-action],
+  &-group__actions-toggle,
+  &-group__actions-menu .btn {
+    text-decoration: none !important;
+
     &:hover,
-    &:active {
-      text-decoration: none;
+    &:active,
+    &:focus,
+    &:focus-visible {
+      text-decoration: none !important;
     }
   }
 }

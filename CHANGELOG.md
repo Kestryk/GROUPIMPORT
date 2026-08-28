@@ -10,14 +10,17 @@ Maintenance convention:
 
 ## Unreleased
 
-### EED-UI-2026-0028-D - Groups and Groupings control typography - 2026-08-28
+### EED-UI-2026-0028-E - EasyStud control typography convergence - 2026-08-28
 
 #### Fixed
 
-- Returned More filters, result counters, Sort and the selected Sort value to
-  the existing normal-weight Moodle control typography in Groups and Groupings.
-- Kept card More actions free of text underlining on hover and active without
-  changing its keyboard focus treatment or touch target.
+- Synchronized the affected shared primitives from EasyEdu UI Kit K3.2 commit
+  `09019ad4e6f05e1683d7f32bae4afa11bb4647d6`.
+- Applied the same inherited Moodle typography to utility controls across all
+  EasyStud views and responsive widths: regular More filters, Sort and selected
+  values, with semibold result counts.
+- Kept More actions triggers and their action-list items free of underlining in
+  hover, active and focus states without changing focus rings or touch targets.
 
 ### EED-UI-2026-0027-R / 0028-C - Card action overflow and Sort stacking - 2026-08-27
 

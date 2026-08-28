@@ -62,6 +62,8 @@ action.
 
 - Menus should stay above cards and scrollable panels.
 - Menu items should expose focus states equivalent to hover states.
+- Menu triggers and visible action items must never acquire text underlining on
+  hover, active or keyboard-focus states; preserve the focus ring instead.
 - Do not keep hover-help tooltips on actions once they are moved inside a menu:
   the menu label is visible and duplicate bubbles add noise.
 - Disabled actions should remain visible only when they help explain why an
@@ -70,6 +72,7 @@ action.
 ## States
 
 - `:hover` and `:focus-visible` must use the same background and text colour.
+- `:hover`, `:active` and `:focus-visible` keep `text-decoration: none`.
 - `[aria-disabled="true"]` and `:disabled` are supported and should not be
   clickable.
 - The menu container should be hidden when closed, not visually collapsed with
