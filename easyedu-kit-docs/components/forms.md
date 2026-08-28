@@ -234,6 +234,7 @@ to restore a compact visual control while preserving its minimum touch target.
 `compact` remains available for disclosures embedded in cards. The label and
 chevron belong to one native `button`; do not place the text beside a separate
 icon-only control or reuse a card-members toggle class on this button.
+The disclosure label uses the regular typography weight at every size.
 
 ```html
 <button

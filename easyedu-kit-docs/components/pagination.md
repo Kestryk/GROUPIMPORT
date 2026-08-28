@@ -69,6 +69,10 @@ The selection control, page controls and sort control share one vertical
 centre. Consumers may reduce their individual heights, but must not offset the
 sort tools with margins or baseline alignment.
 
+Use the regular typography weight for the Sort caption and selected value. Use
+the semibold weight for the result count. Keep this mapping identical in every
+view and at desktop and mobile breakpoints.
+
 Place select-all/select-results controls in the list tools area, not inside the
 pagination controls, so the page navigation remains centred.
 

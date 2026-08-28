@@ -20,6 +20,11 @@ The roles use one font family, a short size scale and four weights. Letter
 spacing is always zero so typography remains stable across Moodle themes and
 languages.
 
+Shared utility controls use the regular weight for disclosure labels, Sort
+captions and selected Sort values. Result-count badges use the semibold weight
+to remain scannable without competing with headings. Consumers must use these
+roles consistently across views and responsive breakpoints.
+
 ```scss
 .local-example {
   @include easyedu.token-defaults;

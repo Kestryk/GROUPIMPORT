@@ -1,5 +1,8 @@
 # Card action overflow and Sort stacking
 
+The shared utility-control typography in this integration is pinned to EasyEdu
+UI Kit K3.2 commit `09019ad4e6f05e1683d7f32bae4afa11bb4647d6`.
+
 Group and Grouping card headers use one local overflow trigger. At compact or
 intermediate widths, the controller measures the rendered card and places only
 actions which no longer fit in that local menu. The original controls remain
@@ -34,9 +37,10 @@ Invariants:
 - at responsive and intermediate widths, the local Group/Grouping overflow
   trigger retains the generic touch target and focus path but explicitly keeps
   its borderless `0.4rem` icon treatment;
-- More filters, result counters, Sort and its selected value keep the existing
-  Moodle control family at normal weight; their geometry, colour and
-  interaction rules remain unchanged;
-- More actions is never underlined on hover or active, while its visible
-  keyboard focus and touch target remain unchanged;
+- across every EasyStud view and breakpoint, More filters, Sort and its selected
+  value use the inherited Moodle family at regular weight, while result counts
+  use the shared semibold token;
+- More actions triggers and their visible action-list items are never
+  underlined on hover, active or focus; the visible keyboard focus ring and
+  touch target remain unchanged;
 - no permission, data, selection or action route changes.

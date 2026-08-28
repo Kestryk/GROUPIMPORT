@@ -544,6 +544,8 @@ Must:
 - keep focus rings on the full control wrapper;
 - render `filter-disclosure-trigger` focus with the defined
   `--easyedu-control-focus-border` and `--easyedu-focus-ring` tokens.
+- render filter disclosures, Sort captions and selected Sort values with the
+  regular typography token; render result counts with the semibold token.
 
 Must not:
 
@@ -557,6 +559,8 @@ Must not:
 - put long help text in labels when a help icon/tooltip is more appropriate.
 - reuse a card reveal chevron as the trigger for a responsive filter panel.
 - reference private or undefined focus variables from a reusable form mixin.
+- add text underlining to overflow-action triggers or visible menu actions in
+  hover, active or focus states; keep the focus ring as the focus indicator.
 - replace an established desktop filter-disclosure wrapper globally when only
   its compact presentation needs to change; preserve the markup and scope the
   alternate styling to the responsive breakpoint.

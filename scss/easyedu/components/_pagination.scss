@@ -146,7 +146,7 @@
   color: color-mix(in srgb, var(--easyedu-text) 74%, var(--easyedu-text-muted) 26%);
   display: inline-flex;
   font-size: 0.68rem;
-  font-weight: 720;
+  font-weight: var(--easyedu-font-weight-semibold);
   line-height: 1;
   padding: 0.32rem 0.55rem;
   white-space: nowrap;
@@ -168,7 +168,7 @@
   > span {
     color: var(--easyedu-text);
     font-size: 0.66rem;
-    font-weight: 720;
+    font-weight: var(--easyedu-font-weight-regular);
     line-height: 1;
   }
 }
