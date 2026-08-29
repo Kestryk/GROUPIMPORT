@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `EED-UI-2026-0032`: selectively synchronize the Navigation Skeleton contract
+  from Kit `45c5cb1a0c8364bd77c343b14af2ee71416a4bcb` and let Mass Import reveal
+  server-rendered navigation and form content without JavaScript. Keep the
+  AMD lifecycle, destinations, geometry and upload XHR unchanged.
+
 - Harmonize EasyStud top-panel action content through the existing shared
   action-button contract, including disabled controls.
 - Give the Complete-view `Groups without grouping` disclosure the established
