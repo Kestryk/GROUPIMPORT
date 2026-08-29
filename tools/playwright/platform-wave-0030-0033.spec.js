@@ -27,13 +27,70 @@ const login = async(page, url) => {
     }
 };
 
-const assertNoScriptFallback = async(page, url, rootSelector) => {
+const paginationOwners = [
+    ['Participants', '[data-easystud-participant-list]'],
+    ['Groups Complete', '.local-groupimport-easystud-participant-groups__list'],
+    ['Groups Structure', '.local-groupimport-easystud-structure-groups__list'],
+    ['Groupings Structure', '.local-groupimport-easystud-tree__groupings'],
+];
+
+const assertPanelDisabledActions = async manageRoot => {
+    const panelOwners = [
+        ['Participants', '[data-easystud-participants-panel="1"]',
+            '[data-easystud-move-selected-participants="1"]'],
+        ['Structure', '[data-easystud-structure-panel="1"]',
+            '[data-easystud-delete-selected-groups="1"]'],
+    ];
+
+    for (const [label, panelSelector, actionSelector] of panelOwners) {
+        const panel = manageRoot.locator(panelSelector);
+        await expect(panel, label + ' panel owner').toHaveCount(1);
+        const actions = panel.locator(':scope > .card-body > .local-groupimport-easystud__panel-heading > ' +
+            '.local-groupimport-easystud__panel-actions');
+        await expect(actions, label + ' panel actions owner').toHaveCount(1);
+        const action = actions.locator(':scope > button' + actionSelector);
+        await expect(action, label + ' known disabled action').toHaveCount(1);
+        await expect(action).toBeDisabled();
+    }
+};
+
+const assertPaginationOwners = async (root, owners) => {
+    for (const [label, listSelector] of owners) {
+        const list = root.locator(listSelector);
+        await expect(list, label + ' list owner').toHaveCount(1);
+        await expect(list, label + ' list').toBeVisible();
+        const pagination = list.locator(':scope > [data-easystud-pagination]');
+        await expect(pagination, label + ' pagination owner').toHaveCount(2);
+        const geometry = await pagination.evaluateAll(nodes => nodes.map(node => {
+            const style = getComputedStyle(node);
+            const owner = node.parentElement;
+            const rect = node.getBoundingClientRect();
+            const ownerRect = owner.getBoundingClientRect();
+            return {
+                position: style.position,
+                bottom: node.getAttribute('data-easystud-pagination') === 'bottom',
+                last: node === owner.lastElementChild,
+                belowListContent: node.getAttribute('data-easystud-pagination') !== 'bottom' ||
+                    rect.top >= ownerRect.top,
+            };
+        }));
+        expect(geometry.every(item => item.position !== 'fixed' && item.position !== 'sticky'),
+            label + ' pagination must not be viewport-fixed').toBe(true);
+        const bottom = geometry.find(item => item.bottom);
+        expect(bottom && bottom.last, label + ' bottom pagination must end its content block').toBe(true);
+        expect(bottom && bottom.belowListContent, label + ' bottom pagination placement').toBe(true);
+    }
+};
+
+const assertNoScriptFallback = async(page, url, rootSelector, contentSelector, capturePath) => {
     await login(page, url);
     const root = page.locator(rootSelector);
+    await expect(root).toHaveCount(1);
     await expect(root).toBeVisible({timeout: 60000});
+    await page.screenshot({path: capturePath, fullPage: true});
     await expect(root.locator('[data-easystud-loading-skeleton]')).toBeHidden();
-    await expect(root.locator('[data-easystud-real-content], [data-local-groupimport-admin-features]')
-        .first()).toBeVisible();
+    await expect(root.locator(contentSelector)).toHaveCount(1);
+    await expect(root.locator(contentSelector)).toBeVisible();
     await expect(root).not.toHaveAttribute('aria-busy', 'true');
 };
 
@@ -42,40 +99,65 @@ test('EED-UI-2026-0030-0033 Platform wave: global controls plus Mass Import and 
     await login(page, manageUrl);
     const manageRoot = page.locator('#local-groupimport-easystud');
     await expect(manageRoot).toBeVisible({timeout: 60000});
-    await expect(manageRoot).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
-    await expect(manageRoot.locator('.local-groupimport-easystud__panel-actions:visible button:disabled'))
-        .toHaveCount(1);
-    await expect(manageRoot.locator('.local-groupimport-easystud-tree__section--ungrouped')).toBeVisible();
-    await expect(manageRoot.locator('[data-easystud-pagination="bottom"]:visible').first()).toBeVisible();
     await page.screenshot({path: testInfo.outputPath('0030-global-controls-desktop.png'), fullPage: true});
+    await expect(manageRoot).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
+    await assertPanelDisabledActions(manageRoot);
+    const ungrouped = manageRoot.locator('.local-groupimport-easystud-tree__section--ungrouped');
+    await expect(ungrouped).toHaveCount(1);
+    await expect(ungrouped).toBeVisible();
+    const ungroupedDisclosure = ungrouped.locator(':scope > [data-easystud-collapse-toggle]');
+    await expect(ungroupedDisclosure).toHaveCount(1);
+    await expect(ungroupedDisclosure).toBeVisible();
+    await expect(ungroupedDisclosure).toHaveAttribute('aria-expanded', 'false');
+    await expect(ungroupedDisclosure).toHaveAttribute('aria-controls', 'easystud-group-list-ungrouped');
+    await ungroupedDisclosure.click();
+    await expect(ungroupedDisclosure).toHaveAttribute('aria-expanded', 'true');
+    await expect(ungrouped.locator(':scope > .local-groupimport-easystud-tree__children')).toBeVisible();
+    await assertPaginationOwners(manageRoot, paginationOwners);
 
     await page.setViewportSize({width: 390, height: 844});
-    await page.locator('[data-easystud-mobile-view="groups"]').click();
+    const mobileViewSwitcher = manageRoot.locator('[data-easystud-mobile-view-switcher="1"]');
+    await expect(mobileViewSwitcher).toHaveCount(1);
+    const groupsViewTrigger = mobileViewSwitcher.locator(':scope > [data-easystud-mobile-view="groups"]');
+    await expect(groupsViewTrigger).toHaveCount(1);
+    await expect(groupsViewTrigger).toBeVisible();
+    await groupsViewTrigger.click();
+    await page.screenshot({path: testInfo.outputPath('0030-global-controls-mobile.png'), fullPage: true});
     await expect(manageRoot).toHaveAttribute('data-easystud-mobile-view-active', 'groups');
-    const next = manageRoot.locator('[data-easystud-page-next]:visible').first();
+    const groupsStructureList = manageRoot.locator(paginationOwners[2][1]);
+    await expect(groupsStructureList).toHaveCount(1);
+    const groupsBottomPagination = groupsStructureList.locator(':scope > [data-easystud-pagination="bottom"]');
+    await expect(groupsBottomPagination).toHaveCount(1);
+    const next = groupsBottomPagination.locator(':scope > .local-groupimport-easystud-pagination__controls ' +
+        '> [data-easystud-page-next="1"]');
+    await expect(next).toHaveCount(1);
+    await expect(next).toBeVisible();
     await next.focus();
     await expect(next).toBeFocused();
-    await page.screenshot({path: testInfo.outputPath('0030-global-controls-mobile.png'), fullPage: true});
 
     await page.goto(massImportUrl, {waitUntil: 'domcontentloaded'});
     const massRoot = page.locator('#local-groupimport-import');
+    await expect(massRoot).toHaveCount(1);
+    await expect(massRoot).toBeVisible({timeout: 60000});
+    await page.screenshot({path: testInfo.outputPath('0032-mass-import-normal-lifecycle.png'), fullPage: true});
     await expect(massRoot).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
     await expect(massRoot.locator('[data-easystud-real-content]')).toBeVisible();
-    await page.screenshot({path: testInfo.outputPath('0032-mass-import-normal-lifecycle.png'), fullPage: true});
 
     await page.goto(adminUrl, {waitUntil: 'domcontentloaded'});
     const adminRoot = page.locator('#page-admin-setting-local_groupimport');
+    await expect(adminRoot).toHaveCount(1);
+    await expect(adminRoot).toBeVisible({timeout: 60000});
+    await page.screenshot({path: testInfo.outputPath('0033-admin-normal-lifecycle.png'), fullPage: true});
     await expect(adminRoot).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
     await expect(adminRoot.locator('[data-local-groupimport-admin-features]')).toBeVisible();
-    await page.screenshot({path: testInfo.outputPath('0033-admin-normal-lifecycle.png'), fullPage: true});
 
     const noScriptContext = await browser.newContext({javaScriptEnabled: false, viewport: {width: 390, height: 844}});
     try {
         const noScriptPage = await noScriptContext.newPage();
-        await assertNoScriptFallback(noScriptPage, massImportUrl, '#local-groupimport-import');
-        await noScriptPage.screenshot({path: testInfo.outputPath('0032-mass-import-no-script.png'), fullPage: true});
-        await assertNoScriptFallback(noScriptPage, adminUrl, '#page-admin-setting-local_groupimport');
-        await noScriptPage.screenshot({path: testInfo.outputPath('0033-admin-no-script.png'), fullPage: true});
+        await assertNoScriptFallback(noScriptPage, massImportUrl, '#local-groupimport-import',
+            '[data-easystud-real-content]', testInfo.outputPath('0032-mass-import-no-script.png'));
+        await assertNoScriptFallback(noScriptPage, adminUrl, '#page-admin-setting-local_groupimport',
+            '[data-local-groupimport-admin-features]', testInfo.outputPath('0033-admin-no-script.png'));
     } finally {
         await noScriptContext.close();
     }
