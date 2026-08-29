@@ -5,7 +5,8 @@
 Student Management (`templates/manage.mustache` and
 `scss/components/_layout.scss`) and Mass Import (`index.php` and
 `scss/views/_mass-import.scss`) consume the immutable UI Kit snapshot
-`7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4`.
+`45c5cb1a0c8364bd77c343b14af2ee71416a4bcb` for the selectively synchronized
+Navigation Skeleton primitive.
 
 The selective vendoring synchronises K3.1 Loading and Navigation Skeleton
 primitives through
@@ -21,7 +22,10 @@ The existing server-rendered skeleton roots remain `aria-hidden` and now mark
 the Navigation Skeleton composition with `data-easyedu-navigation-skeleton`.
 No real control, navigation destination or meaningful copy is added. The
 existing no-script reveal, AMD readiness, 320 ms Student Management handoff,
-180 ms Mass Import handoff and their fail-open paths are unchanged.
+180 ms Mass Import handoff and their JavaScript fail-open paths are unchanged.
+Mass Import additionally reveals its server-rendered content through a scoped
+no-script stylesheet and does not emit server-side `aria-busy`; the classic
+bootstrap still owns that state when JavaScript runs.
 
 Student Management's large left/right loading panels and Mass Import's two
 large loading regions compose `skeleton-structural-container-frame`, which

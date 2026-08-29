@@ -147,8 +147,10 @@ This keeps the kit easy to copy while still allowing each plugin to evolve.
 
 ## Navigation Skeleton consumer boundary
 
-The embedded Loading and `navigation-skeleton` components come from immutable
-UI Kit snapshot `7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4`. K3.1 separates
+The embedded Loading components retain their K3.1 compatibility surface. The
+Navigation Skeleton primitive is selectively synchronized from immutable UI Kit
+`45c5cb1a0c8364bd77c343b14af2ee71416a4bcb` (`EED-KIT-2026-0002`); no unrelated
+Kit foundation is imported. K3.1 separates
 logical inline-start internal-card accents from block-start structural
 left/right containers, and requires the compact static one-line Navigation
 frame, decorative Guide-start circle and one internal cue wherever a consumer
