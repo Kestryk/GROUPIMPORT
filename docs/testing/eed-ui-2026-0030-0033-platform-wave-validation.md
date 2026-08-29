@@ -26,6 +26,10 @@ does not create or edit fixtures, settings, groups, users, cache or data.
    settings after the bounded loading lifecycle) and then a JavaScript-disabled
    page (native settings are visible; only the decorative Skeleton is hidden).
 
+The bottom pagination remains the final managed child of each paginated list.
+Dynamic empty and filtered-empty states are inserted immediately before it, so
+late lifecycle updates cannot push the pagination back into the card flow.
+
 The test uses one browser context for normal lifecycle checks and an isolated
 JavaScript-disabled context for both no-script checks. It closes that isolated
 context in `finally`; the supervised runner still owns credentials, runtime
