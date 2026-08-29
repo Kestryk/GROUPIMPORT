@@ -7,6 +7,11 @@
   Administration normal/no-script loading lifecycles. It remains unexecuted
   until separately authorised for the managed Moodle 5.1 runtime.
 
+- `EED-UI-2026-0033-RF2`: fix the Administration no-script fallback's CSS
+  specificity so the decorative Skeleton stays hidden while native settings
+  remain visible. The normal JavaScript fail-open lifecycle and generated
+  product behavior are unchanged.
+
 - `EED-UI-2026-0033`: restore native Administration settings without JavaScript
   by hiding only its decorative loading Skeleton. Keep the normal 1.5-second
   bootstrap fail-open, `aria-busy` lifecycle and settings geometry unchanged.

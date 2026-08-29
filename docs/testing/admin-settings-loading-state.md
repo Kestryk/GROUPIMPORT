@@ -28,6 +28,9 @@ Skeleton. The bootstrap remains the sole writer of `aria-busy`, so the
 server-rendered no-script page is not left marked busy. This fallback does not
 change the normal 1200 ms minimum-visible interval, 1.5-second degraded
 fail-open deadline, native settings destinations, or JavaScript geometry.
+Its Skeleton selector also matches the more specific loading rule used by the
+normal SCSS state, so Moodle's settings-form cascade cannot re-display the
+placeholder after the no-script override.
 
 With motion enabled, the skeleton fades out over 180 ms and the restored native
 form fades in over 180 ms. Native controls remain masked until the skeleton has
