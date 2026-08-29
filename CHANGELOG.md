@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `EED-UI-2026-0033-RF3`: emit the Administration no-script fallback as a
+  Markdown context block, so its native-settings reveal and decorative
+  Skeleton hide rules are preserved by Moodle's settings-heading renderer.
+  The normal JavaScript lifecycle, SCSS and generated assets are unchanged.
+
 - `EED-UI-2026-0030` through `0033`: add one cumulative, source-owned human
   validation bundle for desktop/mobile global controls plus Mass Import and
   Administration normal/no-script loading lifecycles. It remains unexecuted
