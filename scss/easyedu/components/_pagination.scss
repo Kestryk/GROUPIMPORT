@@ -2,6 +2,49 @@
 
 @use "focus";
 
+// Compact square page navigation. Keep this separate from the surrounding
+// pagination layout so consumers can apply the same arrow target to native
+// buttons or links without local padding/centering corrections.
+@mixin pagination-arrow-button {
+  align-items: center;
+  display: inline-flex;
+  inline-size: 1.85rem;
+  justify-content: center;
+  min-height: 1.85rem;
+  min-inline-size: 1.85rem;
+  padding: 0;
+  text-align: center;
+
+  > .fa {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  @media (forced-colors: active) {
+    border-color: ButtonText;
+  }
+}
+
+// Use for pagination labels and buttons whose visible content must remain
+// centred even when the consumer changes copy or injects an icon.
+@mixin pagination-content-centre {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+
+  > span {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-width: 0;
+    text-align: center;
+  }
+}
+
 @mixin pagination-bar {
   align-items: center;
   display: grid;
@@ -33,6 +76,17 @@
     min-width: 1.85rem;
     padding: 0.2rem 0.45rem;
 
+    &[data-easyedu-page-first],
+    &[data-easyedu-page-prev],
+    &[data-easyedu-page-next],
+    &[data-easyedu-page-last],
+    &[data-easystud-page-first],
+    &[data-easystud-page-prev],
+    &[data-easystud-page-next],
+    &[data-easystud-page-last] {
+      @include pagination-arrow-button;
+    }
+
     &:hover,
     &:focus-visible {
       background: var(--easyedu-primary-soft);
@@ -49,6 +103,8 @@
 
   > [data-easyedu-page-label],
   > [data-easystud-page-label] {
+    @include pagination-content-centre;
+
     color: var(--easyedu-text);
     font-size: 0.72rem;
     font-weight: var(--easyedu-font-weight-semibold);

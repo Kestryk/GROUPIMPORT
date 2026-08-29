@@ -4180,6 +4180,9 @@ const getPaginationConfigs = root => {
 const getPagination = (list, inside, position) => {
     const root = list.closest('.local-groupimport-easystud');
     const labels = root ? getLabels(root) : {};
+    // The consumer owns the block geometry; this marker lets its bottom
+    // pagination remain at the end of that block without viewport positioning.
+    list.classList.add('is-easystud-paginated');
     const selector = '[data-easystud-pagination="' + position + '"]';
     let pagination = inside ? list.querySelector(':scope > ' + selector) :
         (position === 'top' ? list.previousElementSibling : list.nextElementSibling);

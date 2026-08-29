@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Harmonize EasyStud top-panel action content through the existing shared
+  action-button contract, including disabled controls.
+- Give the Complete-view `Groups without grouping` disclosure the established
+  Group-section surface while preserving its current behaviour.
+- Keep bottom pagination at the end of each paginated content block without
+  viewport-fixed positioning.
+- Consume compact pagination-arrow and content-centring primitives from
+  `EED-KIT-2026-0001` commit `6dec8785262d9b006feeb21ea313949ef8fac01c`
+  through the existing `data-easystud-page-*` hooks.
+
 All notable changes to `local_groupimport` are documented here.
 
 Maintenance convention:
