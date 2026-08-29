@@ -4238,6 +4238,11 @@ const getPagination = (list, inside, position) => {
             list.insertAdjacentElement(position === 'top' ? 'beforebegin' : 'afterend', pagination);
         }
     }
+    if (inside && position === 'bottom') {
+        // Reusing an existing navigation must restore the same invariant as
+        // creating it: late lifecycle children stay above the bottom pager.
+        list.appendChild(pagination);
+    }
     return pagination;
 };
 

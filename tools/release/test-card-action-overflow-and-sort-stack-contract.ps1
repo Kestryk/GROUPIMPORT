@@ -15,6 +15,7 @@ $requiredSource = @(
     'pagination.classList.toggle',
     'placeManagedStateBeforeBottomPagination',
     'list.insertBefore(state, bottomPagination || null);',
+    "inside && position === 'bottom'",
     'ResizeObserver',
     'data-easystud-group-actions-menu',
     'header.appendChild(trigger);'
@@ -37,6 +38,10 @@ foreach ($needle in @('is-easystud-card-action-overflow', 'is-sort-menu-open')) 
 
 if (-not $build.Contains('placeManagedStateBeforeBottomPagination')) {
     throw 'Missing generated AMD pagination-order contract.'
+}
+
+if (-not $build.Contains('inside&&"bottom"===position&&list.appendChild(pagination)')) {
+    throw 'Missing generated AMD bottom-pagination final-child contract.'
 }
 
 foreach ($needle in @(
