@@ -227,7 +227,15 @@ if ($hassiteconfig) {
         );
     }
 
-    $adminloadingskeletonhtml = html_writer::div(
+    // The classic bootstrap owns the normal loading lifecycle. Without scripts,
+    // restore native settings instead of retaining the decorative placeholder.
+    $adminnoscriptfallback = html_writer::tag('noscript', html_writer::tag('style',
+        'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings > .settingsform > * { display: block !important; }' .
+            'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings > .settingsform > fieldset:first-of-type > * { display: block !important; }' .
+            'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport [data-easystud-loading-skeleton] { display: none !important; }'
+    ));
+
+    $adminloadingskeletonhtml = $adminnoscriptfallback . html_writer::div(
         html_writer::div(
             html_writer::tag('span', '', [
                 'class' => 'local-groupimport-admin-settings__loading-surface local-groupimport-admin-settings__loading-eyebrow',

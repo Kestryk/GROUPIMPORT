@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `EED-UI-2026-0033`: restore native Administration settings without JavaScript
+  by hiding only its decorative loading Skeleton. Keep the normal 1.5-second
+  bootstrap fail-open, `aria-busy` lifecycle and settings geometry unchanged.
+
 - `EED-UI-2026-0032`: selectively synchronize the Navigation Skeleton contract
   from Kit `45c5cb1a0c8364bd77c343b14af2ee71416a4bcb` and let Mass Import reveal
   server-rendered navigation and form content without JavaScript. Keep the
