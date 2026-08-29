@@ -27,6 +27,7 @@ function Assert-Contains {
 $settings = Read-RequiredFile 'settings.php'
 $bootstrap = Read-RequiredFile 'js\admin_settings_loading.js'
 $styles = Read-RequiredFile 'scss\views\_admin-settings.scss'
+$generatedstyles = Read-RequiredFile 'styles.css'
 $documentation = Read-RequiredFile 'docs\testing\admin-settings-loading-state.md'
 
 Assert-Contains 'Administration skeleton markup' $settings "'data-easystud-loading-skeleton' => '1'"
@@ -40,8 +41,12 @@ Assert-Contains 'Administration no-script specificity override' $settings '.sett
 Assert-Contains 'Administration JavaScript busy lifecycle' $bootstrap "root.setAttribute('aria-busy', 'true');"
 Assert-Contains 'Administration JavaScript ready lifecycle' $bootstrap "root.setAttribute('aria-busy', 'false');"
 Assert-Contains 'Administration fail-open deadline' $bootstrap '}, 1500);'
-Assert-Contains 'Administration loading styles' $styles 'body.local-groupimport-admin-settings-page--loading'
+Assert-Contains 'Administration JavaScript-only loading styles' $styles 'body.jsenabled.local-groupimport-admin-settings-page--loading'
+Assert-Contains 'Generated Administration JavaScript-only loading styles' $generatedstyles 'body.jsenabled.local-groupimport-admin-settings-page--loading'
 Assert-Contains 'Administration no-script documentation' $documentation 'no-script fallback'
+if ($styles.Contains('body.local-groupimport-admin-settings-page--loading [data-easystud-loading-skeleton]')) {
+    throw 'Administration loading styles must not show the Skeleton when Moodle has not marked JavaScript enabled.'
+}
 if ($settings.Contains("'aria-busy' => 'true'")) {
     throw 'Administration must not emit aria-busy server-side when no-script reveals usable native settings.'
 }
