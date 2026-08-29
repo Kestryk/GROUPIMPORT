@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `EED-UI-2026-0030` through `0033`: add one cumulative, source-owned human
+  validation bundle for desktop/mobile global controls plus Mass Import and
+  Administration normal/no-script loading lifecycles. It remains unexecuted
+  until separately authorised for the managed Moodle 5.1 runtime.
+
 - `EED-UI-2026-0033`: restore native Administration settings without JavaScript
   by hiding only its decorative loading Skeleton. Keep the normal 1.5-second
   bootstrap fail-open, `aria-busy` lifecycle and settings geometry unchanged.
