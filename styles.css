@@ -18399,3 +18399,165 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
 .local-groupimport-easystud [data-easystud-context-action]:focus-visible, .local-groupimport-easystud-group__actions-toggle:hover, .local-groupimport-easystud-group__actions-toggle:active, .local-groupimport-easystud-group__actions-toggle:focus, .local-groupimport-easystud-group__actions-toggle:focus-visible, .local-groupimport-easystud-group__actions-menu .btn:hover, .local-groupimport-easystud-group__actions-menu .btn:active, .local-groupimport-easystud-group__actions-menu .btn:focus, .local-groupimport-easystud-group__actions-menu .btn:focus-visible {
   text-decoration: none !important;
 }
+
+.local-groupimport-easystud {
+  font-family: var(--easyedu-font-family-ui);
+}
+.local-groupimport-easystud__eyebrow, .local-groupimport-easystud-settings-modal__eyebrow {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text-muted);
+  font-size: var(--easyedu-font-size-eyebrow);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--local-groupimport-easystud-primary);
+}
+.local-groupimport-easystud__panel-title {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-panel-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
+}
+.local-groupimport-easystud-column-heading__title {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text-muted);
+  font-size: var(--easyedu-font-size-eyebrow);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.local-groupimport-easystud__filter-label {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-control);
+  font-weight: var(--easyedu-font-weight-semibold);
+  line-height: 1.35;
+  color: var(--easyedu-text-muted);
+}
+.local-groupimport-easystud-modal__header h3, .local-groupimport-easystud-settings-modal__heading h3 {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-modal-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
+}
+
+.local-groupimport-import {
+  font-family: var(--easyedu-font-family-ui);
+}
+.local-groupimport-import__eyebrow {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text-muted);
+  font-size: var(--easyedu-font-size-eyebrow);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--local-groupimport-easystud-primary);
+}
+.local-groupimport-import__title {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-page-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
+  margin-bottom: 0.35rem;
+}
+.local-groupimport-import__intro, .local-groupimport-import-card__description {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-body);
+  line-height: var(--easyedu-line-height-body);
+  color: var(--easyedu-text-muted);
+}
+.local-groupimport-import-card__title {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-card-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
+}
+.local-groupimport-import-fields__header strong, .local-groupimport-import-report__title {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-section-title);
+  font-weight: var(--easyedu-font-weight-semibold);
+  line-height: var(--easyedu-line-height-title);
+}
+.local-groupimport-import-form .fitemtitle, .local-groupimport-import-form .col-form-label, .local-groupimport-import-fields__label {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-control);
+  font-weight: var(--easyedu-font-weight-semibold);
+  line-height: 1.35;
+}
+
+#page-admin-setting-local_groupimport {
+  font-family: var(--easyedu-font-family-ui);
+}
+#page-admin-setting-local_groupimport #adminsettings > .settingsform > h2 {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-page-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
+}
+#page-admin-setting-local_groupimport .formsettingheading h3,
+#page-admin-setting-local_groupimport .local-groupimport-admin-settings__hero-copy h3 {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-panel-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
+}
+#page-admin-setting-local_groupimport .local-groupimport-admin-settings__field-card h4 {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-section-title);
+  font-weight: var(--easyedu-font-weight-semibold);
+  line-height: var(--easyedu-line-height-title);
+}
+#page-admin-setting-local_groupimport #admin-alloweduserfields .form-label label,
+#page-admin-setting-local_groupimport #admin-enablesimplifiedview .form-label label,
+#page-admin-setting-local_groupimport #admin-enableanimations .form-label label,
+#page-admin-setting-local_groupimport #admin-participantprimarybadgefield .form-label label,
+#page-admin-setting-local_groupimport #admin-participantprimarybadgebgcolor .form-label label,
+#page-admin-setting-local_groupimport #admin-participantprimarybadgetextcolor .form-label label,
+#page-admin-setting-local_groupimport #admin-participantdetailfield1 .form-label label,
+#page-admin-setting-local_groupimport #admin-participantdetailfield2 .form-label label {
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-control);
+  font-weight: var(--easyedu-font-weight-semibold);
+  line-height: 1.35;
+}
