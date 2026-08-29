@@ -30,7 +30,9 @@ $styles = Read-RequiredFile 'scss\views\_admin-settings.scss'
 $documentation = Read-RequiredFile 'docs\testing\admin-settings-loading-state.md'
 
 Assert-Contains 'Administration skeleton markup' $settings "'data-easystud-loading-skeleton' => '1'"
-Assert-Contains 'Administration no-script fallback' $settings "html_writer::tag('noscript'"
+Assert-Contains 'Administration no-script fallback' $settings 'html_writer::tag('
+Assert-Contains 'Administration no-script fallback' $settings "'noscript',"
+Assert-Contains 'Administration no-script Markdown context block' $settings '"\n" . html_writer::tag(''style'','
 Assert-Contains 'Administration no-script fallback' $settings '#adminsettings > .settingsform > * { display: block !important; }'
 Assert-Contains 'Administration no-script fallback' $settings 'fieldset:first-of-type > * { display: block !important; }'
 Assert-Contains 'Administration no-script fallback' $settings '[data-easystud-loading-skeleton] { display: none !important; }'

@@ -30,7 +30,12 @@ change the normal 1200 ms minimum-visible interval, 1.5-second degraded
 fail-open deadline, native settings destinations, or JavaScript geometry.
 Its Skeleton selector also matches the more specific loading rule used by the
 normal SCSS state, so Moodle's settings-form cascade cannot re-display the
-placeholder after the no-script override.
+placeholder after the no-script override. The fallback's `<noscript>` tag and
+its inner `<style>` are emitted on separate lines. This is required because
+`admin_setting_heading` sends its description through Moodle's Markdown Extra
+renderer: an inline `noscript` is treated as paragraph content, while a
+line-delimited context block is preserved as the browser-recognised no-script
+style source.
 
 With motion enabled, the skeleton fades out over 180 ms and the restored native
 form fades in over 180 ms. Native controls remain masked until the skeleton has

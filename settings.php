@@ -229,12 +229,19 @@ if ($hassiteconfig) {
 
     // The classic bootstrap owns the normal loading lifecycle. Without scripts,
     // restore native settings instead of retaining the decorative placeholder.
-    $adminnoscriptfallback = html_writer::tag('noscript', html_writer::tag('style',
-        'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings > .settingsform > * { display: block !important; }' .
-            'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings > .settingsform > fieldset:first-of-type > * { display: block !important; }' .
-            'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport [data-easystud-loading-skeleton] { display: none !important; }' .
-            'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings .settingsform .local-groupimport-admin-settings__loading-skeleton[data-easystud-loading-skeleton] { display: none !important; }'
-    ));
+    // admin_setting_heading renders its description through Markdown Extra.
+    // `noscript` is a context block there only when its tags occupy their own
+    // lines; otherwise the fallback style is wrapped in a paragraph and does
+    // not reliably participate in the no-script cascade.
+    $adminnoscriptfallback = html_writer::tag(
+        'noscript',
+        "\n" . html_writer::tag('style',
+            'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings > .settingsform > * { display: block !important; }' .
+                'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings > .settingsform > fieldset:first-of-type > * { display: block !important; }' .
+                'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport [data-easystud-loading-skeleton] { display: none !important; }' .
+                'body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport #adminsettings .settingsform .local-groupimport-admin-settings__loading-skeleton[data-easystud-loading-skeleton] { display: none !important; }'
+        ) . "\n"
+    );
 
     $adminloadingskeletonhtml = $adminnoscriptfallback . html_writer::div(
         html_writer::div(
