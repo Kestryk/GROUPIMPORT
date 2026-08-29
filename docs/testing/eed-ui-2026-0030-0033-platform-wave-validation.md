@@ -28,7 +28,10 @@ does not create or edit fixtures, settings, groups, users, cache or data.
 
 The bottom pagination remains the final managed child of each paginated list.
 Dynamic empty and filtered-empty states are inserted immediately before it, so
-late lifecycle updates cannot push the pagination back into the card flow.
+late lifecycle updates cannot push the pagination back into the card flow. A
+subsequent pagination synchronization also moves an already-existing bottom
+navigation back to the final-child position instead of only enforcing this
+order when the navigation is first created.
 
 The test uses one browser context for normal lifecycle checks and an isolated
 JavaScript-disabled context for both no-script checks. It closes that isolated

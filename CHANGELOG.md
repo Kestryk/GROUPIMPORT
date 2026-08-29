@@ -25,6 +25,8 @@
 - Keep dynamically created empty and filtered-empty states before the bottom
   pagination so lifecycle refreshes cannot displace it from the end of the
   Participants, Groups or Groupings block.
+- Restore the final-child position whenever an existing bottom pagination is
+  synchronized, covering late lifecycle nodes as well as newly created ones.
 - Consume compact pagination-arrow and content-centring primitives from
   `EED-KIT-2026-0001` commit `6dec8785262d9b006feeb21ea313949ef8fac01c`
   through the existing `data-easystud-page-*` hooks.
