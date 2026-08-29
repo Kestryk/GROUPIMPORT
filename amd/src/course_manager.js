@@ -1423,6 +1423,11 @@ const applyStructureSearch = (root, options = {}) => {
     }
 };
 
+const placeManagedStateBeforeBottomPagination = (list, state) => {
+    const bottomPagination = list.querySelector(':scope > [data-easystud-pagination="bottom"]');
+    list.insertBefore(state, bottomPagination || null);
+};
+
 const syncContainerGroupEmptyState = (root, list, query, visibleCount) => {
     if (!list) {
         return;
@@ -1442,8 +1447,8 @@ const syncContainerGroupEmptyState = (root, list, query, visibleCount) => {
         filteredEmpty.className = 'local-groupimport-easystud-tree__empty local-groupimport-easystud-tree__empty--filtered';
         filteredEmpty.setAttribute('data-easystud-container-filter-empty', '1');
         filteredEmpty.textContent = labels.noresultsfiltered || 'No results match the current filters.';
-        list.appendChild(filteredEmpty);
     }
+    placeManagedStateBeforeBottomPagination(list, filteredEmpty);
     filteredEmpty.hidden = !query || visibleCount > 0 || groups.length === 0;
 };
 
@@ -5048,8 +5053,9 @@ const updateParticipantEmptyState = root => {
         state.setAttribute('data-easystud-empty-state', 'participants');
         state.hidden = true;
         state.innerHTML = '<span class="fa fa-users" aria-hidden="true"></span><p class="mb-0"></p>';
-        list.appendChild(state);
     }
+
+    placeManagedStateBeforeBottomPagination(list, state);
 
     const labels = getLabels(root);
     const message = users.length ?
@@ -5075,8 +5081,8 @@ const syncManagedEmptyState = (root, list, selector, key) => {
         state = document.createElement('div');
         state.className = 'local-groupimport-easystud-tree__empty local-groupimport-easystud-tree__empty--filtered';
         state.setAttribute('data-easystud-managed-empty', key);
-        list.appendChild(state);
     }
+    placeManagedStateBeforeBottomPagination(list, state);
     if (items.length === 0 && (key === 'participant-groups' || key === 'structure-groups')) {
         state.textContent = labels.nogroupsincourse || 'No groups exist in this course yet.';
     } else if (key === 'structure-groupings' && items.length === 0) {
