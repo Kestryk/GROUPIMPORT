@@ -22,6 +22,13 @@ dependency controller can rewrite inline display values during bootstrap, the
 loader preserves those values, temporarily forces every non-skeleton fieldset
 child hidden, and restores the latest Moodle state before revealing the form.
 
+Without JavaScript, `settings.php` emits a scoped no-script fallback that
+reveals the native settings-form children and hides only the decorative
+Skeleton. The bootstrap remains the sole writer of `aria-busy`, so the
+server-rendered no-script page is not left marked busy. This fallback does not
+change the normal 1200 ms minimum-visible interval, 1.5-second degraded
+fail-open deadline, native settings destinations, or JavaScript geometry.
+
 With motion enabled, the skeleton fades out over 180 ms and the restored native
 form fades in over 180 ms. Native controls remain masked until the skeleton has
 left; reduced-motion users receive the same ordered reveal without a delay.
@@ -39,6 +46,12 @@ contract` in `tools/playwright/mass-import-audit.spec.js`. The validated Moodle
 
 The plugin declares Moodle 5.1 as its compatibility floor. Moodle 4.5, 5.2
 and 5.3 remain deferred to the final compatibility matrix.
+
+## Static contract
+
+Run `tools/release/test-admin-settings-loading-contract.ps1` with PHP lint,
+the classic-bootstrap syntax check and the plugin Sass build. Runtime/browser
+validation remains a separately authorized bundle.
 
 ### Markup correction - 2026-07-30
 
