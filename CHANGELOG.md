@@ -39,6 +39,11 @@
   Administration normal/no-script loading lifecycles. It remains unexecuted
   until separately authorised for the managed Moodle 5.1 runtime.
 
+- `EED-UI-2026-0034-QA1`: make the cumulative platform-wave scenario activate
+  each desktop layout before inspecting its visible list owners, and distinguish
+  pagination owners from visible single-page lists. This is a QA-only correction;
+  product layout and pagination behaviour are unchanged.
+
 - `EED-UI-2026-0033-RF2`: fix the Administration no-script fallback's CSS
   specificity so the decorative Skeleton stays hidden while native settings
   remain visible. The normal JavaScript fail-open lifecycle and generated

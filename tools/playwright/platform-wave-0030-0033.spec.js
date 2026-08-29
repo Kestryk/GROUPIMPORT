@@ -28,10 +28,10 @@ const login = async(page, url) => {
 };
 
 const paginationOwners = [
-    ['Participants', '[data-easystud-participant-list]'],
-    ['Groups Complete', '.local-groupimport-easystud-participant-groups__list'],
-    ['Groups Structure', '.local-groupimport-easystud-structure-groups__list'],
-    ['Groupings Structure', '.local-groupimport-easystud-tree__groupings'],
+    ['Participants', '[data-easystud-participant-list]', '[data-easystud-user]', 15],
+    ['Groups Complete', '.local-groupimport-easystud-participant-groups__list', '[data-easystud-group-id]', 10],
+    ['Groups Structure', '.local-groupimport-easystud-structure-groups__list', '[data-easystud-group-id]', 10],
+    ['Groupings Structure', '.local-groupimport-easystud-tree__groupings', '[data-easystud-grouping-id]', 10],
 ];
 
 const assertPanelDisabledActions = async manageRoot => {
@@ -54,31 +54,77 @@ const assertPanelDisabledActions = async manageRoot => {
     }
 };
 
-const assertPaginationOwners = async (root, owners) => {
+const activateDesktopLayout = async (root, mode) => {
+    const toggle = root.locator(`[data-easystud-layout-mode="${mode}"]`);
+    await expect(toggle, mode + ' desktop layout toggle').toHaveCount(1);
+    await expect(toggle, mode + ' desktop layout toggle').toBeVisible();
+    if (await toggle.getAttribute('aria-pressed') !== 'true') {
+        await toggle.click();
+    }
+    await expect(toggle, mode + ' desktop layout active').toHaveAttribute('aria-pressed', 'true');
+};
+
+const assertVisibleOwners = async (root, owners) => {
     for (const [label, listSelector] of owners) {
         const list = root.locator(listSelector);
         await expect(list, label + ' list owner').toHaveCount(1);
         await expect(list, label + ' list').toBeVisible();
+    }
+};
+
+const assertNonPaginatedOwners = async (root, owners) => {
+    await assertVisibleOwners(root, owners);
+    for (const [label, listSelector] of owners) {
+        const list = root.locator(listSelector);
+        await expect(list.locator(':scope > [data-easystud-pagination]'),
+            label + ' must not own pagination in this layout').toHaveCount(0);
+    }
+};
+
+const assertPaginationGeometry = async (pagination, label, requireBottom) => {
+    const geometry = await pagination.evaluateAll(nodes => nodes.map(node => {
+        const style = getComputedStyle(node);
+        const owner = node.parentElement;
+        const rect = node.getBoundingClientRect();
+        const ownerRect = owner.getBoundingClientRect();
+        return {
+            position: style.position,
+            bottom: node.getAttribute('data-easystud-pagination') === 'bottom',
+            last: node === owner.lastElementChild,
+            belowListContent: node.getAttribute('data-easystud-pagination') !== 'bottom' ||
+                rect.top >= ownerRect.top,
+        };
+    }));
+    expect(geometry.every(item => item.position !== 'fixed' && item.position !== 'sticky'),
+        label + ' pagination must not be viewport-fixed').toBe(true);
+    if (!requireBottom) {
+        return;
+    }
+    const bottom = geometry.find(item => item.bottom);
+    expect(bottom && bottom.last, label + ' bottom pagination must end its content block').toBe(true);
+    expect(bottom && bottom.belowListContent, label + ' bottom pagination placement').toBe(true);
+};
+
+const assertPaginationOwners = async (root, owners) => {
+    for (const [label, listSelector, itemSelector, pageSize] of owners) {
+        const list = root.locator(listSelector);
+        await expect(list, label + ' list owner').toHaveCount(1);
+        await expect(list, label + ' list').toBeVisible();
+        const itemCount = await list.locator(':scope > ' + itemSelector).count();
         const pagination = list.locator(':scope > [data-easystud-pagination]');
+        if (itemCount <= pageSize) {
+            const paginationCount = await pagination.count();
+            expect(paginationCount, label + ' single-page pagination count').toBeLessThanOrEqual(1);
+            if (paginationCount === 1) {
+                await expect(pagination).toHaveAttribute('data-easystud-pagination', 'top');
+                await expect(pagination).toHaveClass(/is-placeholder/);
+                await assertPaginationGeometry(pagination, label, false);
+            }
+            continue;
+        }
+
         await expect(pagination, label + ' pagination owner').toHaveCount(2);
-        const geometry = await pagination.evaluateAll(nodes => nodes.map(node => {
-            const style = getComputedStyle(node);
-            const owner = node.parentElement;
-            const rect = node.getBoundingClientRect();
-            const ownerRect = owner.getBoundingClientRect();
-            return {
-                position: style.position,
-                bottom: node.getAttribute('data-easystud-pagination') === 'bottom',
-                last: node === owner.lastElementChild,
-                belowListContent: node.getAttribute('data-easystud-pagination') !== 'bottom' ||
-                    rect.top >= ownerRect.top,
-            };
-        }));
-        expect(geometry.every(item => item.position !== 'fixed' && item.position !== 'sticky'),
-            label + ' pagination must not be viewport-fixed').toBe(true);
-        const bottom = geometry.find(item => item.bottom);
-        expect(bottom && bottom.last, label + ' bottom pagination must end its content block').toBe(true);
-        expect(bottom && bottom.belowListContent, label + ' bottom pagination placement').toBe(true);
+        await assertPaginationGeometry(pagination, label, true);
     }
 };
 
@@ -113,7 +159,18 @@ test('EED-UI-2026-0030-0033 Platform wave: global controls plus Mass Import and 
     await ungroupedDisclosure.click();
     await expect(ungroupedDisclosure).toHaveAttribute('aria-expanded', 'true');
     await expect(ungrouped.locator(':scope > .local-groupimport-easystud-tree__children')).toBeVisible();
-    await assertPaginationOwners(manageRoot, paginationOwners);
+
+    // The desktop layout intentionally hides one panel at a time. Complete
+    // shows Participants and the Groupings tree, Participants shows Groups
+    // Complete, and Structure shows Groups Structure plus the Groupings tree.
+    // Activate each owning view before asserting its visible pagination.
+    await activateDesktopLayout(manageRoot, 'both');
+    await assertPaginationOwners(manageRoot, [paginationOwners[0]]);
+    await assertNonPaginatedOwners(manageRoot, [paginationOwners[3]]);
+    await activateDesktopLayout(manageRoot, 'participants');
+    await assertPaginationOwners(manageRoot, [paginationOwners[1]]);
+    await activateDesktopLayout(manageRoot, 'structure');
+    await assertPaginationOwners(manageRoot, [paginationOwners[2], paginationOwners[3]]);
 
     await page.setViewportSize({width: 390, height: 844});
     const mobileViewSwitcher = manageRoot.locator('[data-easystud-mobile-view-switcher="1"]');
