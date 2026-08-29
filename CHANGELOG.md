@@ -44,6 +44,10 @@
   pagination owners from visible single-page lists. This is a QA-only correction;
   product layout and pagination behaviour are unchanged.
 
+- `EED-UI-2026-0034-QA2`: write the four normal JavaScript review captures only
+  after their ready, visible-content and layout-specific assertions. The six
+  established capture names and the product runtime remain unchanged.
+
 - `EED-UI-2026-0033-RF2`: fix the Administration no-script fallback's CSS
   specificity so the decorative Skeleton stays hidden while native settings
   remain visible. The normal JavaScript fail-open lifecycle and generated

@@ -45,6 +45,13 @@ JavaScript-disabled context for both no-script checks. It closes that isolated
 context in `finally`; the supervised runner still owns credentials, runtime
 lease and external artifacts.
 
+Normal JavaScript captures are written only after the corresponding root is
+ready and its real content or layout-specific assertions have passed. The
+desktop capture therefore records the settled Complete layout, the mobile
+capture records the active Groups workspace with its focused pagination arrow,
+and the Mass Import and Administration captures cannot preserve a transient
+loading Skeleton as human-review evidence.
+
 ## Required external captures
 
 - `0030-global-controls-desktop.png`
