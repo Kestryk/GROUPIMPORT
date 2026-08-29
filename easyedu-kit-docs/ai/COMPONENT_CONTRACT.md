@@ -36,6 +36,8 @@ Must:
 - inherit the active Moodle theme font through `--easyedu-font-family-ui`;
 - use the shared typography roles for page, modal, panel, section, card,
   control, body, caption and eyebrow text;
+- use `type-page-identity` for plugin view identity headings; it is an alias of
+  `type-page-title` and does not introduce a local scale;
 - use only the shared regular, medium, semibold and strong weights for reusable
   administration chrome;
 - preserve plugin-owned wrapping, truncation and responsive layout rules.

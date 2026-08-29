@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+### EED-UI-2026-0034 - EasyStud typography and identity - 2026-08-29
+
+#### Changed
+
+- Synchronize the `type-page-identity` alias and documentation from immutable
+  UI Kit 0005 commit `bd03d617986e9889f133e007e0cc872ad9cad50d`.
+- Adopt the UI Kit 0005 semantic typography roles across Simplified Student
+  Management, Mass group import and EasyStud Administration without forcing a
+  typeface or changing responsive geometry.
+- Replace the heavy Automatic user identification heading family and other
+  local numeric weights with the shared page, panel, section, card, modal,
+  control, body and eyebrow hierarchy.
+- Preserve accepted result-count, Sort, More filters, More actions, card-title,
+  pagination and K3.1 Skeleton contracts.
+
+#### Validation
+
+- Add a source/generated-CSS contract for the three EasyStud view families and
+  the embedded Kit `type-page-identity` alias. Browser proof remains a separate
+  preview gate.
+
 - `EED-UI-2026-0033-RF4`: gate Administration's decorative loading CSS on
   Moodle's core `jsenabled` marker. With JavaScript disabled, native settings
   now retain their default visibility and the Skeleton remains hidden; the

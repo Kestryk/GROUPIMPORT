@@ -7,6 +7,7 @@ allowing themes to remain the visual owner of the font family.
 ## Public roles
 
 - `type-page-title`: main heading for one plugin view.
+- `type-page-identity`: explicit page-identity alias of `type-page-title`.
 - `type-modal-title`: Moodle modal heading.
 - `type-panel-title`: primary title inside a management panel.
 - `type-section-title`: compact subsection heading.
@@ -19,6 +20,11 @@ allowing themes to remain the visual owner of the font family.
 The roles use one font family, a short size scale and four weights. Letter
 spacing is always zero so typography remains stable across Moodle themes and
 languages.
+
+`type-page-identity` is a naming contract for headings such as "Mass group
+import" and the Course Banner Builder or Simplified Student Management page
+titles. It intentionally aliases `type-page-title`; it adds no font, size,
+weight or letter-spacing variation.
 
 Shared utility controls use the regular weight for disclosure labels, Sort
 captions and selected Sort values. Result-count badges use the semibold weight
@@ -50,6 +56,9 @@ its runtime font, size, weight and line-height variables.
 
 - Keep `--easyedu-font-family-ui: inherit` unless a Moodle theme overrides it.
 - Map existing headings by semantic role, not by their current pixel size.
+- Use `type-page-identity` for a plugin view identity heading instead of
+  recreating the rejected local title treatment used by "Automatic user
+  identification".
 - Do not introduce a fifth font weight for a local variation.
 - Do not add negative or decorative letter spacing.
 - Check long translated headings at narrow widths.
