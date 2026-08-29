@@ -34,6 +34,7 @@ Assert-Contains 'Administration no-script fallback' $settings "html_writer::tag(
 Assert-Contains 'Administration no-script fallback' $settings '#adminsettings > .settingsform > * { display: block !important; }'
 Assert-Contains 'Administration no-script fallback' $settings 'fieldset:first-of-type > * { display: block !important; }'
 Assert-Contains 'Administration no-script fallback' $settings '[data-easystud-loading-skeleton] { display: none !important; }'
+Assert-Contains 'Administration no-script specificity override' $settings '.settingsform .local-groupimport-admin-settings__loading-skeleton[data-easystud-loading-skeleton] { display: none !important; }'
 Assert-Contains 'Administration JavaScript busy lifecycle' $bootstrap "root.setAttribute('aria-busy', 'true');"
 Assert-Contains 'Administration JavaScript ready lifecycle' $bootstrap "root.setAttribute('aria-busy', 'false');"
 Assert-Contains 'Administration fail-open deadline' $bootstrap '}, 1500);'
