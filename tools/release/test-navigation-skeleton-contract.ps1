@@ -28,7 +28,7 @@ function Assert-Contains {
     }
 }
 
-$snapshot = '7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4'
+$snapshot = '45c5cb1a0c8364bd77c343b14af2ee71416a4bcb'
 $component = Read-RequiredFile 'scss\easyedu\components\_navigation-skeleton.scss'
 $loadingComponent = Read-RequiredFile 'scss\easyedu\components\_loading.scss'
 $tokens = Read-RequiredFile 'scss\easyedu\_tokens.scss'
@@ -43,6 +43,7 @@ $documentation = Read-RequiredFile 'docs\testing\navigation-skeleton-parity.md'
 $coverage = Read-RequiredFile 'docs\testing\skeleton-k3-coverage.md'
 $agents = Read-RequiredFile 'AGENTS.md'
 $zoomScenario = Read-RequiredFile 'tools\playwright\navigation-skeleton-zoom.spec.js'
+$loadingBootstrap = Read-RequiredFile 'js\loading_state_bootstrap.js'
 
 foreach ($fragment in @(
     '@mixin navigation-skeleton-frame',
@@ -104,6 +105,13 @@ Assert-Contains 'Student Management markup' $studentMarkup 'data-easyedu-navigat
 Assert-Contains 'Student Management markup' $studentMarkup 'aria-hidden="true"'
 Assert-Contains 'Mass Import markup' $massImport "'data-easyedu-navigation-skeleton' => '1'"
 Assert-Contains 'Mass Import markup' $massImport "'aria-hidden' => 'true'"
+Assert-Contains 'Mass Import no-script fallback' $massImport "html_writer::tag('noscript'"
+Assert-Contains 'Mass Import no-script fallback' $massImport '[data-easystud-loading-skeleton] { display: none !important; }'
+Assert-Contains 'Mass Import no-script fallback' $massImport '[data-easystud-real-content] { display: block !important; }'
+Assert-Contains 'Mass Import JavaScript busy lifecycle' $loadingBootstrap "root.setAttribute('aria-busy', 'true');"
+if ($massImport.Contains("'aria-busy' => 'true'")) {
+    throw 'Mass Import must not emit aria-busy when its no-script fallback reveals usable content.'
+}
 Assert-Contains 'Student Management styles' $studentStyles 'navigation-skeleton-cue-overlay'
 Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-compact-frame'
 Assert-Contains 'Student Management K3 styles' $studentStyles 'navigation-skeleton-guide-start-cue'

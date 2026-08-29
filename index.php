@@ -1091,7 +1091,6 @@ echo html_writer::start_div('local-groupimport-import' . ($preview !== null ? ' 
     'data-easyedu-loading-bootstrap' => '1',
     'data-easyedu-loading-ready-attribute' => 'data-easyedu-loading-ready',
     'data-easyedu-action-busy-label' => get_string('actioninprogress', 'local_groupimport'),
-    'aria-busy' => 'true',
 ]);
 
 echo html_writer::start_div('local-groupimport-import__loading-skeleton', [
@@ -1142,6 +1141,14 @@ for ($skeletoncard = 0; $skeletoncard < 2; $skeletoncard++) {
 }
 echo html_writer::end_div();
 echo html_writer::end_div();
+
+// Without JavaScript the classic bootstrap cannot release the loading state.
+// Reveal the already server-rendered form and navigation instead of leaving a
+// decorative Skeleton as the only visible Mass Import surface.
+echo html_writer::tag('noscript', html_writer::tag('style',
+    '#local-groupimport-import[data-easystud-loading-state="loading"] > [data-easystud-loading-skeleton] { display: none !important; }' .
+        '#local-groupimport-import[data-easystud-loading-state="loading"] > [data-easystud-real-content] { display: block !important; }'
+));
 
 echo html_writer::start_div('local-groupimport-import__content', [
     'data-easystud-real-content' => '1',

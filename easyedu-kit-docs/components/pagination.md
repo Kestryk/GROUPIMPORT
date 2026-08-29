@@ -14,6 +14,14 @@ one column has multiple pages.
   @include easyedu.pagination-controls;
 }
 
+.my-pagination__arrow {
+  @include easyedu.pagination-arrow-button;
+}
+
+.my-pagination__label {
+  @include easyedu.pagination-content-centre;
+}
+
 .my-pagination__selection {
   @include easyedu.pagination-selection;
 }
@@ -58,6 +66,18 @@ reintroducing local vertical-alignment rules.
 Render the changing Select/Deselect wording inside one direct child `<span>`.
 Update that label node rather than replacing the button contents so the
 component keeps a stable, explicitly centred flex item.
+
+Use `pagination-arrow-button` for First, Previous, Next and Last controls when
+their markup needs a direct mixin. `pagination-controls` applies the same
+compact square geometry automatically to the standard EasyEdu/EasyStud page
+data attributes. Use `pagination-content-centre` for a changed page label or a
+custom page button whose icon and text must remain centred; it does not alter
+pagination ownership, page state or keyboard semantics.
+
+The controls are static at desktop and mobile sizes: compact mobile layout
+keeps the centred page group. `prefers-reduced-motion` has no pagination-style
+override because these primitives do not animate; consumers that replace list
+content must continue to use the documented fade-only motion recipe.
 
 Pagination actions use the semantic primary colour rather than Bootstrap's
 neutral `outline-secondary` text colour. Keep page labels, Select/Deselect

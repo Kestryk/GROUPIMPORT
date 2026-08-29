@@ -1,5 +1,33 @@
 # Changelog
 
+## Unreleased
+
+- `EED-UI-2026-0030` through `0033`: add one cumulative, source-owned human
+  validation bundle for desktop/mobile global controls plus Mass Import and
+  Administration normal/no-script loading lifecycles. It remains unexecuted
+  until separately authorised for the managed Moodle 5.1 runtime.
+
+- `EED-UI-2026-0033`: restore native Administration settings without JavaScript
+  by hiding only its decorative loading Skeleton. Keep the normal 1.5-second
+  bootstrap fail-open, `aria-busy` lifecycle and settings geometry unchanged.
+
+- `EED-UI-2026-0032`: selectively synchronize the Navigation Skeleton contract
+  from Kit `45c5cb1a0c8364bd77c343b14af2ee71416a4bcb` and let Mass Import reveal
+  server-rendered navigation and form content without JavaScript. Keep the
+  AMD lifecycle, destinations, geometry and upload XHR unchanged.
+
+- Harmonize EasyStud top-panel action content through the existing shared
+  action-button contract, including disabled controls.
+- Give the Complete-view `Groups without grouping` disclosure the established
+  Group-section surface while preserving its current behaviour.
+- Keep bottom pagination at the end of each paginated content block without
+  viewport-fixed positioning.
+- Consume compact pagination-arrow and content-centring primitives from
+  `EED-KIT-2026-0001` commit `6dec8785262d9b006feeb21ea313949ef8fac01c`
+  through the existing `data-easystud-page-*` hooks.
+- Added the source-owned `global-controls-pagination.spec.js` candidate for
+  the EED-UI-2026-0030 desktop/mobile review matrix; no browser run is implied.
+
 All notable changes to `local_groupimport` are documented here.
 
 Maintenance convention:

@@ -12,6 +12,13 @@ attribute after its initial controls are wired. The bootstrap then waits for a
 short visual-stability quiet period before exposing the real content, with an
 8-second fail-open path if the AMD module cannot start.
 
+For no-script navigation, `index.php` emits a scoped `<noscript>` stylesheet
+that hides only `[data-easystud-loading-skeleton]` and reveals the already
+server-rendered `[data-easystud-real-content]`. `aria-busy` is set by the
+classic bootstrap rather than emitted server-side, so this fallback does not
+leave a usable page marked busy. This does not change destinations, geometry,
+AMD readiness, the 180 ms transition, or the eight-second JavaScript fail-open.
+
 While the root is loading, the existing EasyEdu bottom-end action indicator is
 active. It keeps the historical spinner at the lower-right corner and reads
 the `actioninprogress` language string from
@@ -41,7 +48,7 @@ Under `SKELETON-B-K3.1-RF1`, the two large import regions compose the static
 `skeleton-structural-container-frame` with a block-start accent; their 19
 pre-existing internal decorative cues remain unchanged. The compact K3.1
 Navigation Skeleton adds a decorative Guide circle and one cue, for a total of
-21. The immutable Kit `7043fe5c2fc9440201cbb5b7d25e41a8a9bf54b4` provides the
+21. The selectively synchronized Kit `45c5cb1a0c8364bd77c343b14af2ee71416a4bcb` provides the
 one-line compact navigation frame, structural accent, RTL, reduced-motion and
 forced-colors behavior. The existing 320 px/native-200% containment and loading
 lifecycle remain unchanged. The paired Student Management measurement, static
