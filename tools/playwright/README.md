@@ -88,6 +88,16 @@ card row controls`. At 768 px it compares the vertical centres of the menu
 trigger and the relevant Participant, Group and Grouping row control with a
 maximum two-pixel delta, and writes three external screenshots.
 
+The EED-UI-2026-0030 global-controls check is
+`global-controls-pagination.spec.js` / `EED-UI-2026-0030 global controls,
+ungrouped disclosure and pagination parity`. It is one focused scenario for
+desktop and 390 px mobile: top action centring (including a disabled action),
+the Complete-view `Groups without grouping` surface and disclosure, the four
+Participants/Groups Complete/Groups Structure/Groupings Structure pagination
+owners, bottom-of-block non-fixed placement, compact arrow focus, and two
+explicit human-review captures. Use discovery-only first; it has no browser,
+credential, lease, fixture or cache activity until separately authorised.
+
 The same file also owns `Guide target audit resolves every slide and guided
 step to an actionable control`. The supervised scenario runs the full Guide
 target inventory at 1280 x 900 and 390 x 844: each Show in interface slide and
