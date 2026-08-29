@@ -11,6 +11,8 @@
 - Consume compact pagination-arrow and content-centring primitives from
   `EED-KIT-2026-0001` commit `6dec8785262d9b006feeb21ea313949ef8fac01c`
   through the existing `data-easystud-page-*` hooks.
+- Added the source-owned `global-controls-pagination.spec.js` candidate for
+  the EED-UI-2026-0030 desktop/mobile review matrix; no browser run is implied.
 
 All notable changes to `local_groupimport` are documented here.
 

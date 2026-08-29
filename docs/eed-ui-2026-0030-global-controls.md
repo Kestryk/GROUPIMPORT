@@ -45,6 +45,15 @@ primitive or copied Kit bundle is introduced.
 
 ## Documentation and validation boundary
 
+The focused source-owned scenario is
+`global-controls-pagination.spec.js` / `EED-UI-2026-0030 global controls,
+ungrouped disclosure and pagination parity`. It records explicit desktop and
+390 px mobile review captures, checks enabled/disabled top-action centring,
+the Complete-view ungrouped surface/disclosure, all four pagination owners,
+bottom-of-block placement and compact arrow keyboard focus. It is retained as
+a candidate for a separately authorised authenticated run; this QA commit
+does not execute a browser, acquire a lease, mutate fixtures or refresh cache.
+
 No repository-wide agent-rule change is required: the existing component and
 documentation contracts already require shared button and pagination
 primitives. This document records the specific dependency rather than creating
