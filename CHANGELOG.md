@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `EED-UI-2026-0033-RF4`: gate Administration's decorative loading CSS on
+  Moodle's core `jsenabled` marker. With JavaScript disabled, native settings
+  now retain their default visibility and the Skeleton remains hidden; the
+  scoped inline fallback remains a secondary safeguard. The normal JavaScript
+  lifecycle is unchanged.
+
 - `EED-UI-2026-0033-RF3`: emit the Administration no-script fallback as a
   Markdown context block, so its native-settings reveal and decorative
   Skeleton hide rules are preserved by Moodle's settings-heading renderer.

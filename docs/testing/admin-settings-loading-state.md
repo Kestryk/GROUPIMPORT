@@ -28,6 +28,10 @@ Skeleton. The bootstrap remains the sole writer of `aria-busy`, so the
 server-rendered no-script page is not left marked busy. This fallback does not
 change the normal 1200 ms minimum-visible interval, 1.5-second degraded
 fail-open deadline, native settings destinations, or JavaScript geometry.
+The loading CSS itself is also gated by Moodle's core `body.jsenabled` class:
+the server-rendered loading body class alone cannot prove that scripts ran.
+Core adds `jsenabled` from its early body bootstrap, while a no-script request
+keeps the native form visible and the Skeleton at its normal hidden default.
 Its Skeleton selector also matches the more specific loading rule used by the
 normal SCSS state, so Moodle's settings-form cascade cannot re-display the
 placeholder after the no-script override. The fallback's `<noscript>` tag and

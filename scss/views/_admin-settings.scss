@@ -5,20 +5,23 @@
 // language around them so settings remain accessible and theme-overridable.
 @use "../easyedu" as easyedu;
 
-body.local-groupimport-admin-settings-page--loading [data-easystud-loading-skeleton] {
+// `local-groupimport-admin-settings-page--loading` is server-rendered even
+// without scripts. Moodle adds `jsenabled` only from its early body bootstrap,
+// so it is the reliable gate for this decorative JavaScript-only state.
+body.jsenabled.local-groupimport-admin-settings-page--loading [data-easystud-loading-skeleton] {
   // Moodle's generated settings CSS uses an ID-qualified `display: none` for
   // this same node. The loading marker is the deliberate exception.
   display: grid !important;
   @include easyedu.loading-opacity-transition(180ms);
 }
 
-body.local-groupimport-admin-settings-page--loading
+body.jsenabled.local-groupimport-admin-settings-page--loading
   #page-admin-setting-local_groupimport.is-easystud-loading-skeleton-exiting
   [data-easystud-loading-skeleton] {
   @include easyedu.loading-opacity-hidden;
 }
 
-body.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport {
+body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-setting-local_groupimport {
   #adminsettings > .settingsform > * {
     display: none;
   }
