@@ -18,7 +18,14 @@ does not create or edit fixtures, settings, groups, users, cache or data.
 1. On Student Management, review the 0030 controls at 1440 x 1000 then at
    390 x 844: centred enabled and disabled top actions, the `Groups without
    grouping` surface/disclosure, bottom-of-block pagination and compact
-   pagination-arrow focus.
+   pagination-arrow focus. At desktop, activate Complete (`both`) for
+   Participants and the visible Groupings tree, Participants for Groups
+   Complete, then Structure for Groups Structure and the Groupings tree; the
+   panels are intentionally hidden outside their owning layout mode. The
+   Groupings tree is not a pagination owner in Complete mode. In Structure
+   mode its pagination is threshold-based: a list that fits one page may have
+   no pager (or only the top placeholder), while a list over the ten-item
+   limit must have top and bottom pagers.
 2. On Mass Import, review its normal JavaScript lifecycle (ready real content,
    no visible loading Skeleton) and then a JavaScript-disabled page (native
    navigation and form are visible; only the decorative Skeleton is hidden).
