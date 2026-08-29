@@ -54,6 +54,16 @@ const assertPanelDisabledActions = async manageRoot => {
     }
 };
 
+const activateDesktopLayout = async (root, mode) => {
+    const toggle = root.locator(`[data-easystud-layout-mode="${mode}"]`);
+    await expect(toggle, mode + ' desktop layout toggle').toHaveCount(1);
+    await expect(toggle, mode + ' desktop layout toggle').toBeVisible();
+    if (await toggle.getAttribute('aria-pressed') !== 'true') {
+        await toggle.click();
+    }
+    await expect(toggle, mode + ' desktop layout active').toHaveAttribute('aria-pressed', 'true');
+};
+
 const assertPaginationOwners = async (root, owners) => {
     for (const [label, listSelector] of owners) {
         const list = root.locator(listSelector);
@@ -113,7 +123,17 @@ test('EED-UI-2026-0030-0033 Platform wave: global controls plus Mass Import and 
     await ungroupedDisclosure.click();
     await expect(ungroupedDisclosure).toHaveAttribute('aria-expanded', 'true');
     await expect(ungrouped.locator(':scope > .local-groupimport-easystud-tree__children')).toBeVisible();
-    await assertPaginationOwners(manageRoot, paginationOwners);
+
+    // The desktop layout intentionally hides one panel at a time. Complete
+    // shows Participants and the Groupings tree, Participants shows Groups
+    // Complete, and Structure shows Groups Structure plus the Groupings tree.
+    // Activate each owning view before asserting its visible pagination.
+    await activateDesktopLayout(manageRoot, 'both');
+    await assertPaginationOwners(manageRoot, [paginationOwners[0], paginationOwners[3]]);
+    await activateDesktopLayout(manageRoot, 'participants');
+    await assertPaginationOwners(manageRoot, [paginationOwners[1]]);
+    await activateDesktopLayout(manageRoot, 'structure');
+    await assertPaginationOwners(manageRoot, [paginationOwners[2], paginationOwners[3]]);
 
     await page.setViewportSize({width: 390, height: 844});
     const mobileViewSwitcher = manageRoot.locator('[data-easystud-mobile-view-switcher="1"]');

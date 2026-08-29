@@ -7,6 +7,11 @@
   Administration normal/no-script loading lifecycles. It remains unexecuted
   until separately authorised for the managed Moodle 5.1 runtime.
 
+- `EED-UI-2026-0030-QA3`: scope the cumulative platform-wave pagination
+  assertions to each desktop layout's visible owning panel. This is a
+  QA-only transition fix; product layout and pagination behaviour are
+  unchanged.
+
 - `EED-UI-2026-0033`: restore native Administration settings without JavaScript
   by hiding only its decorative loading Skeleton. Keep the normal 1.5-second
   bootstrap fail-open, `aria-busy` lifecycle and settings geometry unchanged.
