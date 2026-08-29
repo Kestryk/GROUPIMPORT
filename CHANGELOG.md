@@ -12,6 +12,14 @@
   QA-only transition fix; product layout and pagination behaviour are
   unchanged.
 
+- `EED-UI-2026-0030-QA4`: distinguish pagination owners from visible
+  single-page lists in the cumulative platform-wave assertions. Groupings is
+  checked as non-paginated outside Structure mode; in Structure mode, only
+  lists over the ten-item threshold require top and bottom controls, while
+  any existing pager still observes the final-child invariant. This is a
+  QA-only expectation fix; product layout and pagination behaviour are
+  unchanged.
+
 - `EED-UI-2026-0033`: restore native Administration settings without JavaScript
   by hiding only its decorative loading Skeleton. Keep the normal 1.5-second
   bootstrap fail-open, `aria-busy` lifecycle and settings geometry unchanged.
