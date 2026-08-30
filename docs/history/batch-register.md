@@ -1,5 +1,20 @@
 # EasyStud batch register
 
+## Waves 1-3 corrective RF2
+
+- Date: 2026-08-30
+- Lots: `EED-UI-2026-0038-RF2`, `0039-RF2`, `0041-RF2`, `0049-RF3` and
+  shared-title `0048-RF2`.
+- Scope: repair only the human-rejected modal, Administration, Import history,
+  Mass Import body/result and ungrouped-title surfaces from preview `f0bc74f`.
+- Preservation: native multiselect and settings storage, import Restore/Export,
+  modal scrolling/profile action, entity persistence and accepted page title
+  and introduction remain unchanged.
+- Exclusions: stale-data rehydration, page intro/navigation order, Filepicker,
+  global Kit modal migration, preview/cache/fixtures and browser validation.
+- Validation: official Sass/AMD builds, focused RF2 and existing regression
+  contracts, PHP syntax and `git diff --check`.
+
 ## EED-UI-2026-0041 - Import history actions
 
 - Date: 2026-08-30

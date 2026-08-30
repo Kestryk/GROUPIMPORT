@@ -35,7 +35,8 @@
     > .btn {
       @include easyedu.action-button(small);
 
-      min-height: 2.25rem;
+      min-height: 2.5rem;
+      padding-inline: 0.85rem;
       white-space: nowrap;
     }
   }
@@ -146,14 +147,14 @@
     @include easyedu.settings-modal-field;
 
     > span {
+      @include easyedu.type-control-label;
+
       align-items: center;
       color: #62788e;
       display: inline-flex;
-      font-size: 0.68rem;
-      font-weight: 760;
       gap: 0.32rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     > strong {
@@ -284,7 +285,7 @@
     summary {
       @include easyedu.metadata-section-summary;
 
-      > span {
+      > span:first-child {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -297,14 +298,14 @@
         display: inline-flex;
         gap: 0.28rem;
         justify-self: end;
-        max-width: 8.5rem;
+        max-width: min(12rem, 100%);
         min-width: 0;
         overflow: hidden;
 
         .local-groupimport-easystud-settings-modal__list-count-label {
           font-size: 0.66rem;
           font-weight: 720;
-          max-width: 5.8rem;
+          max-width: 8.5rem;
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -312,6 +313,17 @@
         }
       }
 
+      > .local-groupimport-easystud-settings-modal__disclosure-chevron {
+        color: #607487;
+        font-size: 0.72rem;
+        justify-self: center;
+        transition: transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
+      }
+
+    }
+
+    &[data-easystud-settings-list-state] summary {
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
     }
   }
 
@@ -518,7 +530,10 @@
       font-size: 1.28rem;
       height: 100% !important;
       line-height: 5.25rem;
+      margin: 0 !important;
+      max-width: none;
       object-fit: cover;
+      padding: 0;
       transform: translateZ(0);
       width: 100% !important;
     }
@@ -548,6 +563,15 @@
     }
   }
 
+  &-detail__identity-label {
+    @include easyedu.type-caption;
+
+    color: var(--local-groupimport-easystud-primary);
+    display: block;
+    font-weight: var(--easyedu-font-weight-semibold);
+    margin-bottom: 0.16rem;
+  }
+
   &-detail__grid {
     display: grid;
     gap: 0.58rem;
@@ -565,11 +589,11 @@
     padding: 0.52rem 0.64rem;
 
     > span {
+      @include easyedu.type-control-label;
+
       color: #62788e;
-      font-size: 0.68rem;
-      font-weight: 760;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     > strong {
@@ -582,6 +606,7 @@
   }
 
   &-detail__lists {
+    align-items: start;
     display: grid;
     gap: 0.52rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -614,7 +639,7 @@
         display: none;
       }
 
-      > span {
+      > span:first-child {
         @include easyedu.type-section-title;
 
         min-width: 0;
@@ -623,7 +648,15 @@
         white-space: nowrap;
       }
 
-      > strong {
+      .local-groupimport-easystud-detail__list-summary-end {
+        align-items: center;
+        display: inline-flex;
+        gap: 0.48rem;
+        justify-self: end;
+        min-width: 0;
+      }
+
+      strong {
         align-items: center;
         background: #f6f8fa;
         border: 1px solid #d8e0e8;
@@ -634,35 +667,48 @@
         font-weight: 730;
         gap: 0.28rem;
         line-height: 1.2;
-        max-width: 7.5rem;
+        max-width: 9.5rem;
         max-inline-size: 100%;
         min-width: 0;
         overflow: hidden;
         padding: 0.18rem 0.5rem;
 
         span:last-child {
-          max-width: 4.8rem;
+          max-width: 6.5rem;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
       }
+
+      .local-groupimport-easystud-detail__list-chevron {
+        color: #607487;
+        flex: 0 0 auto;
+        font-size: 0.72rem;
+        transition: transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
+      }
     }
   }
 
-  &-detail__list--roles summary > strong {
+  &-detail__list[data-easystud-detail-list-state="open"] &-detail__list-chevron,
+  &-settings-modal__list-section[data-easystud-settings-list-state="open"]
+    &-settings-modal__disclosure-chevron {
+    transform: rotate(180deg);
+  }
+
+  &-detail__list--roles summary strong {
     background: #e7f2ff;
     border-color: #bfd8f4;
     color: #245d92;
   }
 
-  &-detail__list--groups summary > strong {
+  &-detail__list--groups summary strong {
     background: #eaf6ef;
     border-color: #c5e2d0;
     color: #2e6f4b;
   }
 
-  &-detail__list--groupings summary > strong {
+  &-detail__list--groupings summary strong {
     background: #f0edf8;
     border-color: #dacdf0;
     color: #6b4a91;
@@ -759,6 +805,10 @@
       }
     }
 
+    &-settings-modal__list-section[data-easystud-settings-list-state] summary {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
     &-settings-modal &-modal__footer {
       align-items: stretch;
       flex-wrap: wrap;
@@ -769,4 +819,10 @@
     }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    &-detail__list-chevron,
+    &-settings-modal__disclosure-chevron {
+      transition: none;
+    }
+  }
 }

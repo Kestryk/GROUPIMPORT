@@ -1074,6 +1074,8 @@
 
   &-history__item-meta {
     @include easyedu.history-meta;
+
+    margin-bottom: 0.68rem;
   }
 
   &-history__rollback {
@@ -1085,6 +1087,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-top: 0.08rem;
 
     .btn,
     .local-groupimport-import-history__state {
