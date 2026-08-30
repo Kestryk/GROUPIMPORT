@@ -1,16 +1,18 @@
 const {test, expect} = require('@playwright/test');
 
-const baseUrl = process.env.EASYEDU_MOODLE_URL ||
-    'http://localhost/local/groupimport/manage.php?id=5';
-const username = process.env.EASYEDU_MOODLE_USERNAME || 'Admin';
-const password = process.env.EASYEDU_MOODLE_PASSWORD || '';
+const managerUrl = process.env.EASYEDU_EASYSTUD_MANAGER_URL;
+const username = process.env.EASYEDU_MOODLE_USERNAME;
+const password = process.env.EASYEDU_MOODLE_PASSWORD;
 
 const login = async page => {
-    await page.goto(baseUrl, {waitUntil: 'domcontentloaded'});
+    if (!managerUrl) {
+        throw new Error('The supervised EasyStud fixture must supply EASYEDU_EASYSTUD_MANAGER_URL.');
+    }
+    if (!username || !password) {
+        throw new Error('The supervised runner must supply Moodle credentials.');
+    }
+    await page.goto(managerUrl, {waitUntil: 'domcontentloaded'});
     if (page.url().includes('/login/')) {
-        if (!password) {
-            throw new Error('Set EASYEDU_MOODLE_PASSWORD before running this scenario.');
-        }
         await page.locator('#username').fill(username);
         await page.locator('#password').fill(password);
         await page.locator('#loginbtn').click();

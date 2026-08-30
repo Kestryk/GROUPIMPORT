@@ -15,8 +15,11 @@
 
 #### Validation
 
-- Add a source/generated-stylesheet contract. Managed-preview and human visual
-  review remain separately gated.
+- Add a source/generated-stylesheet contract and a deterministic supervised
+  fixture runner. The focused review discovers exactly one test before loading
+  credentials or mutating Moodle, uses a temporary manager URL instead of
+  course 5, and records external cleanup/manifests. Managed-preview and human
+  visual review remain separately gated.
 
 ### EED-UI-2026-0034 - EasyStud typography and identity - 2026-08-29
 

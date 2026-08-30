@@ -31,6 +31,12 @@ param(
     [ValidateRange(60, 1800)]
     [int]$WatchdogSeconds = 300,
 
+    # Optional supervised Moodle fixture. The helper is intentionally opt-in so
+    # existing non-mutating scenarios retain their current execution contract.
+    [string]$MoodleRoot,
+
+    [string]$FixtureHelperPath,
+
     [switch]$DiscoveryOnly
 )
 
@@ -226,6 +232,20 @@ $specArgument = $specPath.Replace('\', '/')
 if ([string]::IsNullOrWhiteSpace($Grep)) {
     throw 'Grep must identify exactly one Playwright test.'
 }
+$fixtureHelper = $null
+if (-not [string]::IsNullOrWhiteSpace($FixtureHelperPath)) {
+    if ([string]::IsNullOrWhiteSpace($MoodleRoot)) {
+        throw 'MoodleRoot is required when FixtureHelperPath is supplied.'
+    }
+    $fixtureHelper = Resolve-ExistingLeaf -Path $FixtureHelperPath -Label 'Fixture helper'
+    if (-not (Test-PathIsSameOrBelow -Path $fixtureHelper -Root $sourcePluginRoot)) {
+        throw 'FixtureHelperPath must stay inside the allowlisted EasyStud source checkout.'
+    }
+    $MoodleRoot = (Resolve-Path -LiteralPath $MoodleRoot).Path
+    if (-not (Test-Path -LiteralPath (Join-Path $MoodleRoot 'config.php') -PathType Leaf)) {
+        throw 'MoodleRoot must contain config.php.'
+    }
+}
 
 $nodeCommand = Get-Command node -CommandType Application -ErrorAction Stop |
     Select-Object -First 1
@@ -313,6 +333,7 @@ $credentialEnvironmentNames = @(
     'EASYEDU_MOODLE_URL',
     'EASYEDU_MOODLE_USERNAME',
     'EASYEDU_MOODLE_PASSWORD',
+    'EASYEDU_EASYSTUD_MANAGER_URL',
     'EASYEDU_LOADING_DIAGNOSTIC_URL',
     'EASYEDU_CCB_MOODLE_URL',
     'EASYEDU_CCB_MOODLE_USERNAME',
@@ -340,6 +361,30 @@ $timedOut = $false
 $status = if ($DiscoveryOnly) { 'incomplete' } else { 'failed' }
 $failureMessage = $null
 $startedAt = [DateTime]::UtcNow
+$fixtureSetup = $null
+$fixtureSetupCompleted = $false
+$fixtureCleanupComplete = $true
+$fixtureCleanupError = $null
+$fixtureManifestPath = Join-Path $runRoot 'fixture-manifest.json'
+
+function Invoke-SupervisedFixtureHelper {
+    param([Parameter(Mandatory = $true)][ValidateSet('setup', 'cleanup')][string]$Action)
+
+    $php = Get-Command php -CommandType Application -ErrorAction Stop | Select-Object -First 1
+    $arguments = @($fixtureHelper, '--moodle-root', $MoodleRoot, '--action', $Action, '--manifest', $fixtureManifestPath)
+    if ($Action -eq 'setup') {
+        $arguments += @('--run-id', $runId)
+    }
+    $output = @(& $php.Source @arguments 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Fixture $Action failed: " + (Protect-SensitiveText -Text ($output -join [Environment]::NewLine))
+    }
+    $json = $output | Where-Object { $_ -match '^\s*\{' } | Select-Object -Last 1
+    if ($null -eq $json) {
+        throw "Fixture $Action did not return JSON."
+    }
+    return ($json | ConvertFrom-Json)
+}
 
 try {
     if ($DiscoveryOnly) {
@@ -372,6 +417,19 @@ try {
             Acquire-EasyEduResourceLease @leaseArguments | Out-Null
         }
         $leaseAcquired = $true
+
+        if ($null -ne $fixtureHelper) {
+            $fixtureSetup = Invoke-SupervisedFixtureHelper -Action 'setup'
+            if ([string]::IsNullOrWhiteSpace([string]$fixtureSetup.managerUrl)) {
+                throw 'Fixture setup did not return a managerUrl.'
+            }
+            $fixtureSetupCompleted = $true
+            [Environment]::SetEnvironmentVariable(
+                'EASYEDU_EASYSTUD_MANAGER_URL',
+                [string]$fixtureSetup.managerUrl,
+                'Process'
+            )
+        }
 
         . $credentialLoader | Out-Null
         $script:LoadedUsername = [Environment]::GetEnvironmentVariable(
@@ -450,6 +508,24 @@ try {
         }
     }
 
+    if ($fixtureSetupCompleted) {
+        try {
+            $fixtureCleanup = Invoke-SupervisedFixtureHelper -Action 'cleanup'
+            $fixtureCleanupComplete = [bool]$fixtureCleanup.complete
+            if (-not $fixtureCleanupComplete) {
+                throw 'Fixture cleanup reported incomplete.'
+            }
+        } catch {
+            $fixtureCleanupComplete = $false
+            $fixtureCleanupError = Protect-SensitiveText -Text $_.Exception.Message
+            $runnerExitCode = 1
+            $status = 'failed'
+            if ([string]::IsNullOrEmpty($failureMessage)) {
+                $failureMessage = 'The supervised Moodle fixture could not be cleaned up.'
+            }
+        }
+    }
+
     foreach ($name in $credentialEnvironmentNames) {
         [Environment]::SetEnvironmentVariable($name, $null, 'Process')
     }
@@ -490,6 +566,10 @@ $cleanup = [ordered]@{
     leaseAcquired = $leaseAcquired
     leaseReleased = $leaseReleased
     ownedChildStopped = $ownedChildStopped
+    fixtureRequested = ($null -ne $fixtureHelper)
+    fixtureSetupCompleted = $fixtureSetupCompleted
+    fixtureCleanupComplete = $fixtureCleanupComplete
+    fixtureCleanupError = $fixtureCleanupError
     profileExternal = -not [bool](
         $protectedPluginRoots | Where-Object {
             Test-PathIsSameOrBelow -Path $profileRoot -Root $_

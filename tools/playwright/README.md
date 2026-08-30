@@ -36,6 +36,16 @@ Use `-Spec` and an exact `-Grep` for another scenario. The one-test gate cannot
 be disabled. `-DiscoveryOnly` validates selection and artifact registration
 without loading credentials or taking the runtime lease.
 
+### EED-UI-2026-0035 action-button alignment
+
+Run `Invoke-EasyStudActionButtonAlignmentSupervised.ps1` for the focused
+alignment review. Its required `-MoodleRoot` and `-RuntimeRunnerPath` identify
+the managed Moodle checkout and its served runner only at execution time; no
+versioned path is used. The supervisor
+discovers one test first, then creates a disposable course/group fixture and
+passes the resulting manager URL to the spec. It removes the fixture in
+`finally`; no fixed course is used.
+
 The dedicated native-drawer clearance scenario is
 `easystud-navigation-native-drawer-clearance.spec.js` /
 `easystud-navigation-native-drawer-clearance`. It uses only the 390 x 844
