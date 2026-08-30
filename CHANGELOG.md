@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### EED-UI-2026-0041 - Import history actions - 2026-08-30
+
+#### Fixed
+
+- Align Restore this import and Export annotated Excel on the same compact
+  action baseline and height, with coherent focus/hover/disabled treatment and
+  readable full-row wrapping at narrow widths.
+
+#### Validation
+
+- Rebuilt Sass and passed the focused source/generated-CSS Import history action
+  contract. No browser or preview run was performed.
+
 ### EED-UI-2026-0049 RF2 - Visible Mass Import hierarchy - 2026-08-30
 
 #### Fixed

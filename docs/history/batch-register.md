@@ -1,5 +1,17 @@
 # EasyStud batch register
 
+## EED-UI-2026-0041 - Import history actions
+
+- Date: 2026-08-30
+- Scope: consumer-only static alignment for Restore this import and Export
+  annotated Excel in the Import history list.
+- Correction: both controls share the Kit compact action geometry, baseline and
+  minimum height; their row wraps cleanly to full-width controls below 30rem.
+  Existing Bootstrap semantic variants, labels and import/export behavior are
+  preserved.
+- Validation: Sass build, focused Import history action contract and
+  `git diff --check`; no browser or preview run was performed.
+
 ## EED-UI-2026-0049 RF2 — visible Mass Import hierarchy
 
 - Date: 2026-08-30
