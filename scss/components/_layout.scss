@@ -759,6 +759,10 @@
 
   &__panel-actions {
     align-items: center;
+    // The Kit action-button owns the icon slot and its theme-overridable
+    // separation. Keep the compact row quieter than its former Bootstrap
+    // utility-margin plus gap combination.
+    --easyedu-action-icon-gap: 0.45rem;
     flex-wrap: nowrap;
     max-width: 100%;
     min-width: 0;
@@ -783,6 +787,7 @@
       display: inline-flex;
       justify-content: center;
       line-height: 1;
+      margin-inline: 0 !important;
     }
   }
 
@@ -830,7 +835,15 @@
 
     .btn {
       justify-content: flex-start;
+      text-decoration: none !important;
       width: 100%;
+
+      &:hover,
+      &:active,
+      &:focus,
+      &:focus-visible {
+        text-decoration: none !important;
+      }
     }
   }
 

@@ -399,6 +399,16 @@
     padding-top: 0.48rem;
   }
 
+  // The native Moodle-profile link is an action, not body copy. It therefore
+  // uses the same centred icon/label contract as the upper EasyStud actions.
+  &-settings-modal__native > .btn {
+    @include easyedu.action-button(small);
+
+    .fa {
+      margin-inline: 0 !important;
+    }
+  }
+
   &-settings-modal__filepicker-icon {
     background: #eef5fb;
     border: 1px solid #d2e2ef;

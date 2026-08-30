@@ -2526,6 +2526,7 @@
 }
 .local-groupimport-easystud__panel-actions {
   align-items: center;
+  --easyedu-action-icon-gap: 0.45rem;
   flex-wrap: nowrap;
   max-width: 100%;
   min-width: 0;
@@ -2584,6 +2585,7 @@
   display: inline-flex;
   justify-content: center;
   line-height: 1;
+  margin-inline: 0 !important;
 }
 .local-groupimport-easystud__panel-actions .btn:disabled, .local-groupimport-easystud__panel-actions .btn.disabled {
   background: #f8fafc;
@@ -2684,7 +2686,11 @@
 }
 .local-groupimport-easystud__panel-actions-menu .btn {
   justify-content: flex-start;
+  text-decoration: none !important;
   width: 100%;
+}
+.local-groupimport-easystud__panel-actions-menu .btn:hover, .local-groupimport-easystud__panel-actions-menu .btn:active, .local-groupimport-easystud__panel-actions-menu .btn:focus, .local-groupimport-easystud__panel-actions-menu .btn:focus-visible {
+  text-decoration: none !important;
 }
 .local-groupimport-easystud-mobile-actions {
   display: none;
@@ -3892,6 +3898,51 @@
   margin-top: 0;
   min-width: 0;
   width: auto;
+}
+.local-groupimport-easystud-rename__edit .btn {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--easyedu-action-icon-gap, 0.65rem);
+  justify-content: center;
+  line-height: 1.2;
+  font-size: 0.78rem;
+  min-height: 1.9rem;
+  min-width: 1.9rem;
+  padding: 0.22rem 0.5rem;
+}
+.local-groupimport-easystud-rename__edit .btn:hover, .local-groupimport-easystud-rename__edit .btn:focus-visible, .local-groupimport-easystud-rename__edit .btn[aria-expanded=true], .local-groupimport-easystud-rename__edit .btn[aria-pressed=true], .local-groupimport-easystud-rename__edit .btn.active, .local-groupimport-easystud-rename__edit .btn.is-active {
+  background: var(--easyedu-primary-soft);
+  border-color: var(--easyedu-control-focus-border);
+  color: var(--easyedu-primary-strong);
+  outline: 0;
+}
+.local-groupimport-easystud-rename__edit .btn:focus-visible {
+  border-color: var(--easyedu-control-focus-border);
+  box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring);
+  outline: var(--easyedu-focus-outline-width) solid transparent;
+  outline-offset: var(--easyedu-focus-outline-offset);
+}
+.local-groupimport-easystud-rename__edit .btn:disabled, .local-groupimport-easystud-rename__edit .btn[aria-disabled=true], .local-groupimport-easystud-rename__edit .btn.disabled {
+  background: var(--easyedu-surface-soft);
+  border-color: var(--easyedu-card-border);
+  color: var(--easyedu-text-muted);
+  cursor: not-allowed;
+  opacity: 0.62;
+  pointer-events: none;
+  transform: none;
+}
+.local-groupimport-easystud-rename__edit .btn .fa {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  line-height: 1;
+  min-inline-size: 1em;
+  margin-inline: 0;
+  width: 1em;
+}
+.local-groupimport-easystud-rename__edit .btn .fa {
+  margin-inline: 0 !important;
 }
 .local-groupimport-easystud-icon-button {
   align-items: center;
@@ -12786,6 +12837,51 @@
   margin-top: 0.48rem;
   padding-top: 0.48rem;
 }
+.local-groupimport-easystud-settings-modal__native > .btn {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--easyedu-action-icon-gap, 0.65rem);
+  justify-content: center;
+  line-height: 1.2;
+  font-size: 0.78rem;
+  min-height: 1.9rem;
+  min-width: 1.9rem;
+  padding: 0.22rem 0.5rem;
+}
+.local-groupimport-easystud-settings-modal__native > .btn:hover, .local-groupimport-easystud-settings-modal__native > .btn:focus-visible, .local-groupimport-easystud-settings-modal__native > .btn[aria-expanded=true], .local-groupimport-easystud-settings-modal__native > .btn[aria-pressed=true], .local-groupimport-easystud-settings-modal__native > .btn.active, .local-groupimport-easystud-settings-modal__native > .btn.is-active {
+  background: var(--easyedu-primary-soft);
+  border-color: var(--easyedu-control-focus-border);
+  color: var(--easyedu-primary-strong);
+  outline: 0;
+}
+.local-groupimport-easystud-settings-modal__native > .btn:focus-visible {
+  border-color: var(--easyedu-control-focus-border);
+  box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring);
+  outline: var(--easyedu-focus-outline-width) solid transparent;
+  outline-offset: var(--easyedu-focus-outline-offset);
+}
+.local-groupimport-easystud-settings-modal__native > .btn:disabled, .local-groupimport-easystud-settings-modal__native > .btn[aria-disabled=true], .local-groupimport-easystud-settings-modal__native > .btn.disabled {
+  background: var(--easyedu-surface-soft);
+  border-color: var(--easyedu-card-border);
+  color: var(--easyedu-text-muted);
+  cursor: not-allowed;
+  opacity: 0.62;
+  pointer-events: none;
+  transform: none;
+}
+.local-groupimport-easystud-settings-modal__native > .btn .fa {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  line-height: 1;
+  min-inline-size: 1em;
+  margin-inline: 0;
+  width: 1em;
+}
+.local-groupimport-easystud-settings-modal__native > .btn .fa {
+  margin-inline: 0 !important;
+}
 .local-groupimport-easystud-settings-modal__filepicker-icon {
   background: #eef5fb;
   border: 1px solid #d2e2ef;
@@ -17080,10 +17176,50 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
   .local-groupimport-easystud-mobile-actions__buttons .btn {
     align-items: center;
     display: inline-flex;
+    gap: var(--easyedu-action-icon-gap, 0.65rem);
+    justify-content: center;
+    line-height: 1.2;
+    font-size: 0.78rem;
+    min-height: 1.9rem;
+    min-width: 1.9rem;
+    padding: 0.22rem 0.5rem;
+    align-items: center;
+    display: inline-flex;
     flex: 0 0 auto;
     gap: 0.35rem;
     min-height: 2.35rem;
     white-space: nowrap;
+  }
+  .local-groupimport-easystud-mobile-actions__buttons .btn:hover, .local-groupimport-easystud-mobile-actions__buttons .btn:focus-visible, .local-groupimport-easystud-mobile-actions__buttons .btn[aria-expanded=true], .local-groupimport-easystud-mobile-actions__buttons .btn[aria-pressed=true], .local-groupimport-easystud-mobile-actions__buttons .btn.active, .local-groupimport-easystud-mobile-actions__buttons .btn.is-active {
+    background: var(--easyedu-primary-soft);
+    border-color: var(--easyedu-control-focus-border);
+    color: var(--easyedu-primary-strong);
+    outline: 0;
+  }
+  .local-groupimport-easystud-mobile-actions__buttons .btn:focus-visible {
+    border-color: var(--easyedu-control-focus-border);
+    box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring);
+    outline: var(--easyedu-focus-outline-width) solid transparent;
+    outline-offset: var(--easyedu-focus-outline-offset);
+  }
+  .local-groupimport-easystud-mobile-actions__buttons .btn:disabled, .local-groupimport-easystud-mobile-actions__buttons .btn[aria-disabled=true], .local-groupimport-easystud-mobile-actions__buttons .btn.disabled {
+    background: var(--easyedu-surface-soft);
+    border-color: var(--easyedu-card-border);
+    color: var(--easyedu-text-muted);
+    cursor: not-allowed;
+    opacity: 0.62;
+    pointer-events: none;
+    transform: none;
+  }
+  .local-groupimport-easystud-mobile-actions__buttons .btn .fa {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    justify-content: center;
+    line-height: 1;
+    min-inline-size: 1em;
+    margin-inline: 0;
+    width: 1em;
   }
   .local-groupimport-easystud--participant-focus .local-groupimport-easystud__participant-content {
     grid-template-columns: 1fr;
@@ -18385,6 +18521,7 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
 }
 .local-groupimport-easystud [data-easystud-card-menu],
 .local-groupimport-easystud [data-easystud-panel-actions-toggle],
+.local-groupimport-easystud [data-easystud-panel-actions-menu] .btn,
 .local-groupimport-easystud [data-easystud-context-action], .local-groupimport-easystud-group__actions-toggle, .local-groupimport-easystud-group__actions-menu .btn {
   text-decoration: none !important;
 }
@@ -18393,6 +18530,10 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
 .local-groupimport-easystud [data-easystud-panel-actions-toggle]:active,
 .local-groupimport-easystud [data-easystud-panel-actions-toggle]:focus,
 .local-groupimport-easystud [data-easystud-panel-actions-toggle]:focus-visible,
+.local-groupimport-easystud [data-easystud-panel-actions-menu] .btn:hover,
+.local-groupimport-easystud [data-easystud-panel-actions-menu] .btn:active,
+.local-groupimport-easystud [data-easystud-panel-actions-menu] .btn:focus,
+.local-groupimport-easystud [data-easystud-panel-actions-menu] .btn:focus-visible,
 .local-groupimport-easystud [data-easystud-context-action]:hover,
 .local-groupimport-easystud [data-easystud-context-action]:active,
 .local-groupimport-easystud [data-easystud-context-action]:focus,
