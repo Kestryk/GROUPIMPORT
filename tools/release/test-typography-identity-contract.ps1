@@ -49,6 +49,9 @@ foreach ($role in @(
     Assert-Contains 'Typography source' $source "easyedu\.$role"
 }
 
+Assert-Contains 'More filters heading source' $source '&-advanced-filters &__filter-label\s*\{\s*@include easyedu\.type-eyebrow;'
+Assert-Contains 'More filters heading generated CSS' $css '\.local-groupimport-easystud-advanced-filters \.local-groupimport-easystud__filter-label\s*\{[^}]*font-size:\s*var\(--easyedu-font-size-eyebrow\);'
+
 if ($source -match 'font-weight:\s*[0-9]' -or $source -match 'letter-spacing:\s*-') {
     throw 'The consumer adoption layer must not introduce numeric weights or negative letter spacing.'
 }
