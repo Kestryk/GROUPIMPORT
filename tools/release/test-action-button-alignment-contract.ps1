@@ -73,7 +73,9 @@ foreach ($needle in @(
     'FixtureHelperPath',
     'easystud-action-button-alignment-fixture.php',
     'EASYEDU_EASYSTUD_MANAGER_URL',
-    'delete_course($courseid, false)'
+    'delete_course($courseid, false)',
+    'for ($attempt = 1; $attempt <= 2',
+    "'warning' => `$complete ? `$cleanupWarning : null"
 )) {
     if (-not ($supervisor + $fixture + $credentialRunner).Contains($needle)) {
         throw "Missing supervised action-alignment fixture contract: $needle"

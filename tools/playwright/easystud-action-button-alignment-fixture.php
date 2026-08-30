@@ -56,14 +56,18 @@ function fixture_write_manifest(string $path, array $manifest): void {
 function fixture_cleanup_course(int $courseid): array {
     global $DB;
     $cleanupError = null;
-    if ($DB->record_exists('course', ['id' => $courseid])) {
+    $cleanupWarning = null;
+    // Moodle teardown can throw after a partial delete. Allow one bounded
+    // follow-up attempt, but only for this manifest-owned course id.
+    for ($attempt = 1; $attempt <= 2 && $DB->record_exists('course', ['id' => $courseid]); $attempt++) {
         try {
             delete_course($courseid, false);
         } catch (Throwable $exception) {
-            // Moodle's backup/controller teardown can throw after the course
-            // has already been removed. Re-check the exact fixture before
-            // reporting failure, and preserve the error when it persists.
             $cleanupError = $exception->getMessage();
+            if (!$DB->record_exists('course', ['id' => $courseid])) {
+                $cleanupWarning = 'delete_course threw after the exact fixture course was removed.';
+                break;
+            }
         }
     }
     $complete = !$DB->record_exists('course', ['id' => $courseid]);
@@ -71,6 +75,7 @@ function fixture_cleanup_course(int $courseid): array {
         'complete' => $complete,
         'courseId' => $courseid,
         'error' => $complete ? null : $cleanupError,
+        'warning' => $complete ? $cleanupWarning : null,
     ];
 }
 
