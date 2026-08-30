@@ -30,6 +30,16 @@
     color: var(--easyedu-text-muted);
   }
 
+  // More filters headings label a compact control cluster rather than a
+  // standalone form field. Keep their hierarchy aligned with the existing
+  // eyebrow treatment used by adjacent panel chrome at every viewport.
+  &-advanced-filters &__filter-label {
+    @include easyedu.type-eyebrow;
+
+    color: var(--easyedu-text-muted);
+    letter-spacing: 0.03em;
+  }
+
   &-modal__header h3,
   &-settings-modal__heading h3 {
     @include easyedu.type-modal-title;
