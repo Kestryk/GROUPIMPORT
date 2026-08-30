@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### EED-UI-2026-0035 - EasyStud action-button alignment - 2026-08-30
+
+#### Changed
+
+- Align upper EasyStud actions, inline rename Save/Cancel controls and the
+  native Moodle-profile action with the existing UI Kit icon/label contract.
+- Remove the old Bootstrap icon utility margin that doubled the upper action
+  gap, while retaining the theme-overridable action-gap token.
+- Keep More actions triggers and cloned action-menu items free of text
+  underlining in hover, active and keyboard-focus states.
+
+#### Validation
+
+- Add a source/generated-stylesheet contract. Managed-preview and human visual
+  review remain separately gated.
+
 ### EED-UI-2026-0034 - EasyStud typography and identity - 2026-08-29
 
 #### Changed
