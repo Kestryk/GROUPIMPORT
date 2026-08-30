@@ -1158,7 +1158,7 @@ echo html_writer::tag('div',
     html_writer::tag('div',
         html_writer::span(get_string('easystudlabel', 'local_groupimport'), 'local-groupimport-import__eyebrow') .
         html_writer::tag('h2', get_string('groupimport', 'local_groupimport'), [
-            'class' => 'h4 local-groupimport-import__title',
+            'class' => 'local-groupimport-import__title',
         ]) .
         html_writer::tag('p', get_string('importfile_help', 'local_groupimport'), [
             'class' => 'local-groupimport-import__intro',
@@ -1192,7 +1192,7 @@ echo html_writer::tag('div',
     html_writer::tag('span', '', ['class' => 'fa fa-file-csv', 'aria-hidden' => 'true']) .
     html_writer::tag('div',
         html_writer::tag('h3', get_string('importfile', 'local_groupimport'), [
-            'class' => 'h5 local-groupimport-import-card__title',
+            'class' => 'local-groupimport-import-card__title',
         ]) .
         html_writer::tag('p', get_string('csvimportintro', 'local_groupimport'), [
             'class' => 'local-groupimport-import-card__description',
@@ -1247,7 +1247,7 @@ echo html_writer::tag('div',
     html_writer::tag('span', '', ['class' => 'fa fa-clipboard-check', 'aria-hidden' => 'true']) .
     html_writer::tag('div',
         html_writer::tag('h3', get_string('importresults', 'local_groupimport'), [
-            'class' => 'h5 local-groupimport-import-card__title',
+            'class' => 'local-groupimport-import-card__title',
         ]) .
         html_writer::tag('p', get_string('csvreportintro', 'local_groupimport'), [
             'class' => 'local-groupimport-import-card__description',

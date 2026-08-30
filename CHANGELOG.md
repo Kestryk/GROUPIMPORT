@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### EED-UI-2026-0048 - EasyStud title identity and card descenders - 2026-08-30
+
+#### Changed
+
+- Align the Mass Import page and upload-section headings with the shared Kit
+  page/card title roles by removing competing Bootstrap heading utilities.
+- Give every EasyStud card title enough line height for lowercase descenders,
+  including group, grouping, participant and ungrouped cards.
+
+#### Validation
+
+- Sass, typography contract, plugin release validation, PHP syntax and
+  `git diff --check` passed. No preview or browser run was performed.
+
 ### EED-UI-2026-0047 - EasyStud Mass Import wording - 2026-08-30
 
 #### Changed
