@@ -1,10 +1,20 @@
 // EED-UI-2026-0034 EasyStud typography and identity adoption.
 //
 // This final consumer layer maps existing EasyStud chrome to the semantic
-// typography roles supplied by UI Kit 0005. It intentionally changes no
-// geometry, authored content, navigation behavior, responsive breakpoint,
-// loading lifecycle or interactive state.
+// typography roles supplied by UI Kit 0005. It changes no layout or
+// interaction geometry, authored content, navigation behavior, responsive
+// breakpoint, loading lifecycle or interactive state.
 @use "../easyedu" as easyedu;
+
+// Compact label role for the More filters disclosure. It deliberately aliases
+// the Kit eyebrow tier and preserves the existing compact letter spacing; the
+// alias gives future selectors one stable role without changing the toggle,
+// disclosure state or panel behaviour.
+@mixin type-more-filters-label {
+  @include easyedu.type-eyebrow;
+
+  letter-spacing: 0.03em;
+}
 
 .local-groupimport-easystud {
   font-family: var(--easyedu-font-family-ui);
@@ -34,10 +44,9 @@
   // standalone form field. Keep their hierarchy aligned with the existing
   // eyebrow treatment used by adjacent panel chrome at every viewport.
   &-advanced-filters &__filter-label {
-    @include easyedu.type-eyebrow;
+    @include type-more-filters-label;
 
     color: var(--easyedu-text-muted);
-    letter-spacing: 0.03em;
   }
 
   &-modal__header h3,
@@ -85,7 +94,7 @@
 }
 
 #page-admin-setting-local_groupimport {
-  font-family: var(--easyedu-font-family-ui);
+  @include easyedu.type-ui-base;
 
   #adminsettings > .settingsform > h2 {
     @include easyedu.type-page-identity;
@@ -96,8 +105,18 @@
     @include easyedu.type-panel-title;
   }
 
+  .formsettingheading .form-description,
+  .local-groupimport-admin-settings__hero-copy p,
+  .local-groupimport-admin-settings__hint span {
+    @include easyedu.type-body;
+  }
+
   .local-groupimport-admin-settings__field-card h4 {
     @include easyedu.type-section-title;
+  }
+
+  .local-groupimport-admin-settings__hint strong {
+    @include easyedu.type-control-label;
   }
 
   #admin-alloweduserfields,
@@ -111,5 +130,14 @@
     .form-label label {
       @include easyedu.type-control-label;
     }
+  }
+
+  // Identifier chips are metadata in the explanatory panel, not headings.
+  // Keep their labels on the shared caption tier while leaving the native
+  // multiselect below untouched.
+  .local-groupimport-admin-settings__chip-label,
+  .local-groupimport-admin-settings__chip-key,
+  .local-groupimport-admin-settings__empty {
+    @include easyedu.type-caption;
   }
 }

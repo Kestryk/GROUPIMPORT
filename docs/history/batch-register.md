@@ -1,5 +1,16 @@
 # EasyStud batch register
 
+## EED-UI-2026-0039-RF1 - Administration hierarchy
+
+- Date: 2026-08-30
+- Repository: `local_groupimport`
+- Scope: static Administration typography and icon harmonisation, plus a
+  naming alias for the existing More filters compact label treatment.
+- Preservation: the identifier explanation text, native multiselect markup,
+  options, settings storage and all disclosure behaviour remain unchanged.
+- Validation: Sass build, focused typography contract, plugin release checks
+  and `git diff --check`; no browser or preview.
+
 ## EED-UI-2026-0049 RF2 — visible Mass Import hierarchy
 
 - Date: 2026-08-30

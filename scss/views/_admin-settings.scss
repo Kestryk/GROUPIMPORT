@@ -204,9 +204,10 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
   .local-groupimport-admin-settings {
     @include easyedu.panel-shell;
 
-    background:
-      radial-gradient(circle at 3rem 2.2rem, color-mix(in srgb, var(--easyedu-primary) 10%, transparent), transparent 8rem),
-      linear-gradient(135deg, #fff 0%, var(--easyedu-surface-soft) 100%);
+    // Keep administration panels on the same quiet surface family as the
+    // Student Management cards. The former radial/diagonal treatment made
+    // the identifier explanation compete with the actual setting controls.
+    background: var(--easyedu-semantic-panel-bg);
     display: grid;
     gap: 1rem;
     margin: 0.65rem 0 1.15rem;
@@ -223,16 +224,17 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
 
   .local-groupimport-admin-settings__hero > .fa {
     align-items: center;
-    background: linear-gradient(135deg, var(--easyedu-primary) 0%, var(--easyedu-accent) 100%);
-    border-radius: 0.95rem;
-    box-shadow: 0 0.45rem 1rem rgba(15, 108, 191, 0.18);
-    color: #fff;
+    background: var(--local-groupimport-easystud-primary-soft);
+    border: 1px solid #d4e4f2;
+    border-radius: 0.75rem;
+    box-shadow: none;
+    color: var(--local-groupimport-easystud-primary);
     display: inline-flex;
-    font-size: 1.05rem;
-    height: 2.75rem;
+    font-size: var(--easyedu-font-size-body);
+    height: 2.55rem;
     justify-content: center;
     line-height: 1;
-    width: 2.75rem;
+    width: 2.55rem;
   }
 
   .local-groupimport-admin-settings__hero-copy {
@@ -443,19 +445,17 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
   }
 
   .local-groupimport-admin-settings--participant-display {
-    background:
-      radial-gradient(circle at 3rem 2.2rem, color-mix(in srgb, var(--easyedu-accent) 12%, transparent), transparent 8rem),
-      linear-gradient(135deg, #fff 0%, #f7fbf9 100%);
+    background: var(--easyedu-semantic-panel-bg);
 
     .local-groupimport-admin-settings__hero > .fa {
-      background: linear-gradient(135deg, var(--easyedu-accent) 0%, var(--easyedu-primary) 100%);
+      background: var(--local-groupimport-easystud-accent-soft);
+      border-color: #d4e7dc;
+      color: var(--local-groupimport-easystud-accent);
     }
   }
 
   .local-groupimport-admin-settings--features {
-    background:
-      radial-gradient(circle at 3rem 2.2rem, color-mix(in srgb, var(--easyedu-primary) 12%, transparent), transparent 8rem),
-      linear-gradient(135deg, #fff 0%, #f5f9fd 100%);
+    background: var(--easyedu-semantic-panel-bg);
   }
 
   .local-groupimport-admin-settings__color-control {
