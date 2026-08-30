@@ -32,8 +32,12 @@ first three, and the accepted semibold weight for result counts.
 ## Validation boundary
 
 `tools/release/test-action-button-alignment-contract.ps1` checks the source
-adoption, menu no-underline protection and generated stylesheet. Sass and the
-standard plugin validation remain source checks only. A managed-preview
-browser review is a separate gate and should inspect desktop and compact
-Participants actions, the overflow menu, participant detail's native-profile
-link, and an inline Group/Grouping rename row.
+adoption, menu no-underline protection and generated stylesheet. The focused
+authenticated review is
+`easystud-action-button-alignment.spec.js` / `EasyStud action controls keep
+shared alignment and restrained typography`. It checks the desktop and 768px
+action rows, detail/profile and inline rename action-button geometry, visible
+menu no-underline treatment, and the More filters, Sort/A-Z and result-count
+typography. It writes external review captures only; it creates no data.
+Sass and the standard plugin validation remain source checks only. A managed
+preview browser review is a separate gate.
