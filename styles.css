@@ -12246,6 +12246,8 @@
   --easyedu-context-modal-accent: var(--easyedu-modal-success-accent);
   --easyedu-context-modal-header-bg: var(--easyedu-modal-header-success-bg);
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .local-groupimport-easystud-settings-modal__dialog.is-file-drag-over::before {
   background: color-mix(in srgb, var(--easyedu-primary-soft) 78%, rgba(255, 255, 255, 0.82) 22%);
@@ -12274,6 +12276,10 @@
   z-index: 9;
 }
 .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
   padding: 0.72rem 0.85rem 0.82rem;
 }
 .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer {
@@ -12282,6 +12288,51 @@
   gap: 0.55rem;
   justify-content: flex-end;
   margin-top: 0.12rem;
+  min-width: 0;
+}
+.local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--easyedu-action-icon-gap, 0.65rem);
+  justify-content: center;
+  line-height: 1.2;
+  font-size: 0.78rem;
+  min-height: 1.9rem;
+  min-width: 1.9rem;
+  padding: 0.22rem 0.5rem;
+  min-height: 2.25rem;
+  white-space: nowrap;
+}
+.local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn:hover, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn:focus-visible, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn[aria-expanded=true], .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn[aria-pressed=true], .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn.active, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn.is-active {
+  background: var(--easyedu-primary-soft);
+  border-color: var(--easyedu-control-focus-border);
+  color: var(--easyedu-primary-strong);
+  outline: 0;
+}
+.local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn:focus-visible {
+  border-color: var(--easyedu-control-focus-border);
+  box-shadow: 0 0 0 var(--easyedu-focus-ring-width) var(--easyedu-focus-ring);
+  outline: var(--easyedu-focus-outline-width) solid transparent;
+  outline-offset: var(--easyedu-focus-outline-offset);
+}
+.local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn:disabled, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn[aria-disabled=true], .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn.disabled {
+  background: var(--easyedu-surface-soft);
+  border-color: var(--easyedu-card-border);
+  color: var(--easyedu-text-muted);
+  cursor: not-allowed;
+  opacity: 0.62;
+  pointer-events: none;
+  transform: none;
+}
+.local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn .fa {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  line-height: 1;
+  min-inline-size: 1em;
+  margin-inline: 0;
+  width: 1em;
 }
 .local-groupimport-easystud-settings-modal__header {
   background: var(--easyedu-modal-header-success-bg);
@@ -12749,6 +12800,7 @@
   justify-self: end;
   max-width: 8.5rem;
   min-width: 0;
+  overflow: hidden;
 }
 .local-groupimport-easystud-settings-modal__list-section summary > strong .local-groupimport-easystud-settings-modal__list-count-label {
   font-size: 0.66rem;
@@ -12763,6 +12815,9 @@
   border-top: 1px solid #e5edf4;
   max-height: 10.5rem;
   overflow: auto;
+  min-width: 0;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 .local-groupimport-easystud-settings-modal__list-scroll ul {
   display: grid;
@@ -12877,8 +12932,9 @@
   border-top: 1px solid #e5edf3;
   display: flex;
   justify-content: flex-end;
-  margin-top: 0.48rem;
-  padding-top: 0.48rem;
+  margin-top: 0.72rem;
+  min-width: 0;
+  padding-top: 0.72rem;
 }
 .local-groupimport-easystud-settings-modal__native > .btn {
   align-items: center;
@@ -12890,6 +12946,8 @@
   min-height: 1.9rem;
   min-width: 1.9rem;
   padding: 0.22rem 0.5rem;
+  min-height: 2.25rem;
+  white-space: nowrap;
 }
 .local-groupimport-easystud-settings-modal__native > .btn:hover, .local-groupimport-easystud-settings-modal__native > .btn:focus-visible, .local-groupimport-easystud-settings-modal__native > .btn[aria-expanded=true], .local-groupimport-easystud-settings-modal__native > .btn[aria-pressed=true], .local-groupimport-easystud-settings-modal__native > .btn.active, .local-groupimport-easystud-settings-modal__native > .btn.is-active {
   background: var(--easyedu-primary-soft);
@@ -12990,28 +13048,32 @@
 .local-groupimport-easystud-detail__avatar img,
 .local-groupimport-easystud-detail__avatar .userinitials {
   border: 0;
-  border-radius: 0.82rem;
+  border-radius: inherit;
   box-shadow: none;
-  display: inline-flex;
+  display: block;
   font-size: 1.28rem;
   height: 100% !important;
   line-height: 5.25rem;
   object-fit: cover;
+  transform: translateZ(0);
   width: 100% !important;
 }
 .local-groupimport-easystud-detail__avatar .userinitials {
   align-items: center;
+  display: inline-flex;
   justify-content: center;
 }
 .local-groupimport-easystud-detail__identity {
   min-width: 0;
 }
 .local-groupimport-easystud-detail__identity h4 {
-  color: #21364a;
-  font-size: 1.08rem;
-  font-weight: 760;
-  letter-spacing: -0.01em;
-  line-height: 1.18;
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-card-title);
+  font-weight: var(--easyedu-font-weight-strong);
+  line-height: var(--easyedu-line-height-title);
   margin: 0 0 0.22rem;
   overflow-wrap: anywhere;
 }
@@ -13083,9 +13145,13 @@
   display: none;
 }
 .local-groupimport-easystud-detail__list summary > span {
-  color: #40566c;
-  font-size: 0.82rem;
-  font-weight: 720;
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text);
+  font-size: var(--easyedu-font-size-section-title);
+  font-weight: var(--easyedu-font-weight-semibold);
+  line-height: var(--easyedu-line-height-title);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -13103,7 +13169,9 @@
   gap: 0.28rem;
   line-height: 1.2;
   max-width: 7.5rem;
+  max-inline-size: 100%;
   min-width: 0;
+  overflow: hidden;
   padding: 0.18rem 0.5rem;
 }
 .local-groupimport-easystud-detail__list summary > strong span:last-child {
@@ -13130,7 +13198,10 @@
 .local-groupimport-easystud-detail__list-scroll {
   border-top: 1px solid #e5edf4;
   max-height: 8.5rem;
+  min-width: 0;
   overflow: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 .local-groupimport-easystud-detail__list-scroll ul {
   display: grid;
@@ -13194,6 +13265,22 @@
 @media (max-width: 54rem) {
   .local-groupimport-easystud-detail__grid, .local-groupimport-easystud-detail__lists {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 34rem) {
+  .local-groupimport-easystud-settings-modal__list-section summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .local-groupimport-easystud-settings-modal__list-section summary > .btn {
+    grid-column: 1/-1;
+    justify-self: start;
+  }
+  .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+  .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn {
+    flex: 1 1 auto;
   }
 }
 

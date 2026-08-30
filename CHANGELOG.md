@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### EED-UI-2026-0038-RF1 - Participant, Group and Grouping card modals - 2026-08-30
+
+#### Fixed
+
+- Harmonise Participant, Group and Grouping modal hierarchy with the embedded
+  EasyEdu typography roles, keep long modal content in its own scroll region,
+  and contain counters and related-item lists without horizontal overflow.
+- Remove the white rounded-corner seam around Moodle profile images; Roles,
+  Groups and Groupings now disclose independently with the normal Motion path
+  while retaining the native immediate reduced-motion path.
+- Keep Group/Grouping Save, Cancel and Edit in Moodle actions on one aligned
+  footer row, and give the Participant native-profile link the same quiet
+  spacing and compact action geometry.
+
+#### Validation
+
+- Rebuilt Sass and passed the focused source/generated-CSS modal contract plus
+  JavaScript syntax and standard plugin release checks. Browser and preview
+  review remain separate.
+
 ### EED-UI-2026-0041 - Import history actions - 2026-08-30
 
 #### Fixed

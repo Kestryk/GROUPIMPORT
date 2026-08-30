@@ -11,9 +11,16 @@
     @include easyedu.settings-modal-dialog;
     @include easyedu.context-modal-variant(success);
     @include easyedu.modal-file-drop-state(".is-file-drag-over", var(--local-groupimport-easystud-primary));
+
+    display: flex;
+    flex-direction: column;
   }
 
   &-settings-modal &-modal__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
     padding: 0.72rem 0.85rem 0.82rem;
   }
 
@@ -23,6 +30,14 @@
     gap: 0.55rem;
     justify-content: flex-end;
     margin-top: 0.12rem;
+    min-width: 0;
+
+    > .btn {
+      @include easyedu.action-button(small);
+
+      min-height: 2.25rem;
+      white-space: nowrap;
+    }
   }
 
   &-settings-modal__header {
@@ -284,6 +299,7 @@
         justify-self: end;
         max-width: 8.5rem;
         min-width: 0;
+        overflow: hidden;
 
         .local-groupimport-easystud-settings-modal__list-count-label {
           font-size: 0.66rem;
@@ -301,6 +317,10 @@
 
   &-settings-modal__list-scroll {
     @include easyedu.metadata-scroll-list;
+
+    min-width: 0;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
 
     table {
       border-collapse: collapse;
@@ -395,14 +415,18 @@
     border-top: 1px solid #e5edf3;
     display: flex;
     justify-content: flex-end;
-    margin-top: 0.48rem;
-    padding-top: 0.48rem;
+    margin-top: 0.72rem;
+    min-width: 0;
+    padding-top: 0.72rem;
   }
 
   // The native Moodle-profile link is an action, not body copy. It therefore
   // uses the same centred icon/label contract as the upper EasyStud actions.
   &-settings-modal__native > .btn {
     @include easyedu.action-button(small);
+
+    min-height: 2.25rem;
+    white-space: nowrap;
 
     .fa {
       margin-inline: 0 !important;
@@ -486,18 +510,22 @@
     img,
     .userinitials {
       border: 0;
-      border-radius: 0.82rem;
+      // Match the clipping radius. The former smaller inner radius exposed a
+      // white seam around Moodle profile images at the rounded corners.
+      border-radius: inherit;
       box-shadow: none;
-      display: inline-flex;
+      display: block;
       font-size: 1.28rem;
       height: 100% !important;
       line-height: 5.25rem;
       object-fit: cover;
+      transform: translateZ(0);
       width: 100% !important;
     }
 
     .userinitials {
       align-items: center;
+      display: inline-flex;
       justify-content: center;
     }
   }
@@ -506,11 +534,8 @@
     min-width: 0;
 
     h4 {
-      color: #21364a;
-      font-size: 1.08rem;
-      font-weight: 760;
-      letter-spacing: -0.01em;
-      line-height: 1.18;
+      @include easyedu.type-card-title;
+
       margin: 0 0 0.22rem;
       overflow-wrap: anywhere;
     }
@@ -590,9 +615,8 @@
       }
 
       > span {
-        color: #40566c;
-        font-size: 0.82rem;
-        font-weight: 720;
+        @include easyedu.type-section-title;
+
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -611,7 +635,9 @@
         gap: 0.28rem;
         line-height: 1.2;
         max-width: 7.5rem;
+        max-inline-size: 100%;
         min-width: 0;
+        overflow: hidden;
         padding: 0.18rem 0.5rem;
 
         span:last-child {
@@ -645,7 +671,10 @@
   &-detail__list-scroll {
     border-top: 1px solid #e5edf4;
     max-height: 8.5rem;
+    min-width: 0;
     overflow: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
 
     ul {
       display: grid;
@@ -717,6 +746,26 @@
     &-detail__grid,
     &-detail__lists {
       grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 34rem) {
+    &-settings-modal__list-section summary {
+      grid-template-columns: minmax(0, 1fr) auto;
+
+      > .btn {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
+    }
+
+    &-settings-modal &-modal__footer {
+      align-items: stretch;
+      flex-wrap: wrap;
+
+      > .btn {
+        flex: 1 1 auto;
+      }
     }
   }
 
