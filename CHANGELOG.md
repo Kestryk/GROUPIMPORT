@@ -10,6 +10,13 @@ Maintenance convention:
 
 ## Unreleased
 
+### 2026-08-30
+
+- Converged Simplified student management and Mass Import chrome on the shared
+  EasyEdu typography roles, including the Import file (CSV or Excel) card and
+  Groups inside Groups without grouping titles.
+- Added a static typography contract covering source SCSS and generated CSS.
+
 ### 2026-07-20
 
 - Normalised custom profile field values used on participant cards so compact
