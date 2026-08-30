@@ -5,11 +5,11 @@
 This phase changes only the **Groups without grouping** disclosure in EasyStud
 Complete view and the visible focus treatment of expanded Grouping cards.
 
-- The ungrouped disclosure uses a restrained slate rail, border and formatted
-  card title. Its rail uses the single-user icon (rather than the Group icon),
-  so the status is visibly distinct without introducing a loud colour. It
-  remains a Group disclosure: its markup, list, keyboard behaviour and actions
-  are untouched.
+- The ungrouped disclosure uses a restrained plum rail, border and formatted
+  card title. Its rail uses the Kit's separate-node `ungrouped` icon, so it is
+  visibly distinct from participant, Group and Grouping cards without becoming
+  a loud secondary panel. It remains a Group disclosure: its markup, list,
+  keyboard behaviour and actions are untouched.
 - An open ungrouped disclosure retains its inner focus edge.
 - An expanded Grouping card also retains the same full inner focus edge as its
   closed state, including when selected.

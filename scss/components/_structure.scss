@@ -600,13 +600,13 @@
     // Ungrouped Groups are a first-class Complete-view section. A restrained
     // slate identity keeps that distinction calm beside Groups and Groupings;
     // the single-user rail icon makes the "not grouped" meaning explicit.
-    --local-groupimport-easystud-ungrouped: #526c78;
-    --local-groupimport-easystud-ungrouped-rail: #aebfc7;
+    --local-groupimport-easystud-ungrouped: #79506f;
+    --local-groupimport-easystud-ungrouped-rail: #c7a9bf;
 
-    @include easyedu.identity-rail(var(--local-groupimport-easystud-icon-user));
+    @include easyedu.identity-rail(var(--local-groupimport-easystud-icon-ungrouped));
 
-    background: linear-gradient(180deg, #fcfdfd 0%, #f1f6f7 100%);
-    border-color: #d6e1e5;
+    background: linear-gradient(180deg, #fefbfd 0%, #f7eef5 100%);
+    border-color: #e5d4e0;
     border-left-color: var(--local-groupimport-easystud-ungrouped-rail);
     border-radius: 0.95rem;
     box-shadow: var(--local-groupimport-easystud-shadow-soft);
@@ -614,21 +614,21 @@
     &:focus-within {
       border-left-color: var(--local-groupimport-easystud-ungrouped-rail);
       @include easyedu.card-focus-context(
-        0 0.45rem 0.95rem rgba(69, 96, 107, 0.15),
+        0 0.45rem 0.95rem rgba(111, 67, 100, 0.15),
         $preserve-identity-rail: true,
         $identity-rail-color: var(--local-groupimport-easystud-ungrouped-rail)
       );
     }
 
     &.is-expanded {
-      background: linear-gradient(180deg, #fafcfc 0%, #eaf3f5 100%);
-      border-color: #bdcfd6;
-      box-shadow: 0 0.42rem 0.9rem -0.28rem rgba(69, 96, 107, 0.18);
+      background: linear-gradient(180deg, #fdfafd 0%, #f2e5ef 100%);
+      border-color: #d7bcd0;
+      box-shadow: 0 0.42rem 0.9rem -0.28rem rgba(111, 67, 100, 0.18);
     }
 
     &.is-expanded:focus-within {
       // Open cards keep the same inner focus rail as their closed state.
-      @include easyedu.card-focus-context(0 0.42rem 0.9rem -0.28rem rgba(69, 96, 107, 0.18));
+      @include easyedu.card-focus-context(0 0.42rem 0.9rem -0.28rem rgba(111, 67, 100, 0.18));
     }
   }
 

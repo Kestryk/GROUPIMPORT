@@ -22,7 +22,7 @@
 #### Changed
 
 - Give the Complete-view **Groups without grouping** disclosure a restrained
-  slate identity rail and the distinct single-user icon while preserving its
+  plum identity rail and the new distinct ungrouped icon while preserving its
   existing Group disclosure behaviour.
 - Preserve the full inner focus edge for open ungrouped and expanded Grouping
   cards, including the selected Grouping state.
