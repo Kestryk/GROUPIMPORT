@@ -20,11 +20,12 @@ function Assert-Contains([string]$label, [string]$text, [string]$pattern) {
 
 $entry = Read-RequiredFile 'scss/easystud.scss'
 $source = Read-RequiredFile 'scss/components/_typography-identity.scss'
+$adminsource = Read-RequiredFile 'scss/views/_admin-settings.scss'
 $kit = Read-RequiredFile 'scss/easyedu/components/_typography.scss'
 $kitcontract = Read-RequiredFile 'easyedu-kit-docs/ai/COMPONENT_CONTRACT.md'
 $css = Read-RequiredFile 'styles.css'
 
-Assert-Contains 'Sass entrypoint' $entry '@use "components/typography-identity";\s*$'
+Assert-Contains 'Sass entrypoint' $entry '@use "components/typography-identity";'
 Assert-Contains 'Embedded Kit typography' $kit '@mixin type-page-identity\s*\{\s*@include type-page-title;'
 Assert-Contains 'Embedded Kit component contract' $kitcontract 'use `type-page-identity` for plugin view identity headings'
 
@@ -49,13 +50,23 @@ foreach ($role in @(
     Assert-Contains 'Typography source' $source "easyedu\.$role"
 }
 
-Assert-Contains 'More filters heading source' $source '&-advanced-filters &__filter-label\s*\{\s*@include easyedu\.type-eyebrow;'
+Assert-Contains 'More filters heading source' $source '&-advanced-filters &__filter-label\s*\{\s*@include type-more-filters-label;'
 Assert-Contains 'More filters heading generated CSS' $css '\.local-groupimport-easystud-advanced-filters \.local-groupimport-easystud__filter-label\s*\{[^}]*font-size:\s*var\(--easyedu-font-size-eyebrow\);'
+Assert-Contains 'More filters compact role' $source '@mixin type-more-filters-label\s*\{\s*@include easyedu\.type-eyebrow;'
+Assert-Contains 'More filters compact role usage' $source '&-advanced-filters &__filter-label\s*\{\s*@include type-more-filters-label;'
 
 $massimport = Read-RequiredFile 'index.php'
 Assert-Contains 'Mass Import page title uses Kit identity role' $massimport "'class' => 'local-groupimport-import__title'"
 Assert-Contains 'Mass Import section title uses Kit card role' $massimport "'class' => 'local-groupimport-import-card__title'"
 Assert-Contains 'Shared card title descender clearance' $kit 'line-height:\s*1\.35;'
+
+Assert-Contains 'Administration page role' $source '#adminsettings > \.settingsform > h2\s*\{\s*@include easyedu\.type-page-identity;'
+Assert-Contains 'Administration panel role' $source '\.formsettingheading h3,\s*\.local-groupimport-admin-settings__hero-copy h3\s*\{\s*@include easyedu\.type-panel-title;'
+Assert-Contains 'Administration body role' $source '\.formsettingheading \.form-description,\s*\.local-groupimport-admin-settings__hero-copy p,\s*\.local-groupimport-admin-settings__hint span\s*\{\s*@include easyedu\.type-body;'
+Assert-Contains 'Administration section role' $source '\.local-groupimport-admin-settings__field-card h4\s*\{\s*@include easyedu\.type-section-title;'
+Assert-Contains 'Administration labels role' $source '\.form-label label\s*\{\s*@include easyedu\.type-control-label;'
+Assert-Contains 'Administration icon size' $css '\.local-groupimport-admin-settings__hero > \.fa\s*\{[^}]*height:\s*2\.55rem;[^}]*width:\s*2\.55rem;'
+Assert-Contains 'Native identifier multiselect remains present' $adminsource 'select\[name="s_local_groupimport_alloweduserfields\[\]"\]'
 
 if ($source -match 'font-weight:\s*[0-9]' -or $source -match 'letter-spacing:\s*-') {
     throw 'The consumer adoption layer must not introduce numeric weights or negative letter spacing.'

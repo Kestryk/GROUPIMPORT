@@ -15,6 +15,25 @@
 - Rebuilt Sass and passed the focused source/generated-CSS Import history action
   contract. No browser or preview run was performed.
 
+### EED-UI-2026-0039-RF1 - EasyStud Administration hierarchy - 2026-08-30
+
+#### Fixed
+
+- Harmonise the Administration page title, panel/section headings, body copy,
+  labels and icon tiles with the semantic EasyStud roles used by Student
+  Management.
+- Replace the strong radial/diagonal family of the Automatic user
+  identification explanation with the quiet shared panel surface while
+  preserving its text and all setting semantics.
+- Name the existing More filters compact label treatment without changing its
+  disclosure behaviour, and preserve the native identifier multiselect.
+
+#### Validation
+
+- Rebuilt Sass and added source/generated-CSS checks for the administration
+  hierarchy, icon sizing, compact label alias and multiselect boundary.
+  Browser and preview review remain separate.
+
 ### EED-UI-2026-0049 RF2 - Visible Mass Import hierarchy - 2026-08-30
 
 #### Fixed
