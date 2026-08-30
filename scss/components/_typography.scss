@@ -1,0 +1,100 @@
+// EED-UI-2026-0049: converge EasyStud chrome on the shared UI typography roles.
+// Keep this late in the entry point so responsive declarations cannot re-expand
+// titles or labels. User-entered content and Moodle form controls remain out of
+// scope.
+
+@use "../easyedu" as easyedu;
+
+.local-groupimport-easystud {
+  @include easyedu.type-ui-base;
+
+  &__panel-title {
+    @include easyedu.type-panel-title;
+
+    margin: 0;
+  }
+
+  &-column-heading__title {
+    @include easyedu.type-eyebrow;
+
+    color: #6a7a8a;
+  }
+
+  &-tree__section--ungrouped > &-tree__toggle {
+    @include easyedu.type-section-title;
+
+    color: #627387;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  // Groups in a grouping and the dedicated Groups without grouping section
+  // share the same entity-card title role.
+  &-group__name {
+    @include easyedu.card-title(regular, var(--local-groupimport-easystud-group));
+  }
+
+  &-grouping__name {
+    @include easyedu.card-title(container, var(--local-groupimport-easystud-grouping));
+  }
+}
+
+.local-groupimport-import {
+  &__title {
+    @include easyedu.type-page-title;
+
+    margin: 0 0 0.35rem;
+  }
+
+  &__intro,
+  &-card__description,
+  &-fields__header p,
+  &-form .fdescription,
+  &-form .form-text,
+  &-form .fp-restrictions {
+    @include easyedu.type-body;
+
+    color: var(--local-groupimport-easystud-text-muted);
+  }
+
+  &-card__title {
+    @include easyedu.type-card-title;
+
+    margin: 0 0 0.2rem;
+  }
+
+  &-fields__header strong {
+    @include easyedu.type-section-title;
+
+    display: block;
+    letter-spacing: 0;
+    margin-bottom: 0.22rem;
+  }
+
+  &-fields__label,
+  &-form .fitemtitle,
+  &-form .col-form-label {
+    @include easyedu.type-control-label;
+
+    color: #5f7185;
+  }
+
+  &-fields__tag {
+    @include easyedu.type-caption;
+
+    color: #38546d;
+    font-weight: var(--easyedu-font-weight-medium);
+  }
+
+  &-preview__table thead th {
+    @include easyedu.type-eyebrow;
+
+    color: #5f7185;
+  }
+
+  &-history__desc,
+  &-history__empty,
+  &-history__item-main span {
+    @include easyedu.type-caption;
+  }
+}
