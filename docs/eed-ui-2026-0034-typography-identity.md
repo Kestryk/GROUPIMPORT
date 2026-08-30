@@ -20,6 +20,12 @@ local numeric weights are not introduced by this adoption layer.
 - Mass group import uses `type-page-identity` for its visible page title and
   aligns its eyebrow, introduction, cards, field labels and report headings to
   the same hierarchy.
+- Its page and upload-section headings no longer carry Bootstrap `h4`/`h5`
+  utility classes: the Kit roles own their size, weight and line height,
+  matching CCB and Student Management.
+- The shared EasyStud card-title role reserves a 1.35 line height so lowercase
+  descenders remain visible in every card title, including later cards in a
+  list.
 - Administration replaces the heavy Automatic user identification family with
   page, panel, section and control-label roles while retaining Moodle's native
   form markup and all current setting semantics.

@@ -154,7 +154,9 @@
 
   color: $color;
   letter-spacing: -0.005em;
-  line-height: 1.25;
+  // Keep descenders visible in every participant, group, grouping and
+  // ungrouped card title, including titles rendered later in a list.
+  line-height: 1.35;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
