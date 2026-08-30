@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### EED-UI-2026-0049 - EasyStud typography convergence - 2026-08-30
+
+#### Changed
+
+- Converge Simplified student management and Mass Import chrome on the shared
+  EasyEdu typography roles, including `Import file (CSV or Excel)` and Groups
+  inside Groups without grouping.
+
+#### Validation
+
+- Sass and a focused source/generated-CSS contract pass; human visual review is
+  separate.
+
 ### EED-UI-2026-0048 - EasyStud title identity and card descenders - 2026-08-30
 
 #### Changed

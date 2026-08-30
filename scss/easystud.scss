@@ -19,3 +19,6 @@
 @use "responsive/mobile";
 @use "components/control-typography";
 @use "components/typography-identity";
+// Product typography is intentionally last so responsive consumer rules cannot
+// override the shared semantic roles.
+@use "components/typography";
