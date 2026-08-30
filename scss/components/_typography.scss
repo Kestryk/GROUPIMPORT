@@ -58,23 +58,31 @@
   }
 
   &-card__title {
-    @include easyedu.type-card-title;
+    // Mass Import cards are control panels, not entity cards. Reuse the
+    // compact control-title tier visible throughout Student Management.
+    @include easyedu.type-control-label;
 
     margin: 0 0 0.2rem;
   }
 
   &-fields__header strong {
-    @include easyedu.type-section-title;
+    @include easyedu.type-control-label;
 
     display: block;
     letter-spacing: 0;
     margin-bottom: 0.22rem;
   }
 
-  &-fields__label,
+  &-fields__label {
+    @include easyedu.type-caption;
+
+    color: #5f7185;
+    font-weight: var(--easyedu-font-weight-semibold);
+  }
+
   &-form .fitemtitle,
   &-form .col-form-label {
-    @include easyedu.type-control-label;
+    @include easyedu.type-eyebrow;
 
     color: #5f7185;
   }

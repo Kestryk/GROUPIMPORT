@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### EED-UI-2026-0049 RF2 - Visible Mass Import hierarchy - 2026-08-30
+
+#### Fixed
+
+- Correct the semantic mapping that left Mass Import visually unchanged: card
+  titles and `Automatic user identification` now use the compact shared
+  control-title tier, while upload field labels use the shared eyebrow/caption
+  tiers already used in Student Management.
+
+#### Validation
+
+- Rebuilt Sass and tightened the source/generated-CSS typography contract.
+  Human visual review remains separate.
+
 ### EED-UI-2026-0049 - EasyStud typography convergence - 2026-08-30
 
 #### Changed
