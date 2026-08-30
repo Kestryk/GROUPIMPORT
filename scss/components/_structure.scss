@@ -43,10 +43,15 @@
   }
 
   &--structure-focus &-tree {
-    align-items: start;
+    // The two Structure columns share the remaining panel height. This lets
+    // a short Group or Grouping list reserve the free space for its existing
+    // in-flow bottom pagination, rather than leaving the navigation directly
+    // below its last card.
+    align-items: stretch;
     display: grid;
     gap: 1rem;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     min-width: 0;
   }
 
@@ -56,7 +61,7 @@
 
   &--structure-focus &-tree__groupings {
     align-content: start;
-    align-self: start;
+    align-self: stretch;
     display: grid;
     gap: 0.65rem;
     grid-auto-rows: max-content;

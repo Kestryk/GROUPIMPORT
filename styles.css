@@ -4034,10 +4034,11 @@
   transform: translateX(0);
 }
 .local-groupimport-easystud--structure-focus .local-groupimport-easystud-tree {
-  align-items: start;
+  align-items: stretch;
   display: grid;
   gap: 1rem;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   min-width: 0;
 }
 .local-groupimport-easystud--structure-focus .local-groupimport-easystud-tree__section--ungrouped {
@@ -4045,7 +4046,7 @@
 }
 .local-groupimport-easystud--structure-focus .local-groupimport-easystud-tree__groupings {
   align-content: start;
-  align-self: start;
+  align-self: stretch;
   display: grid;
   gap: 0.65rem;
   grid-auto-rows: max-content;
