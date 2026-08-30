@@ -31,7 +31,6 @@ if (!$moodleroot || !is_file($moodleroot . DIRECTORY_SEPARATOR . 'config.php')) 
     exit(2);
 }
 require($moodleroot . DIRECTORY_SEPARATOR . 'config.php');
-require_once($CFG->libdir . '/coursecatlib.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/group/lib.php');
 require_once($CFG->libdir . '/enrollib.php');
