@@ -20,6 +20,20 @@ const login = async page => {
     }
     const root = page.locator('#local-groupimport-easystud');
     await expect(root).toHaveAttribute('data-easystud-manager-initialised', '1', {timeout: 60000});
+    // The bootstrap attribute is published before the parallel data render has
+    // completed.  Do not inspect controls while the loading surface is still
+    // replacing the manager contents.
+    await expect(root).toHaveAttribute('data-easystud-loading-state', 'ready', {timeout: 60000});
+    await expect.poll(async() => root.locator(
+        '.local-groupimport-easystud__panel-actions .btn:visible, ' +
+        '[data-easystud-open-user]:visible, ' +
+        '[data-easystud-rename-toggle]:visible, ' +
+        '[data-easystud-advanced-filters-toggle]:visible, ' +
+        '[data-easystud-list-sort-toggle]:visible'
+    ).count(), {
+        timeout: 60000,
+        message: 'EasyStud manager is ready but no actionable controls have rendered',
+    }).toBeGreaterThan(0);
     return root;
 };
 

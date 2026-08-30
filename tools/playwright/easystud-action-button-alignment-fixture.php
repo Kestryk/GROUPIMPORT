@@ -53,6 +53,27 @@ function fixture_write_manifest(string $path, array $manifest): void {
     file_put_contents($path, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL, LOCK_EX);
 }
 
+function fixture_cleanup_course(int $courseid): array {
+    global $DB;
+    $cleanupError = null;
+    if ($DB->record_exists('course', ['id' => $courseid])) {
+        try {
+            delete_course($courseid, false);
+        } catch (Throwable $exception) {
+            // Moodle's backup/controller teardown can throw after the course
+            // has already been removed. Re-check the exact fixture before
+            // reporting failure, and preserve the error when it persists.
+            $cleanupError = $exception->getMessage();
+        }
+    }
+    $complete = !$DB->record_exists('course', ['id' => $courseid]);
+    return [
+        'complete' => $complete,
+        'courseId' => $courseid,
+        'error' => $complete ? null : $cleanupError,
+    ];
+}
+
 if ($options['action'] === 'setup') {
     if (!$options['run-id'] || !preg_match('/^[A-Za-z0-9-]+$/', $options['run-id'])) {
         fixture_fail('A safe run-id is required for setup.');
@@ -107,7 +128,11 @@ if ($options['action'] === 'setup') {
         exit(0);
     } catch (Throwable $exception) {
         if ($courseid && $DB->record_exists('course', ['id' => $courseid])) {
-            delete_course($courseid, false);
+            $cleanup = fixture_cleanup_course($courseid);
+            if (!$cleanup['complete']) {
+                fixture_fail('Fixture setup failed and cleanup is incomplete: ' .
+                    ($cleanup['error'] ?: 'course still exists.'));
+            }
         }
         throw $exception;
     }
@@ -123,12 +148,9 @@ if ($options['action'] === 'cleanup') {
         fixture_fail('Fixture manifest is invalid.');
     }
     $courseid = (int)$manifest['courseId'];
-    if ($DB->record_exists('course', ['id' => $courseid])) {
-        delete_course($courseid, false);
-    }
-    $complete = !$DB->record_exists('course', ['id' => $courseid]);
-    output_fixture_json(['complete' => $complete, 'courseId' => $courseid]);
-    exit($complete ? 0 : 1);
+    $cleanup = fixture_cleanup_course($courseid);
+    output_fixture_json($cleanup);
+    exit($cleanup['complete'] ? 0 : 1);
 }
 
 fixture_fail('Unsupported fixture action.');
