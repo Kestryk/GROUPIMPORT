@@ -3895,15 +3895,13 @@ const openAdvancedSettingsModal = (root, item) => {
                         '<button type="button" class="btn btn-outline-secondary" data-easystud-close-advanced-settings="1">' +
                             escapeHtml(labels.cancel || 'Cancel') +
                         '</button>' +
+                        (nativeurl ?
+                            '<a class="btn btn-outline-secondary" href="' + escapeHtml(nativeurl) + '">' +
+                                '<span class="fa fa-external-link-alt me-1" aria-hidden="true"></span>' +
+                                '<span>' + escapeHtml(labels.advancedsettingsnative || 'Edit in Moodle') + '</span>' +
+                            '</a>' : '') +
                     '</div>' +
                 '</form>' +
-                '<div class="local-groupimport-easystud-settings-modal__native">' +
-                    (nativeurl ?
-                        '<a class="btn btn-outline-secondary" href="' + escapeHtml(nativeurl) + '">' +
-                            '<span class="fa fa-external-link-alt me-1" aria-hidden="true"></span>' +
-                            '<span>' + escapeHtml(labels.advancedsettingsnative || 'Edit in Moodle') + '</span>' +
-                        '</a>' : '') +
-                '</div>' +
             '</div>' +
         '</div>';
 
@@ -7872,13 +7870,54 @@ const bindParticipantModal = root => {
                 escapeHtml(labels.advancedsettingsnotset || 'Not set') +
             '</div>';
         return '<details class="local-groupimport-easystud-detail__list local-groupimport-easystud-detail__list--' +
-                escapeHtml(modifier || 'default') + '" open>' +
+                escapeHtml(modifier || 'default') + '" data-easystud-detail-list="1" open>' +
             '<summary>' +
                 '<span>' + escapeHtml(title) + '</span>' +
                 '<strong><span>' + entries.length + '</span><span>' + escapeHtml(title) + '</span></strong>' +
             '</summary>' +
             list +
         '</details>';
+    };
+
+    const bindParticipantDetailLists = detailRoot => {
+        detailRoot.querySelectorAll('[data-easystud-detail-list]').forEach(details => {
+            const summary = details.querySelector(':scope > summary');
+            const content = details.querySelector(':scope > .local-groupimport-easystud-detail__list-scroll, ' +
+                ':scope > .local-groupimport-easystud-detail__list-empty');
+            if (!summary || !content || details.dataset.easystudDetailListBound === '1') {
+                return;
+            }
+            details.dataset.easystudDetailListBound = '1';
+            details.dataset.easystudDetailListState = details.open ? 'open' : 'closed';
+            details.addEventListener('toggle', () => {
+                if (!Motion.isEnabled(details)) {
+                    details.dataset.easystudDetailListState = details.open ? 'open' : 'closed';
+                }
+            });
+            summary.addEventListener('click', event => {
+                // Native details remains the reduced-motion path. In normal
+                // motion, animate only this list so Roles, Groups and
+                // Groupings stay independent and do not resize one another.
+                if (!Motion.isEnabled(details)) {
+                    return;
+                }
+                event.preventDefault();
+                const shouldOpen = details.dataset.easystudDetailListState === 'closed';
+                details.dataset.easystudDetailListState = shouldOpen ? 'open' : 'closed';
+                if (!shouldOpen) {
+                    Motion.collapse(content, {
+                        duration: Motion.timing.slow,
+                        onComplete: () => {
+                            details.open = false;
+                        },
+                    });
+                    return;
+                }
+                details.open = true;
+                content.hidden = true;
+                Motion.expand(content, {duration: Motion.timing.slow});
+            });
+        });
     };
 
     const openForUser = user => {
@@ -7924,6 +7963,7 @@ const bindParticipantModal = root => {
                     '</a>' +
                 '</div>' : '') +
             '</div>';
+        bindParticipantDetailLists(body);
         showEasyStudModal(modal);
     };
 
