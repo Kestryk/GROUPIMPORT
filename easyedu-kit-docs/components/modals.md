@@ -199,9 +199,12 @@ with `modal-file-drop-state` and toggle the provided state class from plugin
 JavaScript.
 
 History actions remain real buttons and keep their semantic Bootstrap variant;
-`history-action` only standardises compact geometry. Use `history-state` for
-non-interactive status pills. Available state variants are `neutral`, `success`
-and `warning`.
+`history-action` only standardises compact geometry. When a consumer presents
+multiple history actions together, place them in a wrapping action row and give
+each control the same compact action geometry, baseline and minimum height.
+At narrow widths, let the controls take a full row so labels remain readable.
+Use `history-state` for non-interactive status pills. Available state variants
+are `neutral`, `success` and `warning`.
 
 ## Import Audit Checklist
 
