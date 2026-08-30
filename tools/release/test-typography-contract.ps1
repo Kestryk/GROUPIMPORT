@@ -40,8 +40,16 @@ foreach ($sourceSelector in @(
     Assert-Contains $source $sourceSelector "Source contract is missing $sourceSelector."
 }
 
-foreach ($role in @('type-page-title', 'type-panel-title', 'type-section-title', 'type-card-title', 'type-control-label', 'type-body', 'type-caption', 'type-eyebrow')) {
+foreach ($role in @('type-page-title', 'type-panel-title', 'type-section-title', 'type-control-label', 'type-body', 'type-caption', 'type-eyebrow')) {
     Assert-Contains $source "easyedu.$role" "Source contract does not consume $role."
+}
+
+Assert-Contains $source 'easyedu.card-title' 'Entity cards do not consume the shared card-title component.'
+
+if ($source -notmatch '(?s)&-card__title\s*\{.*?@include easyedu\.type-control-label;' -or
+        $source -notmatch '(?s)&-fields__header strong\s*\{\s*@include easyedu\.type-control-label;' -or
+        $source -notmatch '(?s)&-form \.fitemtitle,\s*&-form \.col-form-label\s*\{\s*@include easyedu\.type-eyebrow;') {
+    $failures.Add('Mass Import visible title hierarchy does not use the compact Student Management tiers.')
 }
 
 if ($failures.Count -gt 0) {

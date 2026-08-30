@@ -1,5 +1,16 @@
 # EasyStud batch register
 
+## EED-UI-2026-0049 RF2 — visible Mass Import hierarchy
+
+- Date: 2026-08-30
+- Cause: RF1 reused the same card/section roles already present in the accepted
+  stylesheet, so its principal Mass Import headings could not visibly soften.
+- Correction: map panel-card titles to the shared compact control-label tier
+  and upload form labels to the eyebrow/caption tiers used by Student
+  Management. Page identity and the larger introductory description remain.
+- Validation: Sass build, focused typography contract and `git diff --check`;
+  browser acceptance remains human and separate.
+
 ## EED-UI-2026-0049 — typography convergence
 
 - Date: 2026-08-30
