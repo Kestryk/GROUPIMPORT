@@ -1629,7 +1629,7 @@ echo html_writer::tag('div',
                     'type' => 'button',
                     'class' => 'local-groupimport-import-modal__close',
                     'data-local-groupimport-history-close' => '1',
-                    'aria-label' => get_string('close', 'moodle'),
+                    'aria-label' => get_string('closebuttontitle'),
                 ]
             ),
             ['class' => 'local-groupimport-import-modal__header']
@@ -1704,7 +1704,7 @@ echo html_writer::tag('div',
                     'type' => 'button',
                     'class' => 'local-groupimport-import-modal__close',
                     'data-local-groupimport-rollback-close' => '1',
-                    'aria-label' => get_string('close', 'moodle'),
+                    'aria-label' => get_string('closebuttontitle'),
                 ]
             ),
             ['class' => 'local-groupimport-import-modal__header']

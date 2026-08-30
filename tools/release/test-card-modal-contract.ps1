@@ -60,7 +60,9 @@ if ($manager -notmatch 'name="imagefile" accept="image/\*" data-easystud-advance
 foreach ($needle in @(
     'local_groupimport/course_manager',
     'data-easystud-detail-list',
-    'easystudDetailListState',
+    'bindAnimatedDetails',
+    'data-easystud-detail-list-state',
+    'data-easystud-settings-list-state',
     'Motion.collapse(content',
     'Motion.expand(content'
 )) {

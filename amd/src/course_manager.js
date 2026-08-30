@@ -3707,6 +3707,56 @@ const renderAdvancedTextarea = (label, name, value, help = '') => {
     '</label>';
 };
 
+/**
+ * Bind one native details element to the shared EasyEdu disclosure Motion.
+ *
+ * Native details remains the no-script and reduced-motion path. The explicit
+ * state attribute keeps the visual chevron in sync while Motion temporarily
+ * leaves a closing details element open to animate its content.
+ *
+ * @param {HTMLElement} details The details element.
+ * @param {HTMLElement} content The direct disclosure content.
+ * @param {String} stateAttribute Attribute used by the component CSS.
+ */
+const bindAnimatedDetails = (details, content, stateAttribute) => {
+    const summary = details ? details.querySelector(':scope > summary') : null;
+    if (!details || !summary || !content || details.dataset.easystudMotionBound === '1') {
+        return;
+    }
+    details.dataset.easystudMotionBound = '1';
+
+    const syncState = open => {
+        details.setAttribute(stateAttribute, open ? 'open' : 'closed');
+        summary.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    syncState(details.open);
+    details.addEventListener('toggle', () => {
+        if (!Motion.isEnabled(details)) {
+            syncState(details.open);
+        }
+    });
+    summary.addEventListener('click', event => {
+        if (event.target.closest('[data-easystud-settings-export]') || !Motion.isEnabled(details)) {
+            return;
+        }
+        event.preventDefault();
+        const shouldOpen = details.getAttribute(stateAttribute) === 'closed';
+        syncState(shouldOpen);
+        if (!shouldOpen) {
+            Motion.collapse(content, {
+                duration: Motion.timing.slow,
+                onComplete: () => {
+                    details.open = false;
+                },
+            });
+            return;
+        }
+        details.open = true;
+        content.hidden = true;
+        Motion.expand(content, {duration: Motion.timing.slow});
+    });
+};
+
 const renderAdvancedListSection = (title, rows, columns, exportname, emptylabel, type) => {
     const count = rows.length;
     const open = count <= 6 ? ' open' : '';
@@ -3745,6 +3795,8 @@ const renderAdvancedListSection = (title, rows, columns, exportname, emptylabel,
             '<span>' + escapeHtml(title) + '</span>' +
             '<strong><span>' + count + '</span><span class="local-groupimport-easystud-settings-modal__list-count-label">' +
                 escapeHtml(title) + '</span></strong>' +
+            '<span class="local-groupimport-easystud-settings-modal__disclosure-chevron fa fa-chevron-down" ' +
+                'aria-hidden="true"></span>' +
             '<button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-settings-export="1" ' +
                 (count ? '' : 'disabled') + '>' +
                 '<span class="fa fa-file-export me-1" aria-hidden="true"></span>' +
@@ -3769,7 +3821,9 @@ const openAdvancedSettingsModal = (root, item) => {
     const nativeurl = getAdvancedValue(item, 'native-url');
     const picture = getAdvancedValue(item, 'picture');
     const count = getAdvancedCountLabel(root, item, isgroup);
-    const typeLabel = isgroup ? (labels.groups || 'Groups') : (labels.groupings || 'Groupings');
+    const typeLabel = isgroup ? (labels.groupdetails || 'Group details') :
+        (labels.groupingdetails || 'Grouping details');
+    const pluginLabel = labels.pluginname || 'EasyStud';
     const icon = isgroup ? 'fa-users' : 'fa-layer-group';
     const memberRows = isgroup ? getAdvancedGroupMemberRows(root, item) : [];
     const groupGroupingRows = isgroup ? getAdvancedGroupGroupingRows(root, item) : [];
@@ -3796,9 +3850,9 @@ const openAdvancedSettingsModal = (root, item) => {
                     '<span class="local-groupimport-easystud-settings-modal__icon fa ' + icon + '" aria-hidden="true"></span>' +
                     '<div>' +
                         '<span class="local-groupimport-easystud-settings-modal__eyebrow">' +
-                            escapeHtml(typeLabel) +
+                            escapeHtml(pluginLabel) +
                         '</span>' +
-                        '<h3 class="h5 mb-0">' + escapeHtml(title) + '</h3>' +
+                        '<h3 class="h5 mb-0">' + escapeHtml(typeLabel) + '</h3>' +
                     '</div>' +
                 '</div>' +
                 '<button type="button" class="local-groupimport-easystud-modal__close" data-easystud-close-advanced-settings="1">' +
@@ -3911,6 +3965,11 @@ const openAdvancedSettingsModal = (root, item) => {
         }
     });
     root.appendChild(modal);
+    modal.querySelectorAll('[data-easystud-settings-list-section]').forEach(details => {
+        const content = details.querySelector(':scope > .local-groupimport-easystud-settings-modal__list-scroll, ' +
+            ':scope > .local-groupimport-easystud-settings-modal__list-empty');
+        bindAnimatedDetails(details, content, 'data-easystud-settings-list-state');
+    });
 };
 
 const applyAdvancedGroupUpdate = (root, data) => {
@@ -7873,7 +7932,11 @@ const bindParticipantModal = root => {
                 escapeHtml(modifier || 'default') + '" data-easystud-detail-list="1" open>' +
             '<summary>' +
                 '<span>' + escapeHtml(title) + '</span>' +
-                '<strong><span>' + entries.length + '</span><span>' + escapeHtml(title) + '</span></strong>' +
+                '<span class="local-groupimport-easystud-detail__list-summary-end">' +
+                    '<strong><span>' + entries.length + '</span><span>' + escapeHtml(title) + '</span></strong>' +
+                    '<span class="local-groupimport-easystud-detail__list-chevron fa fa-chevron-down" ' +
+                        'aria-hidden="true"></span>' +
+                '</span>' +
             '</summary>' +
             list +
         '</details>';
@@ -7881,42 +7944,9 @@ const bindParticipantModal = root => {
 
     const bindParticipantDetailLists = detailRoot => {
         detailRoot.querySelectorAll('[data-easystud-detail-list]').forEach(details => {
-            const summary = details.querySelector(':scope > summary');
             const content = details.querySelector(':scope > .local-groupimport-easystud-detail__list-scroll, ' +
                 ':scope > .local-groupimport-easystud-detail__list-empty');
-            if (!summary || !content || details.dataset.easystudDetailListBound === '1') {
-                return;
-            }
-            details.dataset.easystudDetailListBound = '1';
-            details.dataset.easystudDetailListState = details.open ? 'open' : 'closed';
-            details.addEventListener('toggle', () => {
-                if (!Motion.isEnabled(details)) {
-                    details.dataset.easystudDetailListState = details.open ? 'open' : 'closed';
-                }
-            });
-            summary.addEventListener('click', event => {
-                // Native details remains the reduced-motion path. In normal
-                // motion, animate only this list so Roles, Groups and
-                // Groupings stay independent and do not resize one another.
-                if (!Motion.isEnabled(details)) {
-                    return;
-                }
-                event.preventDefault();
-                const shouldOpen = details.dataset.easystudDetailListState === 'closed';
-                details.dataset.easystudDetailListState = shouldOpen ? 'open' : 'closed';
-                if (!shouldOpen) {
-                    Motion.collapse(content, {
-                        duration: Motion.timing.slow,
-                        onComplete: () => {
-                            details.open = false;
-                        },
-                    });
-                    return;
-                }
-                details.open = true;
-                content.hidden = true;
-                Motion.expand(content, {duration: Motion.timing.slow});
-            });
+            bindAnimatedDetails(details, content, 'data-easystud-detail-list-state');
         });
     };
 
@@ -7931,7 +7961,7 @@ const bindParticipantModal = root => {
                 '<div class="local-groupimport-easystud-detail__hero">' +
                     '<div class="local-groupimport-easystud-detail__avatar">' + (data.profileimage || '') + '</div>' +
                     '<div class="local-groupimport-easystud-detail__identity">' +
-                        '<span class="local-groupimport-easystud-settings-modal__eyebrow">' +
+                        '<span class="local-groupimport-easystud-detail__identity-label">' +
                             escapeHtml(labels.participantdetails || 'Participant') +
                         '</span>' +
                         '<h4>' + escapeHtml(data.fullname || '') + '</h4>' +

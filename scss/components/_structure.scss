@@ -718,6 +718,12 @@
     @include easyedu.card-title(regular, var(--local-groupimport-easystud-group));
   }
 
+  &-tree__section--ungrouped &-group__name {
+    // The ungrouped shell clipped the final pixels of glyph descenders even
+    // though the shared card-title role already provided a sound line box.
+    padding-bottom: 0.08em;
+  }
+
   &-grouping__name {
     @include easyedu.card-title(container, var(--local-groupimport-easystud-grouping));
   }

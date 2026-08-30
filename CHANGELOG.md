@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Waves 1-3 corrective RF2 - 2026-08-30
+
+#### Fixed
+
+- Bound Administration typography to the EasyStud settings form so it cannot
+  cascade into Moodle page chrome or a CCB banner; preserve the native
+  identifier multiselect.
+- Separate Import-history metadata from its actions and use the valid core
+  close label without changing Restore or annotated Export behaviour.
+- Remove the native Moodle avatar margin seam, align Participant/Group/Grouping
+  modal identities, labels, badges and actions, and connect their independent
+  disclosures to the shared Motion lifecycle with aligned chevrons.
+- Compact ordinary Mass Import copy, restore the semantic results heading and
+  clear descenders in ungrouped Group titles while preserving accepted page
+  identity and introduction typography.
+
+#### Validation
+
+- Rebuilt official Sass and Course Manager AMD outputs and passed focused RF2
+  contracts, PHP syntax and repository diff checks. Preview/cache/fixtures and
+  browser execution remain explicitly separate.
+
 ### EED-UI-2026-0038-RF1 - Participant, Group and Grouping card modals - 2026-08-30
 
 #### Fixed

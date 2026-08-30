@@ -94,7 +94,12 @@
 }
 
 #page-admin-setting-local_groupimport {
-  @include easyedu.type-ui-base;
+  // Keep the plugin typography inside the generated settings form. Applying
+  // this role to the page root also restyled unrelated page chrome and the
+  // Course Banner Builder banner rendered above Moodle administration.
+  #adminsettings {
+    @include easyedu.type-ui-base;
+  }
 
   #adminsettings > .settingsform > h2 {
     @include easyedu.type-page-identity;
