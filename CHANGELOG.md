@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### EED-UI-2026-0047 - EasyStud Mass Import wording - 2026-08-30
+
+#### Changed
+
+- Rename the visible Mass Import entry points and course-tour labels to
+  **EasyStud Mass Import** (or **Import massif EasyStud** in French).
+- Update the administration compatibility notice and disabled-view notice to
+  use the EasyStud product name while preserving the historical component
+  compatibility behavior.
+
+#### Validation
+
+- Source-only language and documentation update; runtime preview, cache purge
+  and browser validation are intentionally not run.
+
 ### EED-UI-2026-0036 - EasyStud Complete-view cards - 2026-08-30
 
 #### Changed
