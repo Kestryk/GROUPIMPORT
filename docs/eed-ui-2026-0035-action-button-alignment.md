@@ -38,6 +38,20 @@ authenticated review is
 shared alignment and restrained typography`. It checks the desktop and 768px
 action rows, detail/profile and inline rename action-button geometry, visible
 menu no-underline treatment, and the More filters, Sort/A-Z and result-count
-typography. It writes external review captures only; it creates no data.
-Sass and the standard plugin validation remain source checks only. A managed
-preview browser review is a separate gate.
+typography. It writes external review captures only. Sass and the standard
+plugin validation remain source checks only. A managed preview browser review
+is a separate gate.
+
+## Supervised fixture protocol
+
+`Invoke-EasyStudActionButtonAlignmentSupervised.ps1` is the only supported
+runtime entry point. Its `RuntimeRunnerPath` is the current managed runtime's
+saved-credentials runner, so the external source spec always borrows the
+served checkout's Playwright dependencies. Before credentials, lease
+acquisition or fixture creation, it discovers exactly the one focused test. It then acquires the managed
+EasyStud runtime lease, creates a disposable course with two groups, supplies
+its exact manager URL through `EASYEDU_EASYSTUD_MANAGER_URL`, and removes the
+course in `finally` after the owned Playwright child has stopped. Credentials,
+profile, lease, fixture manifest and external artifact manifest are all cleaned
+or recorded by the shared saved-credentials runner. The spec has no fixed
+course id or fallback URL.

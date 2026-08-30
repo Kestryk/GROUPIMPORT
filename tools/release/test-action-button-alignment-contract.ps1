@@ -19,6 +19,10 @@ $settingsModal = Read-RequiredFile 'scss/components/_settings-modal.scss'
 $controlTypography = Read-RequiredFile 'scss/components/_control-typography.scss'
 $responsive = Read-RequiredFile 'scss/responsive/_desktop.scss'
 $styles = Read-RequiredFile 'styles.css'
+$scenario = Read-RequiredFile 'tools/playwright/easystud-action-button-alignment.spec.js'
+$supervisor = Read-RequiredFile 'tools/playwright/Invoke-EasyStudActionButtonAlignmentSupervised.ps1'
+$fixture = Read-RequiredFile 'tools/playwright/easystud-action-button-alignment-fixture.php'
+$credentialRunner = Read-RequiredFile 'tools/playwright/Invoke-EasyStudPlaywrightWithSavedCredentials.ps1'
 
 if ($template -match 'fa \{\{icon\}\} me-2') {
     throw 'Upper EasyStud actions still add a Bootstrap icon margin on top of the Kit gap.'
@@ -58,6 +62,21 @@ foreach ($needle in @(
 )) {
     if (-not $styles.Contains($needle)) {
         throw "Generated stylesheet is missing action-button alignment: $needle"
+    }
+}
+
+if ($scenario -match 'manage\.php\?id=5' -or
+        -not $scenario.Contains('EASYEDU_EASYSTUD_MANAGER_URL')) {
+    throw 'The focused scenario must require the supervisor-provided fixture URL and must not retain course 5.'
+}
+foreach ($needle in @(
+    'FixtureHelperPath',
+    'easystud-action-button-alignment-fixture.php',
+    'EASYEDU_EASYSTUD_MANAGER_URL',
+    'delete_course($courseid, false)'
+)) {
+    if (-not ($supervisor + $fixture + $credentialRunner).Contains($needle)) {
+        throw "Missing supervised action-alignment fixture contract: $needle"
     }
 }
 
