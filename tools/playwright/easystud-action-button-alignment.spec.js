@@ -140,9 +140,19 @@ test('EasyStud action controls keep shared alignment and restrained typography',
         if (await menuToggle.count()) {
             await menuToggle.click();
             const openItems = root.locator('[data-easystud-panel-actions-menu]:not([hidden]) .btn:visible');
+            // Inspect every visible menu item, including disabled actions, via
+            // computed style. Disabled items are intentionally non-interactive
+            // and may be covered by the menu surface, so hovering them creates
+            // a false QA failure without testing a user-reachable state.
             for (let index = 0; index < await openItems.count(); index++) {
-                await openItems.nth(index).hover();
                 await expect(openItems.nth(index)).not.toHaveCSS('text-decoration-line', 'underline');
+            }
+            const hoverableItems = root.locator(
+                '[data-easystud-panel-actions-menu]:not([hidden]) .btn:visible:not(:disabled):not([aria-disabled="true"])'
+            );
+            for (let index = 0; index < await hoverableItems.count(); index++) {
+                await hoverableItems.nth(index).hover();
+                await expect(hoverableItems.nth(index)).not.toHaveCSS('text-decoration-line', 'underline');
             }
             await page.keyboard.press('Escape');
         }
