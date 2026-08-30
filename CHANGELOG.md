@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### EED-UI-2026-0037 - EasyStud bottom pagination alignment - 2026-08-30
+
+#### Fixed
+
+- Let the Groups and Groupings columns stretch to the remaining panel height
+  in the Structure workspace, so their existing in-flow bottom pagination
+  aligns with the bottom of the content block for both short and long lists.
+- Preserve DOM order, keyboard order, scrolling and the non-viewport-fixed
+  pagination contract. Participants and the Complete workspace are unchanged.
+
+#### Validation
+
+- Add a source/generated-stylesheet contract for the shared-height Structure
+  columns and the existing bottom-pagination auto margin. Preview review is
+  separately gated.
+
 ### EED-UI-2026-0035 - EasyStud action-button alignment - 2026-08-30
 
 #### Changed
