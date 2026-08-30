@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### EED-UI-2026-0036 - EasyStud Complete-view cards - 2026-08-30
+
+#### Changed
+
+- Give the Complete-view **Groups without grouping** disclosure its own amber
+  identity rail, border and formatted title while preserving its existing
+  Group disclosure behaviour.
+- Preserve the full inner focus edge for open ungrouped and expanded Grouping
+  cards, including the selected Grouping state.
+
+#### Validation
+
+- Add a narrow source/generated-stylesheet contract. Preview review remains
+  separately gated.
+
 ### EED-UI-2026-0037 - EasyStud bottom pagination alignment - 2026-08-30
 
 #### Fixed

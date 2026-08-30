@@ -540,9 +540,7 @@
 
       background: linear-gradient(180deg, #fff 0%, #f7fafc 100%);
       @include easyedu.card-focus-context(
-        0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18),
-        $preserve-identity-rail: true,
-        $identity-rail-color: #f7fafc
+        0 0.42rem 0.9rem -0.28rem rgba(106, 127, 152, 0.18)
       );
     }
 
@@ -576,9 +574,7 @@
 
       background: #edf2f7;
       @include easyedu.card-focus-context(
-        0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22),
-        $preserve-identity-rail: true,
-        $identity-rail-color: #edf2f7
+        0 0.5rem 1rem -0.24rem rgba(106, 127, 152, 0.22)
       );
     }
 
@@ -601,21 +597,52 @@
   }
 
   &-tree__section--ungrouped {
-    // This is a Complete-view section, not a secondary utility panel. Keep
-    // its existing disclosure markup while using the same Group card language
-    // as the surrounding structure sections.
+    // Ungrouped Groups are a first-class Complete-view section. Their amber
+    // identity distinguishes them from ordinary Group cards without turning
+    // the disclosure into a secondary utility panel.
+    --local-groupimport-easystud-ungrouped: #a76513;
+    --local-groupimport-easystud-ungrouped-rail: #d9a75b;
+
     @include easyedu.identity-rail(var(--local-groupimport-easystud-icon-group));
 
-    background: linear-gradient(180deg, #fff 0%, #fbfdfb 100%);
-    border-color: #d6dfd4;
-    border-left-color: var(--local-groupimport-easystud-group-rail);
+    background: linear-gradient(180deg, #fffdf9 0%, #fff7ea 100%);
+    border-color: #ead8ba;
+    border-left-color: var(--local-groupimport-easystud-ungrouped-rail);
     border-radius: 0.95rem;
     box-shadow: var(--local-groupimport-easystud-shadow-soft);
+
+    &:focus-within {
+      border-left-color: var(--local-groupimport-easystud-ungrouped-rail);
+      @include easyedu.card-focus-context(
+        0 0.45rem 0.95rem rgba(138, 91, 25, 0.15),
+        $preserve-identity-rail: true,
+        $identity-rail-color: var(--local-groupimport-easystud-ungrouped-rail)
+      );
+    }
+
+    &.is-expanded {
+      background: linear-gradient(180deg, #fffdf9 0%, #fff4e2 100%);
+      border-color: #dfbd87;
+      box-shadow: 0 0.42rem 0.9rem -0.28rem rgba(138, 91, 25, 0.18);
+    }
+
+    &.is-expanded:focus-within {
+      // Open cards keep the same inner focus rail as their closed state.
+      @include easyedu.card-focus-context(0 0.42rem 0.9rem -0.28rem rgba(138, 91, 25, 0.18));
+    }
   }
 
   &-tree__section--ungrouped > &-tree__toggle {
-    color: var(--easyedu-text);
+    color: var(--local-groupimport-easystud-ungrouped);
     padding-right: 0;
+
+    > .fa {
+      color: var(--local-groupimport-easystud-ungrouped);
+    }
+
+    > span:last-child {
+      @include easyedu.card-title(container, var(--local-groupimport-easystud-ungrouped));
+    }
   }
 
   &-tree__section[data-easystud-grouping-drop].is-drop-target {
