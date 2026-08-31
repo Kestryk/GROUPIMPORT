@@ -1,5 +1,16 @@
 # EasyStud batch register
 
+## Waves RF6 - AMD runtime format repair
+
+- Date: 2026-08-31
+- Cause: RF4 shipped Course Manager as raw ESM, so Moodle RequireJS aggregation
+  parsed a top-level `import` while loading unrelated Core modules.
+- Correction: rebuild the exact RF4 source with Moodle Grunt and Node 22.11;
+  require every generated EasyStud bundle to start with its AMD `define` call
+  and contain no top-level module declarations.
+- Validation: `tools/release/test-amd-runtime-format-contract.ps1`, RF4/RF5 and
+  RF3 contracts, Node syntax and `git diff --check`; no browser scenario.
+
 ## Waves 1-3 corrective RF4/RF5
 
 - Date: 2026-08-31

@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### AMD runtime format repair - 2026-08-31
+
+#### Fixed
+
+- Rebuild Course Manager as a RequireJS `define(...)` bundle instead of a raw
+  ES module whose top-level `import` broke Moodle's aggregated `core/first` and
+  `core_form/changechecker` responses.
+- Add a release contract rejecting top-level `import`/`export` syntax in every
+  generated EasyStud AMD bundle.
+
+#### Validation
+
+- Moodle Grunt build with Node 22.11, JavaScript syntax checks, complete AMD
+  runtime-format contract and existing RF4/RF5/RF3 contracts.
+
 ### Waves 1-3 corrective RF4/RF5 - 2026-08-31
 
 #### Fixed
