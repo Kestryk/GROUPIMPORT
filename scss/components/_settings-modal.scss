@@ -26,17 +26,22 @@
 
   &-settings-modal &-modal__footer {
     align-items: center;
+    border-top: 1px solid #e5edf3;
     display: flex;
     gap: 0.55rem;
     justify-content: flex-end;
-    margin-top: 0.12rem;
+    margin-top: 0.72rem;
     min-width: 0;
+    padding-top: 0.72rem;
 
     > .btn {
       @include easyedu.action-button(small);
 
-      min-height: 2.5rem;
-      padding-inline: 0.85rem;
+      // Participant's native-profile action is the accepted modal-action
+      // reference. Keep all Group/Grouping footer actions on that same box.
+      box-sizing: border-box;
+      min-height: 2.25rem;
+      padding-inline: 0.5rem;
       white-space: nowrap;
     }
   }
@@ -146,7 +151,11 @@
   &-settings-modal__field {
     @include easyedu.settings-modal-field;
 
-    > span {
+    // The embedded settings-modal-field primitive still has a stronger
+    // `span:first-child` legacy selector. Match it explicitly so Group and
+    // Grouping labels resolve to the accepted Participant caption role.
+    > span,
+    > span:first-child {
       @include easyedu.type-caption;
 
       align-items: center;
@@ -271,9 +280,36 @@
   }
 
   &-settings-modal__help {
-    @include easyedu.settings-modal-help-icon;
+    // CCB Slideshow currently owns the accepted 1.15rem contextual question
+    // geometry. The future Kit help-control migration will replace this local
+    // compatibility mapping in both consumers.
+    align-items: center;
+    background: transparent;
+    border: 1px solid rgba(15, 108, 191, 0.35);
+    border-radius: 999px;
+    color: var(--easyedu-primary);
+    display: inline-flex;
+    flex: 0 0 1.15rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    height: 1.15rem;
+    justify-content: center;
+    line-height: 1;
+    min-height: 1.15rem;
+    min-width: 1.15rem;
+    padding: 0;
+    text-decoration: none;
+    width: 1.15rem;
 
     margin-inline-start: 0.08rem;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--easyedu-primary-soft);
+      border-color: rgba(15, 108, 191, 0.35);
+      color: var(--easyedu-primary-strong);
+      text-decoration: none;
+    }
   }
 
   &-settings-modal__filemanager-title > span:last-child {
@@ -408,13 +444,17 @@
 
   &-settings-modal__list-item-chip {
     @include easyedu.metadata-item-chip;
+    @include easyedu.type-caption;
+
+    font-weight: var(--easyedu-font-weight-semibold);
 
     > span:first-child {
-      color: #7d8fa1;
-      font-size: 0.64rem;
-      font-weight: 760;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      @include easyedu.type-caption;
+
+      color: inherit;
+      font-weight: inherit;
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     > span:last-child {

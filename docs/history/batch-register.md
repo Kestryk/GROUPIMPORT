@@ -1,5 +1,21 @@
 # EasyStud batch register
 
+## Waves 1-3 corrective RF4/RF5
+
+- Date: 2026-08-31
+- Lots: `UI0038-RF4` Participant/Group/Grouping modal parity and `UI0049-RF5`
+  Mass Import operational copy.
+- Scope: exact Participant native-profile footer reference; shared compact
+  Group/Grouping titles, labels, values, badges and proportions; local CCB
+  Slideshow-compatible help control; explicitly named compact Mass Import
+  paragraphs.
+- Preservation: entity/modal semantics, form values, disclosure Motion,
+  accepted page identity/introduction and all import workflow logic.
+- Exclusions: shared Kit/CCB source, runtime, preview, cache, fixtures and
+  browser checks.
+- Validation: official Sass/AMD builds, focused RF4/RF5 contract, syntax and
+  `git diff --check`.
+
 ## Waves 1-3 corrective RF3
 
 - Date: 2026-08-31

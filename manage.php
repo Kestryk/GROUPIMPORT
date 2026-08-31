@@ -313,6 +313,7 @@ function local_groupimport_build_manage_template_data(
         'groupdropcopy' => get_string('groupdropcopy', 'local_groupimport'),
         'groupdropmove' => get_string('groupdropmove', 'local_groupimport'),
         'cancel' => get_string('cancel'),
+        'close' => get_string('closebuttontitle'),
         'selectall' => get_string('selectall', 'local_groupimport'),
         'deselectall' => get_string('deselectall', 'local_groupimport'),
         'selectresults' => get_string('selectresults', 'local_groupimport'),
