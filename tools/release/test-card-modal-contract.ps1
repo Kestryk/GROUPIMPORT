@@ -25,7 +25,7 @@ foreach ($needle in @(
     'overflow: auto;',
     'overscroll-behavior: contain;',
     '@include easyedu.type-card-title;',
-    '@include easyedu.type-section-title;',
+    '@include easyedu.type-control-label;',
     'border-radius: inherit;',
     '@include easyedu.action-button(small);',
     'min-height: 2.25rem;',

@@ -107,17 +107,29 @@
 
   .formsettingheading h3,
   .local-groupimport-admin-settings__hero-copy h3 {
-    @include easyedu.type-panel-title;
+    // Administration groups are compact operational sections. The stronger
+    // panel-title role made them compete with the page identity.
+    @include easyedu.type-section-title;
   }
 
   .formsettingheading .form-description,
-  .local-groupimport-admin-settings__hero-copy p,
-  .local-groupimport-admin-settings__hint span {
+  .local-groupimport-admin-settings__hero-copy p {
     @include easyedu.type-body;
   }
 
+  .local-groupimport-admin-settings__hint span {
+    @include easyedu.type-ui-base;
+
+    font-size: var(--easyedu-font-size-control);
+    line-height: var(--easyedu-line-height-body);
+  }
+
   .local-groupimport-admin-settings__field-card h4 {
-    @include easyedu.type-section-title;
+    @include easyedu.type-control-label;
+
+    color: var(--easyedu-text-muted);
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   .local-groupimport-admin-settings__hint strong {

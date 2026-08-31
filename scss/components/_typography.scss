@@ -48,6 +48,25 @@
   font-size: var(--easyedu-font-size-control);
   line-height: var(--easyedu-line-height-body);
 
+  // Moodle and legacy component selectors assign their own larger body size
+  // to several nested operational surfaces. Restate the compact UI baseline
+  // on those surfaces without touching the accepted page introduction.
+  &-card,
+  &-fields,
+  &-form,
+  &-summary,
+  &-report,
+  &-preview,
+  &-history,
+  &-modal {
+    font-size: var(--easyedu-font-size-control);
+    line-height: var(--easyedu-line-height-body);
+  }
+
+  &__header > .local-groupimport-import-navigation {
+    margin-top: 1rem;
+  }
+
   &__title {
     @include easyedu.type-page-title;
 

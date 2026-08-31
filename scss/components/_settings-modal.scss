@@ -147,26 +147,29 @@
     @include easyedu.settings-modal-field;
 
     > span {
-      @include easyedu.type-control-label;
+      @include easyedu.type-caption;
 
       align-items: center;
       color: #62788e;
       display: inline-flex;
+      font-weight: var(--easyedu-font-weight-semibold);
       gap: 0.32rem;
       letter-spacing: 0;
       text-transform: none;
     }
 
     > strong {
+      @include easyedu.type-body;
+
       color: #263b4f;
-      font-size: 0.88rem;
-      font-weight: 640;
+      font-size: var(--easyedu-font-size-control);
+      font-weight: var(--easyedu-font-weight-regular);
       min-width: 0;
       overflow-wrap: anywhere;
 
       &.is-empty {
         color: #8a9bad;
-        font-weight: 560;
+        font-weight: var(--easyedu-font-weight-regular);
       }
     }
 
@@ -269,6 +272,23 @@
 
   &-settings-modal__help {
     @include easyedu.settings-modal-help-icon;
+
+    margin-inline-start: 0.08rem;
+  }
+
+  &-settings-modal__filemanager-title > span:last-child {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.38rem;
+    min-width: 0;
+  }
+
+  &-settings-modal &-toggle-check {
+    @include easyedu.toggle-check;
+
+    font-weight: var(--easyedu-font-weight-regular);
+    justify-self: start;
+    margin-block-start: 0.08rem;
   }
 
   &-settings-modal__lists {
@@ -285,7 +305,10 @@
     summary {
       @include easyedu.metadata-section-summary;
 
-      > span:first-child {
+      > .local-groupimport-easystud-settings-modal__list-title {
+        @include easyedu.type-control-label;
+
+        font-weight: var(--easyedu-font-weight-semibold);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -296,6 +319,8 @@
 
         align-items: center;
         display: inline-flex;
+        font-size: var(--easyedu-font-size-caption);
+        font-weight: var(--easyedu-font-weight-semibold);
         gap: 0.28rem;
         justify-self: end;
         max-width: min(12rem, 100%);
@@ -303,8 +328,8 @@
         overflow: hidden;
 
         .local-groupimport-easystud-settings-modal__list-count-label {
-          font-size: 0.66rem;
-          font-weight: 720;
+          font-size: inherit;
+          font-weight: inherit;
           max-width: 8.5rem;
           min-width: 0;
           overflow: hidden;
@@ -316,14 +341,14 @@
       > .local-groupimport-easystud-settings-modal__disclosure-chevron {
         color: #607487;
         font-size: 0.72rem;
-        justify-self: center;
+        justify-self: start;
         transition: transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
       }
 
     }
 
     &[data-easystud-settings-list-state] summary {
-      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
     }
   }
 
@@ -589,17 +614,20 @@
     padding: 0.52rem 0.64rem;
 
     > span {
-      @include easyedu.type-control-label;
+      @include easyedu.type-caption;
 
       color: #62788e;
+      font-weight: var(--easyedu-font-weight-semibold);
       letter-spacing: 0;
       text-transform: none;
     }
 
     > strong {
+      @include easyedu.type-body;
+
       color: #263b4f;
-      font-size: 0.88rem;
-      font-weight: 640;
+      font-size: var(--easyedu-font-size-control);
+      font-weight: var(--easyedu-font-weight-regular);
       min-width: 0;
       overflow-wrap: anywhere;
     }
@@ -623,7 +651,7 @@
       cursor: pointer;
       display: grid;
       gap: 0.55rem;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: auto minmax(0, 1fr) auto;
       list-style: none;
       padding: 0.52rem 0.62rem;
 
@@ -639,9 +667,10 @@
         display: none;
       }
 
-      > span:first-child {
-        @include easyedu.type-section-title;
+      > .local-groupimport-easystud-detail__list-title {
+        @include easyedu.type-control-label;
 
+        font-weight: var(--easyedu-font-weight-semibold);
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -663,8 +692,8 @@
         border-radius: 999px;
         color: #6d7f91;
         display: inline-flex;
-        font-size: 0.72rem;
-        font-weight: 730;
+        font-size: var(--easyedu-font-size-caption);
+        font-weight: var(--easyedu-font-weight-semibold);
         gap: 0.28rem;
         line-height: 1.2;
         max-width: 9.5rem;
@@ -685,6 +714,7 @@
         color: #607487;
         flex: 0 0 auto;
         font-size: 0.72rem;
+        justify-self: start;
         transition: transform var(--easyedu-motion-normal) var(--easyedu-motion-ease);
       }
     }
@@ -806,7 +836,7 @@
     }
 
     &-settings-modal__list-section[data-easystud-settings-list-state] summary {
-      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-columns: auto minmax(0, 1fr) auto;
     }
 
     &-settings-modal &-modal__footer {
