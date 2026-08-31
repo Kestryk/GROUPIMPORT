@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### Waves 1-3 corrective RF4/RF5 - 2026-08-31
+
+#### Fixed
+
+- Match Group and Grouping modal footer geometry to the accepted Participant
+  native-profile action and keep their titles, labels, values and badges on
+  the same compact semantic tiers and proportions.
+- Give Group and Grouping settings a local keyboard-reachable question-mark
+  help control with the CCB Slideshow visual contract, without a runtime
+  dependency on CCB.
+- Compact the explicitly operational Mass Import paragraphs with the existing
+  control-size token while preserving page identity, introduction and import
+  logic.
+
+#### Validation
+
+- Rebuilt official Sass and Course Manager AMD outputs and passed the focused
+  RF4/RF5 static contract plus syntax and diff checks. Browser, preview,
+  cache and fixture activity remain separate.
+
 ### Waves 1-3 corrective RF3 - 2026-08-31
 
 #### Fixed

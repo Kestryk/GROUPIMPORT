@@ -12287,11 +12287,13 @@
 }
 .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer {
   align-items: center;
+  border-top: 1px solid #e5edf3;
   display: flex;
   gap: 0.55rem;
   justify-content: flex-end;
-  margin-top: 0.12rem;
+  margin-top: 0.72rem;
   min-width: 0;
+  padding-top: 0.72rem;
 }
 .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn {
   align-items: center;
@@ -12303,8 +12305,9 @@
   min-height: 1.9rem;
   min-width: 1.9rem;
   padding: 0.22rem 0.5rem;
-  min-height: 2.5rem;
-  padding-inline: 0.85rem;
+  box-sizing: border-box;
+  min-height: 2.25rem;
+  padding-inline: 0.5rem;
   white-space: nowrap;
 }
 .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn:hover, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn:focus-visible, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn[aria-expanded=true], .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn[aria-pressed=true], .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn.active, .local-groupimport-easystud-settings-modal .local-groupimport-easystud-modal__footer > .btn.is-active {
@@ -12527,7 +12530,8 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.local-groupimport-easystud-settings-modal__field > span {
+.local-groupimport-easystud-settings-modal__field > span,
+.local-groupimport-easystud-settings-modal__field > span:first-child {
   font-family: var(--easyedu-font-family-ui);
   font-weight: var(--easyedu-font-weight-regular);
   letter-spacing: 0;
@@ -12730,29 +12734,29 @@
 }
 .local-groupimport-easystud-settings-modal__help {
   align-items: center;
-  background: color-mix(in srgb, var(--easyedu-primary-soft) 68%, #fff 32%);
-  border: 1px solid var(--easyedu-card-border);
+  background: transparent;
+  border: 1px solid rgba(15, 108, 191, 0.35);
   border-radius: 999px;
   color: var(--easyedu-primary);
   display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 0.62rem;
-  height: 1rem;
+  flex: 0 0 1.15rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  height: 1.15rem;
   justify-content: center;
-  letter-spacing: 0;
   line-height: 1;
+  min-height: 1.15rem;
+  min-width: 1.15rem;
   padding: 0;
-  position: relative;
-  text-transform: none;
-  width: 1rem;
+  text-decoration: none;
+  width: 1.15rem;
   margin-inline-start: 0.08rem;
 }
-.local-groupimport-easystud-settings-modal__help::before {
-  left: 50%;
-  line-height: 1;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.local-groupimport-easystud-settings-modal__help:hover, .local-groupimport-easystud-settings-modal__help:focus-visible {
+  background: var(--easyedu-primary-soft);
+  border-color: rgba(15, 108, 191, 0.35);
+  color: var(--easyedu-primary-strong);
+  text-decoration: none;
 }
 .local-groupimport-easystud-settings-modal__filemanager-title > span:last-child {
   align-items: center;
@@ -12973,13 +12977,25 @@
   min-height: 1.35rem;
   min-width: 0;
   padding: 0.14rem 0.48rem;
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text-muted);
+  font-size: var(--easyedu-font-size-caption);
+  line-height: 1.4;
+  font-weight: var(--easyedu-font-weight-semibold);
 }
 .local-groupimport-easystud-settings-modal__list-item-chip > span:first-child {
-  color: #7d8fa1;
-  font-size: 0.64rem;
-  font-weight: 760;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-family: var(--easyedu-font-family-ui);
+  font-weight: var(--easyedu-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--easyedu-text-muted);
+  font-size: var(--easyedu-font-size-caption);
+  line-height: 1.4;
+  color: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .local-groupimport-easystud-settings-modal__list-item-chip > span:last-child {
   min-width: 0;
@@ -19203,13 +19219,14 @@ body.jsenabled.local-groupimport-admin-settings-page--loading #page-admin-settin
   line-height: var(--easyedu-line-height-body);
   color: var(--local-groupimport-easystud-text-muted);
 }
-.local-groupimport-import-card__description, .local-groupimport-import-fields__header p, .local-groupimport-import-form .fdescription, .local-groupimport-import-form .form-text, .local-groupimport-import-form .fp-restrictions {
+.local-groupimport-import-card__description, .local-groupimport-import-fields__header p, .local-groupimport-import-empty p, .local-groupimport-import-preview__notice p, .local-groupimport-import-preview__reimport-alert p, .local-groupimport-import-drop__panel p, .local-groupimport-import-form .fdescription, .local-groupimport-import-form .form-text, .local-groupimport-import-form .fp-restrictions {
   font-family: var(--easyedu-font-family-ui);
   font-weight: var(--easyedu-font-weight-regular);
   letter-spacing: 0;
+  color: var(--easyedu-text-muted);
+  font-size: var(--easyedu-font-size-caption);
+  line-height: 1.4;
   color: var(--local-groupimport-easystud-text-muted);
-  font-size: var(--easyedu-font-size-control);
-  line-height: var(--easyedu-line-height-body);
 }
 .local-groupimport-import-card__title {
   font-family: var(--easyedu-font-family-ui);

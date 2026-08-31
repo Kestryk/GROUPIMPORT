@@ -3667,8 +3667,12 @@ const renderFieldHelp = help => {
     if (!help) {
         return '';
     }
-    return '<span class="local-groupimport-easystud-settings-modal__help fa fa-question" ' +
-        'aria-hidden="true" data-easystud-hover-help="' + escapeHtml(help) + '"></span>';
+    // Keep the contextual-help control keyboard reachable. Its visual and
+    // hover/focus behavior deliberately matches the accepted CCB Slideshow
+    // question-mark control without importing another plugin at runtime.
+    return '<button type="button" class="btn btn-link p-0 icon-no-margin ' +
+        'local-groupimport-easystud-settings-modal__help" ' +
+        'aria-label="' + escapeHtml(help) + '" data-easystud-hover-help="' + escapeHtml(help) + '">?</button>';
 };
 
 const getAdvancedCountLabel = (root, item, isgroup) => {
@@ -3855,7 +3859,9 @@ const openAdvancedSettingsModal = (root, item) => {
                         '<h3 class="h5 mb-0">' + escapeHtml(typeLabel) + '</h3>' +
                     '</div>' +
                 '</div>' +
-                '<button type="button" class="local-groupimport-easystud-modal__close" data-easystud-close-advanced-settings="1">' +
+                '<button type="button" class="local-groupimport-easystud-modal__close" ' +
+                    'data-easystud-close-advanced-settings="1" aria-label="' +
+                    escapeHtml(labels.close || 'Close') + '">' +
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
             '</div>' +
