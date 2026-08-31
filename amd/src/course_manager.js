@@ -3792,11 +3792,11 @@ const renderAdvancedListSection = (title, rows, columns, exportname, emptylabel,
             'data-easystud-settings-list-section="1"' +
             ' data-easystud-settings-export-name="' + escapeHtml(exportname) + '"' + open + '>' +
         '<summary>' +
-            '<span>' + escapeHtml(title) + '</span>' +
-            '<strong><span>' + count + '</span><span class="local-groupimport-easystud-settings-modal__list-count-label">' +
-                escapeHtml(title) + '</span></strong>' +
             '<span class="local-groupimport-easystud-settings-modal__disclosure-chevron fa fa-chevron-down" ' +
                 'aria-hidden="true"></span>' +
+            '<span class="local-groupimport-easystud-settings-modal__list-title">' + escapeHtml(title) + '</span>' +
+            '<strong><span>' + count + '</span><span class="local-groupimport-easystud-settings-modal__list-count-label">' +
+                escapeHtml(title) + '</span></strong>' +
             '<button type="button" class="btn btn-sm btn-outline-secondary" data-easystud-settings-export="1" ' +
                 (count ? '' : 'disabled') + '>' +
                 '<span class="fa fa-file-export me-1" aria-hidden="true"></span>' +
@@ -7931,11 +7931,11 @@ const bindParticipantModal = root => {
         return '<details class="local-groupimport-easystud-detail__list local-groupimport-easystud-detail__list--' +
                 escapeHtml(modifier || 'default') + '" data-easystud-detail-list="1" open>' +
             '<summary>' +
-                '<span>' + escapeHtml(title) + '</span>' +
+                '<span class="local-groupimport-easystud-detail__list-chevron fa fa-chevron-down" ' +
+                    'aria-hidden="true"></span>' +
+                '<span class="local-groupimport-easystud-detail__list-title">' + escapeHtml(title) + '</span>' +
                 '<span class="local-groupimport-easystud-detail__list-summary-end">' +
                     '<strong><span>' + entries.length + '</span><span>' + escapeHtml(title) + '</span></strong>' +
-                    '<span class="local-groupimport-easystud-detail__list-chevron fa fa-chevron-down" ' +
-                        'aria-hidden="true"></span>' +
                 '</span>' +
             '</summary>' +
             list +

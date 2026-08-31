@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### Waves 1-3 corrective RF3 - 2026-08-31
+
+#### Fixed
+
+- Soften Administration operational headings and keep Standard Moodle fields
+  and Custom profile fields visually subordinate to their parent section.
+- Place Participant, Group and Grouping disclosure chevrons before their title
+  and harmonise title, counter, field-label, value, help and checkbox typography
+  on the compact EasyStud semantic tiers.
+- Reassert the compact Student Management text baseline across Mass Import
+  operational surfaces and restore a visible gap between the accepted page
+  introduction and shared navigation.
+
+#### Validation
+
+- Rebuilt official Sass and Course Manager AMD outputs and passed focused RF3
+  and established static regression contracts. Preview/cache/fixtures and
+  browser execution remain separately coordinated.
+
 ### Waves 1-3 corrective RF2 - 2026-08-30
 
 #### Fixed

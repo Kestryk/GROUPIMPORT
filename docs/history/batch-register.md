@@ -1,5 +1,20 @@
 # EasyStud batch register
 
+## Waves 1-3 corrective RF3
+
+- Date: 2026-08-31
+- Lots: corrective follow-up for `EED-UI-2026-0038`, `0039`, `0049` and
+  intro-spacing `0051`.
+- Scope: quiet Administration hierarchy; left-aligned disclosure chevrons and
+  compact labels, values, counters, help and checkbox treatment across the
+  three entity modal families; compact Mass Import operational copy and a
+  visible introduction-to-navigation gap.
+- Preservation: native settings controls/storage, entity persistence, modal
+  Motion/reduced-motion behavior and all Mass Import actions remain unchanged.
+- Exclusions: shared Kit migration, preview/cache/fixtures and browser checks.
+- Validation: official Sass/AMD builds, focused RF3 and established regression
+  contracts, PHP/JavaScript syntax, release validation and `git diff --check`.
+
 ## Waves 1-3 corrective RF2
 
 - Date: 2026-08-30
